@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@id/companyLoginFragment">
+
+    <fragment
+        android:id="@+id/nav_home"
+        android:name="com.fastertable.fastertable.ui.ui.home.HomeFragment"
+        android:label="@string/menu_home"
+        tools:layout="@layout/fragment_home" />
+    <fragment
+        android:id="@+id/companyLoginFragment"
+        android:name="com.fastertable.fastertable.ui.ui.login.company.CompanyLoginFragment"
+        android:label="CompanyLoginFragment"
+        tools:layout="@layout/company_login_fragment" >
+        <action
+            android:id="@+id/action_companyLoginFragment_to_restaurantLoginFragment"
+            app:destination="@id/restaurantLoginFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/restaurantLoginFragment"
+        android:name="com.fastertable.fastertable.ui.ui.login.restaurant.RestaurantLoginFragment"
+        android:label="RestaurantLoginFragment"
+        tools:layout="@layout/restaurant_login_fragment">
+        <argument
+            android:name="location"
+            app:argType="com.fastertable.fastertable.data.Location"/>
+        <action
+            android:id="@+id/action_restaurantLoginFragment_to_terminalSelectFragment"
+            app:destination="@id/terminalSelectFragment" />
+        <action
+            android:id="@+id/action_restaurantLoginFragment_to_userLoginFragment"
+            app:destination="@id/userLoginFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/terminalSelectFragment"
+        android:name="com.fastertable.fastertable.ui.ui.login.terminal.TerminalSelectFragment"
+        android:label="TerminalSelectFragment"
+        tools:layout="@layout/terminal_select_fragment">
+        <argument
+            android:name="settings"
+            app:argType="com.fastertable.fastertable.data.Settings"/>
+        <action
+            android:id="@+id/action_terminalSelectFragment_to_userLoginFragment"
+            app:destination="@id/userLoginFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/userLoginFragment"
+        android:name="com.fastertable.fastertable.ui.ui.login.user.UserLoginFragment"
+        android:label="UserLoginFragment"
+        tools:layout="@layout/user_login_fragment">
+        <action
+            android:id="@+id/action_userLoginFragment_to_orderListFragment"
+            app:destination="@id/orderListFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/orderListFragment"
+        android:name="com.fastertable.fastertable.ui.ui.order.OrderListFragment"
+        android:label="OrderListFragment"
+        tools:layout="@layout/order_list_fragment" />
+
+</navigation>

@@ -1,0 +1,72 @@
+<resources>
+    <string name="app_name">Fastertable</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="menu_home">Fastertable</string>
+    <string name="message_subscribe_failed">Failed to subscribe to topic</string>
+    <string name="message_subscribed">Subscribed to topic</string>
+
+    <string name="company_login_title">Fastertable Login</string>
+    <string name="company_login">Enter Company Login</string>
+    <string name="company_login_edit">Company Login</string>
+    <string name="company_password">Enter Company Password</string>
+    <string name="company_password_edit">Company Password</string>
+
+    <string name="login">Login</string>
+
+    <string name="notification_title">Faster Orders</string>
+    <string name="notification_text">A new order has arrived!!</string>
+
+    <string name="order_received">New Order Received</string>
+    <string name="faster_order_channel_id" translatable="false">order_channel</string>
+    <string name="faster_order_notification_channel_name" translatable="true">Faster Web Orders</string>
+    <string name="fastertable_notification_channel_id" translatable="false">fcm_default_channel</string>
+    <string name="fastertable_notification_channel_name" translatable="true">Faster Orders</string>
+    <string name="accept">Accept</string>
+
+    <string name="string_order">Order</string>
+    <string name="string_customer">Customer</string>
+    <string name="string_telephone">Telephone</string>
+    <string name="order_number">Order #:</string>
+    <string name="time_received">Time:</string>
+    <string name="number_placeholder">100</string>
+    <string name="telephone_placeholder">5556667777</string>
+    <string name="string_quantity">Qty</string>
+    <string name="string_item">Item</string>
+    <string name="string_price">Price</string>
+    <string name="string_subtotal">Subtotal</string>
+    <string name="string_saleTax">Tax</string>
+    <string name="string_total">Total</string>
+    <string name="string_mods">mods</string>
+    <string name="string_ingredients">Ingredients</string>
+
+    //Button pad
+    <string name="string_one">1</string>
+    <string name="string_two">2</string>
+    <string name="string_three">3</string>
+    <string name="string_four">4</string>
+    <string name="string_five">5</string>
+    <string name="string_six">6</string>
+    <string name="string_seven">7</string>
+    <string name="string_eight">8</string>
+    <string name="string_nine">9</string>
+    <string name="string_zero">0</string>
+    <string name="string_clear">Clear</string>
+    <string name="string_enter">Enter</string>
+    <string name="restaurant_login">Restaurant Login</string>
+    <string name="user_login">User Login</string>
+    <string name="restaurant_pin">Restaurant Pin</string>
+    <string name="user_pin">User Pin</string>
+
+    //Terminals
+    <string name="string_terminal">Terminals</string>
+    <string name="terminal_instructions">Selecting a terminal determines where credit cards are processed and where receipts are printed.</string>
+    <string name="select">Select</string>
+    <string name="company_error">There was an error logging you into the system. Please check your login and password and try again.</string>
+    <string name="pin_invalid">The PIN you have entered is not recognized.</string>
+</resources>

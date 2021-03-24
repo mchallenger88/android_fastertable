@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="view_titles">
+        <item name="android:textSize">@dimen/header_size</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textAlignment">viewEnd</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textColor">@color/default_text_color</item>
+        <item name="android:layout_marginTop">@dimen/textView_margin</item>
+    </style>
+
+    <style name="default_text">
+    <item name="android:textSize">@dimen/default_text_size</item>
+    <item name="android:textStyle">bold</item>
+    <item name="android:textColor">@color/default_text_color</item>
+    <item name="android:layout_marginTop">@dimen/textView_margin</item>
+    </style>
+
+    <style name="edit_hint">
+        <item name="android:textSize">@dimen/default_text_size</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/default_text_color</item>
+        <item name="android:layout_marginTop">@dimen/textView_margin</item>
+        <item name="android:textAlignment">center</item>
+    </style>
+
+    <style name="edit_text_title">
+        <item name="android:textSize">@dimen/large_text_size</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textAlignment">viewEnd</item>
+        <item name="android:textColor">@color/default_text_color</item>
+        <item name="android:layout_marginTop">@dimen/textView_margin</item>
+    </style>
+
+    <style name="ChipTextAppearance" parent="TextAppearance.MaterialComponents.Chip">
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textSize">@dimen/default_text_size</item>
+        <item name="android:background">@color/primaryColor</item>
+    </style>
+
+<!--    <style name="ChipTextAppearance_selected" parent="TextAppearance.MaterialComponents.Chip">-->
+<!--        <item name="android:textColor">@android:color/white</item>-->
+<!--        <item name="android:textSize">@dimen/default_text_size</item>-->
+<!--        <item name="android:background">@color/secondaryColor</item>-->
+<!--    </style>-->
+
+    <style name="AppTextField" parent="Widget.MaterialComponents.TextInputLayout.FilledBox">
+        <item name="boxBackgroundColor">@color/editText</item>
+    </style>
+
+    <style name="primary_button" parent="Widget.MaterialComponents.Button">
+        <item name="android:textSize">@dimen/default_text_size</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:background">@color/primaryColor</item>
+    </style>
+</resources>

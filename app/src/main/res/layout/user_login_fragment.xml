@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+    <data>
+        <variable
+            name="viewModel"
+            type="com.fastertable.fastertable.ui.ui.login.user.UserLoginViewModel" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:id="@+id/imageView6"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="24dp"
+            android:contentDescription="@string/user_login"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_fastertablelogo"/>
+
+        <TextView
+            android:id="@+id/txt_terminal_using"
+            style="@style/view_titles"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="50dp"
+            android:text="@string/app_name"
+            android:textSize="40sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:terminalUsing="@{viewModel.terminal}" />
+
+        <TextView
+            android:id="@+id/txt_user_login_title"
+            style="@style/view_titles"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/user_login"
+            app:layout_constraintBottom_toTopOf="@+id/edit_user_password"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.514"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/edit_user_password"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            android:hint="@string/user_pin"
+            android:ems="10"
+            app:layout_constraintBottom_toTopOf="@+id/btn_user_two"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.52"
+            app:layout_constraintStart_toStartOf="parent"
+            >
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/large_text_size"
+                android:textAlignment="center"
+                android:inputType="textPassword"
+                android:text="@{viewModel.pin}" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+        <Button
+            android:id="@+id/btn_user_one"
+            android:layout_width="@dimen/login_button"
+            android:layout_height="@dimen/login_button"
+            android:text="@string/string_one"
+            android:textColor="@color/white"
+            android:textSize="@dimen/large_text_size"
+            android:backgroundTint="@color/secondaryColor"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.43"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.39" />
+
+        <Button
+            android:id="@+id/btn_user_two"
+            android:layout_width="@dimen/login_button"
+            android:layout_height="@dimen/login_button"
+            android:layout_marginStart="6dp"
+            android:backgroundTint="@color/secondaryColor"
+            android:text="@string/string_two"
+            android:textColor="@color/white"
+            android:textSize="@dimen/large_text_size"
+            app:layout_constraintStart_toEndOf="@+id/btn_user_one"
+            app:layout_constraintTop_toTopOf="@+id/btn_user_one" />
+
+        <Button
+            android:id="@+id/btn_user_three"
+            android:layout_width="@dimen/login_button"
+            android:layout_height="@dimen/login_button"
+            android:layout_marginStart="6dp"
+            android:backgroundTint="@color/secondaryColor"
+            android:text="@string/string_three"
+            android:textColor="@color/white"
+            android:textSize="@dimen/large_text_size"
+            app:layout_constraintStart_toEndOf="@+id/btn_user_two"
+            app:layout_constraintTop_toTopOf="@+id/btn_user_two" />
+
+        <Button
+            android:id="@+id/btn_user_four"
+            android:layout_width="@dimen/login_button"
+            android:layout_height="@dimen/login_button"
+            android:text="@string/string_four"
+            android:textColor="@color/white"
+            android:textSize="@dimen/large_text_size"
+            android:backgroundTint="@color/secondaryColor"
+            app:layout_constraintStart_toStartOf="@+id/btn_user_one"
+            app:layout_constraintTop_toBottomOf="@+id/btn_user_one" />
+
+        <Button
+            android:id="@+id/btn_user_five"
+            android:layout_width="@dimen/login_button"
+            android:layout_height="@dimen/login_button"
+            android:layout_marginStart="6dp"
+            android:backgroundTint="@color/secondaryColor"
+            android:text="@string/string_five"
+            android:textColor="@color/white"
+            android:textSize="@dimen/large_text_size"
+            app:layout_constraintStart_toEndOf="@+id/btn_user_four"
+            app:layout_constraintTop_toBottomOf="@+id/btn_user_two" />
+
+        <Button
+            android:id="@+id/btn_user_six"
+            android:layout_width="@dimen/login_button"
+            android:layout_height="@dimen/login_button"
+            android:layout_marginStart="6dp"
+            android:backgroundTint="@color/secondaryColor"
+            android:text="@string/string_six"
+            android:textColor="@color/white"
+            android:textSize="@dimen/large_text_size"
+            app:layout_constraintStart_toEndOf="@+id/btn_user_five"
+            app:layout_constraintTop_toBottomOf="@+id/btn_user_three" />
+
+        <Button
+            android:id="@+id/btn_user_seven"
+            android:layout_width="@dimen/login_button"
+            android:layout_height="@dimen/login_button"
+            android:text="@string/string_seven"
+            android:textColor="@color/white"
+            android:textSize="@dimen/large_text_size"
+            android:backgroundTint="@color/secondaryColor"
+            app:layout_constraintStart_toStartOf="@+id/btn_user_four"
+            app:layout_constraintTop_toBottomOf="@+id/btn_user_four" />
+
+        <Button
+            android:id="@+id/btn_user_eight"
+            android:layout_width="@dimen/login_button"
+            android:layout_height="@dimen/login_button"
+            android:layout_marginStart="6dp"
+            android:backgroundTint="@color/secondaryColor"
+            android:text="@string/string_eight"
+            android:textColor="@color/white"
+            android:textSize="@dimen/large_text_size"
+            app:layout_constraintStart_toEndOf="@+id/btn_user_seven"
+            app:layout_constraintTop_toBottomOf="@+id/btn_user_five" />
+
+        <Button
+            android:id="@+id/btn_user_nine"
+            android:layout_width="@dimen/login_button"
+            android:layout_height="@dimen/login_button"
+            android:layout_marginStart="6dp"
+            android:backgroundTint="@color/secondaryColor"
+            android:text="@string/string_nine"
+            android:textColor="@color/white"
+            android:textSize="@dimen/large_text_size"
+            app:layout_constraintStart_toEndOf="@+id/btn_user_eight"
+            app:layout_constraintTop_toBottomOf="@+id/btn_user_six" />
+
+        <Button
+            android:id="@+id/btn_user_clear"
+            android:layout_width="@dimen/login_button"
+            android:layout_height="@dimen/login_button"
+            android:layout_marginStart="6dp"
+            android:backgroundTint="@color/secondaryColor"
+            android:text="@string/string_clear"
+            android:textColor="@color/white"
+            android:textSize="@dimen/login_button_words"
+            app:layout_constraintStart_toEndOf="@+id/btn_user_zero"
+            app:layout_constraintTop_toBottomOf="@+id/btn_user_eight" />
+
+        <Button
+            android:id="@+id/btn_user_zero"
+            android:layout_width="@dimen/login_button"
+            android:layout_height="@dimen/login_button"
+            android:backgroundTint="@color/secondaryColor"
+            android:text="@string/string_zero"
+            android:textColor="@color/white"
+            android:textSize="@dimen/large_text_size"
+            app:layout_constraintStart_toStartOf="@+id/btn_user_seven"
+            app:layout_constraintTop_toBottomOf="@+id/btn_user_seven" />
+
+        <Button
+            android:id="@+id/btn_user_enter"
+            android:layout_width="@dimen/login_button"
+            android:layout_height="@dimen/login_button"
+            android:layout_marginStart="6dp"
+            android:backgroundTint="@color/secondaryColor"
+            android:text="@string/string_enter"
+            android:textColor="@color/white"
+            android:textSize="@dimen/login_button_words"
+            app:layout_constraintStart_toEndOf="@+id/btn_user_clear"
+            app:layout_constraintTop_toBottomOf="@+id/btn_user_nine" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
