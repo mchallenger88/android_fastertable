@@ -5,10 +5,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import com.fastertable.fastertable.R
 import com.fastertable.fastertable.data.Location
 import com.fastertable.fastertable.data.repository.LoginRepository
 import com.fastertable.fastertable.databinding.CompanyLoginFragmentBinding
@@ -32,6 +34,12 @@ class CompanyLoginFragment : Fragment()  {
 
         viewModel = ViewModelProvider(
                 this, viewModelFactory).get(CompanyLoginViewModel::class.java)
+
+        val toolbar: Toolbar = requireActivity().findViewById(R.id.toolbar)
+        var fasterToolbar: Toolbar = requireActivity().findViewById(R.id.fastertoolbar)
+        toolbar.visibility = View.GONE
+        fasterToolbar.visibility = View.GONE
+
         binding.lifecycleOwner = viewLifecycleOwner
         binding.viewModel = viewModel
 

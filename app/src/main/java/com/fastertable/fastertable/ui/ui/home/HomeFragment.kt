@@ -8,23 +8,42 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import com.fastertable.fastertable.R
+import com.fastertable.fastertable.data.repository.LoginRepository
 
 class HomeFragment : Fragment() {
 
-    private lateinit var homeViewModel: HomeViewModel
+    private lateinit var viewModel: HomeViewModel
 
     override fun onCreateView(
             inflater: LayoutInflater,
             container: ViewGroup?,
             savedInstanceState: Bundle?
     ): View? {
-        homeViewModel =
-                ViewModelProvider(this).get(HomeViewModel::class.java)
+        val application = requireNotNull(activity).application
+        val loginRepository = LoginRepository(application)
+        val navController = findNavController()
+
+        val viewModelFactory = HomeViewModelFactory(application, loginRepository)
+        viewModel = ViewModelProvider(
+            this, viewModelFactory).get(HomeViewModel::class.java)
         val root = inflater.inflate(R.layout.fragment_home, container, false)
         val textView: TextView = root.findViewById(R.id.text_home)
-        homeViewModel.text.observe(viewLifecycleOwner, Observer {
+        viewModel.text.observe(viewLifecycleOwner, Observer {
             textView.text = it
+        })
+
+        viewModel.company.observe(viewLifecycleOwner, Observer { company ->
+            if(company == null){
+                navController.navigate(R.id.companyLoginFragment)
+            }
+        })
+
+        viewModel.settings.observe(viewLifecycleOwner, Observer { settings ->
+            if(settings == null){
+                navController.navigate(R.id.companyLoginFragment)
+            }
         })
         return root
     }

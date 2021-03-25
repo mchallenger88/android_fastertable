@@ -6,7 +6,9 @@ import com.fastertable.fastertable.api.*
 import com.fastertable.fastertable.data.Company
 import com.fastertable.fastertable.data.Menu
 import com.fastertable.fastertable.data.Settings
+import com.fastertable.fastertable.data.Terminal
 import com.google.gson.Gson
+import java.io.BufferedReader
 import java.io.File
 
 class LoginRepository(private val app: Application) {
@@ -19,7 +21,17 @@ class LoginRepository(private val app: Application) {
         val file= File(app.filesDir, "company.json")
         file.writeText(jsonString)
         return company
+    }
 
+    @WorkerThread
+    fun getCompany(): Company?{
+        var gson = Gson()
+        if (File(app.filesDir, "company.json").exists()){
+            val bufferedReader: BufferedReader = File(app.filesDir, "company.json").bufferedReader()
+            val inputString = bufferedReader.use { it.readText() }
+            return gson.fromJson(inputString, Company::class.java)
+        }
+        return null
     }
 
     @WorkerThread
@@ -34,13 +46,35 @@ class LoginRepository(private val app: Application) {
     }
 
     @WorkerThread
-    suspend fun getMenus(rid: String): List<Menu>{
+    suspend fun getSettings(): Settings?{
+        var gson = Gson()
+        if (File(app.filesDir, "settings.json").exists()){
+            val bufferedReader: BufferedReader = File(app.filesDir, "settings.json").bufferedReader()
+            val inputString = bufferedReader.use { it.readText() }
+            return gson.fromJson(inputString, Settings::class.java)
+        }
+        return null
+    }
+
+    @WorkerThread
+    suspend fun saveMenus(rid: String): List<Menu>{
         val menus: List<Menu> = MenusHelper(MenuService.Companion.ApiService, rid).getMenus()
         val gson = Gson()
         val jsonString = gson.toJson(menus)
         val file= File(app.filesDir, "menus.json")
         file.writeText(jsonString)
         return menus
+    }
+
+    @WorkerThread
+    fun getMenus(): Menu? {
+        var gson = Gson()
+        if (File(app.filesDir, "menus.json").exists()){
+            val bufferedReader: BufferedReader = File(app.filesDir, "menus.json").bufferedReader()
+            val inputString = bufferedReader.use { it.readText() }
+            return gson.fromJson(inputString, Menu::class.java)
+        }
+        return null
     }
 
     @WorkerThread

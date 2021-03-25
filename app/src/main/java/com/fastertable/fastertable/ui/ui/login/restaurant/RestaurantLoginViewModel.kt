@@ -7,17 +7,13 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.fastertable.fastertable.api.MenuService
-import com.fastertable.fastertable.api.SettingsService
 import com.fastertable.fastertable.data.Location
-import com.fastertable.fastertable.data.Menu
 import com.fastertable.fastertable.data.Settings
 import com.fastertable.fastertable.data.Terminal
 import com.fastertable.fastertable.data.repository.LoginRepository
 import com.fastertable.fastertable.utils.ApiStatus
 import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.BufferedReader
@@ -109,7 +105,7 @@ class RestaurantLoginViewModel(application: Application,
             try {
                 val settings: Settings = loginRepository.getRestaurantSettings(restaurant.id)
                 saveTaxRate(settings)
-                loginRepository.getMenus(restaurant.id)
+                loginRepository.saveMenus(restaurant.id)
                 checkTerminal(app)
                 _showProgressBar.postValue(false)
             }
@@ -128,7 +124,7 @@ class RestaurantLoginViewModel(application: Application,
         editor.apply()
     }
 
-    fun checkTerminal(app: Application){
+    private fun checkTerminal(app: Application){
         val gson = Gson()
         if (File(app.filesDir, "terminal.json").exists()){
             val bufferedReader: BufferedReader = File(app.filesDir, "terminal.json").bufferedReader()
@@ -137,6 +133,7 @@ class RestaurantLoginViewModel(application: Application,
             _navigateToUserLogin.postValue(true)
 
         }else{
+            println("here we are")
             _navigateToTerminals.postValue(true)
         }
 
