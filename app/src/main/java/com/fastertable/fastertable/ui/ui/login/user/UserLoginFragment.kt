@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import com.fastertable.fastertable.data.repository.LoginRepository
 import com.fastertable.fastertable.databinding.UserLoginFragmentBinding
 
 class UserLoginFragment: Fragment() {
@@ -16,11 +17,12 @@ class UserLoginFragment: Fragment() {
     override fun onCreateView(
             inflater: LayoutInflater,
             container: ViewGroup?,
-            savedInstanceState: Bundle?): View? {
+            savedInstanceState: Bundle?): View {
 
         val binding = UserLoginFragmentBinding.inflate(inflater)
         val application = requireNotNull(activity).application
-        val viewModelFactory = UserLoginViewModelFactory(application)
+        val loginRepository = LoginRepository(application)
+        val viewModelFactory = UserLoginViewModelFactory(application, loginRepository)
         viewModel = ViewModelProvider(
                 this, viewModelFactory).get(UserLoginViewModel::class.java)
         binding.lifecycleOwner = viewLifecycleOwner
@@ -58,7 +60,6 @@ class UserLoginFragment: Fragment() {
     }
 
     private fun loginEnter(){
-        UserLoginFragmentDirections.actionUserLoginFragmentToOrderListFragment()
-//        viewModel.userLogin()
+        viewModel.userLogin()
     }
 }

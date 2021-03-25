@@ -20,14 +20,17 @@ import com.fastertable.fastertable.api.UserService
 import com.fastertable.fastertable.data.OpsAuth
 import com.fastertable.fastertable.data.Order
 import com.fastertable.fastertable.data.Terminal
+import com.fastertable.fastertable.data.repository.LoginRepository
 import com.fastertable.fastertable.utils.GlobalUtils
 import com.google.gson.Gson
+import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.BufferedReader
 import java.io.File
 
 
-class UserLoginViewModel(application: Application) : AndroidViewModel(application) {
+class UserLoginViewModel(application: Application, private val loginRepository: LoginRepository) : AndroidViewModel(application) {
     val app: Application = application
     private var cid: String = ""
     private var lid: String = ""
@@ -50,7 +53,7 @@ class UserLoginViewModel(application: Application) : AndroidViewModel(applicatio
     }
 
     private fun getTerminal(){
-        var gson = Gson()
+        val gson = Gson()
         if (File(app.filesDir, "terminal.json").exists()){
             val bufferedReader: BufferedReader = File(app.filesDir, "terminal.json").bufferedReader()
             val inputString = bufferedReader.use { it.readText() }
@@ -67,26 +70,27 @@ class UserLoginViewModel(application: Application) : AndroidViewModel(applicatio
     }
 
     fun userLogin(){
-        viewModelScope.launch {
-            val sp: SharedPreferences = app.getSharedPreferences("restaurant", Context.MODE_PRIVATE)
-            //initializing editor
-            cid = sp.getString("cid", "").toString()
-            lid = sp.getString("lid", "").toString()
-            val now = GlobalUtils(app.applicationContext).getNowEpoch()
-            val midnight = GlobalUtils(app.applicationContext).getMidnight()
-            val user = UserHelper(
-                UserService.Companion.ApiService,
-                pin.value.toString(),
-                cid,
-                lid,
-                now,
-                midnight
-            ).loginUser()
-            saveUser(user)
-            goHome()
-            _navigate.value = true
+       viewModelScope.launch {
+           val sp: SharedPreferences = app.getSharedPreferences("restaurant", Context.MODE_PRIVATE)
+           //initializing editor
+           cid = sp.getString("cid", "").toString()
+           lid = sp.getString("lid", "").toString()
+           val now = GlobalUtils(app.applicationContext).getNowEpoch()
+           val midnight = GlobalUtils(app.applicationContext).getMidnight()
+           getUserLogin(pin.value.toString(), cid, lid, now, midnight)
+           goHome()
+           _navigate.value = true
+       }
+    }
+
+    private suspend fun getUserLogin(pin: String, cid: String, lid: String, now: Long, midnight: Long){
+        withContext(IO){
+            loginRepository.loginUser(pin, cid, lid, now, midnight)
+
         }
     }
+
+
 
     private fun goHome(){
         Handler(Looper.getMainLooper()).post {
@@ -101,10 +105,4 @@ class UserLoginViewModel(application: Application) : AndroidViewModel(applicatio
 //        startActivity(app.applicationContext, intent, null)
     }
 
-    private fun saveUser(user: OpsAuth){
-        val gson = Gson()
-        val jsonString = gson.toJson(user)
-        val file= File(app.filesDir, "user.json")
-        file.writeText(jsonString)
-    }
 }

@@ -13,17 +13,21 @@ import com.fastertable.fastertable.data.Location
 import com.fastertable.fastertable.data.Menu
 import com.fastertable.fastertable.data.Settings
 import com.fastertable.fastertable.data.Terminal
+import com.fastertable.fastertable.data.repository.LoginRepository
 import com.fastertable.fastertable.utils.ApiStatus
 import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.BufferedReader
 import java.io.File
 
-class RestaurantLoginViewModel(application: Application, restaurant: Location) : AndroidViewModel(application) {
+class RestaurantLoginViewModel(application: Application,
+                private val restaurant: Location,
+                private val loginRepository: LoginRepository) : AndroidViewModel(application) {
+
     val app: Application = application
-    val restaurant: Location = restaurant
     private val _pin = MutableLiveData<String>()
     val pin: LiveData<String>
         get() = _pin
@@ -73,7 +77,9 @@ class RestaurantLoginViewModel(application: Application, restaurant: Location) :
     fun restLogin(){
         if (restaurant.loginPin == pin.value?.toInt()){
             setPin(restaurant.loginPin.toString())
-            saveRestaurantData(app)
+            viewModelScope.launch {
+                saveRestaurantData()
+            }
         }else{
             _error.value = true
         }
@@ -92,68 +98,46 @@ class RestaurantLoginViewModel(application: Application, restaurant: Location) :
         val sp: SharedPreferences = app.getSharedPreferences("restaurant", Context.MODE_PRIVATE)
         //initializing editor
         val editor = sp.edit()
-        editor.putString("pin", pin);
-        editor.apply();
+        editor.putString("pin", pin)
+        editor.apply()
     }
 
-    private fun saveRestaurantData(app: Application){
-        viewModelScope.launch {
-            _showProgressBar.value = true
-            _status.value = ApiStatus.LOADING
+    private suspend fun saveRestaurantData(){
+        withContext(Dispatchers.IO) {
+            _showProgressBar.postValue(true)
+            _status.postValue(ApiStatus.LOADING)
             try {
-                // load settings
-                val settings: Settings = SettingsService.Companion.ApiService.retrofitService.getLocationSettings(restaurant.id)
-                saveSettings(app, settings)
-                // set tax rate
+                val settings: Settings = loginRepository.getRestaurantSettings(restaurant.id)
                 saveTaxRate(settings)
-                // load menus
-                val menus: List<Menu> = MenuService.Companion.ApiService.retrofitService.getMenus(restaurant.id)
-                saveMenus(app, menus)
-                // set terminals
+                loginRepository.getMenus(restaurant.id)
                 checkTerminal(app)
-                _showProgressBar.value = false
+                _showProgressBar.postValue(false)
             }
             catch (e: Exception) {
-                _status.value = ApiStatus.ERROR
+                _status.postValue(ApiStatus.ERROR)
             }
-
         }
-
     }
 
-    fun saveSettings(app: Application, settings: Settings){
-        _settings.value = settings
-        val gson = Gson()
-        val jsonString = gson.toJson(settings)
-        val file= File(app.filesDir, "settings.json")
-        file.writeText(jsonString)
-    }
 
-    fun saveMenus(app: Application, menus: List<Menu>){
-        val gson = Gson()
-        val jsonString = gson.toJson(menus)
-        val file= File(app.filesDir, "menus.json")
-        file.writeText(jsonString)
-    }
-
-    fun saveTaxRate(settings: Settings){
+    private fun saveTaxRate(settings: Settings){
         val sp: SharedPreferences = app.getSharedPreferences("restaurant", Context.MODE_PRIVATE)
         //initializing editor
         val editor = sp.edit()
-        editor.putString("taxrate", settings.taxRate.rate.toString());
-        editor.apply();
+        editor.putString("taxrate", settings.taxRate.rate.toString())
+        editor.apply()
     }
 
     fun checkTerminal(app: Application){
-        var gson = Gson()
+        val gson = Gson()
         if (File(app.filesDir, "terminal.json").exists()){
             val bufferedReader: BufferedReader = File(app.filesDir, "terminal.json").bufferedReader()
             val inputString = bufferedReader.use { it.readText() }
             var terminal = gson.fromJson(inputString, Terminal::class.java)
-            _navigateToUserLogin.value = true
+            _navigateToUserLogin.postValue(true)
 
         }else{
-            _navigateToTerminals.value = true
+            _navigateToTerminals.postValue(true)
         }
 
     }
