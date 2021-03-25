@@ -1,6 +1,7 @@
 package com.fastertable.fastertable.api
 
 import com.fastertable.fastertable.data.Company
+import com.fastertable.fastertable.utils.NullOnEmptyConverterFactory
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import okhttp3.OkHttpClient
@@ -33,6 +34,7 @@ interface CompanyService {
             Retrofit.Builder()
                     .baseUrl(BASE_URL)
                     .client(httpClient)
+                    .addConverterFactory( NullOnEmptyConverterFactory())
                     .addConverterFactory(GsonConverterFactory.create(gson))
                     .build()
         }
@@ -46,7 +48,7 @@ interface CompanyService {
 }
 
 class CompanyHelper(private val apiService: CompanyService.Companion.ApiService,
-                     private val loginCode: String, private val password: String){
+                     private val loginCode: String?, private val password: String?){
 
     suspend fun geCompany() = apiService.retrofitService.getCompany(loginCode, password)
 }

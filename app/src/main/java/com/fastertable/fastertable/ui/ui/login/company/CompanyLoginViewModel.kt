@@ -22,9 +22,8 @@ import kotlinx.coroutines.withContext
 import java.io.File
 
 
-class CompanyLoginViewModel(application: Application, loginRepository: LoginRepository) : AndroidViewModel(application) {
+class CompanyLoginViewModel(application: Application, private val loginRepository: LoginRepository) : AndroidViewModel(application) {
     private val app: Application = application
-    private val loginRepository = loginRepository
     private val _company = MutableLiveData<Company>()
     val company: LiveData<Company>
         get() = _company
@@ -58,43 +57,20 @@ class CompanyLoginViewModel(application: Application, loginRepository: LoginRepo
         checkCompany()
     }
 
-    private suspend fun testLoginCompany(loginName: String?, password: String?){
+    private suspend fun loginCompany(loginName: String?, password: String?){
         withContext(IO){
-            _company.postValue(loginRepository.loginCompany(loginName, password))
-        }
-    }
-
-    @SuppressLint("CommitPrefEdits")
-    private fun loginCompany(loginName: String?, password: String?){
-        viewModelScope.launch{
-            //Get company
-            _status.value = ApiStatus.LOADING
+            _status.postValue(ApiStatus.LOADING)
             try {
-                val company: Company = CompanyService.Companion.ApiService.retrofitService.getCompany(loginName, password)
-                _status.value = ApiStatus.SUCCESS
-                _error.value = false
-                //getting shared preferences
-                val sp: SharedPreferences = app.getSharedPreferences("restaurant", MODE_PRIVATE)
-                //initializing editor
-                val editor = sp.edit()
-                editor.putString("loginName", loginName);
-                editor.putString("password", password);
-                editor.putString("cid", company.id)
-                editor.apply();
-
-                //Save company json to file
-                saveCompany(app, company)
-
-                //Get Restaurant Locations
-                _locations.value = company.locations
-
-
-            } catch (e: Exception) {
-                _status.value = ApiStatus.ERROR
-                _error.value = true
+                val comp = loginRepository.loginCompany(loginName, password)
+                _company.postValue(comp)
+                _locations.postValue(comp.locations)
+                _status.postValue(ApiStatus.SUCCESS)
+                _error.postValue(false)
+                saveLogin(loginName, password, comp.id)
+            }catch (e: Exception) {
+                _status.postValue(ApiStatus.ERROR)
+                _error.postValue(true)
             }
-
-            _showProgressBar.value = false
         }
     }
 
@@ -110,19 +86,13 @@ class CompanyLoginViewModel(application: Application, loginRepository: LoginRepo
 
     fun getRestaurants(){
         _showProgressBar.value = true
-        loginCompany(loginName.get(), password.get())
-//        viewModelScope.launch {
-//            testLoginCompany(loginName.get(), password.get())
-//            _showProgressBar.value = false
-//        }
+        viewModelScope.launch {
+            loginCompany(loginName.get(), password.get())
+
+            _showProgressBar.value = false
+        }
     }
 
-    private fun saveCompany(app: Application, company: Company){
-        val gson = Gson()
-        val jsonString = gson.toJson(company)
-        val file= File(app.filesDir, "company.json")
-        file.writeText(jsonString)
-    }
 
     fun setRestaurant(l: Location){
         _restaurant.value = l
@@ -130,6 +100,16 @@ class CompanyLoginViewModel(application: Application, loginRepository: LoginRepo
         //initializing editor
         val editor = sp.edit()
         editor.putString("lid", l.id)
+        editor.apply()
+    }
+
+    private fun saveLogin(loginName: String?, password: String?, cid: String){
+        val sp: SharedPreferences = app.getSharedPreferences("restaurant", MODE_PRIVATE)
+        //initializing editor
+        val editor = sp.edit()
+        editor.putString("loginName", loginName)
+        editor.putString("password", password)
+        editor.putString("cid", cid)
         editor.apply()
     }
 
