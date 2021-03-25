@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -25,6 +26,11 @@ class HomeFragment : Fragment() {
         val application = requireNotNull(activity).application
         val loginRepository = LoginRepository(application)
         val navController = findNavController()
+
+        val toolbar: Toolbar = requireActivity().findViewById(R.id.toolbar)
+        var fasterToolbar: Toolbar = requireActivity().findViewById(R.id.fastertoolbar)
+        toolbar.visibility = View.VISIBLE
+        fasterToolbar.visibility = View.VISIBLE
 
         val viewModelFactory = HomeViewModelFactory(application, loginRepository)
         viewModel = ViewModelProvider(
