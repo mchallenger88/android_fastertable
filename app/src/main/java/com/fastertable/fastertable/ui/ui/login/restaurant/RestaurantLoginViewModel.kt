@@ -104,6 +104,7 @@ class RestaurantLoginViewModel(application: Application,
             _status.postValue(ApiStatus.LOADING)
             try {
                 val settings: Settings = loginRepository.getRestaurantSettings(restaurant.id)
+                _settings.postValue(settings)
                 saveTaxRate(settings)
                 loginRepository.saveMenus(restaurant.id)
                 checkTerminal(app)
@@ -133,7 +134,6 @@ class RestaurantLoginViewModel(application: Application,
             _navigateToUserLogin.postValue(true)
 
         }else{
-            println("here we are")
             _navigateToTerminals.postValue(true)
         }
 

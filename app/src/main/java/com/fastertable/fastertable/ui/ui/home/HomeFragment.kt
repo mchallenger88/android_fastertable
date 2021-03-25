@@ -11,6 +11,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.fastertable.fastertable.R
 import com.fastertable.fastertable.data.repository.LoginRepository
+import com.fastertable.fastertable.ui.ui.login.restaurant.RestaurantLoginFragmentDirections
 
 class HomeFragment : Fragment() {
 
@@ -43,6 +44,13 @@ class HomeFragment : Fragment() {
         viewModel.settings.observe(viewLifecycleOwner, Observer { settings ->
             if(settings == null){
                 navController.navigate(R.id.companyLoginFragment)
+            }
+        })
+
+        viewModel.terminal.observe(viewLifecycleOwner, Observer { terminal ->
+            if(terminal == null){
+                val action = HomeFragmentDirections.actionNavHomeToTerminalSelectFragment(viewModel.settings.value!!)
+                navController.navigate(action)
             }
         })
         return root

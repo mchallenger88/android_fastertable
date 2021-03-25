@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.fastertable.fastertable.data.Company
 import com.fastertable.fastertable.data.Settings
+import com.fastertable.fastertable.data.Terminal
 import com.fastertable.fastertable.data.repository.LoginRepository
 import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers.IO
@@ -31,10 +32,15 @@ class HomeViewModel(application: Application, private val loginRepository: Login
     val settings: LiveData<Settings>
         get() = _settings
 
+    private val _terminal = MutableLiveData<Terminal>()
+    val terminal: LiveData<Terminal>
+        get() = _terminal
+
     init{
         viewModelScope.launch {
             getCompany()
             getSettings()
+            getTerminal()
         }
 
     }
@@ -48,6 +54,12 @@ class HomeViewModel(application: Application, private val loginRepository: Login
     private suspend fun getSettings(){
         withContext(IO){
             _settings.postValue(loginRepository.getSettings())
+        }
+    }
+
+    private suspend fun getTerminal(){
+        withContext(IO){
+            _terminal.postValue(loginRepository.getTerminal())
         }
     }
 }

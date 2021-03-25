@@ -85,4 +85,15 @@ class LoginRepository(private val app: Application) {
         val file= File(app.filesDir, "user.json")
         file.writeText(jsonString)
     }
+
+    @WorkerThread
+    fun getTerminal(): Terminal?{
+        var gson = Gson()
+        if (File(app.filesDir, "terminal.json").exists()){
+            val bufferedReader: BufferedReader = File(app.filesDir, "terminal.json").bufferedReader()
+            val inputString = bufferedReader.use { it.readText() }
+            return gson.fromJson(inputString, Terminal::class.java)
+        }
+        return null
+    }
 }

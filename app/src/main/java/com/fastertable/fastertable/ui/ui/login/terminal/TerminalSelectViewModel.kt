@@ -32,7 +32,6 @@ class TerminalSelectViewModel(application: Application, settings: Settings) : An
             val bufferedReader: BufferedReader = File(app.filesDir, "terminal.json").bufferedReader()
             val inputString = bufferedReader.use { it.readText() }
             _terminal.value = gson.fromJson(inputString, Terminal::class.java)
-
         }
     }
 
@@ -41,5 +40,6 @@ class TerminalSelectViewModel(application: Application, settings: Settings) : An
         val jsonString = gson.toJson(terminal)
         val file= File(app.filesDir, "terminal.json")
         file.writeText(jsonString)
+        _terminal.value = terminal
     }
 }
