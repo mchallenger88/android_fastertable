@@ -35,10 +35,10 @@ class CompanyLoginFragment : Fragment()  {
         viewModel = ViewModelProvider(
                 this, viewModelFactory).get(CompanyLoginViewModel::class.java)
 
-        val toolbar: Toolbar = requireActivity().findViewById(R.id.toolbar)
-        var fasterToolbar: Toolbar = requireActivity().findViewById(R.id.fastertoolbar)
-        toolbar.visibility = View.GONE
-        fasterToolbar.visibility = View.GONE
+//        val toolbar: Toolbar = requireActivity().findViewById(R.id.toolbar)
+//        var fasterToolbar: Toolbar = requireActivity().findViewById(R.id.fastertoolbar)
+//        toolbar.visibility = View.GONE
+//        fasterToolbar.visibility = View.GONE
 
         binding.lifecycleOwner = viewLifecycleOwner
         binding.viewModel = viewModel

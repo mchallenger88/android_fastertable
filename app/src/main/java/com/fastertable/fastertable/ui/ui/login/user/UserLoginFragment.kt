@@ -44,7 +44,7 @@ class UserLoginFragment: Fragment() {
 
         viewModel.navigate.observe(viewLifecycleOwner, Observer { it ->
             if (it){
-                this.findNavController().navigate(UserLoginFragmentDirections.actionUserLoginFragmentToOrderListFragment())
+                this.findNavController().navigate(UserLoginFragmentDirections.actionUserLoginFragmentToHomeFragment())
             }
         })
 

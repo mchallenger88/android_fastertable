@@ -21,21 +21,17 @@ class LoginActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?){
         super.onCreate(savedInstanceState)
 
-        setContentView(R.layout.activity_main)
-        val toolbar: Toolbar = findViewById(R.id.toolbar)
-        var fasterToolbar: Toolbar = findViewById(R.id.fastertoolbar)
-
-
-        toolbar.visibility = View.GONE
-        fasterToolbar.visibility = View.GONE
+        setContentView(R.layout.activity_login)
+        val navView: NavigationView = findViewById(R.id.login_nav_view)
+        val navLoginFragment =
+                supportFragmentManager.findFragmentById(R.id.nav_login_fragment) as NavHostFragment
+        val navController: NavController = navLoginFragment.navController
+        navView.setupWithNavController(navController)
     }
 
     public fun goHome(){
-
-        this.finish()
-//        val intent = Intent(this, MainActivity::class.java)
-//        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-//        startActivity(intent)
+        val intent = Intent(this, MainActivity::class.java)
+        startActivity(intent)
 
     }
 

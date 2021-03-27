@@ -17,7 +17,7 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface OrderService{
-    @GET("orders")
+    @GET("orders/")
     suspend fun getOrders(@Query("midnight") midnight: Long,
                               @Query("locationId") locationId: String): List<Order>
 

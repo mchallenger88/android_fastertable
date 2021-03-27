@@ -27,11 +27,6 @@ class HomeFragment : Fragment() {
         val loginRepository = LoginRepository(application)
         val navController = findNavController()
 
-        val toolbar: Toolbar = requireActivity().findViewById(R.id.toolbar)
-        var fasterToolbar: Toolbar = requireActivity().findViewById(R.id.fastertoolbar)
-        toolbar.visibility = View.VISIBLE
-        fasterToolbar.visibility = View.VISIBLE
-
         val viewModelFactory = HomeViewModelFactory(application, loginRepository)
         viewModel = ViewModelProvider(
             this, viewModelFactory).get(HomeViewModel::class.java)
@@ -53,12 +48,12 @@ class HomeFragment : Fragment() {
             }
         })
 
-        viewModel.terminal.observe(viewLifecycleOwner, Observer { terminal ->
-            if(terminal == null){
-                val action = HomeFragmentDirections.actionNavHomeToTerminalSelectFragment(viewModel.settings.value!!)
-                navController.navigate(action)
-            }
-        })
+//        viewModel.terminal.observe(viewLifecycleOwner, Observer { terminal ->
+//            if(terminal == null){
+//                val action = HomeFragmentDirections.actionNavHomeToTerminalSelectFragment(viewModel.settings.value!!)
+//                navController.navigate(action)
+//            }
+//        })
         return root
     }
 }

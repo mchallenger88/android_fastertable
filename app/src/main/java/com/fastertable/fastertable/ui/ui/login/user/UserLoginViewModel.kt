@@ -98,11 +98,6 @@ class UserLoginViewModel(application: Application, private val loginRepository: 
             activity.goHome()
         }
 
-
-//
-//        val intent = Intent(app.applicationContext, MainActivity::class.java)
-//        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-//        startActivity(app.applicationContext, intent, null)
     }
 
 }
