@@ -6,10 +6,10 @@ import androidx.lifecycle.ViewModelProvider
 import com.fastertable.fastertable.data.Location
 import com.fastertable.fastertable.data.repository.LoginRepository
 
-class UserLoginViewModelFactory(private val application: Application, private val loginRepository: LoginRepository) : ViewModelProvider.Factory {
+class UserLoginViewModelFactory(private val loginRepository: LoginRepository) : ViewModelProvider.Factory {
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(UserLoginViewModel::class.java)) {
-            return UserLoginViewModel(application, loginRepository) as T
+            return UserLoginViewModel(loginRepository) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

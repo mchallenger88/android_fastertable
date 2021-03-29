@@ -11,6 +11,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.fastertable.fastertable.R
+import com.fastertable.fastertable.databinding.FragmentHomeBinding
 import com.fastertable.fastertable.data.repository.LoginRepository
 import com.fastertable.fastertable.ui.ui.login.restaurant.RestaurantLoginFragmentDirections
 
@@ -23,17 +24,17 @@ class HomeFragment : Fragment() {
             container: ViewGroup?,
             savedInstanceState: Bundle?
     ): View? {
+        val binding = FragmentHomeBinding.inflate(inflater)
         val application = requireNotNull(activity).application
         val loginRepository = LoginRepository(application)
         val navController = findNavController()
 
-        val viewModelFactory = HomeViewModelFactory(application, loginRepository)
+        val viewModelFactory = HomeViewModelFactory(loginRepository)
         viewModel = ViewModelProvider(
             this, viewModelFactory).get(HomeViewModel::class.java)
-        val root = inflater.inflate(R.layout.fragment_home, container, false)
-        val textView: TextView = root.findViewById(R.id.text_home)
+
         viewModel.text.observe(viewLifecycleOwner, Observer {
-            textView.text = it
+            binding.textHome.text = it
         })
 
         viewModel.company.observe(viewLifecycleOwner, Observer { company ->
@@ -48,12 +49,11 @@ class HomeFragment : Fragment() {
             }
         })
 
-//        viewModel.terminal.observe(viewLifecycleOwner, Observer { terminal ->
-//            if(terminal == null){
-//                val action = HomeFragmentDirections.actionNavHomeToTerminalSelectFragment(viewModel.settings.value!!)
-//                navController.navigate(action)
-//            }
-//        })
-        return root
+        viewModel.terminal.observe(viewLifecycleOwner, Observer { terminal ->
+            if(terminal == null){
+                navController.navigate(R.id.terminalSelectFragment)
+            }
+        })
+        return binding.root
     }
 }

@@ -3,10 +3,8 @@ package com.fastertable.fastertable.ui.ui.login.restaurant
 import android.app.Application
 import android.content.Context
 import android.content.SharedPreferences
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
+import com.fastertable.fastertable.data.Company
 import com.fastertable.fastertable.data.Location
 import com.fastertable.fastertable.data.Settings
 import com.fastertable.fastertable.data.Terminal
@@ -19,11 +17,8 @@ import kotlinx.coroutines.withContext
 import java.io.BufferedReader
 import java.io.File
 
-class RestaurantLoginViewModel(application: Application,
-                private val restaurant: Location,
-                private val loginRepository: LoginRepository) : AndroidViewModel(application) {
+class RestaurantLoginViewModel(private val loginRepository: LoginRepository) : ViewModel() {
 
-    val app: Application = application
     private val _pin = MutableLiveData<String>()
     val pin: LiveData<String>
         get() = _pin
@@ -31,6 +26,10 @@ class RestaurantLoginViewModel(application: Application,
     private val _settings = MutableLiveData<Settings>()
     val settings: LiveData<Settings>
         get() = _settings
+
+    private val _restaurant = MutableLiveData<Location>()
+    val restaurant: LiveData<Location>
+        get() = _restaurant
 
     private val _navigateToTerminals = MutableLiveData<Boolean>()
     val navigateToTerminals: LiveData<Boolean>
@@ -55,12 +54,20 @@ class RestaurantLoginViewModel(application: Application,
     init{
         _error.value = false
         _showProgressBar.value = false
+        getRestaurant()
         checkPin()
         _navigateToTerminals.value = false
         _navigateToUserLogin.value = false
     }
 
 
+    private fun getRestaurant(){
+        viewModelScope.launch {
+            val rid: String? = loginRepository.getStringSharedPreferences("rid")
+            val company: Company? = loginRepository.getCompany()
+            _restaurant.postValue(company?.getLocation(rid!!))
+        }
+    }
 
     fun concatPin(num: Int){
         _pin.value = pin.value + num.toString()
@@ -71,8 +78,10 @@ class RestaurantLoginViewModel(application: Application,
     }
 
     fun restLogin(){
-        if (restaurant.loginPin == pin.value?.toInt()){
-            setPin(restaurant.loginPin.toString())
+        println(restaurant.value?.loginPin)
+
+        if (restaurant.value?.loginPin == pin.value?.toInt()){
+            setPin(restaurant.value!!.loginPin.toString())
             viewModelScope.launch {
                 saveRestaurantData()
             }
@@ -82,20 +91,19 @@ class RestaurantLoginViewModel(application: Application,
     }
 
     private fun checkPin(){
-        val sp: SharedPreferences = app.getSharedPreferences("restaurant", Context.MODE_PRIVATE)
-        if (sp.contains("pin")){
-            _pin.value = sp.getString("pin", "")
-        }else{
-            _pin.value = ""
+        viewModelScope.launch {
+            if (loginRepository.getStringSharedPreferences("pin") != null){
+                _pin.postValue(loginRepository.getStringSharedPreferences("pin"))
+            }else{
+                _pin.postValue("")
+            }
         }
     }
 
     private fun setPin(pin: String){
-        val sp: SharedPreferences = app.getSharedPreferences("restaurant", Context.MODE_PRIVATE)
-        //initializing editor
-        val editor = sp.edit()
-        editor.putString("pin", pin)
-        editor.apply()
+        viewModelScope.launch{
+            loginRepository.setSharedPreferences("pin", pin)
+        }
     }
 
     private suspend fun saveRestaurantData(){
@@ -103,11 +111,11 @@ class RestaurantLoginViewModel(application: Application,
             _showProgressBar.postValue(true)
             _status.postValue(ApiStatus.LOADING)
             try {
-                val settings: Settings = loginRepository.getRestaurantSettings(restaurant.id)
+                val settings: Settings = loginRepository.getRestaurantSettings(restaurant.value!!.id)
                 _settings.postValue(settings)
                 saveTaxRate(settings)
-                loginRepository.saveMenus(restaurant.id)
-                checkTerminal(app)
+                loginRepository.saveMenus(restaurant.value!!.id)
+                checkTerminal()
                 _showProgressBar.postValue(false)
             }
             catch (e: Exception) {
@@ -117,25 +125,22 @@ class RestaurantLoginViewModel(application: Application,
     }
 
 
-    private fun saveTaxRate(settings: Settings){
-        val sp: SharedPreferences = app.getSharedPreferences("restaurant", Context.MODE_PRIVATE)
-        //initializing editor
-        val editor = sp.edit()
-        editor.putString("taxrate", settings.taxRate.rate.toString())
-        editor.apply()
+    private fun saveTaxRate(settings: Settings) {
+        viewModelScope.launch {
+            loginRepository.setSharedPreferences("taxrate", settings.taxRate.rate.toString())
+
+        }
     }
 
-    private fun checkTerminal(app: Application){
-        val gson = Gson()
-        if (File(app.filesDir, "terminal.json").exists()){
-            val bufferedReader: BufferedReader = File(app.filesDir, "terminal.json").bufferedReader()
-            val inputString = bufferedReader.use { it.readText() }
-            var terminal = gson.fromJson(inputString, Terminal::class.java)
-            _navigateToUserLogin.postValue(true)
+        private fun checkTerminal() {
+            viewModelScope.launch {
+                if (loginRepository.getTerminal() != null){
+                    _navigateToUserLogin.postValue(true)
+                }else{
+                    _navigateToTerminals.postValue(true)
+                }
+            }
 
-        }else{
-            _navigateToTerminals.postValue(true)
         }
 
-    }
 }

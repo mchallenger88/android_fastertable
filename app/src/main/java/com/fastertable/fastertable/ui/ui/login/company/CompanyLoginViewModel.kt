@@ -1,29 +1,18 @@
 package com.fastertable.fastertable.ui.ui.login.company
 
 import android.annotation.SuppressLint
-import android.app.Application
-import android.content.Context.MODE_PRIVATE
-import android.content.SharedPreferences
 import androidx.databinding.ObservableField
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
-import com.fastertable.fastertable.api.CompanyService
+import androidx.lifecycle.*
 import com.fastertable.fastertable.data.Company
 import com.fastertable.fastertable.data.Location
 import com.fastertable.fastertable.data.repository.LoginRepository
 import com.fastertable.fastertable.utils.ApiStatus
-import com.google.gson.Gson
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.io.File
 
 
-class CompanyLoginViewModel(application: Application, private val loginRepository: LoginRepository) : AndroidViewModel(application) {
-    private val app: Application = application
+class CompanyLoginViewModel(private val loginRepository: LoginRepository) : ViewModel() {
     private val _company = MutableLiveData<Company>()
     val company: LiveData<Company>
         get() = _company
@@ -57,7 +46,7 @@ class CompanyLoginViewModel(application: Application, private val loginRepositor
         checkCompany()
     }
 
-    private suspend fun loginCompany(loginName: String?, password: String?){
+    private suspend fun loginCompany(loginName: String, password: String){
         withContext(IO){
             _status.postValue(ApiStatus.LOADING)
             try {
@@ -77,17 +66,17 @@ class CompanyLoginViewModel(application: Application, private val loginRepositor
 
     @SuppressLint("CommitPrefEdits")
     private fun checkCompany(){
-        //getting shared preferences
-        val sp: SharedPreferences = app.getSharedPreferences("restaurant", MODE_PRIVATE)
-        //initializing editor
-        loginName.set(sp.getString("loginName", ""))
-        password.set(sp.getString("password", ""))
+        viewModelScope.launch {
+            val sp =
+            loginName.set(loginRepository.getStringSharedPreferences("loginName"))
+            password.set(loginRepository.getStringSharedPreferences("password"))
+        }
     }
 
     fun getRestaurants(){
         _showProgressBar.value = true
         viewModelScope.launch {
-            loginCompany(loginName.get(), password.get())
+            loginCompany(loginName.get()!!, password.get()!!)
 
             _showProgressBar.value = false
         }
@@ -96,21 +85,18 @@ class CompanyLoginViewModel(application: Application, private val loginRepositor
 
     fun setRestaurant(l: Location){
         _restaurant.value = l
-        val sp: SharedPreferences = app.getSharedPreferences("restaurant", MODE_PRIVATE)
-        //initializing editor
-        val editor = sp.edit()
-        editor.putString("lid", l.id)
-        editor.apply()
+        viewModelScope.launch {
+            loginRepository.setSharedPreferences("rid", l.id)
+        }
     }
 
-    private fun saveLogin(loginName: String?, password: String?, cid: String){
-        val sp: SharedPreferences = app.getSharedPreferences("restaurant", MODE_PRIVATE)
-        //initializing editor
-        val editor = sp.edit()
-        editor.putString("loginName", loginName)
-        editor.putString("password", password)
-        editor.putString("cid", cid)
-        editor.apply()
+    private fun saveLogin(loginName: String, password: String, cid: String){
+        viewModelScope.launch {
+            loginRepository.setSharedPreferences("loginName", loginName)
+            loginRepository.setSharedPreferences("password", password)
+            loginRepository.setSharedPreferences("cid", cid)
+
+        }
     }
 
 }

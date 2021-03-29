@@ -2,7 +2,7 @@
 <resources>
     <color name="primaryColor">#1a237e</color>
     <color name="primaryLightColor">#534bae</color>
-    <color name="primaryDarkColor">#000051</color>
+    <color name="primaryDarkColor">#000E1B</color>
     <color name="secondaryColor">#c2185b</color>
     <color name="secondaryLightColor">#fa5788</color>
     <color name="secondaryDarkColor">#8c0032</color>
@@ -13,4 +13,7 @@
     <color name="white">#ffffff</color>
     <color name="darkBlue">#1A237E</color>
     <color name="editText">#F5F5F5</color>
+    <color name="primaryToolBar">#080b28</color>
+    <color name="fasterToolBar">#00001B</color>
+    <color name="semiTransparent">#9E9E9E66</color>
 </resources>

@@ -23,9 +23,9 @@ class RestaurantLoginFragment : Fragment() {
             savedInstanceState: Bundle?): View {
         val binding = RestaurantLoginFragmentBinding.inflate(inflater)
         val application = requireNotNull(activity).application
-        val restaurant = RestaurantLoginFragmentArgs.fromBundle(requireArguments()).location
+//        val restaurant = RestaurantLoginFragmentArgs.fromBundle(requireArguments()).location
         val loginRepository = LoginRepository(application)
-        val viewModelFactory = RestaurantLoginViewModelFactory(application, restaurant, loginRepository)
+        val viewModelFactory = RestaurantLoginViewModelFactory(loginRepository)
         viewModel = ViewModelProvider(
                 this, viewModelFactory).get(RestaurantLoginViewModel::class.java)
 
@@ -48,10 +48,7 @@ class RestaurantLoginFragment : Fragment() {
 
         viewModel.navigateToTerminals.observe(viewLifecycleOwner, Observer { it ->
             if (it){
-                if (viewModel.settings.value != null){
-                    val settings: Settings = viewModel.settings.value!!
-                    this.findNavController().navigate(RestaurantLoginFragmentDirections.actionRestaurantLoginFragmentToTerminalSelectFragment(settings))
-                }
+                this.findNavController().navigate(RestaurantLoginFragmentDirections.actionRestaurantLoginFragmentToTerminalSelectFragment())
             }
         })
 

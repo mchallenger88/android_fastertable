@@ -7,11 +7,11 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.fastertable.fastertable.data.Order
 
-@Dao
-interface  FastertableDatabaseDao {
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertAll(vararg orders: DatabaseEntities.DataOrder)
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertOrder(order: DatabaseEntities.DataOrder)
-}
+//@Dao
+//interface  FastertableDatabaseDao {
+//    @Insert(onConflict = OnConflictStrategy.REPLACE)
+//    fun insertAll(vararg orders: DatabaseEntities.DataOrder)
+//
+//    @Insert(onConflict = OnConflictStrategy.REPLACE)
+//    fun insertOrder(order: DatabaseEntities.DataOrder)
+//}

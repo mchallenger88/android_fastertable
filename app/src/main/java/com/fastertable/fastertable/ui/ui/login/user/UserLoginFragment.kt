@@ -1,5 +1,7 @@
 package com.fastertable.fastertable.ui.ui.login.user
 
+import android.content.Intent
+import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,6 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import com.fastertable.fastertable.MainActivity
 import com.fastertable.fastertable.data.repository.LoginRepository
 import com.fastertable.fastertable.databinding.UserLoginFragmentBinding
 
@@ -22,7 +25,7 @@ class UserLoginFragment: Fragment() {
         val binding = UserLoginFragmentBinding.inflate(inflater)
         val application = requireNotNull(activity).application
         val loginRepository = LoginRepository(application)
-        val viewModelFactory = UserLoginViewModelFactory(application, loginRepository)
+        val viewModelFactory = UserLoginViewModelFactory(loginRepository)
         viewModel = ViewModelProvider(
                 this, viewModelFactory).get(UserLoginViewModel::class.java)
         binding.lifecycleOwner = viewLifecycleOwner
@@ -44,6 +47,10 @@ class UserLoginFragment: Fragment() {
 
         viewModel.navigate.observe(viewLifecycleOwner, Observer { it ->
             if (it){
+                 val intent = Intent(this.context, MainActivity::class.java)
+                intent.setFlags(FLAG_ACTIVITY_NEW_TASK)
+                startActivity(intent)
+
                 this.findNavController().navigate(UserLoginFragmentDirections.actionUserLoginFragmentToHomeFragment())
             }
         })

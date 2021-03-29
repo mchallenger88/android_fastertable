@@ -1,6 +1,8 @@
 package com.fastertable.fastertable.data.repository
 
 import android.app.Application
+import android.content.Context
+import android.content.SharedPreferences
 import androidx.annotation.WorkerThread
 import com.fastertable.fastertable.api.*
 import com.fastertable.fastertable.data.Company
@@ -10,6 +12,8 @@ import com.fastertable.fastertable.data.Terminal
 import com.google.gson.Gson
 import java.io.BufferedReader
 import java.io.File
+import javax.inject.Singleton
+
 
 class LoginRepository(private val app: Application) {
     @WorkerThread
@@ -95,5 +99,28 @@ class LoginRepository(private val app: Application) {
             return gson.fromJson(inputString, Terminal::class.java)
         }
         return null
+    }
+
+    @WorkerThread
+    fun saveTerminal(terminal: Terminal){
+        val gson = Gson()
+        val jsonString = gson.toJson(terminal)
+        val file= File(app.filesDir, "terminal.json")
+        file.writeText(jsonString)
+    }
+
+    @WorkerThread
+    fun getStringSharedPreferences(key: String): String?{
+        val sp = app.getSharedPreferences("restaurant", Context.MODE_PRIVATE)
+        return sp.getString(key, null)
+
+    }
+
+    @WorkerThread
+    fun setSharedPreferences(key: String, value: String){
+        val sp = app.getSharedPreferences("restaurant", Context.MODE_PRIVATE)
+        val editor = sp.edit()
+        editor.putString(key, value)
+        editor.apply()
     }
 }

@@ -8,10 +8,7 @@ import android.os.Handler
 import android.os.Looper
 import androidx.core.app.NavUtils.navigateUpTo
 import androidx.core.content.ContextCompat.startActivity
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.fastertable.fastertable.LoginActivity
 import com.fastertable.fastertable.MainActivity
 import com.fastertable.fastertable.OrderingActivity
@@ -30,8 +27,7 @@ import java.io.BufferedReader
 import java.io.File
 
 
-class UserLoginViewModel(application: Application, private val loginRepository: LoginRepository) : AndroidViewModel(application) {
-    val app: Application = application
+class UserLoginViewModel(private val loginRepository: LoginRepository) : ViewModel() {
     private var cid: String = ""
     private var lid: String = ""
     private val _pin = MutableLiveData<String>()
@@ -52,12 +48,13 @@ class UserLoginViewModel(application: Application, private val loginRepository: 
         getTerminal()
     }
 
+    @Suppress("UNNECESSARY_NOT_NULL_ASSERTION")
     private fun getTerminal(){
-        val gson = Gson()
-        if (File(app.filesDir, "terminal.json").exists()){
-            val bufferedReader: BufferedReader = File(app.filesDir, "terminal.json").bufferedReader()
-            val inputString = bufferedReader.use { it.readText() }
-            _terminal.value = gson.fromJson(inputString, Terminal::class.java)
+        viewModelScope.launch {
+            val term = loginRepository.getTerminal()
+            if (term != null){
+                _terminal.postValue(term!!)
+            }
         }
     }
 
@@ -71,12 +68,10 @@ class UserLoginViewModel(application: Application, private val loginRepository: 
 
     fun userLogin(){
        viewModelScope.launch {
-           val sp: SharedPreferences = app.getSharedPreferences("restaurant", Context.MODE_PRIVATE)
-           //initializing editor
-           cid = sp.getString("cid", "").toString()
-           lid = sp.getString("lid", "").toString()
-           val now = GlobalUtils(app.applicationContext).getNowEpoch()
-           val midnight = GlobalUtils(app.applicationContext).getMidnight()
+           cid = loginRepository.getStringSharedPreferences("cid")!!
+           lid = loginRepository.getStringSharedPreferences("rid")!!
+           val now = GlobalUtils().getNowEpoch()
+           val midnight = GlobalUtils().getMidnight()
            getUserLogin(pin.value.toString(), cid, lid, now, midnight)
            goHome()
            _navigate.value = true

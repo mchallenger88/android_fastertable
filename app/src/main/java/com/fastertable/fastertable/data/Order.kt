@@ -149,8 +149,7 @@ data class OrderItem(
     val status: String,
 ): Parcelable {
     fun getExtendedPrice(): Double{
-        var price: Double = 0.00;
-        price = this.quantity * this.menuItemPrice.price
+        var price: Double = this.quantity * this.menuItemPrice.price
         this.orderMods?.forEach{x ->
             if (x.surcharge > 0){
                 price += x.surcharge

@@ -13,7 +13,11 @@ data class Company(
     val loginCode: String,
     val password: String,
     val website: String,
-): Parcelable
+): Parcelable{
+    fun getLocation(id: String): Location? {
+        return this.locations.find { it.id == id }
+    }
+}
 
 @Parcelize
 data class Person(

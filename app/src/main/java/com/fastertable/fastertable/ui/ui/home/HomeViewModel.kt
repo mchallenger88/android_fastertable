@@ -1,10 +1,7 @@
 package com.fastertable.fastertable.ui.ui.home
 
 import android.app.Application
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.fastertable.fastertable.data.Company
 import com.fastertable.fastertable.data.Settings
 import com.fastertable.fastertable.data.Terminal
@@ -16,9 +13,8 @@ import kotlinx.coroutines.withContext
 import java.io.BufferedReader
 import java.io.File
 
-class HomeViewModel(application: Application, private val loginRepository: LoginRepository) : AndroidViewModel(application) {
+class HomeViewModel(private val loginRepository: LoginRepository) : ViewModel() {
 
-    private val app: Application = application
     private val _text = MutableLiveData<String>().apply {
         value = "This is home Fragment"
     }

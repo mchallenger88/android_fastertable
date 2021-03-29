@@ -20,9 +20,6 @@
         android:name="com.fastertable.fastertable.ui.ui.login.restaurant.RestaurantLoginFragment"
         android:label="RestaurantLoginFragment"
         tools:layout="@layout/restaurant_login_fragment">
-        <argument
-            android:name="location"
-            app:argType="com.fastertable.fastertable.data.Location"/>
         <action
             android:id="@+id/action_restaurantLoginFragment_to_terminalSelectFragment"
             app:destination="@id/terminalSelectFragment" />
@@ -35,9 +32,6 @@
         android:name="com.fastertable.fastertable.ui.ui.login.terminal.TerminalSelectFragment"
         android:label="TerminalSelectFragment"
         tools:layout="@layout/terminal_select_fragment">
-        <argument
-            android:name="settings"
-            app:argType="com.fastertable.fastertable.data.Settings"/>
         <action
             android:id="@+id/action_terminalSelectFragment_to_userLoginFragment"
             app:destination="@id/userLoginFragment" />

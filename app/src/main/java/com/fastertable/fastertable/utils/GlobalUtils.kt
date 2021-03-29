@@ -3,7 +3,7 @@ package com.fastertable.fastertable.utils
 import android.content.Context
 import java.time.OffsetDateTime
 
-class GlobalUtils(context: Context) {
+class GlobalUtils() {
 
 
     fun getNowEpoch(): Long{
