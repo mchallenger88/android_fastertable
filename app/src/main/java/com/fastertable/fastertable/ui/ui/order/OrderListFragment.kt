@@ -25,10 +25,6 @@ class OrderListFragment: Fragment() {
         viewModel = ViewModelProvider(
             this, viewModelFactory).get(OrderListViewModel::class.java)
 
-        val toolbar: Toolbar = requireActivity().findViewById(R.id.toolbar)
-        var fasterToolbar: Toolbar = requireActivity().findViewById(R.id.fastertoolbar)
-        toolbar.visibility = View.VISIBLE
-        fasterToolbar.visibility = View.VISIBLE
 
         binding.lifecycleOwner = viewLifecycleOwner
         binding.viewModel = viewModel

@@ -4,16 +4,16 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
-import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.ConcatAdapter
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.fastertable.fastertable.R
-import com.fastertable.fastertable.databinding.FragmentHomeBinding
+import com.fastertable.fastertable.databinding.HomeFragmentBinding
 import com.fastertable.fastertable.data.repository.LoginRepository
-import com.fastertable.fastertable.ui.ui.login.restaurant.RestaurantLoginFragmentDirections
+import com.fastertable.fastertable.data.repository.OrderRepository
 
 class HomeFragment : Fragment() {
 
@@ -24,18 +24,20 @@ class HomeFragment : Fragment() {
             container: ViewGroup?,
             savedInstanceState: Bundle?
     ): View? {
-        val binding = FragmentHomeBinding.inflate(inflater)
+        val binding = HomeFragmentBinding.inflate(inflater)
         val application = requireNotNull(activity).application
         val loginRepository = LoginRepository(application)
+        val orderRepository = OrderRepository(application)
         val navController = findNavController()
+        val viewModelFactory = HomeViewModelFactory(loginRepository, orderRepository)
+        viewModel = ViewModelProvider(
+            this, viewModelFactory).get(HomeViewModel::class.java)
+        binding.lifecycleOwner = this
+        binding.viewModel = viewModel
 
-        val viewModelFactory = HomeViewModelFactory(loginRepository)
         viewModel = ViewModelProvider(
             this, viewModelFactory).get(HomeViewModel::class.java)
 
-        viewModel.text.observe(viewLifecycleOwner, Observer {
-            binding.textHome.text = it
-        })
 
         viewModel.company.observe(viewLifecycleOwner, Observer { company ->
             if(company == null){
@@ -54,6 +56,33 @@ class HomeFragment : Fragment() {
                 navController.navigate(R.id.terminalSelectFragment)
             }
         })
-        return binding.root
+
+        viewModel.showProgressBar.observe(viewLifecycleOwner, Observer { it ->
+            if (it){
+                binding.progressBarHome.visibility = View.VISIBLE
+            }else{
+                binding.progressBarHome.visibility = View.INVISIBLE
+            }
+        })
+
+        val orderAdapter = OrderListAdapter(OrderListListener {
+            orderId ->  viewModel.onOrderClicked(orderId)
+        })
+
+        viewModel.orders.observe(viewLifecycleOwner, Observer {
+            it?.let{
+                orderAdapter.submitList(it)
+            }
+        })
+
+        val headerAdapter = HeaderTestAdapter()
+        val concatAdapter = ConcatAdapter(headerAdapter, orderAdapter)
+
+        binding.orderRecycler.adapter = concatAdapter
+
+        val manager = LinearLayoutManager(activity)
+        binding.orderRecycler.layoutManager = manager
+
+                return binding.root
     }
 }

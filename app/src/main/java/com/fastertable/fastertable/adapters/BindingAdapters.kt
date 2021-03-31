@@ -7,12 +7,33 @@ import androidx.recyclerview.widget.RecyclerView
 import com.fastertable.fastertable.data.Order
 import com.fastertable.fastertable.data.OrderItem
 import com.fastertable.fastertable.data.Terminal
+import com.fastertable.fastertable.ui.ui.home.OrderListAdapter
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 
 
 @SuppressLint("SetTextI18n")
 @BindingAdapter("intToString")
 fun intToString(textView: TextView, value: Int) {
-    textView.text = value.toString();
+    textView.text = value.toString()
+}
+
+
+@BindingAdapter("orderTypeTableNumber")
+fun orderTypeTableNumber(textView: TextView, order: Order) {
+    if (order.orderType == "Takeout"){
+        textView.text = order.takeOutCustomer.name
+    }
+
+    if (order.orderType == "Counter"){
+        textView.text = ""
+    }
+
+    if (order.orderType == "Table"){
+        textView.text = order.tableNumber.toString()
+    }
+
+
 }
 
 @SuppressLint("SetTextI18n")
@@ -33,16 +54,16 @@ fun setTerminalName(textView: TextView, terminal: Terminal?){
     }
 }
 
-//@BindingAdapter("timeStamp")
-//fun timeStamp(textView: TextView, value: Long) {
-//
-//   textView.text = DateTimeFormatter.ofPattern("h:mm a").withZone(ZoneId.systemDefault())
-//            .format(java.time.Instant.ofEpochSecond(value))
-//}
-//
-//@BindingAdapter("itemListData")
-//fun bindRecyclerView(recyclerView: RecyclerView, data: List<OrderItem>?) {
-//    val adapter = recyclerView.adapter as MenuItemAdapter
+@BindingAdapter("timeStamp")
+fun timeStamp(textView: TextView, value: Long) {
+
+   textView.text = DateTimeFormatter.ofPattern("h:mm a").withZone(ZoneId.systemDefault())
+            .format(java.time.Instant.ofEpochSecond(value))
+}
+
+//@BindingAdapter("orderListData")
+//fun bindRecyclerView(recyclerView: RecyclerView, data: List<Order>?) {
+//    val adapter = recyclerView.adapter as OrderListAdapter
 //    adapter.submitList(data)
 //}
 

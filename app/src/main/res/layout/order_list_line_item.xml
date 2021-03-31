@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android" >
+    <data>
+        <variable
+            name="order"
+            type="com.fastertable.fastertable.data.Order" />
+
+        <variable
+            name="clickListener"
+            type="com.fastertable.fastertable.ui.ui.home.OrderListListener" />
+    </data>
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/cell_grid"
+        android:onClick="@{() -> clickListener.onClick(order)}">
+
+        <TextView
+            android:id="@+id/txt_order_number"
+            style="@style/order_grid"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:width="80dp"
+            android:text="@string/string_order_number"
+            app:intToString="@{order.orderNumber}"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/txt_order_type"
+            style="@style/order_grid"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@{order.orderType}"
+            app:layout_constraintStart_toEndOf="@+id/txt_order_number"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/txt_table_number"
+            style="@style/order_grid"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/string_table_number"
+            app:layout_constraintStart_toEndOf="@+id/txt_order_type"
+            app:layout_constraintTop_toTopOf="parent"
+            app:orderTypeTableNumber="@{order}" />
+
+        <TextView
+            android:id="@+id/txt_employee_name"
+            style="@style/order_grid"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@{order.userName}"
+            app:layout_constraintStart_toEndOf="@+id/txt_table_number"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/txt_start_time"
+            style="@style/order_grid"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/string_start_time"
+            app:layout_constraintStart_toEndOf="@+id/txt_employee_name"
+            app:layout_constraintTop_toTopOf="parent"
+            app:timeStamp="@{order.startTime}" />
+
+        <TextView
+            android:id="@+id/txt_close_time"
+            style="@style/order_grid"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/string_close_time"
+            app:layout_constraintStart_toEndOf="@+id/txt_start_time"
+            app:layout_constraintTop_toTopOf="parent"
+            app:timeStamp="@{order.closeTime}" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

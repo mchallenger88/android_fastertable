@@ -9,7 +9,7 @@
         android:id="@+id/nav_home"
         android:name="com.fastertable.fastertable.ui.ui.home.HomeFragment"
         android:label="@string/menu_home"
-        tools:layout="@layout/fragment_home" >
+        tools:layout="@layout/home_fragment" >
         <argument
             android:name="settings"
             app:argType="com.fastertable.fastertable.data.Settings"/>

@@ -3,11 +3,12 @@ package com.fastertable.fastertable.ui.ui.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.fastertable.fastertable.data.repository.LoginRepository
+import com.fastertable.fastertable.data.repository.OrderRepository
 
-class HomeViewModelFactory (private val loginRepository: LoginRepository) : ViewModelProvider.Factory {
+class HomeViewModelFactory (private val loginRepository: LoginRepository, private val orderRepository: OrderRepository) : ViewModelProvider.Factory {
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(HomeViewModel::class.java)) {
-            return HomeViewModel(loginRepository) as T
+            return HomeViewModel(loginRepository, orderRepository) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

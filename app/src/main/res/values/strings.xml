@@ -69,4 +69,18 @@
     <string name="select">Select</string>
     <string name="company_error">There was an error logging you into the system. Please check your login and password and try again.</string>
     <string name="pin_invalid">The PIN you have entered is not recognized.</string>
+
+    //Toolbars
+    <string name="counter_order">Counter Order</string>
+    <string name="table_order">Table Order</string>
+    <string name="takeout_order">Takeout Order</string>
+    <string name="delivery_order">Delivery Order</string>
+
+    //Order
+    <string name="string_order_number">Order #</string>
+    <string name="string_order_type">Order Type</string>
+    <string name="string_table_number">Table</string>
+    <string name="string_employee">Employee</string>
+    <string name="string_start_time">Start Time</string>
+    <string name="string_close_time">Close Time</string>
 </resources>

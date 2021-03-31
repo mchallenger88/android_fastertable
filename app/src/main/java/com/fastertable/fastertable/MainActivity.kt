@@ -27,8 +27,6 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         toolbar.setBackgroundColor(applicationContext.getColor(R.color.primaryToolBar))
-        var fasterToolbar: Toolbar = findViewById(R.id.fastertoolbar)
-        fasterToolbar.setBackgroundColor(applicationContext.getColor(R.color.fasterToolBar))
 
         setSupportActionBar(toolbar)
 

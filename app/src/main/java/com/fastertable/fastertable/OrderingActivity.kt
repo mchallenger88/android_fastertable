@@ -10,10 +10,6 @@ class OrderingActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_main)
-        val toolbar: Toolbar = findViewById(R.id.toolbar)
-        var fasterToolbar: Toolbar = findViewById(R.id.fastertoolbar)
-        toolbar.visibility = View.VISIBLE
-        fasterToolbar.visibility = View.VISIBLE
 
 
     }

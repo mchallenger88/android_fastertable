@@ -25,4 +25,15 @@ class OrderRepository(private val app: Application) {
         file.writeText(jsonString)
         return order
     }
+
+    @WorkerThread
+    suspend fun getOrders(midnight: Long, rid: String): List<Order>{
+        val orders = OrderService.Companion.ApiService.retrofitService.getOrders(midnight, rid)
+        //Save order json to file
+        val gson = Gson()
+        val jsonString = gson.toJson(orders)
+        val file= File(app.filesDir, "orders.json")
+        file.writeText(jsonString)
+        return orders
+    }
 }
