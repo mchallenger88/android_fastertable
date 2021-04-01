@@ -1,13 +1,10 @@
-package com.fastertable.fastertable.ui.ui.login.terminal
+package com.fastertable.fastertable.ui.login.terminal
 
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import androidx.appcompat.widget.Toolbar
-import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -17,7 +14,6 @@ import com.fastertable.fastertable.R
 import com.fastertable.fastertable.data.Terminal
 import com.fastertable.fastertable.data.repository.LoginRepository
 import com.fastertable.fastertable.databinding.TerminalSelectFragmentBinding
-import com.fastertable.fastertable.ui.ui.login.restaurant.RestaurantLoginFragmentDirections
 import com.google.android.material.chip.Chip
 
 class TerminalSelectFragment : Fragment()  {

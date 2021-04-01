@@ -1,6 +1,5 @@
-package com.fastertable.fastertable.ui.ui.home
+package com.fastertable.fastertable.ui.home
 
-import android.app.Application
 import androidx.lifecycle.*
 import com.fastertable.fastertable.data.Company
 import com.fastertable.fastertable.data.Order
@@ -8,13 +7,9 @@ import com.fastertable.fastertable.data.Settings
 import com.fastertable.fastertable.data.Terminal
 import com.fastertable.fastertable.data.repository.LoginRepository
 import com.fastertable.fastertable.data.repository.OrderRepository
-import com.fastertable.fastertable.utils.GlobalUtils
-import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.io.BufferedReader
-import java.io.File
 
 class HomeViewModel(private val loginRepository: LoginRepository,
                     private val orderRepository: OrderRepository) : ViewModel() {
@@ -115,6 +110,10 @@ class HomeViewModel(private val loginRepository: LoginRepository,
     fun onClosedClicked(){
         _orderFilter.value = "Closed"
         filterOrders(orderFilter.value!!)
+    }
+
+    fun startCounterOrder(){
+        _navigateToOrder.value = "Counter"
     }
 
 

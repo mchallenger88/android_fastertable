@@ -5,7 +5,7 @@
     <data>
         <variable
             name="viewModel"
-            type="com.fastertable.fastertable.ui.ui.login.terminal.TerminalSelectViewModel" />
+            type="com.fastertable.fastertable.ui.login.terminal.TerminalSelectViewModel" />
     </data>
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"

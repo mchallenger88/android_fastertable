@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+    <data>
+
+    </data>
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/order_fastertoolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/fasterToolBar"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:popupTheme="@style/Theme.Fastertable.PopupOverlay">
+
+            <Button
+                android:id="@+id/btn_order_exit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/fasterToolBar"
+                android:text="@string/exit"
+                android:textColor="@color/white"
+                android:textSize="@dimen/toolbar_button"
+                tools:layout_editor_absoluteX="16dp"
+                tools:layout_editor_absoluteY="8dp" />
+
+            <Button
+                android:id="@+id/btn_add_guest"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/fasterToolBar"
+                android:text="@string/add_guest"
+                android:textColor="@color/white"
+                android:textSize="@dimen/toolbar_button"
+                tools:layout_editor_absoluteX="104dp"
+                tools:layout_editor_absoluteY="8dp" />
+
+            <Button
+                android:id="@+id/btn_reorder_drinks"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/fasterToolBar"
+                android:text="@string/reorder_drinks"
+                android:textColor="@color/white"
+                android:textSize="@dimen/toolbar_button"
+                tools:layout_editor_absoluteX="246dp"
+                tools:layout_editor_absoluteY="8dp" />
+
+        </androidx.appcompat.widget.Toolbar>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

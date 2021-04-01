@@ -5,7 +5,7 @@
     <data>
         <variable
             name="viewModel"
-            type="com.fastertable.fastertable.ui.ui.login.user.UserLoginViewModel" />
+            type="com.fastertable.fastertable.ui.login.user.UserLoginViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

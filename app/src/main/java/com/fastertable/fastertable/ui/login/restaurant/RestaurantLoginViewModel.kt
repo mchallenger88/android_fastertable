@@ -1,21 +1,14 @@
-package com.fastertable.fastertable.ui.ui.login.restaurant
+package com.fastertable.fastertable.ui.login.restaurant
 
-import android.app.Application
-import android.content.Context
-import android.content.SharedPreferences
 import androidx.lifecycle.*
 import com.fastertable.fastertable.data.Company
 import com.fastertable.fastertable.data.Location
 import com.fastertable.fastertable.data.Settings
-import com.fastertable.fastertable.data.Terminal
 import com.fastertable.fastertable.data.repository.LoginRepository
 import com.fastertable.fastertable.utils.ApiStatus
-import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.io.BufferedReader
-import java.io.File
 
 class RestaurantLoginViewModel(private val loginRepository: LoginRepository) : ViewModel() {
 

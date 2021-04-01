@@ -1,4 +1,4 @@
-package com.fastertable.fastertable.ui.ui.login.company
+package com.fastertable.fastertable.ui.login.company
 
 import android.os.Bundle
 import android.view.LayoutInflater

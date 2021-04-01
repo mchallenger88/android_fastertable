@@ -1,18 +1,16 @@
-package com.fastertable.fastertable.ui.ui.home
+package com.fastertable.fastertable.ui.home
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.fastertable.fastertable.R
 import com.fastertable.fastertable.data.Order
 import com.fastertable.fastertable.databinding.OrderListLineHeaderBinding
 
 class OrderHeaderAdapter: ListAdapter<Order, OrderHeaderAdapter.HeaderViewHolder>(DiffCallback) {
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HeaderViewHolder{
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HeaderViewHolder {
         return HeaderViewHolder(OrderListLineHeaderBinding.inflate(LayoutInflater.from(parent.context)))
     }
 

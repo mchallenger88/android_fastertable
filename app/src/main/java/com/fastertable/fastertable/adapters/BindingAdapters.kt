@@ -3,11 +3,9 @@ package com.fastertable.fastertable.adapters
 import android.annotation.SuppressLint
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
-import androidx.recyclerview.widget.RecyclerView
 import com.fastertable.fastertable.data.Order
 import com.fastertable.fastertable.data.OrderItem
 import com.fastertable.fastertable.data.Terminal
-import com.fastertable.fastertable.ui.ui.home.OrderListAdapter
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 

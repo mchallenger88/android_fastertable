@@ -1,21 +1,19 @@
-package com.fastertable.fastertable.ui.ui.home
+package com.fastertable.fastertable.ui.home
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.fastertable.fastertable.R
 import com.fastertable.fastertable.data.Order
 import com.fastertable.fastertable.databinding.OrderListLineItemBinding
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 
-class OrderListAdapter(val clickListener: OrderListListener): ListAdapter<Order, OrderListAdapter.OrderViewHolder>(DiffCallback) {
+class OrderListAdapter(val clickListener: OrderListListener): ListAdapter<Order, OrderListAdapter.OrderViewHolder>(
+    DiffCallback
+) {
     private val adapterScope = CoroutineScope(Dispatchers.Default)
 
 
@@ -24,7 +22,7 @@ class OrderListAdapter(val clickListener: OrderListListener): ListAdapter<Order,
         holder.bind(order)
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): OrderListAdapter.OrderViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): OrderViewHolder {
         return OrderViewHolder(OrderListLineItemBinding.inflate(LayoutInflater.from(parent.context)))
     }
 

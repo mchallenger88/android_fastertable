@@ -1,15 +1,10 @@
-package com.fastertable.fastertable.ui.ui.login.terminal
+package com.fastertable.fastertable.ui.login.terminal
 
-import android.app.Application
 import androidx.lifecycle.*
-import com.fastertable.fastertable.data.Location
 import com.fastertable.fastertable.data.Settings
 import com.fastertable.fastertable.data.Terminal
 import com.fastertable.fastertable.data.repository.LoginRepository
-import com.google.gson.Gson
 import kotlinx.coroutines.launch
-import java.io.BufferedReader
-import java.io.File
 
 class TerminalSelectViewModel(private val loginRepository: LoginRepository) : ViewModel() {
     private val _settings = MutableLiveData<Settings>()

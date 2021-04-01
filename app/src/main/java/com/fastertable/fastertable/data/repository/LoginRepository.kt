@@ -2,7 +2,6 @@ package com.fastertable.fastertable.data.repository
 
 import android.app.Application
 import android.content.Context
-import android.content.SharedPreferences
 import androidx.annotation.WorkerThread
 import com.fastertable.fastertable.api.*
 import com.fastertable.fastertable.data.Company
@@ -12,7 +11,6 @@ import com.fastertable.fastertable.data.Terminal
 import com.google.gson.Gson
 import java.io.BufferedReader
 import java.io.File
-import javax.inject.Singleton
 
 
 class LoginRepository(private val app: Application) {

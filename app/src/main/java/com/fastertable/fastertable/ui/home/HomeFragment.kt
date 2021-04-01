@@ -1,10 +1,9 @@
-package com.fastertable.fastertable.ui.ui.home
+package com.fastertable.fastertable.ui.home
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.forEach
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -56,24 +55,27 @@ class HomeFragment : Fragment() {
             }
         })
 
+        viewModel.navigateToOrder.observe(viewLifecycleOwner, Observer { it ->
+            if (it == "Counter"){
+                navController.navigate(HomeFragmentDirections.actionNavHomeToOrderFragment())
+            }
+        })
+
         viewModel.orderFilter.observe(viewLifecycleOwner, Observer {  it ->
 
             if (it == "All"){
-//                binding.chipAllOrders.setTextAppearance(R.style.ChipTextAppearance)
                 binding.chipAllOrders.setChipBackgroundColorResource(R.color.secondaryColor)
                 binding.chipClosedOrders.setChipBackgroundColorResource(R.color.primaryColor)
                 binding.chipOpenOrders.setChipBackgroundColorResource(R.color.primaryColor)
             }
 
             if (it == "Open"){
-//                binding.chipOpenOrders.setTextAppearance(R.style.ChipTextAppearance)
                 binding.chipOpenOrders.setChipBackgroundColorResource(R.color.secondaryColor)
                 binding.chipAllOrders.setChipBackgroundColorResource(R.color.primaryColor)
                 binding.chipClosedOrders.setChipBackgroundColorResource(R.color.primaryColor)
             }
 
             if (it == "Closed"){
-//                binding.chipClosedOrders.setTextAppearance(R.style.ChipTextAppearance)
                 binding.chipClosedOrders.setChipBackgroundColorResource(R.color.secondaryColor)
                 binding.chipAllOrders.setChipBackgroundColorResource(R.color.primaryColor)
                 binding.chipOpenOrders.setChipBackgroundColorResource(R.color.primaryColor)

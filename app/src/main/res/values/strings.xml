@@ -88,4 +88,7 @@
     <string name="string_employee">Employee</string>
     <string name="string_start_time">Start Time</string>
     <string name="string_close_time">Close Time</string>
+    <string name="exit">Exit</string>
+    <string name="add_guest">Add Guest</string>
+    <string name="reorder_drinks">Reorder Drinks</string>
 </resources>

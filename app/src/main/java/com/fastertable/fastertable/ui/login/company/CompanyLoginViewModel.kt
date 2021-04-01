@@ -1,4 +1,4 @@
-package com.fastertable.fastertable.ui.ui.login.company
+package com.fastertable.fastertable.ui.login.company
 
 import android.annotation.SuppressLint
 import androidx.databinding.ObservableField

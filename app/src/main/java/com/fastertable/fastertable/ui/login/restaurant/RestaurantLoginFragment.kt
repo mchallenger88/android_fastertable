@@ -1,4 +1,4 @@
-package com.fastertable.fastertable.ui.ui.login.restaurant
+package com.fastertable.fastertable.ui.login.restaurant
 
 
 import android.os.Bundle
@@ -9,7 +9,6 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
-import com.fastertable.fastertable.data.Settings
 import com.fastertable.fastertable.data.repository.LoginRepository
 import com.fastertable.fastertable.databinding.RestaurantLoginFragmentBinding
 

@@ -1,9 +1,7 @@
-package com.fastertable.fastertable.ui.ui.login.restaurant
+package com.fastertable.fastertable.ui.login.restaurant
 
-import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.fastertable.fastertable.data.Location
 import com.fastertable.fastertable.data.repository.LoginRepository
 
 class RestaurantLoginViewModelFactory (

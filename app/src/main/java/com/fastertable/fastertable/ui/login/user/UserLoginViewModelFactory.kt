@@ -1,9 +1,7 @@
-package com.fastertable.fastertable.ui.ui.login.user
+package com.fastertable.fastertable.ui.login.user
 
-import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.fastertable.fastertable.data.Location
 import com.fastertable.fastertable.data.repository.LoginRepository
 import com.fastertable.fastertable.data.repository.OrderRepository
 
