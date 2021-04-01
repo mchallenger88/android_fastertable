@@ -12,6 +12,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.fastertable.fastertable.MainActivity
 import com.fastertable.fastertable.data.repository.LoginRepository
+import com.fastertable.fastertable.data.repository.OrderRepository
 import com.fastertable.fastertable.databinding.UserLoginFragmentBinding
 
 class UserLoginFragment: Fragment() {
@@ -25,7 +26,8 @@ class UserLoginFragment: Fragment() {
         val binding = UserLoginFragmentBinding.inflate(inflater)
         val application = requireNotNull(activity).application
         val loginRepository = LoginRepository(application)
-        val viewModelFactory = UserLoginViewModelFactory(loginRepository)
+        val orderRepository = OrderRepository(application)
+        val viewModelFactory = UserLoginViewModelFactory(loginRepository, orderRepository)
         viewModel = ViewModelProvider(
                 this, viewModelFactory).get(UserLoginViewModel::class.java)
         binding.lifecycleOwner = viewLifecycleOwner
@@ -50,8 +52,14 @@ class UserLoginFragment: Fragment() {
                  val intent = Intent(this.context, MainActivity::class.java)
                 intent.setFlags(FLAG_ACTIVITY_NEW_TASK)
                 startActivity(intent)
+            }
+        })
 
-                this.findNavController().navigate(UserLoginFragmentDirections.actionUserLoginFragmentToHomeFragment())
+        viewModel.showProgressBar.observe(viewLifecycleOwner, Observer { it ->
+            if (it){
+                binding.progressBarUserLogin.visibility = View.VISIBLE
+            }else{
+                binding.progressBarUserLogin.visibility = View.INVISIBLE
             }
         })
 

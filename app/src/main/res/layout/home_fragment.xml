@@ -66,10 +66,39 @@
             android:id="@+id/order_recycler"
             android:layout_width="wrap_content"
             android:layout_height="500dp"
+            android:layout_marginTop="8dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/progressBar_home" />
+            app:layout_constraintTop_toBottomOf="@+id/home_chip_group" />
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/home_chip_group"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/progressBar_home">
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip_open_orders"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/open_orders" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip_closed_orders"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/closed_orders" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip_all_orders"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/all_orders" />
+
+        </com.google.android.material.chip.ChipGroup>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
 

@@ -70,6 +70,11 @@
     <string name="company_error">There was an error logging you into the system. Please check your login and password and try again.</string>
     <string name="pin_invalid">The PIN you have entered is not recognized.</string>
 
+    //Home
+    <string name="open_orders">Open Orders</string>
+    <string name="closed_orders">Closed Orders</string>
+    <string name="all_orders">All Orders</string>
+
     //Toolbars
     <string name="counter_order">Counter Order</string>
     <string name="table_order">Table Order</string>

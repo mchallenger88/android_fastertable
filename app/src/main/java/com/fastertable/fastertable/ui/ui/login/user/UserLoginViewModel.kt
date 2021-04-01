@@ -18,6 +18,7 @@ import com.fastertable.fastertable.data.OpsAuth
 import com.fastertable.fastertable.data.Order
 import com.fastertable.fastertable.data.Terminal
 import com.fastertable.fastertable.data.repository.LoginRepository
+import com.fastertable.fastertable.data.repository.OrderRepository
 import com.fastertable.fastertable.utils.GlobalUtils
 import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers.IO
@@ -27,7 +28,7 @@ import java.io.BufferedReader
 import java.io.File
 
 
-class UserLoginViewModel(private val loginRepository: LoginRepository) : ViewModel() {
+class UserLoginViewModel(private val loginRepository: LoginRepository, private val orderRepository: OrderRepository) : ViewModel() {
     private var cid: String = ""
     private var lid: String = ""
     private val _pin = MutableLiveData<String>()
@@ -42,9 +43,15 @@ class UserLoginViewModel(private val loginRepository: LoginRepository) : ViewMod
     val navigate: LiveData<Boolean>
         get() = _navigate
 
+    private val _showProgressBar = MutableLiveData<Boolean>()
+    val showProgressBar: LiveData<Boolean>
+        get() = _showProgressBar
+
+
     init{
         _pin.value = ""
         _navigate.value = false
+        _showProgressBar.value = false
         getTerminal()
     }
 
@@ -68,11 +75,14 @@ class UserLoginViewModel(private val loginRepository: LoginRepository) : ViewMod
 
     fun userLogin(){
        viewModelScope.launch {
+           _showProgressBar.postValue(true)
            cid = loginRepository.getStringSharedPreferences("cid")!!
            lid = loginRepository.getStringSharedPreferences("rid")!!
            val now = GlobalUtils().getNowEpoch()
            val midnight = GlobalUtils().getMidnight()
            getUserLogin(pin.value.toString(), cid, lid, now, midnight)
+           getOrders()
+           _showProgressBar.postValue(false)
            goHome()
            _navigate.value = true
        }
@@ -81,10 +91,17 @@ class UserLoginViewModel(private val loginRepository: LoginRepository) : ViewMod
     private suspend fun getUserLogin(pin: String, cid: String, lid: String, now: Long, midnight: Long){
         withContext(IO){
             loginRepository.loginUser(pin, cid, lid, now, midnight)
-
         }
     }
 
+    private suspend fun getOrders(){
+        withContext(IO){
+            val midnight = GlobalUtils().getMidnight()
+            //    - 86400
+            val rid = loginRepository.getStringSharedPreferences("rid")
+            orderRepository.getOrders(midnight, rid!!)
+        }
+    }
 
 
     private fun goHome(){

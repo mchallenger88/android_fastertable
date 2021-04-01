@@ -39,28 +39,37 @@ class HomeViewModel(private val loginRepository: LoginRepository,
     val orders: LiveData<List<Order>>
         get() = _orders
 
+    private val _filteredOrders = MutableLiveData<List<Order>>()
+    val filteredOrders: LiveData<List<Order>>
+        get() = _filteredOrders
+
+    private val _orderFilter = MutableLiveData<String>()
+    val orderFilter: LiveData<String>
+        get() = _orderFilter
+
     private val _navigateToOrder = MutableLiveData<String>()
     val navigateToOrder: LiveData<String>
         get() = _navigateToOrder
 
+    private val _viewLoaded = MutableLiveData<Boolean>()
+    val viewLoaded: LiveData<Boolean>
+        get() = _viewLoaded
+
     init{
+        _showProgressBar.value = false
+        _viewLoaded.value = false
         viewModelScope.launch {
-            _showProgressBar.postValue(true)
-            getCompany()
-            getSettings()
-            getTerminal()
             getOrders()
-            _showProgressBar.postValue(false)
         }
 
     }
 
     private suspend fun getOrders(){
-        withContext(IO){
-            val midnight = GlobalUtils().getMidnight() - 86400
-            val rid = loginRepository.getStringSharedPreferences("rid")
-            _orders.postValue(orderRepository.getOrders(midnight, rid!!))
+        viewModelScope.launch {
+            _orders.postValue(orderRepository.getOrdersFromFile())
+            _viewLoaded.postValue(true)
         }
+
     }
 
     private suspend fun getCompany(){
@@ -81,7 +90,32 @@ class HomeViewModel(private val loginRepository: LoginRepository,
         }
     }
 
+    fun filterOrders(filter: String){
+        when (filter) {
+            "Open" -> _filteredOrders.value = orders.value?.filter { it -> it.closeTime == null }
+            "Closed" -> _filteredOrders.value = orders.value?.filter { it -> it.closeTime != null }
+            "All" -> _filteredOrders.value = orders.value
+        }
+    }
+
     fun onOrderClicked(id: String) {
         _navigateToOrder.value = id
     }
+
+    fun onOpenClicked(){
+        _orderFilter.value = "Open"
+        filterOrders(orderFilter.value!!)
+    }
+
+    fun onAllClicked(){
+        _orderFilter.value = "All"
+        filterOrders(orderFilter.value!!)
+    }
+
+    fun onClosedClicked(){
+        _orderFilter.value = "Closed"
+        filterOrders(orderFilter.value!!)
+    }
+
+
 }

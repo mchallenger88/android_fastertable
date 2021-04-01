@@ -23,6 +23,18 @@
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_fastertablelogo"/>
 
+        <ProgressBar
+            android:id="@+id/progressBar_userLogin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            app:layout_constraintBottom_toTopOf="@+id/txt_user_login_title"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.84000003"
+            tools:visibility="invisible" />
+
         <TextView
             android:id="@+id/txt_terminal_using"
             style="@style/view_titles"

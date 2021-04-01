@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.forEach
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -35,27 +36,11 @@ class HomeFragment : Fragment() {
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
 
+        setChipDefaults(binding)
+
         viewModel = ViewModelProvider(
             this, viewModelFactory).get(HomeViewModel::class.java)
 
-
-        viewModel.company.observe(viewLifecycleOwner, Observer { company ->
-            if(company == null){
-                navController.navigate(R.id.companyLoginFragment)
-            }
-        })
-
-        viewModel.settings.observe(viewLifecycleOwner, Observer { settings ->
-            if(settings == null){
-                navController.navigate(R.id.companyLoginFragment)
-            }
-        })
-
-        viewModel.terminal.observe(viewLifecycleOwner, Observer { terminal ->
-            if(terminal == null){
-                navController.navigate(R.id.terminalSelectFragment)
-            }
-        })
 
         viewModel.showProgressBar.observe(viewLifecycleOwner, Observer { it ->
             if (it){
@@ -65,11 +50,42 @@ class HomeFragment : Fragment() {
             }
         })
 
+        viewModel.viewLoaded.observe(viewLifecycleOwner, Observer { it ->
+            if (it){
+                viewModel.filterOrders("Open")
+            }
+        })
+
+        viewModel.orderFilter.observe(viewLifecycleOwner, Observer {  it ->
+
+            if (it == "All"){
+//                binding.chipAllOrders.setTextAppearance(R.style.ChipTextAppearance)
+                binding.chipAllOrders.setChipBackgroundColorResource(R.color.secondaryColor)
+                binding.chipClosedOrders.setChipBackgroundColorResource(R.color.primaryColor)
+                binding.chipOpenOrders.setChipBackgroundColorResource(R.color.primaryColor)
+            }
+
+            if (it == "Open"){
+//                binding.chipOpenOrders.setTextAppearance(R.style.ChipTextAppearance)
+                binding.chipOpenOrders.setChipBackgroundColorResource(R.color.secondaryColor)
+                binding.chipAllOrders.setChipBackgroundColorResource(R.color.primaryColor)
+                binding.chipClosedOrders.setChipBackgroundColorResource(R.color.primaryColor)
+            }
+
+            if (it == "Closed"){
+//                binding.chipClosedOrders.setTextAppearance(R.style.ChipTextAppearance)
+                binding.chipClosedOrders.setChipBackgroundColorResource(R.color.secondaryColor)
+                binding.chipAllOrders.setChipBackgroundColorResource(R.color.primaryColor)
+                binding.chipOpenOrders.setChipBackgroundColorResource(R.color.primaryColor)
+            }
+
+        })
+
         val orderAdapter = OrderListAdapter(OrderListListener {
             orderId ->  viewModel.onOrderClicked(orderId)
         })
 
-        viewModel.orders.observe(viewLifecycleOwner, Observer {
+        viewModel.filteredOrders.observe(viewLifecycleOwner, Observer {
             it?.let{
                 orderAdapter.submitList(it)
             }
@@ -84,5 +100,19 @@ class HomeFragment : Fragment() {
         binding.orderRecycler.layoutManager = manager
 
                 return binding.root
+    }
+
+    private fun setChipDefaults(binding: HomeFragmentBinding){
+        binding.chipAllOrders.setChipBackgroundColorResource(R.color.primaryColor)
+        binding.chipAllOrders.setTextAppearance(R.style.ChipTextAppearance)
+        binding.chipAllOrders.setOnClickListener{ viewModel.onAllClicked()}
+
+        binding.chipClosedOrders.setChipBackgroundColorResource(R.color.primaryColor)
+        binding.chipClosedOrders.setTextAppearance(R.style.ChipTextAppearance)
+        binding.chipClosedOrders.setOnClickListener{ viewModel.onClosedClicked()}
+
+        binding.chipOpenOrders.setChipBackgroundColorResource(R.color.primaryColor)
+        binding.chipOpenOrders.setTextAppearance(R.style.ChipTextAppearance)
+        binding.chipOpenOrders.setOnClickListener{ viewModel.onOpenClicked()}
     }
 }

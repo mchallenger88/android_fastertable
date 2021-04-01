@@ -2,17 +2,13 @@ package com.fastertable.fastertable.data.repository
 
 import android.app.Application
 import androidx.annotation.WorkerThread
-import com.fastertable.fastertable.api.CompanyHelper
-import com.fastertable.fastertable.api.CompanyService
-import com.fastertable.fastertable.api.OrderHelper
 import com.fastertable.fastertable.api.OrderService
-import com.fastertable.fastertable.data.Company
-import com.fastertable.fastertable.data.Order
-import com.fastertable.fastertable.data.TimeBasedRequest
+import com.fastertable.fastertable.data.*
 import com.google.gson.Gson
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import com.google.gson.reflect.TypeToken
+import java.io.BufferedReader
 import java.io.File
+
 
 class OrderRepository(private val app: Application) {
     @WorkerThread
@@ -35,5 +31,18 @@ class OrderRepository(private val app: Application) {
         val file= File(app.filesDir, "orders.json")
         file.writeText(jsonString)
         return orders
+    }
+
+    @WorkerThread
+    suspend fun getOrdersFromFile(): List<Order>?{
+        var gson = Gson()
+        if (File(app.filesDir, "orders.json").exists()){
+            val bufferedReader: BufferedReader = File(app.filesDir, "orders.json").bufferedReader()
+            val inputString = bufferedReader.use { it.readText() }
+            val arrayList: ArrayList<Order> = gson.fromJson(inputString, object : TypeToken<List<Order?>?>() {}.type)
+            val list: List<Order> = arrayList
+            return list
+        }
+        return null
     }
 }
