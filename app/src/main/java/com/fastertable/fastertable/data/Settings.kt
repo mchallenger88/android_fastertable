@@ -1,6 +1,7 @@
 package com.fastertable.fastertable.data
 
 import android.os.Parcelable
+import com.google.gson.annotations.SerializedName
 import kotlinx.parcelize.Parcelize
 import java.util.*
 import kotlin.collections.ArrayList
@@ -8,6 +9,7 @@ import kotlin.collections.ArrayList
 @Parcelize
 data class Settings (
     val id: String,
+    @SerializedName("locationid")
     val locationId: String,
     val discounts: ArrayList<Discount>,
     val taxRate: TaxRate,

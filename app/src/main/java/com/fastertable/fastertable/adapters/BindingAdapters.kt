@@ -20,7 +20,7 @@ fun intToString(textView: TextView, value: Int) {
 @BindingAdapter("orderTypeTableNumber")
 fun orderTypeTableNumber(textView: TextView, order: Order) {
     if (order.orderType == "Takeout"){
-        textView.text = order.takeOutCustomer.name
+        textView.text = order.takeOutCustomer?.name
     }
 
     if (order.orderType == "Counter"){

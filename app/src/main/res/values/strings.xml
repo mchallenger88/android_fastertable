@@ -91,4 +91,6 @@
     <string name="exit">Exit</string>
     <string name="add_guest">Add Guest</string>
     <string name="reorder_drinks">Reorder Drinks</string>
+    <string name="todo">TODO</string>
+    <string name="guests">Guests</string>
 </resources>

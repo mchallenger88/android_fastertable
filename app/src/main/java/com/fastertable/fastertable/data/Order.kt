@@ -24,7 +24,7 @@ data class Order(
     var note: String?,
 
     var customer: Customer?,
-    var takeOutCustomer: TakeOutCustomer,
+    var takeOutCustomer: TakeOutCustomer?,
     var outsideDelivery: DeliveryCustomer?,
 
     val orderFees: Double?,

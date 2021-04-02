@@ -10,9 +10,6 @@
         android:name="com.fastertable.fastertable.ui.home.HomeFragment"
         android:label="@string/menu_home"
         tools:layout="@layout/home_fragment" >
-        <argument
-            android:name="settings"
-            app:argType="com.fastertable.fastertable.data.Settings"/>
         <action
             android:id="@+id/action_nav_home_to_orderFragment"
             app:destination="@id/orderFragment" />
@@ -21,7 +18,7 @@
     <fragment
         android:id="@+id/orderFragment"
         android:name="com.fastertable.fastertable.ui.order.OrderFragment"
-        android:label="OrderFragment"
+        android:label="ORDER"
         tools:layout="@layout/order_fragment" />
 
 

@@ -19,16 +19,6 @@
             app:layout_constraintTop_toTopOf="parent"
             app:popupTheme="@style/Theme.Fastertable.PopupOverlay">
 
-            <Button
-                android:id="@+id/btn_order_exit"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:backgroundTint="@color/fasterToolBar"
-                android:text="@string/exit"
-                android:textColor="@color/white"
-                android:textSize="@dimen/toolbar_button"
-                tools:layout_editor_absoluteX="16dp"
-                tools:layout_editor_absoluteY="8dp" />
 
             <Button
                 android:id="@+id/btn_add_guest"
@@ -52,7 +42,57 @@
                 tools:layout_editor_absoluteX="246dp"
                 tools:layout_editor_absoluteY="8dp" />
 
+<!--            <Button-->
+<!--                android:id="@+id/btn_order_exit"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:backgroundTint="@color/fasterToolBar"-->
+<!--                android:text="@string/exit"-->
+<!--                android:textColor="@color/white"-->
+<!--                android:textSize="@dimen/toolbar_button"-->
+<!--                tools:layout_editor_absoluteX="16dp"-->
+<!--                tools:layout_editor_absoluteY="8dp" />-->
+
         </androidx.appcompat.widget.Toolbar>
+
+        <LinearLayout
+            android:id="@+id/toolbar_guestSideBar"
+            android:layout_width="60dp"
+            android:layout_height="0dp"
+            android:background="@color/fasterToolBar"
+            android:gravity="fill_vertical"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/order_fastertoolbar"
+            app:layout_constraintVertical_bias="0.5">
+
+            <TextView
+                android:id="@+id/guests_title_sidebar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:text="@string/guests"
+                android:textAlignment="center"
+                android:textColor="@color/white"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/floatingActionButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:clickable="true"
+                android:contentDescription="@string/todo"
+                android:focusable="true"
+                android:scaleType="center"
+                app:fabSize="mini"
+                app:iconSize="40dp"
+                app:srcCompat="@drawable/guest_1_foreground" />
+        </LinearLayout>
+
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

@@ -1,10 +1,7 @@
 package com.fastertable.fastertable.ui.home
 
 import androidx.lifecycle.*
-import com.fastertable.fastertable.data.Company
-import com.fastertable.fastertable.data.Order
-import com.fastertable.fastertable.data.Settings
-import com.fastertable.fastertable.data.Terminal
+import com.fastertable.fastertable.data.*
 import com.fastertable.fastertable.data.repository.LoginRepository
 import com.fastertable.fastertable.data.repository.OrderRepository
 import kotlinx.coroutines.Dispatchers.IO
@@ -30,6 +27,10 @@ class HomeViewModel(private val loginRepository: LoginRepository,
     val terminal: LiveData<Terminal>
         get() = _terminal
 
+    private val _user = MutableLiveData<OpsAuth>()
+    val user: LiveData<OpsAuth>
+        get() = _user
+
     private val _orders = MutableLiveData<List<Order>>()
     val orders: LiveData<List<Order>>
         get() = _orders
@@ -53,8 +54,11 @@ class HomeViewModel(private val loginRepository: LoginRepository,
     init{
         _showProgressBar.value = false
         _viewLoaded.value = false
+
         viewModelScope.launch {
             getOrders()
+            getSettings()
+            getUser()
         }
 
     }
@@ -76,6 +80,12 @@ class HomeViewModel(private val loginRepository: LoginRepository,
     private suspend fun getSettings(){
         withContext(IO){
             _settings.postValue(loginRepository.getSettings())
+        }
+    }
+
+    private suspend fun getUser(){
+        withContext(IO){
+            _user.postValue(loginRepository.getOpsUser())
         }
     }
 
@@ -113,7 +123,9 @@ class HomeViewModel(private val loginRepository: LoginRepository,
     }
 
     fun startCounterOrder(){
+        orderRepository.createNewOrder("Counter", _settings.value!!, _user.value!!, null)
         _navigateToOrder.value = "Counter"
+
     }
 
 
