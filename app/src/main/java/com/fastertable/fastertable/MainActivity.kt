@@ -24,26 +24,26 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        val toolbar: Toolbar = findViewById(R.id.toolbar)
-        toolbar.setBackgroundColor(applicationContext.getColor(R.color.primaryToolBar))
-
-        setSupportActionBar(toolbar)
-
-        val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
-        val navView: NavigationView = findViewById(R.id.nav_view)
-        val navHostFragment =
-            supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
-        val navController: NavController = navHostFragment.navController
+//        val toolbar: Toolbar? = findViewById(R.id.toolbar)
+//        toolbar.setBackgroundColor(applicationContext.getColor(R.color.primaryToolBar))
+//
+//        setSupportActionBar(toolbar)
+//
+//        val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
+//        val navView: NavigationView = findViewById(R.id.nav_view)
+//        val navHostFragment =
+//            supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+//        val navController: NavController = navHostFragment.navController
 
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
-        appBarConfiguration = AppBarConfiguration(
-            setOf(
-                R.id.nav_home
-            ), drawerLayout
-        )
-        setupActionBarWithNavController(navController, appBarConfiguration)
-        navView.setupWithNavController(navController)
+//        appBarConfiguration = AppBarConfiguration(
+//            setOf(
+//                R.id.nav_home
+//            ), drawerLayout
+//        )
+//        setupActionBarWithNavController(navController, appBarConfiguration)
+//        navView.setupWithNavController(navController)
 
         hideSystemUI()
     }
