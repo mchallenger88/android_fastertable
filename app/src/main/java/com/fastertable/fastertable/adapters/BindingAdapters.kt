@@ -3,9 +3,11 @@ package com.fastertable.fastertable.adapters
 import android.annotation.SuppressLint
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
+import androidx.recyclerview.widget.RecyclerView
 import com.fastertable.fastertable.data.Order
 import com.fastertable.fastertable.data.OrderItem
 import com.fastertable.fastertable.data.Terminal
+import com.fastertable.fastertable.data.adapters.OrderItemAdapter
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
@@ -30,8 +32,6 @@ fun orderTypeTableNumber(textView: TextView, order: Order) {
     if (order.orderType == "Table"){
         textView.text = order.tableNumber.toString()
     }
-
-
 }
 
 @SuppressLint("SetTextI18n")
@@ -53,10 +53,15 @@ fun setTerminalName(textView: TextView, terminal: Terminal?){
 }
 
 @BindingAdapter("timeStamp")
-fun timeStamp(textView: TextView, value: Long) {
+fun timeStamp(textView: TextView, value: Long?) {
 
-   textView.text = DateTimeFormatter.ofPattern("h:mm a").withZone(ZoneId.systemDefault())
+    if (value != null){
+        textView.text = DateTimeFormatter.ofPattern("h:mm a").withZone(ZoneId.systemDefault())
             .format(java.time.Instant.ofEpochSecond(value))
+    }else{
+        textView.text = ""
+    }
+
 }
 
 //@BindingAdapter("orderListData")
@@ -94,4 +99,31 @@ fun getSalesTax(textView: TextView, total: Double){
 @BindingAdapter("orderTotal")
 fun getOrderTotal(textView: TextView, total: Double){
     textView.text = "Total: $%.${2}f".format(total)
+}
+
+@BindingAdapter("itemListData")
+fun bindRecyclerView(recyclerView: RecyclerView?, data: List<OrderItem>?) {
+    val adapter = recyclerView?.adapter as OrderItemAdapter
+    adapter.submitList(data)
+}
+
+@SuppressLint("SetTextI18n")
+@BindingAdapter("setFullOrderType")
+fun fullOrderType(textView: TextView, orderType: String?){
+    if (orderType != null){
+        textView.text = "$orderType Order"
+    }else{
+        textView.text = "Order"
+    }
+
+}
+
+@SuppressLint("SetTextI18n")
+@BindingAdapter("setGuestNumberTitle")
+fun setGuestNumberTitle(textView: TextView, guestNumber: Int?){
+    if (guestNumber != null){
+        textView.text = "Guest ${guestNumber.toString()}"
+    }else{
+        textView.text = "Guest"
+    }
 }

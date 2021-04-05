@@ -15,6 +15,7 @@
 
     <dimen name="default_padding">16dp</dimen>
     <dimen name="default_margin">40dp</dimen>
+    <dimen name="card_top_margin">20dp</dimen>
     <dimen name="first_textView_margin">8dp</dimen>
     <dimen name="textView_margin">4dp</dimen>
     <dimen name="grid_cell_padding">10dp</dimen>

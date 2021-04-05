@@ -1,6 +1,7 @@
 package com.fastertable.fastertable.data
 
 import android.os.Parcelable
+import com.fastertable.fastertable.utils.GlobalUtils
 import kotlinx.parcelize.Parcelize
 import com.squareup.moshi.JsonClass
 
@@ -50,8 +51,18 @@ data class Order(
     val _attachments: String?,
     val _ts: Long?
 ): Parcelable {
-    fun guestAdd(guest: Guest){
-        this.guests?.add(guest)
+    fun guestAdd(){
+        val count = this.guests?.size
+        val newGuest: Guest = Guest(
+            id = count!!.plus(1),
+            startTime = GlobalUtils().getNowEpoch(),
+            orderItems = null,
+            subTotal = null,
+            tax = null,
+            gratuity = 0.00,
+            total = null
+        )
+        this.guests?.add(newGuest)
     }
 
     fun guestRemove(guest: Guest){

@@ -51,7 +51,7 @@ class OrderRepository(private val app: Application) {
 
     fun createNewOrder(orderType: String, settings: Settings, user: OpsAuth, tableNumber: Int?): Order{
         val newGuest: Guest = Guest(
-            id = 0,
+            id = 1,
             startTime = GlobalUtils().getNowEpoch(),
             orderItems = null,
             subTotal = null,
@@ -60,7 +60,7 @@ class OrderRepository(private val app: Application) {
             total = null
         )
 
-        var guests = ArrayList<Guest>()
+        val guests = ArrayList<Guest>()
         guests.add(newGuest)
 
 

@@ -5,12 +5,13 @@ import com.fastertable.fastertable.data.Company
 import com.fastertable.fastertable.data.Location
 import com.fastertable.fastertable.data.Settings
 import com.fastertable.fastertable.data.repository.LoginRepository
+import com.fastertable.fastertable.data.repository.MenusRepository
 import com.fastertable.fastertable.utils.ApiStatus
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class RestaurantLoginViewModel(private val loginRepository: LoginRepository) : ViewModel() {
+class RestaurantLoginViewModel(private val loginRepository: LoginRepository, private val menusRepository: MenusRepository) : ViewModel() {
 
     private val _pin = MutableLiveData<String>()
     val pin: LiveData<String>
@@ -107,7 +108,7 @@ class RestaurantLoginViewModel(private val loginRepository: LoginRepository) : V
                 val settings: Settings = loginRepository.getRestaurantSettings(restaurant.value!!.id)
                 _settings.postValue(settings)
                 saveTaxRate(settings)
-                loginRepository.saveMenus(restaurant.value!!.id)
+                menusRepository.saveMenus(restaurant.value!!.id)
                 checkTerminal()
                 _showProgressBar.postValue(false)
             }

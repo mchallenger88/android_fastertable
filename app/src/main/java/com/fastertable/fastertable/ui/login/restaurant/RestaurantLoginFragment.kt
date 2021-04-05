@@ -10,6 +10,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.fastertable.fastertable.data.repository.LoginRepository
+import com.fastertable.fastertable.data.repository.MenusRepository
 import com.fastertable.fastertable.databinding.RestaurantLoginFragmentBinding
 
 
@@ -24,7 +25,8 @@ class RestaurantLoginFragment : Fragment() {
         val application = requireNotNull(activity).application
 //        val restaurant = RestaurantLoginFragmentArgs.fromBundle(requireArguments()).location
         val loginRepository = LoginRepository(application)
-        val viewModelFactory = RestaurantLoginViewModelFactory(loginRepository)
+        val menusRepository = MenusRepository(application)
+        val viewModelFactory = RestaurantLoginViewModelFactory(loginRepository, menusRepository)
         viewModel = ViewModelProvider(
                 this, viewModelFactory).get(RestaurantLoginViewModel::class.java)
 

@@ -55,26 +55,6 @@ class LoginRepository(private val app: Application) {
         return null
     }
 
-    @WorkerThread
-    suspend fun saveMenus(rid: String): List<Menu>{
-        val menus: List<Menu> = MenusHelper(MenuService.Companion.ApiService, rid).getMenus()
-        val gson = Gson()
-        val jsonString = gson.toJson(menus)
-        val file= File(app.filesDir, "menus.json")
-        file.writeText(jsonString)
-        return menus
-    }
-
-    @WorkerThread
-    fun getMenus(): Menu? {
-        var gson = Gson()
-        if (File(app.filesDir, "menus.json").exists()){
-            val bufferedReader: BufferedReader = File(app.filesDir, "menus.json").bufferedReader()
-            val inputString = bufferedReader.use { it.readText() }
-            return gson.fromJson(inputString, Menu::class.java)
-        }
-        return null
-    }
 
     @WorkerThread
     suspend fun loginUser(pin: String, cid: String, rid: String, now: Long, midnight: Long){

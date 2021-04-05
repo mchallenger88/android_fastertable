@@ -52,7 +52,11 @@ data class MenuCategory(
      val menuItems: ArrayList<MenuItem>,
      val kioskDisplay: Boolean?,
      val imageName: String,
-): Parcelable
+): Parcelable{
+     fun getItems(){
+          return menuItems.sortBy { it.itemName }
+     }
+}
 
 @Parcelize
 data class MenuItemSummary(

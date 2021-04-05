@@ -83,6 +83,7 @@
 
     //Order
     <string name="string_order_number">Order #</string>
+    <string name="string_guest">Guest</string>
     <string name="string_order_type">Order Type</string>
     <string name="string_table_number">Table</string>
     <string name="string_employee">Employee</string>
@@ -93,4 +94,8 @@
     <string name="reorder_drinks">Reorder Drinks</string>
     <string name="todo">TODO</string>
     <string name="guests">Guests</string>
+
+    //Menu
+    <string name="menu_categories">Categories</string>
+    <string name="menu_items">Menu Items</string>
 </resources>

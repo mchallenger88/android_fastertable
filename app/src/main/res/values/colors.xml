@@ -16,4 +16,6 @@
     <color name="primaryToolBar">#080b28</color>
     <color name="fasterToolBar">#00001B</color>
     <color name="semiTransparent">#9E9E9E66</color>
+    <color name="guest_toolbar">#757575</color>
+    <color name="side_window">#FAFAFA</color>
 </resources>
