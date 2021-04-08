@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.fastertable.fastertable.R
 
-class HeaderTestAdapter: RecyclerView.Adapter<HeaderTestAdapter.HeaderViewHolder>() {
+class OrderListHeaderAdapter: RecyclerView.Adapter<OrderListHeaderAdapter.HeaderViewHolder>() {
     private var orderCount: Int = 0
 
     /* ViewHolder for displaying header. */

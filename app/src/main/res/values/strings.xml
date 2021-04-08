@@ -98,4 +98,8 @@
     //Menu
     <string name="menu_categories">Categories</string>
     <string name="menu_items">Menu Items</string>
+    <string name="back">Back</string>
+    <string name="add">Add</string>
+    <string name="subtract">Subtract</string>
+    <string name="mod_required">Selection Required</string>
 </resources>

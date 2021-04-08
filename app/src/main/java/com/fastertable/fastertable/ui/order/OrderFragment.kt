@@ -2,6 +2,7 @@ package com.fastertable.fastertable.ui.order
 
 import android.R.attr.*
 import android.content.res.ColorStateList
+import android.opengl.Visibility
 import android.os.Bundle
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -17,11 +18,12 @@ import androidx.core.view.children
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.ConcatAdapter
 import com.fastertable.fastertable.R
 import com.fastertable.fastertable.data.Menu
 import com.fastertable.fastertable.data.MenuCategory
 import com.fastertable.fastertable.data.MenuItem
-import com.fastertable.fastertable.data.adapters.OrderItemAdapter
+import com.fastertable.fastertable.data.adapters.*
 import com.fastertable.fastertable.data.repository.LoginRepository
 import com.fastertable.fastertable.data.repository.MenusRepository
 import com.fastertable.fastertable.data.repository.OrderRepository
@@ -67,11 +69,6 @@ class OrderFragment : Fragment() {
             }
         })
 
-        viewModel.order.observe(viewLifecycleOwner, Observer { order ->
-            if (order != null) {
-
-            }
-        })
 
         viewModel.activeGuest.observe(viewLifecycleOwner, Observer { guestNumber ->
             binding.toolbarGuestSideBar.children.forEachIndexed { index, element ->
@@ -87,7 +84,25 @@ class OrderFragment : Fragment() {
             }
         })
 
+        val modAdapter = ModifierAdapter(ModifierAdapter.ModifierListener { item ->
+            viewModel.onModItemClicked(item)
+        })
+
+        val ingAdapter = IngredientsAdapter(IngredientsAdapter.IngredientListener { item ->
+            viewModel.onIngredientClicked(item)
+        })
+
+
+        menusViewModel.activeItem.observe(viewLifecycleOwner, Observer { item ->
+            modAdapter.submitList(item.modifiers)
+            ingAdapter.submitList(menusViewModel.createIngredientList(item))
+        })
+
+        val concatAdapter = ConcatAdapter(modAdapter, ingAdapter)
+
+
         binding.orderItems.adapter = OrderItemAdapter()
+        binding.modRecyclerView.adapter = concatAdapter
             return binding.root
     }
 
@@ -183,22 +198,31 @@ class OrderFragment : Fragment() {
             params.setMargins(5, 2, 5, 2)
             btnView.setPadding(25, 20, 25, 20)
             btnView.layoutParams = params
-            btnView.setOnClickListener { menuSelect(menu) }
+            btnView.setOnClickListener { menuSelect(menu, binding) }
 
-            if (int == 0){
-                btnView.backgroundTintList = ColorStateList.valueOf(accent)
-                createCategoryButtons(menu, binding)
-            }
+//            if (int == 0){
+//                btnView.backgroundTintList = ColorStateList.valueOf(accent)
+//                createCategoryButtons(menu, binding)
+//            }
 
             binding.menusToolbar.addView(btnView)
         }
     }
 
-    private fun menuSelect(menu: Menu){
+    private fun menuSelect(menu: Menu, binding: OrderFragmentBinding){
         menusViewModel.setActiveMenu(menu)
+        binding.layoutMenuCategories.visibility = View.VISIBLE
+        binding.layoutMenuItems.visibility = View.GONE
+        binding.btnMenuBack.visibility = View.VISIBLE
+        binding.layoutMenuItem.visibility = View.GONE
+        binding.btnMinusQuantity.visibility = View.GONE
+        binding.btnAddQuantity.visibility = View.GONE
+        binding.txtItemQuantity.visibility = View.GONE
     }
 
     private fun createCategoryButtons(menu: Menu, binding: OrderFragmentBinding){
+        binding.btnMenuBack.visibility = View.VISIBLE
+
         binding.layoutMenuCategories.removeAllViews()
         //Create the flow layout
         val flow = Flow(context)
@@ -249,6 +273,7 @@ class OrderFragment : Fragment() {
     }
 
     private fun setCategory(cat: MenuCategory, binding: OrderFragmentBinding){
+        binding.btnMenuBack.visibility = View.VISIBLE
         binding.layoutMenuCategories.visibility = View.GONE
         binding.layoutMenuItems.visibility = View.VISIBLE
         binding.layoutMenuItems.removeAllViews()
@@ -300,25 +325,32 @@ class OrderFragment : Fragment() {
     }
 
     private fun setMenuItem(item: MenuItem, binding: OrderFragmentBinding){
+        binding.btnMenuBack.visibility = View.GONE
+        binding.layoutMenuItems.visibility = View.GONE
+        binding.layoutMenuItem.visibility = View.VISIBLE
+        binding.btnMinusQuantity.visibility = View.VISIBLE
+        binding.btnAddQuantity.visibility = View.VISIBLE
+        binding.txtItemQuantity.visibility = View.VISIBLE
 
+        menusViewModel.setActiveItem(item)
     }
 
 
 
-    private fun chipMenus(menus: List<Menu>, binding: OrderFragmentBinding){
-        menus.forEachIndexed{ int, menu ->
-            val chipView = Chip(activity)
-            chipView.setChipBackgroundColorResource(R.color.primaryColor)
-            chipView.setTextAppearance(R.style.ChipTextAppearance)
-            chipView.text = menu.name
-
-            if (int == 0){
-                chipView.setChipBackgroundColorResource(R.color.secondaryColor)
-            }
-
+//    private fun chipMenus(menus: List<Menu>, binding: OrderFragmentBinding){
+//        menus.forEachIndexed{ int, menu ->
+//            val chipView = Chip(activity)
+//            chipView.setChipBackgroundColorResource(R.color.primaryColor)
+//            chipView.setTextAppearance(R.style.ChipTextAppearance)
+//            chipView.text = menu.name
+//
+//            if (int == 0){
+//                chipView.setChipBackgroundColorResource(R.color.secondaryColor)
+//            }
+//
 //            binding.menusChipGroup.addView(chipView)
-        }
-    }
+//        }
+//    }
 
 
 

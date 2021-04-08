@@ -74,12 +74,11 @@ data class MenuItemMenus
 
 @Parcelize
 data class IngredientList(
-     val id: String,
-     val locationId: String,
-     val ingredients: ArrayList<String>,
+        val id: String,
+        val locationId: String,
+        val ingredients: List<ItemIngredient>,
 
-): Parcelable
-
+        ): Parcelable
 
 @Parcelize
 data class Modifier(
@@ -95,7 +94,8 @@ data class Modifier(
      val _self: String?,
      val _etag: String?,
      val _attachments: String?,
-     val _ts: Long?
+     val _ts: Long?,
+     var arrayId: Double?
 ): Parcelable
 
 @Parcelize

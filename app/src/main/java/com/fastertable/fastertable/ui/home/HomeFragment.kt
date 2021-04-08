@@ -93,7 +93,7 @@ class HomeFragment : Fragment() {
             }
         })
 
-        val headerAdapter = HeaderTestAdapter()
+        val headerAdapter = OrderListHeaderAdapter()
         val concatAdapter = ConcatAdapter(headerAdapter, orderAdapter)
 
         binding.orderRecycler.adapter = concatAdapter
