@@ -1,4 +1,4 @@
-package com.fastertable.fastertable.data.adapters
+package com.fastertable.fastertable.adapters
 
 import android.view.LayoutInflater
 import android.view.View

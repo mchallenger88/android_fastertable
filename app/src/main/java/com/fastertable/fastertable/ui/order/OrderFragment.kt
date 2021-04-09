@@ -1,8 +1,6 @@
 package com.fastertable.fastertable.ui.order
 
-import android.R.attr.*
 import android.content.res.ColorStateList
-import android.opengl.Visibility
 import android.os.Bundle
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -20,17 +18,18 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ConcatAdapter
 import com.fastertable.fastertable.R
+import com.fastertable.fastertable.adapters.IngredientsAdapter
+import com.fastertable.fastertable.adapters.ModifierAdapter
+import com.fastertable.fastertable.adapters.OrderItemAdapter
 import com.fastertable.fastertable.data.Menu
 import com.fastertable.fastertable.data.MenuCategory
 import com.fastertable.fastertable.data.MenuItem
-import com.fastertable.fastertable.data.adapters.*
 import com.fastertable.fastertable.data.repository.LoginRepository
 import com.fastertable.fastertable.data.repository.MenusRepository
 import com.fastertable.fastertable.data.repository.OrderRepository
 import com.fastertable.fastertable.databinding.OrderFragmentBinding
 import com.fastertable.fastertable.ui.menus.MenusViewModel
 import com.fastertable.fastertable.ui.menus.MenusViewModelFactory
-import com.google.android.material.chip.Chip
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 
@@ -152,8 +151,12 @@ class OrderFragment : Fragment() {
 
         fab.setOnClickListener{ setActiveGuest(int) }
 
-        menusViewModel.menus.observe(viewLifecycleOwner, Observer { menus ->
-            createMenuButtons(menus, binding)
+        menusViewModel.pageLoaded.observe(viewLifecycleOwner, Observer { it ->
+            if (it){
+                createMenuButtons(menusViewModel.menus.value!!, binding)
+                menusViewModel.setPageLoaded(false)
+            }
+
 //            menus.forEach { menu ->
 //                createCategoryButtons(menu, binding)
 //            }

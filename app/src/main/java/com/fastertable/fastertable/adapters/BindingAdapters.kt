@@ -6,8 +6,6 @@ import android.widget.TextView
 import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.fastertable.fastertable.data.*
-import com.fastertable.fastertable.data.adapters.ModifierAdapter
-import com.fastertable.fastertable.data.adapters.OrderItemAdapter
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 

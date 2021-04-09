@@ -32,28 +32,28 @@ class MenusFragment : Fragment(){
         binding.lifecycleOwner = viewLifecycleOwner
         binding.viewModel = viewModel
 
-        viewModel.pageLoaded.observe(viewLifecycleOwner, Observer { it ->
-            if (it){
-                println("in the observer")
-                println(it)
-                createMenuButtons(viewModel.menus.value, binding)
-            }
-
-        })
+//        viewModel.pageLoaded.observe(viewLifecycleOwner, Observer { it ->
+//            if (it){
+//                println("in the observer")
+//                println(it)
+//                createMenuButtons(viewModel.menus.value, binding)
+//            }
+//
+//        })
 
 
 
             return binding.root
     }
 
-    private fun createMenuButtons(menus: List<Menu>?, binding: MenusFragmentBinding){
-        menus?.forEach{ menu ->
-            val btnView = Button(activity)
-            btnView.text = menu.name
-            btnView.textSize = 18F
-            btnView.setPadding(25, 20, 25, 20)
-            println("In the function")
-            binding.toolbarMenus.addView(btnView)
-        }
-    }
+//    private fun createMenuButtons(menus: List<Menu>?, binding: MenusFragmentBinding){
+//        menus?.forEach{ menu ->
+//            val btnView = Button(activity)
+//            btnView.text = menu.name
+//            btnView.textSize = 18F
+//            btnView.setPadding(25, 20, 25, 20)
+//            println("In the function")
+//            binding.toolbarMenus.addView(btnView)
+//        }
+//    }
 }

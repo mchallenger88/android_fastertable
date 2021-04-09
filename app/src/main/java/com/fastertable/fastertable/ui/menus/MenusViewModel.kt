@@ -53,7 +53,7 @@ class MenusViewModel(private val menusRepository: MenusRepository, private val o
 
 
     init{
-        _pageLoaded.value = false
+        setPageLoaded(false)
         viewModelScope.launch {
             getMenus()
             _itemQuantity.postValue(1)
@@ -66,6 +66,11 @@ class MenusViewModel(private val menusRepository: MenusRepository, private val o
             _pageLoaded.postValue(true)
         }
     }
+
+    fun setPageLoaded(b: Boolean){
+        _pageLoaded.value = b
+    }
+
 
     fun setActiveMenu(menu: Menu){
         _previousMenu.value = activeMenu.value

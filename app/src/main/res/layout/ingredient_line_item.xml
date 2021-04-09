@@ -9,7 +9,7 @@
 
         <variable
             name="clickListener"
-            type="com.fastertable.fastertable.data.adapters.IngredientsAdapter.IngredientListener" />
+            type="com.fastertable.fastertable.adapters.IngredientsAdapter.IngredientListener" />
     </data>
     <LinearLayout
         android:id="@+id/layout_ingredient_test"

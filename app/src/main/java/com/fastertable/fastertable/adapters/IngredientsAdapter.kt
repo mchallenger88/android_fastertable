@@ -1,4 +1,4 @@
-package com.fastertable.fastertable.data.adapters
+package com.fastertable.fastertable.adapters
 
 import android.content.res.ColorStateList
 import android.graphics.Typeface

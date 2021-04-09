@@ -1,4 +1,4 @@
-package com.fastertable.fastertable.data.adapters
+package com.fastertable.fastertable.adapters
 
 import android.annotation.SuppressLint
 import android.graphics.Typeface
@@ -12,13 +12,12 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.fastertable.fastertable.data.Modifier
-import com.fastertable.fastertable.data.ModifierItem
 import com.fastertable.fastertable.data.OrderMod
 import com.fastertable.fastertable.databinding.ModifierLineItemBinding
 
 class ModifierAdapter(private val clickListener: ModifierListener) : ListAdapter<Modifier, ModifierAdapter.ModifierViewHolder>(DiffCallback) {
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ModifierViewHolder{
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ModifierViewHolder {
         return ModifierViewHolder(ModifierLineItemBinding.inflate(LayoutInflater.from(parent.context)), parent)
     }
 

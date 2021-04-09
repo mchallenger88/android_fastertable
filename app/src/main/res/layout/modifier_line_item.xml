@@ -9,7 +9,7 @@
 
         <variable
             name="clickListener"
-            type="com.fastertable.fastertable.data.adapters.ModifierAdapter.ModifierListener" />
+            type="com.fastertable.fastertable.adapters.ModifierAdapter.ModifierListener" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
