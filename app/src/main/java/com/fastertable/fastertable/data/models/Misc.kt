@@ -1,4 +1,4 @@
-package com.fastertable.fastertable.data
+package com.fastertable.fastertable.data.models
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
@@ -23,8 +23,8 @@ data class HourMinute (
 
 @Parcelize
 data class DeletePrinterDialogData(
-        val deletedPrinter: Printer,
-        val printers: ArrayList<Printer>,
-        val continueX: Boolean,
-        val message: String,
+    val deletedPrinter: Printer,
+    val printers: ArrayList<Printer>,
+    val continueX: Boolean,
+    val message: String,
 ): Parcelable

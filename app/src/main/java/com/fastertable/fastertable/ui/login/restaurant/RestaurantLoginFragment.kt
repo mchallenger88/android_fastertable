@@ -9,12 +9,12 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
-import com.fastertable.fastertable.data.repository.LoginRepository
-import com.fastertable.fastertable.data.repository.MenusRepository
+import com.fastertable.fastertable.common.base.BaseFragment
 import com.fastertable.fastertable.databinding.RestaurantLoginFragmentBinding
+import dagger.hilt.android.AndroidEntryPoint
 
-
-class RestaurantLoginFragment : Fragment() {
+@AndroidEntryPoint
+class RestaurantLoginFragment : BaseFragment() {
     private lateinit var viewModel: RestaurantLoginViewModel
 
     override fun onCreateView(
@@ -22,13 +22,7 @@ class RestaurantLoginFragment : Fragment() {
             container: ViewGroup?,
             savedInstanceState: Bundle?): View {
         val binding = RestaurantLoginFragmentBinding.inflate(inflater)
-        val application = requireNotNull(activity).application
-//        val restaurant = RestaurantLoginFragmentArgs.fromBundle(requireArguments()).location
-        val loginRepository = LoginRepository(application)
-        val menusRepository = MenusRepository(application)
-        val viewModelFactory = RestaurantLoginViewModelFactory(loginRepository, menusRepository)
-        viewModel = ViewModelProvider(
-                this, viewModelFactory).get(RestaurantLoginViewModel::class.java)
+        viewModel = ViewModelProvider(this).get(RestaurantLoginViewModel::class.java)
 
         binding.lifecycleOwner = viewLifecycleOwner
         binding.viewModel = viewModel

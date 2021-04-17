@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.fastertable.fastertable.R
-import com.fastertable.fastertable.data.IngredientList
+import com.fastertable.fastertable.data.models.IngredientList
 import com.fastertable.fastertable.databinding.IngredientLineItemBinding
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 

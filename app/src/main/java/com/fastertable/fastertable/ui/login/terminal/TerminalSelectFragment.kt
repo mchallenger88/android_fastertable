@@ -11,12 +11,15 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.fastertable.fastertable.R
-import com.fastertable.fastertable.data.Terminal
+import com.fastertable.fastertable.common.base.BaseFragment
+import com.fastertable.fastertable.data.models.Terminal
 import com.fastertable.fastertable.data.repository.LoginRepository
 import com.fastertable.fastertable.databinding.TerminalSelectFragmentBinding
 import com.google.android.material.chip.Chip
+import dagger.hilt.android.AndroidEntryPoint
 
-class TerminalSelectFragment : Fragment()  {
+@AndroidEntryPoint
+class TerminalSelectFragment : BaseFragment()  {
     private lateinit var viewModel: TerminalSelectViewModel
 
     @SuppressLint("ResourceAsColor")
@@ -25,11 +28,8 @@ class TerminalSelectFragment : Fragment()  {
             container: ViewGroup?,
             savedInstanceState: Bundle?): View? {
         val binding = TerminalSelectFragmentBinding.inflate(inflater)
-        val application = requireNotNull(activity).application
-        val loginRepository = LoginRepository(application)
-        val viewModelFactory = TerminalSelectViewModelFactory(loginRepository)
-        viewModel = ViewModelProvider(
-                this, viewModelFactory).get(TerminalSelectViewModel::class.java)
+
+        viewModel = ViewModelProvider(this).get(TerminalSelectViewModel::class.java)
 
         binding.lifecycleOwner = viewLifecycleOwner
         binding.viewModel = viewModel

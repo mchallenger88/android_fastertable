@@ -1,32 +1,32 @@
-package com.fastertable.fastertable.data
+package com.fastertable.fastertable.data.models
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class MenuItem(
-     val id: String,
-     val itemName: String,
-     val itemDescription: String,
-     val prices: ArrayList<ItemPrice>,
-     val modifiers: ArrayList<Modifier>,
-     val ingredients: ArrayList<ItemIngredient>,
-     val active: Boolean,
-     val printer: Printer,
-     val prepStation: PrepStation,
-     val salesCategory: String,
-     val kiosk: Boolean,
-     val imageName: String,
-     val categories: ArrayList<String>,
-     val soldOut: Boolean,
-     val alias: String,
-     val avatar: String,
-     val type: String,
-     val _rid: String?,
-     val _self: String?,
-     val _etag: String?,
-     val _attachments: String?,
-     val _ts: Long?
+    val id: String,
+    val itemName: String,
+    val itemDescription: String,
+    val prices: ArrayList<ItemPrice>,
+    val modifiers: ArrayList<Modifier>,
+    val ingredients: ArrayList<ItemIngredient>,
+    val active: Boolean,
+    val printer: Printer,
+    val prepStation: PrepStation,
+    val salesCategory: String,
+    val kiosk: Boolean,
+    val imageName: String,
+    val categories: ArrayList<String>,
+    val soldOut: Boolean,
+    val alias: String,
+    val avatar: String,
+    val type: String,
+    val _rid: String?,
+    val _self: String?,
+    val _etag: String?,
+    val _attachments: String?,
+    val _ts: Long?
 ): Parcelable
 
 @Parcelize
@@ -46,12 +46,12 @@ data class ItemIngredient(
 
 @Parcelize
 data class MenuCategory(
-     val id: String,
-     val category: String,
-     val displayOrder: Int,
-     val menuItems: ArrayList<MenuItem>,
-     val kioskDisplay: Boolean?,
-     val imageName: String,
+    val id: String,
+    val category: String,
+    val displayOrder: Int,
+    val menuItems: ArrayList<MenuItem>,
+    val kioskDisplay: Boolean?,
+    val imageName: String,
 ): Parcelable{
      fun getItems(){
           return menuItems.sortBy { it.itemName }
@@ -74,28 +74,28 @@ data class MenuItemMenus
 
 @Parcelize
 data class IngredientList(
-        val id: String,
-        val locationId: String,
-        val ingredients: List<ItemIngredient>,
+    val id: String,
+    val locationId: String,
+    val ingredients: List<ItemIngredient>,
 
-        ): Parcelable
+    ): Parcelable
 
 @Parcelize
 data class Modifier(
-     val id: String,
-     val modifierName: String,
-     val purpose: String,
-     val modifierItems: ArrayList<ModifierItem>,
-     val selectionLimitMin: Int,
-     val selectionLimitMax: Int,
-     val active: Boolean,
-     val type: String,
-     val _rid: String?,
-     val _self: String?,
-     val _etag: String?,
-     val _attachments: String?,
-     val _ts: Long?,
-     var arrayId: Double?
+    val id: String,
+    val modifierName: String,
+    val purpose: String,
+    val modifierItems: ArrayList<ModifierItem>,
+    val selectionLimitMin: Int,
+    val selectionLimitMax: Int,
+    val active: Boolean,
+    val type: String,
+    val _rid: String?,
+    val _self: String?,
+    val _etag: String?,
+    val _attachments: String?,
+    val _ts: Long?,
+    var arrayId: Double?
 ): Parcelable
 
 @Parcelize
@@ -106,8 +106,8 @@ data class ModifierItem(
 
 @Parcelize
 data class SalesCategory(
-     val name: String,
-     val taxCategory: TaxCategory,
+    val name: String,
+    val taxCategory: TaxCategory,
 ): Parcelable
 
 @Parcelize
@@ -143,19 +143,19 @@ data class DeleteRequest(
 
 @Parcelize
 data class IngredientChange(
-     val item: ItemIngredient,
-     val value: Double,
+    val item: ItemIngredient,
+    val value: Double,
 ): Parcelable
 
 @Parcelize
 data class OrderOrderItem(
-     val order:Order,
-     val orderItem: OrderItem,
+    val order: Order,
+    val orderItem: OrderItem,
 ): Parcelable
 
 @Parcelize
 data class MenuLocation(
-     val menuName: String,
-     val categories: ArrayList<MenuCategory>,
-     val catNames: ArrayList<String>,
+    val menuName: String,
+    val categories: ArrayList<MenuCategory>,
+    val catNames: ArrayList<String>,
 ): Parcelable

@@ -1,4 +1,4 @@
-package com.fastertable.fastertable.data
+package com.fastertable.fastertable.data.models
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
@@ -399,7 +399,7 @@ data class DetailsTransportKeyResponse(
     val responseType: String,
     val paymentDetails: PaymentDetails,
 
-): Parcelable
+    ): Parcelable
 @Parcelize
 data class PaymentDetails(
     val paymentDetail: PaymentDetail,

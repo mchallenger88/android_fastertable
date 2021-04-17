@@ -1,4 +1,4 @@
-package com.fastertable.fastertable.data
+package com.fastertable.fastertable.data.models
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize

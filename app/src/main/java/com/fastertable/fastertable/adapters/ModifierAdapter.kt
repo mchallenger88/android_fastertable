@@ -11,8 +11,8 @@ import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.fastertable.fastertable.data.Modifier
-import com.fastertable.fastertable.data.OrderMod
+import com.fastertable.fastertable.data.models.Modifier
+import com.fastertable.fastertable.data.models.OrderMod
 import com.fastertable.fastertable.databinding.ModifierLineItemBinding
 
 class ModifierAdapter(private val clickListener: ModifierListener) : ListAdapter<Modifier, ModifierAdapter.ModifierViewHolder>(DiffCallback) {

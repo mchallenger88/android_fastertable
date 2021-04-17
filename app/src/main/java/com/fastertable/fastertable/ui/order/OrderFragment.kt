@@ -21,19 +21,16 @@ import com.fastertable.fastertable.R
 import com.fastertable.fastertable.adapters.IngredientsAdapter
 import com.fastertable.fastertable.adapters.ModifierAdapter
 import com.fastertable.fastertable.adapters.OrderItemAdapter
-import com.fastertable.fastertable.data.Menu
-import com.fastertable.fastertable.data.MenuCategory
-import com.fastertable.fastertable.data.MenuItem
-import com.fastertable.fastertable.data.repository.LoginRepository
-import com.fastertable.fastertable.data.repository.MenusRepository
-import com.fastertable.fastertable.data.repository.OrderRepository
+import com.fastertable.fastertable.common.base.BaseFragment
+import com.fastertable.fastertable.data.models.Menu
+import com.fastertable.fastertable.data.models.MenuCategory
+import com.fastertable.fastertable.data.models.MenuItem
 import com.fastertable.fastertable.databinding.OrderFragmentBinding
 import com.fastertable.fastertable.ui.menus.MenusViewModel
-import com.fastertable.fastertable.ui.menus.MenusViewModelFactory
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 
-class OrderFragment : Fragment() {
+class OrderFragment : BaseFragment() {
     private lateinit var viewModel: OrderViewModel
     private lateinit var menusViewModel: MenusViewModel
 
@@ -43,19 +40,12 @@ class OrderFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val binding = OrderFragmentBinding.inflate(inflater)
-        val application = requireNotNull(activity).application
-        val loginRepository = LoginRepository(application)
-        val orderRepository = OrderRepository(application)
-        val menusRepository = MenusRepository(application)
-        val viewModelFactory = OrderViewModelFactory(loginRepository, orderRepository)
-        viewModel = ViewModelProvider(
-            this, viewModelFactory
-        ).get(OrderViewModel::class.java)
 
-        val viewModelFactoryMenus = MenusViewModelFactory(menusRepository, orderRepository)
-        menusViewModel = ViewModelProvider(
-            this, viewModelFactoryMenus
+        menusViewModel = ViewModelProvider(this
         ).get(MenusViewModel::class.java)
+
+        viewModel = ViewModelProvider(this
+        ).get(OrderViewModel::class.java)
 
         binding.lifecycleOwner = viewLifecycleOwner
         binding.viewModel = viewModel

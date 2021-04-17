@@ -1,4 +1,4 @@
-package com.fastertable.fastertable.data
+package com.fastertable.fastertable.data.models
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
@@ -49,7 +49,7 @@ data class Ticket(
     val creditCardTransactions: ArrayList<CreditCardTransaction>,
     val partialPayment: Boolean,
 
-): Parcelable
+    ): Parcelable
 
 @Parcelize
 data class CreditCardTransaction(

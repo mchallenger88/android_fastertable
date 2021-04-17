@@ -1,17 +1,24 @@
 package com.fastertable.fastertable.ui.login.restaurant
 
 import androidx.lifecycle.*
-import com.fastertable.fastertable.data.Company
-import com.fastertable.fastertable.data.Location
-import com.fastertable.fastertable.data.Settings
+import com.fastertable.fastertable.api.GetMenusUseCase
+import com.fastertable.fastertable.api.GetSettingsUseCase
+import com.fastertable.fastertable.data.models.Company
+import com.fastertable.fastertable.data.models.Location
+import com.fastertable.fastertable.data.models.Settings
 import com.fastertable.fastertable.data.repository.LoginRepository
-import com.fastertable.fastertable.data.repository.MenusRepository
 import com.fastertable.fastertable.utils.ApiStatus
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
-class RestaurantLoginViewModel(private val loginRepository: LoginRepository, private val menusRepository: MenusRepository) : ViewModel() {
+@HiltViewModel
+class RestaurantLoginViewModel @Inject constructor(
+    private val getSettingsUseCase: GetSettingsUseCase,
+    private val getMenusUseCase: GetMenusUseCase,
+    private val loginRepository: LoginRepository) : ViewModel() {
 
     private val _pin = MutableLiveData<String>()
     val pin: LiveData<String>
@@ -105,10 +112,12 @@ class RestaurantLoginViewModel(private val loginRepository: LoginRepository, pri
             _showProgressBar.postValue(true)
             _status.postValue(ApiStatus.LOADING)
             try {
-                val settings: Settings = loginRepository.getRestaurantSettings(restaurant.value!!.id)
-                _settings.postValue(settings)
+                getSettingsUseCase.getSettings(restaurant.value!!.id)
+                val settings: Settings? = loginRepository.getSettings()
+                _settings.postValue(settings!!)
                 saveTaxRate(settings)
-                menusRepository.saveMenus(restaurant.value!!.id)
+
+                getMenusUseCase.getMenus(restaurant.value!!.id)
                 checkTerminal()
                 _showProgressBar.postValue(false)
             }

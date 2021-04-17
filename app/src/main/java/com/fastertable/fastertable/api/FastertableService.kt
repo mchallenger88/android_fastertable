@@ -1,35 +1,40 @@
 package com.fastertable.fastertable.api
 
-import com.squareup.moshi.Moshi
-import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
-import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
-import retrofit2.Retrofit
-import retrofit2.converter.moshi.MoshiConverterFactory
+import com.fastertable.fastertable.data.models.*
+import retrofit2.Response
+import retrofit2.http.GET
+import retrofit2.http.Path
+import retrofit2.http.Query
 
-interface FastertableService {
+interface FastertableApi {
 
-    companion object{
-        private const val BASE_URL = "https://datadev.fastertable.com/api"
+    //Company Login
+    @GET("companies/{loginCode}/{password}")
+    suspend fun getCompany(@Path("loginCode") loginCode: String?, @Path("password") password: String? ): Response<Company>
 
-        fun create(): FastertableService {
-            val logger = HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BASIC }
+    //Location Settings
+    @GET("settings/{lid}")
+    suspend fun getLocationSettings(@Path("lid") lid: String?): Response<Settings>
 
-            val moshi = Moshi.Builder()
-                .add(KotlinJsonAdapterFactory())
-                .build()
+    //Get Restaurant Menus
+    @GET("menus/{lid}")
+    suspend fun getMenus(@Path("lid") lid: String?): Response<List<Menu>>
 
-            val client = OkHttpClient.Builder()
-                .addInterceptor(logger)
-                .build()
+    //User Login
+    @GET("login/{pin}/{cid}/{lid}/{time}/{midnight}")
+    suspend fun loginUser(@Path("pin") pin: String,
+                          @Path("cid") cid: String,
+                          @Path("lid") lid: String,
+                          @Path("time") time: Long,
+                          @Path("midnight") midnight: Long): Response<OpsAuth>
 
-            return Retrofit.Builder()
-                .baseUrl(BASE_URL)
-                .client(client)
-                .addConverterFactory(MoshiConverterFactory.create(moshi))
-                .build()
-                .create(FastertableService::class.java)
-        }
-    }
+    //Order
+    @GET("orders/")
+    suspend fun getOrders(@Query("midnight") midnight: Long,
+                          @Query("locationId") locationId: String): Response<List<Order>>
+
+    @GET("orders/{id}/{lid}")
+    suspend fun getOrder(@Path("id") id: String?, @Path("lid") lid: String?): Response<Order>
 }
+
 

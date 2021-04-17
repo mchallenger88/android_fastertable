@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.fastertable.fastertable.data.OrderItem
+import com.fastertable.fastertable.data.models.OrderItem
 import com.fastertable.fastertable.databinding.OrderLineItemBinding
 
 class OrderItemAdapter : ListAdapter<OrderItem, OrderItemAdapter.MenuItemViewHolder>(DiffCallback) {

@@ -11,11 +11,16 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.fastertable.fastertable.R
+import com.fastertable.fastertable.api.CompanyLoginUseCase
+import com.fastertable.fastertable.common.base.BaseFragment
 import com.fastertable.fastertable.databinding.HomeFragmentBinding
 import com.fastertable.fastertable.data.repository.LoginRepository
 import com.fastertable.fastertable.data.repository.OrderRepository
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
-class HomeFragment : Fragment() {
+@AndroidEntryPoint
+class HomeFragment : BaseFragment() {
 
     private lateinit var viewModel: HomeViewModel
 
@@ -26,19 +31,16 @@ class HomeFragment : Fragment() {
     ): View? {
         val binding = HomeFragmentBinding.inflate(inflater)
         val application = requireNotNull(activity).application
-        val loginRepository = LoginRepository(application)
-        val orderRepository = OrderRepository(application)
+
         val navController = findNavController()
-        val viewModelFactory = HomeViewModelFactory(loginRepository, orderRepository)
-        viewModel = ViewModelProvider(
-            this, viewModelFactory).get(HomeViewModel::class.java)
+
+        viewModel = ViewModelProvider(this).get(HomeViewModel::class.java)
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
 
         setChipDefaults(binding)
 
-        viewModel = ViewModelProvider(
-            this, viewModelFactory).get(HomeViewModel::class.java)
+        viewModel = ViewModelProvider(this).get(HomeViewModel::class.java)
 
 
         viewModel.showProgressBar.observe(viewLifecycleOwner, Observer { it ->

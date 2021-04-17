@@ -4,16 +4,16 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import com.fastertable.fastertable.data.Menu
+import com.fastertable.fastertable.common.base.BaseFragment
 import com.fastertable.fastertable.data.repository.MenusRepository
 import com.fastertable.fastertable.data.repository.OrderRepository
 import com.fastertable.fastertable.databinding.MenusFragmentBinding
+import dagger.hilt.android.AndroidEntryPoint
 
-class MenusFragment : Fragment(){
+@AndroidEntryPoint
+class MenusFragment : BaseFragment(){
     private lateinit var viewModel: MenusViewModel
 
     override fun onCreateView(
@@ -22,24 +22,12 @@ class MenusFragment : Fragment(){
         savedInstanceState: Bundle?
     ): View? {
         val binding = MenusFragmentBinding.inflate(inflater)
-        val application = requireNotNull(activity).application
-        val menusRepository = MenusRepository(application)
-        val orderRepository = OrderRepository(application)
-        val viewModelFactory = MenusViewModelFactory(menusRepository, orderRepository)
-        viewModel = ViewModelProvider(
-            this, viewModelFactory).get(MenusViewModel::class.java)
+
+        viewModel = ViewModelProvider(this).get(MenusViewModel::class.java)
 
         binding.lifecycleOwner = viewLifecycleOwner
         binding.viewModel = viewModel
 
-//        viewModel.pageLoaded.observe(viewLifecycleOwner, Observer { it ->
-//            if (it){
-//                println("in the observer")
-//                println(it)
-//                createMenuButtons(viewModel.menus.value, binding)
-//            }
-//
-//        })
 
 
 

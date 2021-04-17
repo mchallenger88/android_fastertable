@@ -5,7 +5,7 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.fastertable.fastertable.data.*
+import com.fastertable.fastertable.data.models.*
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 

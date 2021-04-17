@@ -1,15 +1,16 @@
 package com.fastertable.fastertable.ui.home
 
 import androidx.lifecycle.*
-import com.fastertable.fastertable.data.*
+import com.fastertable.fastertable.data.models.*
 import com.fastertable.fastertable.data.repository.LoginRepository
 import com.fastertable.fastertable.data.repository.OrderRepository
-import kotlinx.coroutines.Dispatchers.IO
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
-class HomeViewModel(private val loginRepository: LoginRepository,
-                    private val orderRepository: OrderRepository) : ViewModel() {
+@HiltViewModel
+class HomeViewModel @Inject constructor (private val loginRepository: LoginRepository,
+                                         private val orderRepository: OrderRepository) : ViewModel() {
 
     private val _showProgressBar = MutableLiveData<Boolean>()
     val showProgressBar: LiveData<Boolean>
@@ -63,7 +64,7 @@ class HomeViewModel(private val loginRepository: LoginRepository,
 
     }
 
-    private suspend fun getOrders(){
+    private fun getOrders(){
         viewModelScope.launch {
             _orders.postValue(orderRepository.getOrdersFromFile())
             _viewLoaded.postValue(true)
@@ -71,26 +72,26 @@ class HomeViewModel(private val loginRepository: LoginRepository,
 
     }
 
-    private suspend fun getCompany(){
-        withContext(IO){
+    fun getCompany(){
+        viewModelScope.launch{
             _company.postValue(loginRepository.getCompany())
         }
     }
 
-    private suspend fun getSettings(){
-        withContext(IO){
+    private fun getSettings(){
+        viewModelScope.launch{
             _settings.postValue(loginRepository.getSettings())
         }
     }
 
-    private suspend fun getUser(){
-        withContext(IO){
+    private fun getUser(){
+        viewModelScope.launch{
             _user.postValue(loginRepository.getOpsUser())
         }
     }
 
-    private suspend fun getTerminal(){
-        withContext(IO){
+    private fun getTerminal(){
+        viewModelScope.launch{
             _terminal.postValue(loginRepository.getTerminal())
         }
     }

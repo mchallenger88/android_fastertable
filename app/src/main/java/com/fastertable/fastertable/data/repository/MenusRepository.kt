@@ -1,20 +1,32 @@
 package com.fastertable.fastertable.data.repository
 
-import android.R
 import android.app.Application
-import androidx.annotation.WorkerThread
-import com.fastertable.fastertable.api.MenuService
-import com.fastertable.fastertable.api.MenusHelper
-import com.fastertable.fastertable.data.Menu
+import com.fastertable.fastertable.api.GetMenusUseCase
+import com.fastertable.fastertable.data.models.Menu
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.io.BufferedReader
 import java.io.File
+import java.lang.RuntimeException
+import javax.inject.Inject
 
-class MenusRepository(private val app: Application) {
-    @WorkerThread
-    suspend fun saveMenus(rid: String): List<Menu>{
-        val menus: List<Menu> = MenusHelper(MenuService.Companion.ApiService, rid).getMenus()
+class GetMenus @Inject constructor(private val getMenusUseCase: GetMenusUseCase,
+                                   private val menusRepository: MenusRepository){
+    suspend fun getAllMenus(lid: String){
+        val menus: List<Menu>
+        val result = getMenusUseCase.getMenus(lid)
+        if (result is GetMenusUseCase.Result.Success){
+            menus = result.menus
+            menusRepository.saveMenus(menus)
+        }else{
+            throw RuntimeException("fetch failed")
+        }
+    }
+}
+
+class MenusRepository @Inject constructor(private val app: Application) {
+
+    fun saveMenus(menus: List<Menu>): List<Menu>{
         val gson = Gson()
         val jsonString = gson.toJson(menus)
         val file= File(app.filesDir, "menus.json")
@@ -22,7 +34,7 @@ class MenusRepository(private val app: Application) {
         return menus
     }
 
-    @WorkerThread
+
     fun getMenus(): List<Menu>? {
         var gson = Gson()
         if (File(app.filesDir, "menus.json").exists()){

@@ -4,14 +4,18 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.fastertable.fastertable.data.*
+import com.fastertable.fastertable.data.models.*
 import com.fastertable.fastertable.data.repository.LoginRepository
 import com.fastertable.fastertable.data.repository.OrderRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
-class OrderViewModel(private val loginRepository: LoginRepository, private val orderRepository: OrderRepository) : ViewModel() {
+@HiltViewModel
+class OrderViewModel @Inject constructor (private val loginRepository: LoginRepository,
+                     private val orderRepository: OrderRepository) : ViewModel() {
 
     private val _order = MutableLiveData<Order>()
     val order: LiveData<Order>
@@ -72,9 +76,14 @@ class OrderViewModel(private val loginRepository: LoginRepository, private val o
         println(orderItemMods.size)
     }
 
-    fun onIngredientClicked(item:IngredientList){
+    fun onIngredientClicked(item: IngredientList){
 
     }
+
+    fun addItemToOrder(item: MenuItem){
+
+    }
+
 
 
 }

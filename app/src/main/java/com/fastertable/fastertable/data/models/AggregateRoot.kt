@@ -1,4 +1,4 @@
-package com.fastertable.fastertable.data
+package com.fastertable.fastertable.data.models
 
 class AggregateRoot (
     val id: String,

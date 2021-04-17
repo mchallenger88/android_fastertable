@@ -3,10 +3,7 @@ package com.fastertable.fastertable
 import android.os.Build
 import android.os.Bundle
 import android.view.*
-import androidx.annotation.RequiresApi
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import androidx.core.view.WindowCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
@@ -15,11 +12,14 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
-import com.fastertable.fastertable.data.Modifier
-import com.fastertable.fastertable.data.ModifierItem
+import com.fastertable.fastertable.common.base.BaseActivity
+import com.fastertable.fastertable.data.models.Modifier
+import com.fastertable.fastertable.data.models.ModifierItem
 import com.google.android.material.navigation.NavigationView
+import dagger.hilt.android.AndroidEntryPoint
 
-class MainActivity : AppCompatActivity() {
+@AndroidEntryPoint
+class MainActivity : BaseActivity() {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
 
@@ -76,7 +76,5 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun modAdapterOnClick(mod: Modifier, item: ModifierItem) {
 
-    }
 }

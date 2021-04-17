@@ -10,11 +10,14 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.fastertable.fastertable.MainActivity
+import com.fastertable.fastertable.common.base.BaseFragment
 import com.fastertable.fastertable.data.repository.LoginRepository
 import com.fastertable.fastertable.data.repository.OrderRepository
 import com.fastertable.fastertable.databinding.UserLoginFragmentBinding
+import dagger.hilt.android.AndroidEntryPoint
 
-class UserLoginFragment: Fragment() {
+@AndroidEntryPoint
+class UserLoginFragment: BaseFragment() {
     private lateinit var viewModel: UserLoginViewModel
 
     override fun onCreateView(
@@ -23,12 +26,8 @@ class UserLoginFragment: Fragment() {
             savedInstanceState: Bundle?): View {
 
         val binding = UserLoginFragmentBinding.inflate(inflater)
-        val application = requireNotNull(activity).application
-        val loginRepository = LoginRepository(application)
-        val orderRepository = OrderRepository(application)
-        val viewModelFactory = UserLoginViewModelFactory(loginRepository, orderRepository)
-        viewModel = ViewModelProvider(
-                this, viewModelFactory).get(UserLoginViewModel::class.java)
+
+        viewModel = ViewModelProvider(this).get(UserLoginViewModel::class.java)
         binding.lifecycleOwner = viewLifecycleOwner
         binding.viewModel = viewModel
 

@@ -4,16 +4,23 @@ import android.os.Handler
 import android.os.Looper
 import androidx.lifecycle.*
 import com.fastertable.fastertable.LoginActivity
-import com.fastertable.fastertable.data.Terminal
+import com.fastertable.fastertable.api.GetOrdersUseCase
+import com.fastertable.fastertable.api.LoginUserUseCase
+import com.fastertable.fastertable.data.models.Terminal
 import com.fastertable.fastertable.data.repository.LoginRepository
 import com.fastertable.fastertable.data.repository.OrderRepository
 import com.fastertable.fastertable.utils.GlobalUtils
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
+@HiltViewModel
+class UserLoginViewModel @Inject constructor(private val loginRepository: LoginRepository,
+                                             private val loginUserUseCase: LoginUserUseCase,
+                                             private val getOrdersUseCase: GetOrdersUseCase) : ViewModel() {
 
-class UserLoginViewModel(private val loginRepository: LoginRepository, private val orderRepository: OrderRepository) : ViewModel() {
     private var cid: String = ""
     private var lid: String = ""
     private val _pin = MutableLiveData<String>()
@@ -74,8 +81,8 @@ class UserLoginViewModel(private val loginRepository: LoginRepository, private v
     }
 
     private suspend fun getUserLogin(pin: String, cid: String, lid: String, now: Long, midnight: Long){
-        withContext(IO){
-            loginRepository.loginUser(pin, cid, lid, now, midnight)
+        viewModelScope.launch {
+            loginUserUseCase.userLogin(pin, cid, lid, now, midnight)
         }
     }
 
@@ -84,7 +91,7 @@ class UserLoginViewModel(private val loginRepository: LoginRepository, private v
             val midnight = GlobalUtils().getMidnight()
             //    - 86400
             val rid = loginRepository.getStringSharedPreferences("rid")
-            orderRepository.getOrders(midnight, rid!!)
+            getOrdersUseCase.getOrders(midnight, rid!!)
         }
     }
 

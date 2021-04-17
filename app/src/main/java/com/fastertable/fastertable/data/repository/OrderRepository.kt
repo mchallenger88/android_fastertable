@@ -1,42 +1,71 @@
 package com.fastertable.fastertable.data.repository
 
 import android.app.Application
-import androidx.annotation.WorkerThread
-import com.fastertable.fastertable.api.OrderService
-import com.fastertable.fastertable.data.*
+import com.fastertable.fastertable.api.GetOrderUseCase
+import com.fastertable.fastertable.api.GetOrdersUseCase
+import com.fastertable.fastertable.data.models.Guest
+import com.fastertable.fastertable.data.models.OpsAuth
+import com.fastertable.fastertable.data.models.Order
+import com.fastertable.fastertable.data.models.Settings
 import com.fastertable.fastertable.utils.GlobalUtils
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.io.BufferedReader
 import java.io.File
+import java.lang.RuntimeException
 import java.util.*
+import javax.inject.Inject
 import kotlin.collections.ArrayList
 
+class GetOrder @Inject constructor(private val getOrderUseCase: GetOrderUseCase,
+                                   private val orderRepository: OrderRepository){
 
-class OrderRepository(private val app: Application) {
-    @WorkerThread
-    suspend fun getOrder(orderId: String, lid: String): Order {
-        val order = OrderService.Companion.ApiService.retrofitService.getOrder(orderId, lid)
+    suspend fun getOrder(id: String, lid: String){
+        val order: Order
+        val result = getOrderUseCase.getOrder(id, lid)
+        if (result is GetOrderUseCase.Result.Success){
+            order = result.order
+            orderRepository.saveOrder(order)
+        }else{
+            throw RuntimeException("fetch failed")
+        }
+    }
+}
+
+class GetOrders @Inject constructor(private val getOrdersUseCase: GetOrdersUseCase,
+                                    private val orderRepository: OrderRepository){
+
+    suspend fun getOrders(midnight: Long, rid: String){
+        val orders: List<Order>
+        val result = getOrdersUseCase.getOrders(midnight, rid)
+        if (result is GetOrdersUseCase.Result.Success){
+            orders = result.orders
+            orderRepository.saveOrders(orders)
+        }else{
+            throw RuntimeException("fetch failed")
+        }
+    }
+}
+
+class OrderRepository @Inject constructor(private val app: Application) {
+
+    suspend fun saveOrder(order: Order) {
         //Save order json to file
         val gson = Gson()
         val jsonString = gson.toJson(order)
         val file= File(app.filesDir, "order.json")
         file.writeText(jsonString)
-        return order
+
     }
 
-    @WorkerThread
-    suspend fun getOrders(midnight: Long, rid: String): List<Order>{
-        val orders = OrderService.Companion.ApiService.retrofitService.getOrders(midnight, rid)
+    suspend fun saveOrders(orders: List<Order>){
         //Save order json to file
         val gson = Gson()
         val jsonString = gson.toJson(orders)
         val file= File(app.filesDir, "orders.json")
         file.writeText(jsonString)
-        return orders
     }
 
-    @WorkerThread
     fun getOrdersFromFile(): List<Order>?{
         var gson = Gson()
         if (File(app.filesDir, "orders.json").exists()){
@@ -49,7 +78,7 @@ class OrderRepository(private val app: Application) {
         return null
     }
 
-    fun createNewOrder(orderType: String, settings: Settings, user: OpsAuth, tableNumber: Int?): Order{
+    fun createNewOrder(orderType: String, settings: Settings, user: OpsAuth, tableNumber: Int?): Order {
         val newGuest: Guest = Guest(
             id = 1,
             startTime = GlobalUtils().getNowEpoch(),

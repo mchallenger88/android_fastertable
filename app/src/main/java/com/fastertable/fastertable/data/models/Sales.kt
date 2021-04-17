@@ -1,4 +1,4 @@
-package com.fastertable.fastertable.data
+package com.fastertable.fastertable.data.models
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
@@ -11,6 +11,6 @@ data class PaymentSelected (
 
 @Parcelize
 data class Refund (
-        val t: PayTicket,
-        val amount: Double
+    val t: PayTicket,
+    val amount: Double
 ): Parcelable

@@ -5,7 +5,7 @@
     <data>
         <variable
             name="ingredients"
-            type="com.fastertable.fastertable.data.IngredientList" />
+            type="com.fastertable.fastertable.data.models.IngredientList" />
 
         <variable
             name="clickListener"

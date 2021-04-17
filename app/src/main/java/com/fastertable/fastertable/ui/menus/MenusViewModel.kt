@@ -4,14 +4,18 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.fastertable.fastertable.data.*
+import com.fastertable.fastertable.data.models.*
 import com.fastertable.fastertable.data.repository.MenusRepository
 import com.fastertable.fastertable.data.repository.OrderRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
-class MenusViewModel(private val menusRepository: MenusRepository, private val orderRepository: OrderRepository): ViewModel() {
+@HiltViewModel
+class MenusViewModel @Inject constructor(private val menusRepository: MenusRepository,
+                                         private val orderRepository: OrderRepository): ViewModel() {
 
     private val _menus = MutableLiveData<List<Menu>>()
     val menus: LiveData<List<Menu>>

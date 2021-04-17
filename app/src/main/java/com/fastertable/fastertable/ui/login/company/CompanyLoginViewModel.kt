@@ -3,16 +3,20 @@ package com.fastertable.fastertable.ui.login.company
 import android.annotation.SuppressLint
 import androidx.databinding.ObservableField
 import androidx.lifecycle.*
-import com.fastertable.fastertable.data.Company
-import com.fastertable.fastertable.data.Location
+import com.fastertable.fastertable.data.models.Company
+import com.fastertable.fastertable.data.models.Location
+import com.fastertable.fastertable.data.repository.LoginCompany
 import com.fastertable.fastertable.data.repository.LoginRepository
 import com.fastertable.fastertable.utils.ApiStatus
-import kotlinx.coroutines.Dispatchers.IO
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
+@HiltViewModel
+class CompanyLoginViewModel @Inject constructor(
+    private val loginCompany: LoginCompany,
+    private val loginRepository: LoginRepository) : ViewModel() {
 
-class CompanyLoginViewModel(private val loginRepository: LoginRepository) : ViewModel() {
     private val _company = MutableLiveData<Company>()
     val company: LiveData<Company>
         get() = _company
@@ -47,11 +51,12 @@ class CompanyLoginViewModel(private val loginRepository: LoginRepository) : View
     }
 
     private suspend fun loginCompany(loginName: String, password: String){
-        withContext(IO){
+        viewModelScope.launch {
             _status.postValue(ApiStatus.LOADING)
             try {
-                val comp = loginRepository.loginCompany(loginName, password)
-                _company.postValue(comp)
+                loginCompany.loginCompany(loginName, password)
+                val comp = loginRepository.getCompany()
+                _company.postValue(comp!!)
                 _locations.postValue(comp.locations)
                 _status.postValue(ApiStatus.SUCCESS)
                 _error.postValue(false)
