@@ -1,9 +1,12 @@
 package com.fastertable.fastertable.adapters
 
+import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.Typeface
+import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -37,30 +40,32 @@ class IngredientsAdapter(private val clickListener: IngredientListener) : ListAd
             binding.executePendingBindings()
 
             list.ingredients.forEach { it ->
-                val btnAdd = FloatingActionButton(parent.context)
-                btnAdd.id = ViewCompat.generateViewId()
-                val params = ViewGroup.LayoutParams(
-                        ViewGroup.LayoutParams.WRAP_CONTENT,
-                        ViewGroup.LayoutParams.WRAP_CONTENT
-                )
-                btnAdd.layoutParams = params
-                btnAdd.contentDescription = "add"
-                btnAdd.elevation = 2f
-                val color = ContextCompat.getColor(parent.context, R.color.guest_toolbar)
-                btnAdd.backgroundTintList = ColorStateList.valueOf(color)
-                btnAdd.customSize = 50
-                btnAdd.scaleType = ImageView.ScaleType.CENTER
-                btnAdd.setImageResource(R.drawable.ic_baseline_add_24)
-
-                val btnMinus = FloatingActionButton(parent.context)
-                btnMinus.id = ViewCompat.generateViewId()
-                btnMinus.layoutParams = params
-                btnMinus.contentDescription = "add"
-                btnMinus.elevation = 2f
-                btnMinus.backgroundTintList = ColorStateList.valueOf(color)
-                btnMinus.customSize = 50
-                btnMinus.scaleType = ImageView.ScaleType.CENTER
-                btnMinus.setImageResource(R.drawable.ic_baseline_horizontal_rule_24)
+                val btnAdd = createAddButton()
+                val btnMinus = createMinusButton()
+//                val btnAdd = FloatingActionButton(parent.context)
+//                btnAdd.id = ViewCompat.generateViewId()
+//                val params = ViewGroup.LayoutParams(
+//                        ViewGroup.LayoutParams.WRAP_CONTENT,
+//                        ViewGroup.LayoutParams.WRAP_CONTENT
+//                )
+//                btnAdd.layoutParams = params
+//                btnAdd.contentDescription = "add"
+//                btnAdd.elevation = 2f
+//                val color = ContextCompat.getColor(parent.context, R.color.guest_toolbar)
+//                btnAdd.backgroundTintList = ColorStateList.valueOf(color)
+//                btnAdd.customSize = 50
+//                btnAdd.scaleType = ImageView.ScaleType.CENTER
+//                btnAdd.setImageResource(R.drawable.ic_baseline_add_24)
+//
+//                val btnMinus = FloatingActionButton(parent.context)
+//                btnMinus.id = ViewCompat.generateViewId()
+//                btnMinus.layoutParams = params
+//                btnMinus.contentDescription = "add"
+//                btnMinus.elevation = 2f
+//                btnMinus.backgroundTintList = ColorStateList.valueOf(color)
+//                btnMinus.customSize = 50
+//                btnMinus.scaleType = ImageView.ScaleType.CENTER
+//                btnMinus.setImageResource(R.drawable.ic_baseline_horizontal_rule_24)
 
                 val textView = TextView(parent.context)
                 textView.id = ViewCompat.generateViewId()
@@ -68,8 +73,11 @@ class IngredientsAdapter(private val clickListener: IngredientListener) : ListAd
                 textView.textSize = 24f
                 val textColor = ContextCompat.getColor(parent.context, R.color.default_text_color)
                 textView.setTextColor(textColor)
-                textView.typeface = Typeface.defaultFromStyle(Typeface.BOLD)
-                val tvLayoutParams: LinearLayout.LayoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT)
+//                textView.typeface = Typeface.defaultFromStyle(Typeface.BOLD)
+                val tvLayoutParams: LinearLayout.LayoutParams = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                )
 //                val tvLayoutParams = textView.layoutParams as RelativeLayout.LayoutParams
                 tvLayoutParams.setMargins(18, 18, 0, 0)
                 textView.layoutParams = tvLayoutParams
@@ -77,8 +85,8 @@ class IngredientsAdapter(private val clickListener: IngredientListener) : ListAd
                 val layout = LinearLayout(parent.context)
                 layout.id = ViewCompat.generateViewId()
                 val layoutPars = LinearLayout.LayoutParams(
-                        LinearLayout.LayoutParams.WRAP_CONTENT,
-                        LinearLayout.LayoutParams.WRAP_CONTENT
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
                 )
                 layout.layoutParams = layoutPars
                 layout.orientation = LinearLayout.HORIZONTAL
@@ -92,6 +100,43 @@ class IngredientsAdapter(private val clickListener: IngredientListener) : ListAd
 
 
             }
+        }
+
+        private fun createAddButton(): ImageButton {
+            val btnAdd = ImageButton(parent.context)
+            btnAdd.id = ViewCompat.generateViewId()
+            val params = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            )
+            params.width = 50
+            params.height = 50
+            params.topMargin = 18
+            params.leftMargin = 25
+            btnAdd.layoutParams = params
+            btnAdd.contentDescription = "add"
+            btnAdd.background = ContextCompat.getDrawable(parent.context, R.drawable.customborder)
+            btnAdd.scaleType = ImageView.ScaleType.CENTER
+            btnAdd.setImageResource(R.drawable.ic_baseline_add_24)
+            return btnAdd
+        }
+
+        private fun createMinusButton(): ImageButton {
+            val btnAdd = ImageButton(parent.context)
+            btnAdd.id = ViewCompat.generateViewId()
+            val params = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            )
+            params.width = 50
+            params.height = 50
+            params.topMargin = 18
+            btnAdd.layoutParams = params
+            btnAdd.contentDescription = "add"
+            btnAdd.background = ContextCompat.getDrawable(parent.context, R.drawable.customborder)
+            btnAdd.scaleType = ImageView.ScaleType.CENTER
+            btnAdd.setImageResource(R.drawable.ic_baseline_horizontal_rule_24)
+            return btnAdd
         }
     }
 

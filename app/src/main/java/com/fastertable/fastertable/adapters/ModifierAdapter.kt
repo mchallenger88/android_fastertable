@@ -45,11 +45,11 @@ class ModifierAdapter(private val clickListener: ModifierListener) : ListAdapter
                     val cb = CheckBox(parent.context)
                     cb.id = ViewCompat.generateViewId()
                     cb.textSize = 24f
-                    cb.typeface = Typeface.defaultFromStyle(Typeface.BOLD)
+//                    cb.typeface = Typeface.defaultFromStyle(Typeface.BOLD)
                     if (item.surcharge == 0.0){
                         cb.text = item.itemName
                     }else{
-                        cb.text = item.itemName + ": +" + "$%.${2}f".format(item.surcharge)
+                        cb.text = item.itemName + ": (+" + "$%.${2}f".format(item.surcharge) + ")"
                     }
                     val ordMod = OrderMod(item = item, mod = modifier)
                     cb.setOnClickListener { clickListener.onClick(ordMod) }
@@ -64,11 +64,11 @@ class ModifierAdapter(private val clickListener: ModifierListener) : ListAdapter
                     val rb = RadioButton(parent.context)
                     rb.id = ViewCompat.generateViewId()
                     rb.textSize = 24f
-                    rb.typeface = Typeface.defaultFromStyle(Typeface.BOLD)
+//                    rb.typeface = Typeface.defaultFromStyle(Typeface.BOLD)
                     if (item.surcharge == 0.0){
                         rb.text = item.itemName
                     }else{
-                        rb.text = item.itemName + ": +" + "$%.${2}f".format(item.surcharge)
+                        rb.text = item.itemName + ": (+" + "$%.${2}f".format(item.surcharge) + ")"
                     }
                     val ordMod = OrderMod(item = item, mod = modifier)
                     rb.setOnClickListener { clickListener.onClick(ordMod) }

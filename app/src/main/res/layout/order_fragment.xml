@@ -7,47 +7,35 @@
             name="viewModel"
             type="com.fastertable.fastertable.ui.order.OrderViewModel" />
 
-        <variable
-            name="menusViewModel"
-            type="com.fastertable.fastertable.ui.menus.MenusViewModel" />
     </data>
 
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="#E8EAF6">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/order_fastertoolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="@color/fasterToolBar"
+            android:paddingLeft="80dp"
+            android:paddingRight="80dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:popupTheme="@style/Theme.Fastertable.PopupOverlay">
 
-
-            <Button
-                android:id="@+id/btn_add_guest"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:backgroundTint="@color/fasterToolBar"
-                android:onClick="@{() -> viewModel.addGuest()}"
-                android:text="@string/add_guest"
-                android:textColor="@color/white"
-                android:textSize="@dimen/toolbar_button"
-                tools:layout_editor_absoluteX="104dp"
-                tools:layout_editor_absoluteY="8dp" />
-
             <Button
                 android:id="@+id/btn_reorder_drinks"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:backgroundTint="@color/fasterToolBar"
                 android:text="@string/reorder_drinks"
                 android:textColor="@color/white"
                 android:textSize="@dimen/toolbar_button"
+                app:strokeColor="@color/white"
                 tools:layout_editor_absoluteX="246dp"
                 tools:layout_editor_absoluteY="8dp" />
 
@@ -56,10 +44,11 @@
 
         <ScrollView
             android:id="@+id/toolbar_scrollView"
-            android:layout_width="60dp"
+            android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:background="@color/guest_toolbar"
             android:elevation="10dp"
+            android:padding="10dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/order_fastertoolbar">
@@ -76,17 +65,15 @@
                 app:layout_constraintTop_toBottomOf="@+id/order_fastertoolbar"
                 app:layout_constraintVertical_bias="0.5">
 
-                <TextView
-                    android:id="@+id/guests_title_sidebar"
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/btn_floating_add_guest"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginBottom="10dp"
-                    android:text="@string/guests"
-                    android:textAlignment="center"
-                    android:textColor="@color/white"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
+                    android:clickable="true"
+                    android:contentDescription="@string/string_add_guest"
+                    android:focusable="true"
+                    android:onClick="@{() -> viewModel.addGuest()}"
+                    app:srcCompat="@drawable/ic_baseline_add_24" />
 
 
             </LinearLayout>
@@ -97,31 +84,32 @@
             android:id="@+id/order_card_view"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
-            android:layout_marginStart="60dp"
             android:fitsSystemWindows="true"
+            android:paddingBottom="10dp"
+            app:cardBackgroundColor="#E8EAF6"
+            app:cardElevation="0dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/toolbar_scrollView"
             app:layout_constraintTop_toBottomOf="@+id/order_fastertoolbar"
             app:layout_constraintVertical_bias="0.0">
 
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/layout_order"
-                android:layout_width="360dp"
+                android:layout_width="450dp"
                 android:layout_height="match_parent"
                 android:layout_marginStart="@dimen/default_margin"
-                android:layout_marginTop="@dimen/card_top_margin"
                 android:layout_marginEnd="@dimen/default_margin"
-                android:layout_marginBottom="@dimen/default_margin"
-                android:background="@drawable/customborder">
+                android:background="#ffffff"
+                android:elevation="4dp">
 
 
                 <TextView
                     android:id="@+id/txt_Order"
                     style="@style/header"
                     android:layout_width="0dp"
-                    android:layout_height="40dp"
-                    android:background="@color/darkBlue"
+                    android:layout_height="60dp"
+                    android:background="@color/primaryLightColor"
                     android:gravity="center_horizontal|center_vertical"
                     android:text="@string/string_order"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -132,21 +120,23 @@
                 <TextView
                     android:id="@+id/txt_guest_number"
                     style="@style/large_title"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:gravity="center_vertical"
                     android:text="@string/string_guest"
+                    android:textAlignment="center"
                     android:textStyle="bold"
                     app:layout_constraintBottom_toTopOf="@+id/viewLine1"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/txt_Order"
+                    app:layout_constraintVertical_bias="0.5"
                     app:setGuestNumberTitle="@{viewModel.activeGuest}" />
 
                 <View
                     android:id="@+id/viewLine1"
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:layout_marginTop="16dp"
                     android:background="#CCCCCC"
                     app:layout_constraintTop_toBottomOf="@+id/txt_guest_number" />
 
@@ -154,11 +144,16 @@
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/orderItems"
                     android:layout_width="0dp"
-                    android:layout_height="280dp"
-                    android:layout_marginTop="20dp"
-                    app:itemListData="@{viewModel.order.getAllOrderItems()}"
+                    android:layout_height="0dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginBottom="16dp"
+                    android:scrollbarStyle="outsideInset"
+                    app:itemListData="@{viewModel.order.guests[viewModel.activeGuest -1 ].getOrderItems()}"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/txt_guest_number"
                     tools:listitem="@layout/order_line_item" />
 
@@ -171,42 +166,74 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/layout_menus"
-            android:layout_width="600dp"
+            android:layout_width="580dp"
             android:layout_height="0dp"
-            android:background="@color/side_window"
+            android:background="@color/offWhite_background"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/order_fastertoolbar">
 
-            <androidx.appcompat.widget.Toolbar
-                android:id="@+id/menus_toolbar"
+            <com.google.android.material.tabs.TabLayout
+                android:id="@+id/menus_tab_bar"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@color/guest_toolbar"
-                android:minHeight="?attr/actionBarSize"
-                android:theme="?attr/actionBarTheme"
+                android:layout_height="60dp"
+
+                android:background="@color/primaryLightColor"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                app:tabIndicatorColor="@color/white"
+                app:tabMode="auto"
+                app:tabSelectedTextColor="@color/white"
+                app:tabTextAppearance="@style/tab_text"
+                app:tabTextColor="@color/offWhite">
 
+            </com.google.android.material.tabs.TabLayout>
 
             <ImageButton
                 android:id="@+id/btn_menu_back"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:backgroundTint="@color/white"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:backgroundTint="@color/offWhite_background"
                 android:contentDescription="@string/back"
-                android:visibility="gone"
+                android:onClick="@{() -> viewModel.arrowBack()}"
+                android:visibility="visible"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/menus_toolbar"
+                app:layout_constraintTop_toBottomOf="@+id/menus_tab_bar"
                 app:srcCompat="@drawable/ic_back_arrow" />
+
+            <TextView
+                android:id="@+id/txt_menu_category"
+                style="@style/large_title_bold"
+                android:layout_width="wrap_content"
+                android:layout_height="60dp"
+                android:layout_marginTop="24dp"
+                android:text="@{viewModel.activeCategory.category}"
+                android:textAlignment="center"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/btn_menu_back"
+                app:layout_constraintTop_toBottomOf="@+id/menus_tab_bar" />
+
+            <TextView
+                android:id="@+id/txt_menuItem_item_name"
+                style="@style/large_title_bold"
+                android:layout_width="wrap_content"
+                android:layout_height="60dp"
+                android:layout_marginTop="24dp"
+                android:text="@{viewModel.activeItem.itemName}"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/btn_menu_back"
+                app:layout_constraintTop_toBottomOf="@+id/menus_tab_bar" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/layout_menu_categories"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="50dp"
                 android:orientation="horizontal"
                 app:flow_wrapMode="aligned"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -216,112 +243,114 @@
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/layout_menu_items"
+            <ScrollView
+                android:id="@+id/scroll_menu_items"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:orientation="horizontal"
+                android:layout_marginTop="25dp"
                 android:visibility="gone"
-                app:flow_wrapMode="aligned"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/btn_menu_back"
-                tools:layout_editor_absoluteX="169dp" />
+                app:layout_constraintTop_toBottomOf="@+id/btn_menu_back">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/layout_menu_items"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:orientation="horizontal"
+                    android:visibility="visible"
+                    app:flow_wrapMode="aligned"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/btn_menu_back"
+                    tools:layout_editor_absoluteX="169dp" />
+
+            </ScrollView>
+
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/layout_menuItem"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
+                android:layout_marginTop="80dp"
+                android:background="@color/white"
+                android:visibility="visible"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/menus_toolbar">
+                app:layout_constraintTop_toBottomOf="@+id/menus_tab_bar">
 
                 <TextView
-                    android:id="@+id/txt_menuItem_item_name"
-                    style="@style/large_title_bold"
-                    android:layout_width="wrap_content"
+                    android:id="@+id/txt_menu_item_description"
+                    style="@style/item_description"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="@{menusViewModel.activeItem.itemName}"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:text="@{viewModel.activeItem.itemDescription}"
+                    android:textAlignment="textStart"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <TextView
-                    android:id="@+id/txt_menu_item_description"
-                    style="@style/default_text"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="50dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginEnd="50dp"
-                    android:text="@{menusViewModel.activeItem.itemDescription}"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/txt_menuItem_item_name" />
 
-
-
-                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                <ImageButton
                     android:id="@+id/btn_minus_quantity"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="42dp"
+                    android:layout_height="42dp"
                     android:layout_marginTop="11dp"
-                    android:layout_marginEnd="8dp"
+                    android:layout_marginEnd="24dp"
+                    android:background="@drawable/customborder"
                     android:contentDescription="@string/subtract"
-                    android:visibility="gone"
-                    app:backgroundTint="@color/primaryColor"
-                    app:fabCustomSize="32dp"
+                    android:onClick="@{() -> viewModel.decreaseItemQuantity()}"
                     app:layout_constraintEnd_toStartOf="@+id/txt_item_quantity"
                     app:layout_constraintTop_toBottomOf="@+id/txt_menu_item_description"
-                    app:maxImageSize="24dp"
-                    app:srcCompat="@drawable/ic_baseline_horizontal_rule_24"
-                    android:onClick="@{() -> menusViewModel.decreaseItemQuantity()}"/>
+                    app:srcCompat="@drawable/ic_baseline_horizontal_rule_24" />
+
 
                 <TextView
                     android:id="@+id/txt_item_quantity"
                     style="@style/large_title_bold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:textSize="@dimen/title_size"
-                    android:visibility="gone"
-                    app:intToString="@{menusViewModel.itemQuantity}"
+                    android:layout_marginTop="16dp"
+                    android:textSize="@dimen/order_default_size"
+                    app:intToString="@{viewModel.itemQuantity}"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/txt_menu_item_description"
-                    />
+                    app:layout_constraintTop_toBottomOf="@+id/txt_menu_item_description" />
 
-                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                <ImageButton
                     android:id="@+id/btn_add_quantity"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
+                    android:layout_width="42dp"
+                    android:layout_height="42dp"
+                    android:layout_marginStart="24dp"
                     android:layout_marginTop="11dp"
-                    android:clickable="true"
+                    android:background="@drawable/customborder"
                     android:contentDescription="@string/add"
-                    android:focusable="true"
-                    android:visibility="gone"
-                    app:backgroundTint="@color/primaryColor"
-                    app:fabCustomSize="32dp"
+                    android:onClick="@{() -> viewModel.increaseItemQuantity()}"
                     app:layout_constraintStart_toEndOf="@+id/txt_item_quantity"
                     app:layout_constraintTop_toBottomOf="@+id/txt_menu_item_description"
-                    app:maxImageSize="24dp"
-                    app:srcCompat="@drawable/ic_baseline_add_24"
-                    android:onClick="@{() -> menusViewModel.increaseItemQuantity()}" />
+                    app:srcCompat="@drawable/ic_baseline_add_24" />
+
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/mod_recycler_view"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
                     android:layout_marginStart="50dp"
+                    android:layout_marginTop="16dp"
                     android:layout_marginEnd="50dp"
-                    android:layout_marginBottom="16dp"
+                    android:layout_marginBottom="30dp"
+                    android:scrollbarAlwaysDrawVerticalTrack="false"
+                    android:scrollbarStyle="outsideInset"
+                    android:scrollbars="vertical"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     app:layout_constraintBottom_toTopOf="@+id/btn_add_item"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/txt_item_quantity"
-                    tools:listitem="@layout/modifier_line_item" />
+                    app:layout_constraintTop_toBottomOf="@+id/btn_minus_quantity"
+                    tools:listitem="@layout/modifier_line_item">
+
+                </androidx.recyclerview.widget.RecyclerView>
 
                 <Button
                     android:id="@+id/btn_add_item"
@@ -329,13 +358,27 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="10dp"
-                    android:text="@string/select"
-                    app:addItem="@{menusViewModel.activeItem}"
-                    app:addQuantity="@{menusViewModel.itemQuantity}"
+                    android:drawableLeft="@drawable/ic_baseline_add_24_white"
+                    android:background="@drawable/rounded_button"
+                    android:onClick="@{() -> viewModel.addItemToOrder()}"
+                    android:text="@string/add_item_to_order"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
- />
+                    tools:ignore="RtlHardcoded" />
+
+                <TextView
+                    android:id="@+id/txt_item_price"
+                    style="@style/large_title_bold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="10dp"
+                    app:priceDouble="@{viewModel.workingItemPrice}"
+                    app:layout_constraintBottom_toTopOf="@+id/btn_add_item"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/mod_recycler_view" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
 

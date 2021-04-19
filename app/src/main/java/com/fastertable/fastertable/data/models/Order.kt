@@ -126,11 +126,26 @@ data class Guest(
     var total: Double?
 ): Parcelable{
     fun orderItemAdd(oi: OrderItem){
-        this.orderItems?.add(oi)
+        if (this.orderItems == null){
+            val list = mutableListOf<OrderItem>()
+            list.add(oi)
+            this.orderItems = list
+        }else{
+            this.orderItems?.add(oi)
+        }
+
     }
 
     fun orderItemRemove(oi: OrderItem){
         this.orderItems?.remove(oi)
+    }
+
+    fun getOrderItems(): ArrayList<OrderItem> {
+        val list: ArrayList<OrderItem> = arrayListOf()
+        this.orderItems?.forEach{ it
+            list.add(it)
+        }
+        return list;
     }
 }
 
@@ -145,12 +160,12 @@ data class OrderItem(
     val menuItemPrice: ItemPrice,
     val orderMods: MutableList<ModifierItem>?,
     val salesCategory: String,
-    val ingredientList: MutableList<ItemIngredient>,
-    val ingredients: MutableList<ItemIngredient>,
+    val ingredientList: List<ItemIngredient>,
+    val ingredients: List<ItemIngredient>,
     val prepStation: PrepStation,
     val printer: Printer,
     val priceAdjusted: Boolean,
-    val menuItemDiscount: Double,
+    val menuItemDiscount: Double?,
     val takeOutFlag: Boolean,
     val dontMake: Boolean,
     val rush: Boolean,

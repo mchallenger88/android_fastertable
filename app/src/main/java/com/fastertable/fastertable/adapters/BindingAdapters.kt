@@ -127,6 +127,7 @@ fun getOrderTotal(textView: TextView, total: Double){
 fun bindRecyclerView(recyclerView: RecyclerView?, data: List<OrderItem>?) {
     val adapter = recyclerView?.adapter as OrderItemAdapter
     adapter.submitList(data)
+    adapter.notifyDataSetChanged()
 }
 
 @BindingAdapter("itemModifiers")
@@ -159,10 +160,10 @@ fun setGuestNumberTitle(textView: TextView, guestNumber: Int?){
 
 @SuppressLint("SetTextI18n")
 @BindingAdapter("bind:addItem", "bind:addQuantity")
-fun addItemToOrder(btn: Button, addItem: MenuItem?, addQuantity: Int){
+fun addItemToOrder(textView: TextView, addItem: MenuItem?, addQuantity: Int){
     if (addItem?.prices?.size == 1){
         val price = addItem.prices[0].price * addQuantity
-        btn.text = "Add Item to Order - $%.${2}f".format(price)
+        textView.text = "$%.${2}f".format(price)
     }
 
 }

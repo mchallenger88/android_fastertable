@@ -1,10 +1,14 @@
 package com.fastertable.fastertable.ui.order
 
+import android.annotation.SuppressLint
 import android.content.res.ColorStateList
+import android.graphics.Paint
+import android.graphics.Typeface
 import android.os.Bundle
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.TEXT_ALIGNMENT_CENTER
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.LinearLayout
@@ -27,12 +31,16 @@ import com.fastertable.fastertable.data.models.MenuCategory
 import com.fastertable.fastertable.data.models.MenuItem
 import com.fastertable.fastertable.databinding.OrderFragmentBinding
 import com.fastertable.fastertable.ui.menus.MenusViewModel
+import com.google.android.material.button.MaterialButton
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.tabs.TabItem
+import com.google.android.material.tabs.TabLayout
+import dagger.hilt.android.AndroidEntryPoint
+import java.util.jar.Attributes
 
-
+@AndroidEntryPoint
 class OrderFragment : BaseFragment() {
     private lateinit var viewModel: OrderViewModel
-    private lateinit var menusViewModel: MenusViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -41,15 +49,11 @@ class OrderFragment : BaseFragment() {
     ): View? {
         val binding = OrderFragmentBinding.inflate(inflater)
 
-        menusViewModel = ViewModelProvider(this
-        ).get(MenusViewModel::class.java)
-
         viewModel = ViewModelProvider(this
         ).get(OrderViewModel::class.java)
 
         binding.lifecycleOwner = viewLifecycleOwner
         binding.viewModel = viewModel
-        binding.menusViewModel = menusViewModel
 
         viewModel.guestAdd.observe(viewLifecycleOwner, Observer { it ->
             if (it) {
@@ -61,13 +65,15 @@ class OrderFragment : BaseFragment() {
 
         viewModel.activeGuest.observe(viewLifecycleOwner, Observer { guestNumber ->
             binding.toolbarGuestSideBar.children.forEachIndexed { index, element ->
-                if (element is FloatingActionButton) {
+                if (element is Button) {
                     if (index == guestNumber) {
-                        val color = ContextCompat.getColor(requireContext(), R.color.secondaryColor)
-                        element.backgroundTintList = ColorStateList.valueOf(color)
+                        val color = ContextCompat.getColor(requireContext(), R.color.white)
+                        element.setTextColor(ColorStateList.valueOf(color))
+                        element.setCompoundDrawablesRelativeWithIntrinsicBounds(0, R.drawable.ic_user_white, 0, 0)
                     } else {
-                        val color = ContextCompat.getColor(requireContext(), R.color.primaryColor)
-                        element.backgroundTintList = ColorStateList.valueOf(color)
+                        val color = ContextCompat.getColor(requireContext(), R.color.offWhite)
+                        element.setTextColor(ColorStateList.valueOf(color))
+                        element.setCompoundDrawablesRelativeWithIntrinsicBounds(0, R.drawable.ic_user_offwhite, 0, 0)
                     }
                 }
             }
@@ -82,9 +88,9 @@ class OrderFragment : BaseFragment() {
         })
 
 
-        menusViewModel.activeItem.observe(viewLifecycleOwner, Observer { item ->
+        viewModel.activeItem.observe(viewLifecycleOwner, Observer { item ->
             modAdapter.submitList(item.modifiers)
-            ingAdapter.submitList(menusViewModel.createIngredientList(item))
+            ingAdapter.submitList(viewModel.createIngredientList(item))
         })
 
         val concatAdapter = ConcatAdapter(modAdapter, ingAdapter)
@@ -92,6 +98,31 @@ class OrderFragment : BaseFragment() {
 
         binding.orderItems.adapter = OrderItemAdapter()
         binding.modRecyclerView.adapter = concatAdapter
+
+        binding.menusTabBar.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+            override fun onTabSelected(tab: TabLayout.Tab?) {
+                val menu = viewModel.menus.value?.find{it -> it.name == tab?.text!!}
+                if (menu != null){
+                    menuSelect(menu, binding)
+                    createCategoryButtons(menu, binding)
+                    viewModel.setMenusNavigation(MenusNavigation.CATEGORIES)
+                }
+
+            }
+            override fun onTabUnselected(tab: TabLayout.Tab?) {}
+            override fun onTabReselected(tab: TabLayout.Tab?) {}
+        })
+
+        viewModel.menusNavigation.observe(viewLifecycleOwner, Observer { it ->
+            when (it) {
+                MenusNavigation.CATEGORIES -> setCategoryVisibility(binding)
+                MenusNavigation.MENU_ITEMS -> setMenuItemsVisibility(binding)
+                MenusNavigation.MENU_ITEM -> setItemVisibility(binding)
+                else -> setCategoryVisibility(binding)
+            }
+
+        })
+
             return binding.root
     }
 
@@ -99,118 +130,97 @@ class OrderFragment : BaseFragment() {
         viewModel.setActiveGuest(int)
     }
 
-    private fun addGuestButtons(int: Int, binding: OrderFragmentBinding){
-        val fab = FloatingActionButton(requireActivity())
-        fab.id = ViewCompat.generateViewId()
-        fab.size = FloatingActionButton.SIZE_MINI
-        val color = ContextCompat.getColor(requireContext(), R.color.primaryColor)
-        fab.backgroundTintList = ColorStateList.valueOf(color)
-        fab.elevation = 4f
-
-        when (int){
-            1 -> fab.setImageResource(R.drawable.guest_1_foreground)
-            2 -> fab.setImageResource(R.drawable.guest_2_foreground)
-            3 -> fab.setImageResource(R.drawable.guest_3_foreground)
-            4 -> fab.setImageResource(R.drawable.guest_4_foreground)
-            5 -> fab.setImageResource(R.drawable.guest_5_foreground)
-            6 -> fab.setImageResource(R.drawable.guest_6_foreground)
-            7 -> fab.setImageResource(R.drawable.guest_7_foreground)
-            8 -> fab.setImageResource(R.drawable.guest_8_foreground)
-            9 -> fab.setImageResource(R.drawable.guest_9_foreground)
-            10 -> fab.setImageResource(R.drawable.guest_10_foreground)
-            11 -> fab.setImageResource(R.drawable.guest_11_foreground)
-            12 -> fab.setImageResource(R.drawable.guest_12_foreground)
-            13 -> fab.setImageResource(R.drawable.guest_13_foreground)
-            14 -> fab.setImageResource(R.drawable.guest_14_foreground)
-            15 -> fab.setImageResource(R.drawable.guest_15_foreground)
-            16 -> fab.setImageResource(R.drawable.guest_16_foreground)
-            17 -> fab.setImageResource(R.drawable.guest_17_foreground)
-            18 -> fab.setImageResource(R.drawable.guest_18_foreground)
-            19 -> fab.setImageResource(R.drawable.guest_19_foreground)
-            20 -> fab.setImageResource(R.drawable.guest_20_foreground)
-            else -> fab.setImageResource(R.drawable.guest_1_foreground)
-        }
-
-        fab.isFocusable = true
+    @SuppressLint("SetTextI18n")
+    private fun createGuestButton(int: Int): Button{
+        val btn = Button(requireContext(), null, android.R.style.TextAppearance_Material_Widget_Button_Borderless_Colored)
+        btn.id = ViewCompat.generateViewId()
+        val color = ContextCompat.getColor(requireContext(), android.R.color.transparent)
+        val white = ContextCompat.getColor(requireContext(), R.color.white)
+        btn.backgroundTintList = ColorStateList.valueOf(color)
+        btn.setCompoundDrawablesRelativeWithIntrinsicBounds(0, R.drawable.ic_user_white, 0, 0)
+        btn.text = "Guest ${int.toString()}"
+        btn.textSize = 16f
+        btn.typeface = Typeface.defaultFromStyle(Typeface.BOLD)
+        btn.textAlignment = TEXT_ALIGNMENT_CENTER
         val layoutParams = LinearLayout.LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT,
             ViewGroup.LayoutParams.WRAP_CONTENT
         )
         layoutParams.gravity = Gravity.CENTER_HORIZONTAL
-        fab.layoutParams = layoutParams
+        layoutParams.setMargins(0, 40, 0, 0)
+        btn.setTextColor(ColorStateList.valueOf(white))
+        btn.layoutParams = layoutParams
+        btn.setOnClickListener{ setActiveGuest(int) }
+        return btn
+    }
 
-        fab.setOnClickListener{ setActiveGuest(int) }
-
-        menusViewModel.pageLoaded.observe(viewLifecycleOwner, Observer { it ->
+    private fun addGuestButtons(int: Int, binding: OrderFragmentBinding){
+        val btn = createGuestButton(int)
+        binding.toolbarGuestSideBar.addView(btn)
+        viewModel.pageLoaded.observe(viewLifecycleOwner, Observer { it ->
             if (it){
-                createMenuButtons(menusViewModel.menus.value!!, binding)
-                menusViewModel.setPageLoaded(false)
+                createMenuButtons(viewModel.menus.value!!, binding)
+                viewModel.setPageLoaded(false)
             }
-
-//            menus.forEach { menu ->
-//                createCategoryButtons(menu, binding)
-//            }
 
         })
 
-        menusViewModel.activeMenu.observe(viewLifecycleOwner, Observer { menu ->
-            binding.menusToolbar.children.forEach { child ->
-                val color = ContextCompat.getColor(requireContext(), R.color.primaryColor)
-                val accent = ContextCompat.getColor(requireContext(), R.color.secondaryColor)
-                if (child is Button) {
-                    if (child.text == menu.name) {
-                        child.backgroundTintList = ColorStateList.valueOf(accent)
-                        createCategoryButtons(menu, binding)
-                    } else {
-                        child.backgroundTintList = ColorStateList.valueOf(color)
-                    }
-                }
-            }
-        })
-
-        binding.toolbarGuestSideBar.addView(fab)
     }
 
     private fun createMenuButtons(menus: List<Menu>, binding: OrderFragmentBinding){
         menus.forEachIndexed{ int, menu ->
-            val btnView = Button(activity)
-            btnView.id = ViewCompat.generateViewId()
-            val color = ContextCompat.getColor(requireContext(), R.color.primaryColor)
-            val white = ContextCompat.getColor(requireContext(), R.color.white)
-            val accent = ContextCompat.getColor(requireContext(), R.color.secondaryColor)
-            btnView.backgroundTintList = ColorStateList.valueOf(color)
-            btnView.setTextColor(ColorStateList.valueOf(white))
-            btnView.text = menu.name
-            btnView.textSize = 18F
+            val tab = binding.menusTabBar.newTab()
 
-            val params = LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT
-            )
+            tab.id = ViewCompat.generateViewId()
+            tab.text = menu.name
+            binding.menusTabBar.addTab(tab)
 
-            params.setMargins(5, 2, 5, 2)
-            btnView.setPadding(25, 20, 25, 20)
-            btnView.layoutParams = params
-            btnView.setOnClickListener { menuSelect(menu, binding) }
+        }
 
-//            if (int == 0){
-//                btnView.backgroundTintList = ColorStateList.valueOf(accent)
-//                createCategoryButtons(menu, binding)
-//            }
-
-            binding.menusToolbar.addView(btnView)
+        menus.forEachIndexed{ int, menu ->
+            binding.menusTabBar.getTabAt(int)?.setText(menus[int].name)
         }
     }
 
-    private fun menuSelect(menu: Menu, binding: OrderFragmentBinding){
-        menusViewModel.setActiveMenu(menu)
+    private fun setCategoryVisibility(binding: OrderFragmentBinding){
         binding.layoutMenuCategories.visibility = View.VISIBLE
-        binding.layoutMenuItems.visibility = View.GONE
+        binding.scrollMenuItems.visibility = View.GONE
+        binding.btnMenuBack.visibility = View.GONE
+        binding.layoutMenuItem.visibility = View.GONE
+        binding.txtMenuCategory.visibility = View.GONE
+        binding.txtMenuItemItemName.visibility = View.GONE
+        val offWhite = ContextCompat.getColor(requireContext(), R.color.offWhite_background)
+        binding.layoutMenus.backgroundTintList = ColorStateList.valueOf(offWhite)
+        binding.btnMenuBack.backgroundTintList = ColorStateList.valueOf(offWhite)
+    }
+
+    private fun setMenuItemsVisibility(binding: OrderFragmentBinding){
+        binding.layoutMenuCategories.visibility = View.GONE
+        binding.scrollMenuItems.visibility = View.VISIBLE
         binding.btnMenuBack.visibility = View.VISIBLE
         binding.layoutMenuItem.visibility = View.GONE
-        binding.btnMinusQuantity.visibility = View.GONE
-        binding.btnAddQuantity.visibility = View.GONE
-        binding.txtItemQuantity.visibility = View.GONE
+        binding.txtMenuCategory.visibility = View.VISIBLE
+        binding.txtMenuItemItemName.visibility = View.GONE
+        val offWhite = ContextCompat.getColor(requireContext(), R.color.offWhite_background)
+        binding.layoutMenus.backgroundTintList = ColorStateList.valueOf(offWhite)
+        binding.btnMenuBack.backgroundTintList = ColorStateList.valueOf(offWhite)
+    }
+
+    private fun setItemVisibility(binding: OrderFragmentBinding){
+        binding.layoutMenuCategories.visibility = View.GONE
+        binding.scrollMenuItems.visibility = View.GONE
+        binding.btnMenuBack.visibility = View.VISIBLE
+        binding.txtMenuCategory.visibility = View.GONE
+        binding.layoutMenuItem.visibility = View.VISIBLE
+        binding.txtMenuItemItemName.visibility = View.VISIBLE
+        val white = ContextCompat.getColor(requireContext(), R.color.white)
+        binding.layoutMenus.backgroundTintList = ColorStateList.valueOf(white)
+        binding.btnMenuBack.backgroundTintList = ColorStateList.valueOf(white)
+    }
+
+    private fun menuSelect(menu: Menu, binding: OrderFragmentBinding){
+        viewModel.setActiveMenu(menu)
+
     }
 
     private fun createCategoryButtons(menu: Menu, binding: OrderFragmentBinding){
@@ -236,13 +246,14 @@ class OrderFragment : BaseFragment() {
         menu.categories.forEachIndexed{int, category ->
             val btnView = Button(activity)
             btnView.id = ViewCompat.generateViewId()
-            val color = ContextCompat.getColor(requireContext(), R.color.primaryColor)
+            val color = ContextCompat.getColor(requireContext(), R.color.primaryTextColor)
             val white = ContextCompat.getColor(requireContext(), R.color.white)
             val accent = ContextCompat.getColor(requireContext(), R.color.secondaryColor)
-            btnView.backgroundTintList = ColorStateList.valueOf(color)
-            btnView.setTextColor(ColorStateList.valueOf(white))
+            btnView.backgroundTintList = ColorStateList.valueOf(white)
+            btnView.setTextColor(ColorStateList.valueOf(color))
+
             btnView.text = category.category
-            btnView.textSize = 18F
+            btnView.textSize = 20F
 
             val params = LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT,
@@ -252,8 +263,8 @@ class OrderFragment : BaseFragment() {
             params.setMargins(5, 2, 5, 2)
             btnView.setPadding(25, 20, 25, 20)
             btnView.layoutParams = params
-            btnView.width = 225
-            btnView.height = 150
+            btnView.width = 250
+            btnView.height = 200
             btnView.setOnClickListener { setCategory(category, binding) }
 
             binding.layoutMenuCategories.addView(btnView)
@@ -266,11 +277,8 @@ class OrderFragment : BaseFragment() {
     }
 
     private fun setCategory(cat: MenuCategory, binding: OrderFragmentBinding){
-        binding.btnMenuBack.visibility = View.VISIBLE
-        binding.layoutMenuCategories.visibility = View.GONE
-        binding.layoutMenuItems.visibility = View.VISIBLE
         binding.layoutMenuItems.removeAllViews()
-
+        viewModel.setActiveCategory(cat)
         val flow = Flow(context)
         flow.id = ViewCompat.generateViewId()
         val flowParams = ConstraintLayout.LayoutParams(
@@ -289,13 +297,13 @@ class OrderFragment : BaseFragment() {
         cat.menuItems.forEachIndexed { index, menuItem ->
             val btnView = Button(activity)
             btnView.id = ViewCompat.generateViewId()
-            val color = ContextCompat.getColor(requireContext(), R.color.primaryColor)
+            val color = ContextCompat.getColor(requireContext(), R.color.primaryTextColor)
             val white = ContextCompat.getColor(requireContext(), R.color.white)
             val accent = ContextCompat.getColor(requireContext(), R.color.secondaryColor)
-            btnView.backgroundTintList = ColorStateList.valueOf(color)
-            btnView.setTextColor(ColorStateList.valueOf(white))
+            btnView.backgroundTintList = ColorStateList.valueOf(white)
+            btnView.setTextColor(ColorStateList.valueOf(color))
             btnView.text = menuItem.itemName
-            btnView.textSize = 18F
+            btnView.textSize = 20F
 
             val params = LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT,
@@ -305,46 +313,24 @@ class OrderFragment : BaseFragment() {
             params.setMargins(5, 2, 5, 2)
             btnView.setPadding(25, 20, 25, 20)
             btnView.layoutParams = params
-            btnView.width = 225
-            btnView.height = 150
+            btnView.width = 450
+            btnView.height = 180
             btnView.setOnClickListener { setMenuItem(menuItem, binding) }
 
             binding.layoutMenuItems.addView(btnView)
 
             flow.addView(btnView)
         }
-
+        viewModel.setMenusNavigation(MenusNavigation.MENU_ITEMS)
         binding.layoutMenuItems.addView(flow)
+
     }
 
     private fun setMenuItem(item: MenuItem, binding: OrderFragmentBinding){
-        binding.btnMenuBack.visibility = View.GONE
-        binding.layoutMenuItems.visibility = View.GONE
-        binding.layoutMenuItem.visibility = View.VISIBLE
-        binding.btnMinusQuantity.visibility = View.VISIBLE
-        binding.btnAddQuantity.visibility = View.VISIBLE
-        binding.txtItemQuantity.visibility = View.VISIBLE
+        viewModel.setMenusNavigation(MenusNavigation.MENU_ITEM)
+        viewModel.setActiveItem(item)
 
-        menusViewModel.setActiveItem(item)
     }
-
-
-
-//    private fun chipMenus(menus: List<Menu>, binding: OrderFragmentBinding){
-//        menus.forEachIndexed{ int, menu ->
-//            val chipView = Chip(activity)
-//            chipView.setChipBackgroundColorResource(R.color.primaryColor)
-//            chipView.setTextAppearance(R.style.ChipTextAppearance)
-//            chipView.text = menu.name
-//
-//            if (int == 0){
-//                chipView.setChipBackgroundColorResource(R.color.secondaryColor)
-//            }
-//
-//            binding.menusChipGroup.addView(chipView)
-//        }
-//    }
-
 
 
 }
