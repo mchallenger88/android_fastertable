@@ -43,6 +43,16 @@
             app:layout_constraintTop_toBottomOf="@+id/txt_modifier_title"
             app:modSelection="@{modifier}" />
 
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/layout_modtestbuttons"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:orientation="horizontal"
+            app:flow_wrapMode="aligned"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/txt_mod_required" />
+
         <RadioGroup
             android:id="@+id/modifier_radio_group"
             android:layout_width="wrap_content"

@@ -6,7 +6,10 @@ import com.fastertable.fastertable.api.GetSettingsUseCase
 import com.fastertable.fastertable.data.models.Company
 import com.fastertable.fastertable.data.models.Location
 import com.fastertable.fastertable.data.models.Settings
+import com.fastertable.fastertable.data.repository.GetMenus
+import com.fastertable.fastertable.data.repository.GetRestaurantSettings
 import com.fastertable.fastertable.data.repository.LoginRepository
+import com.fastertable.fastertable.data.repository.MenusRepository
 import com.fastertable.fastertable.utils.ApiStatus
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -16,8 +19,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class RestaurantLoginViewModel @Inject constructor(
-    private val getSettingsUseCase: GetSettingsUseCase,
-    private val getMenusUseCase: GetMenusUseCase,
+    private val getRestaurantSettings: GetRestaurantSettings,
+    private val getMenus: GetMenus,
     private val loginRepository: LoginRepository) : ViewModel() {
 
     private val _pin = MutableLiveData<String>()
@@ -112,12 +115,12 @@ class RestaurantLoginViewModel @Inject constructor(
             _showProgressBar.postValue(true)
             _status.postValue(ApiStatus.LOADING)
             try {
-                getSettingsUseCase.getSettings(restaurant.value!!.id)
+                getRestaurantSettings.getRestaurantSettings(restaurant.value!!.id)
                 val settings: Settings? = loginRepository.getSettings()
                 _settings.postValue(settings!!)
                 saveTaxRate(settings)
 
-                getMenusUseCase.getMenus(restaurant.value!!.id)
+                getMenus.getAllMenus(restaurant.value!!.id)
                 checkTerminal()
                 _showProgressBar.postValue(false)
             }

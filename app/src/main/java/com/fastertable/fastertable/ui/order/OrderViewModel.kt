@@ -4,7 +4,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.fastertable.fastertable.common.Constants
 import com.fastertable.fastertable.data.models.*
 import com.fastertable.fastertable.data.repository.LoginRepository
 import com.fastertable.fastertable.data.repository.MenusRepository
@@ -17,6 +16,11 @@ enum class MenusNavigation{
     CATEGORIES,
     MENU_ITEMS,
     MENU_ITEM
+}
+
+enum class AddSubtract{
+    ADD,
+    SUBTRACT
 }
 
 @HiltViewModel
@@ -41,8 +45,8 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
     val activeCategory: LiveData<MenuCategory>
         get() = _activeCategory
 
-    private val _activeItem = MutableLiveData<MenuItem>()
-    val activeItem: LiveData<MenuItem>
+    private val _activeItem = MutableLiveData<MenuItem?>()
+    val activeItem: LiveData<MenuItem?>
         get() = _activeItem
 
     private val _itemQuantity = MutableLiveData<Int>()
@@ -53,9 +57,13 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
     val modifiers: LiveData<List<Modifier>?>
         get() = _modifiers
 
-    private val _ingList = MutableLiveData<List<IngredientList>>()
-    val ingList: LiveData<List<IngredientList>?>
-        get() = _ingList
+//    private val _defaultIngredients = MutableLiveData<List<ItemIngredient>>()
+//    val defaultIngredients: LiveData<List<ItemIngredient>?>
+//        get() = _defaultIngredients
+
+    private val _changedIngredients = MutableLiveData<ArrayList<ItemIngredient>>()
+    val changedIngredients: LiveData<ArrayList<ItemIngredient>?>
+        get() = _changedIngredients
 
     private val _pageLoaded = MutableLiveData<Boolean>()
     val pageLoaded: LiveData<Boolean>
@@ -124,6 +132,7 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
 
     fun setActiveGuest(int: Int){
         _activeGuest.value = int
+        _order.value = orderRepository.getNewOrder()
     }
 
     fun addGuest(){
@@ -140,36 +149,95 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
     }
 
     fun onModItemClicked(item: OrderMod) {
-        //These are checkboxes
-        if (item.mod.selectionLimitMin >= 1 && item.mod.selectionLimitMax > 1) {
+        val flat = listOf(item.mod.modifierItems).flatten()
+        val sum = flat.sumOf{x -> x.quantity}
+
+        if (item.mod.selectionLimitMax == 1){
+            radioMod(sum, item)
         }
 
-        //These are radio buttons
-        if (item.mod.selectionLimitMin <= 1 && item.mod.selectionLimitMax <= 1) {
-            val found = orderMods.find { x -> x.mod.arrayId == item.mod.arrayId }
-            if (found != null) {
-                orderMods.remove(found)
-                modItems.remove(found.item)
-                if (found.item.surcharge > 0){
-                    _workingItemPrice.value = workingItemPrice.value!!.minus(found.item.surcharge.times(itemQuantity.value!!))
+        if (item.mod.selectionLimitMax == 0 || item.mod.selectionLimitMax > 1){
+            checkboxMod(sum, item)
+        }
+
+        val index = _activeItem.value?.modifiers!!.indexOfFirst { x -> x.id == item.mod.id }
+        _activeItem.value!!.modifiers[index] = item.mod
+        _activeItem.value = _activeItem.value
+    }
+
+    private fun checkboxMod(sum: Int, item: OrderMod){
+        val max = item.mod.selectionLimitMax
+
+        if (max == 0){
+            val it = item.mod.modifierItems.find{x -> x.itemName == item.item.itemName}
+            it?.quantity = 1
+            if (it?.surcharge!! > 0){
+                AddSubtract.ADD.updateWorkingPrice(it.surcharge)
+            }
+        }
+
+        if (max > 1){
+            if (sum < max){
+                val it = item.mod.modifierItems.find{x -> x.itemName == item.item.itemName}
+                it?.quantity = it?.quantity!!.plus(1)
+                if (it.surcharge > 0){
+                    AddSubtract.ADD.updateWorkingPrice(it.surcharge)
                 }
-                orderMods.add(item)
-                modItems.add(item.item)
-                _workingItemPrice.value = workingItemPrice.value!!.plus(item.item.surcharge.times(itemQuantity.value!!))
-            } else {
-                orderMods.add(item)
-                modItems.add(item.item)
-                _workingItemPrice.value = workingItemPrice.value!!.plus(item.item.surcharge.times(itemQuantity.value!!))
+
+            }else{
+                val it = item.mod.modifierItems.find{x -> x.itemName == item.item.itemName}
+                val qty = it?.quantity
+                it?.quantity = 0
+                if (it?.surcharge!! > 0){
+                    AddSubtract.SUBTRACT.updateWorkingPrice(it?.surcharge!!.times(qty!!))
+                }
+
+            }
+        }
+    }
+
+    private fun radioMod(sum: Int, item: OrderMod){
+        if (sum == 0){
+            val it = item.mod.modifierItems.find{x -> x.itemName == item.item.itemName}
+            it?.quantity = 1
+            if (it?.surcharge!! > 0){
+                AddSubtract.ADD.updateWorkingPrice(it.surcharge)
+            }
+        }else{
+            val it = item.mod.modifierItems.find{x -> x.itemName == item.item.itemName}
+            if (it?.quantity == 0) {
+                it.quantity = 1
+                if (it.surcharge > 0){
+                    AddSubtract.ADD.updateWorkingPrice(it.surcharge)
+                }
+            }
+            if (it?.quantity == 1){
+                it.quantity = 0
+                if (it.surcharge > 0){
+                    AddSubtract.SUBTRACT.updateWorkingPrice(it.surcharge)
+                }
             }
 
         }
     }
 
-    fun onIngredientClicked(item: IngredientList){
-
+    private fun AddSubtract.updateWorkingPrice(surcharge: Double){
+        when (this){
+            AddSubtract.ADD -> _workingItemPrice.value = workingItemPrice.value!!.plus(surcharge.times(itemQuantity.value!!))
+            AddSubtract.SUBTRACT -> _workingItemPrice.value = workingItemPrice.value!!.minus(surcharge.times(itemQuantity.value!!))
+        }
     }
 
+
     fun addItemToOrder(){
+        val mods = arrayListOf<ModifierItem>()
+        activeItem.value!!.modifiers.forEach { mod ->
+            mod.modifierItems.forEach { mi ->
+                if (mi.quantity > 0){
+                    mods.add(mi)
+                }
+            }
+        }
 
         val item = OrderItem(
             id = 1,
@@ -177,10 +245,10 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
             menuItemId = activeItem.value!!.id,
             menuItemName = activeItem.value!!.itemName,
             menuItemPrice = activeItem.value!!.prices[0],
-            orderMods = modItems,
+            orderMods = mods,
             salesCategory = activeItem.value!!.salesCategory,
-            ingredientList = activeItem.value!!.ingredients,
-            ingredients = activeItem.value!!.ingredients,
+            ingredientList = null,
+            ingredients = changedIngredients.value,
             prepStation = findPrepStation()!!,
             printer = activeItem.value!!.printer,
             priceAdjusted = false,
@@ -196,7 +264,9 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
 
         _order.value!!.guests!![activeGuest.value!! - 1].orderItemAdd(item)
         _order.value = _order.value
-
+        orderRepository.saveNewOrder(order.value!!)
+        _menusNavigation.value = MenusNavigation.CATEGORIES
+        clearItemSettings()
     }
 
     private fun findPrepStation(): PrepStation?{
@@ -215,32 +285,46 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
         _activeCategory.value = cat
     }
 
-    fun setActiveItem(menuItem: MenuItem){
+    fun setActiveItem(menuItem: MenuItem) {
         _modifiers.value = null
         modList.clear()
-        _activeItem.value = menuItem
+        _activeItem.value = menuItem.clone()
 
-        menuItem.modifiers.forEachIndexed { int, mod ->
+        activeItem.value?.modifiers?.forEachIndexed { int, mod ->
             mod.arrayId = int.toDouble()
             modList.add(mod)
         }
 
         _modifiers.value = modList
-        _ingList.value = createIngredientList(menuItem)
+        _changedIngredients.value = activeItem.value?.ingredients
         _workingItemPrice.value = activeItem.value!!.prices[0].price
     }
 
-    fun createIngredientList(menuItem: MenuItem): ArrayList<IngredientList>{
-        val list = IngredientList(
-            id = "0",
-            locationId = menuItem.id,
-            ingredients = menuItem.ingredients.toList()
-        )
-        val al: ArrayList<IngredientList> = ArrayList<IngredientList>()
-        al.add(list)
-        return al
-    }
+    fun onIngredientClicked(item: IngredientChange){
+        val it = changedIngredients.value?.indexOf(item.item)
+        val found = changedIngredients.value?.get(it!!)
+        if (item.value == 1){
+            if (found?.orderValue!! < 2){
+                found.orderValue = found.orderValue.plus(1)
+                _changedIngredients.value?.set(it!!, found)
+                if (found.orderValue == 2 && found.surcharge > 0.0){
+                    AddSubtract.ADD.updateWorkingPrice(found.surcharge)
+                }
+            }
 
+        }
+
+        if (item.value == -1){
+            if (found?.orderValue!! > 0){
+                found.orderValue = found.orderValue.minus(1)
+                _changedIngredients.value?.set(it!!, found)
+                if (found.orderValue == 1 && found.surcharge > 0.0){
+                    AddSubtract.SUBTRACT.updateWorkingPrice(found.surcharge)
+                }
+            }
+        }
+        _changedIngredients.value = _changedIngredients.value
+    }
 
     fun increaseItemQuantity(){
         val unitPrice = _workingItemPrice.value!!.div(itemQuantity.value!!)
@@ -263,8 +347,17 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
     fun arrowBack(){
         when (menusNavigation.value){
             MenusNavigation.MENU_ITEMS -> _menusNavigation.value = MenusNavigation.CATEGORIES
-            MenusNavigation.MENU_ITEM -> _menusNavigation.value = MenusNavigation.MENU_ITEMS
+            MenusNavigation.MENU_ITEM -> {
+                _menusNavigation.value = MenusNavigation.MENU_ITEMS
+                clearItemSettings()
+            }else -> MenusNavigation.CATEGORIES
+            }
         }
+
+    private fun clearItemSettings(){
+        _activeItem.value = null
+        _workingItemPrice.value = 0.0
+        _itemQuantity.value = 1
+    }
     }
 
-}

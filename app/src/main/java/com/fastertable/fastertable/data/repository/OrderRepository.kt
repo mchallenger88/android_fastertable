@@ -49,16 +49,25 @@ class GetOrders @Inject constructor(private val getOrdersUseCase: GetOrdersUseCa
 
 class OrderRepository @Inject constructor(private val app: Application) {
 
-    suspend fun saveOrder(order: Order) {
+    fun saveOrder(order: Order) {
         //Save order json to file
         val gson = Gson()
         val jsonString = gson.toJson(order)
         val file= File(app.filesDir, "order.json")
         file.writeText(jsonString)
-
     }
 
-    suspend fun saveOrders(orders: List<Order>){
+    fun getOrderFromFile(): Order?{
+        var gson = Gson()
+        if (File(app.filesDir, "orders.json").exists()){
+            val bufferedReader: BufferedReader = File(app.filesDir, "order.json").bufferedReader()
+            val inputString = bufferedReader.use { it.readText() }
+            return gson.fromJson(inputString, Order::class.java)
+        }
+        return null
+    }
+
+    fun saveOrders(orders: List<Order>){
         //Save order json to file
         val gson = Gson()
         val jsonString = gson.toJson(orders)
@@ -143,6 +152,14 @@ class OrderRepository @Inject constructor(private val app: Application) {
         val file= File(app.filesDir, "new_order.json")
         file.writeText(jsonString)
         return order
+    }
+
+    fun saveNewOrder(order: Order) {
+        //Save order json to file
+        val gson = Gson()
+        val jsonString = gson.toJson(order)
+        val file= File(app.filesDir, "new_order.json")
+        file.writeText(jsonString)
     }
 
     fun getNewOrder(): Order?{

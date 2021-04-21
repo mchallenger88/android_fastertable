@@ -22,6 +22,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ConcatAdapter
 import com.fastertable.fastertable.R
+import com.fastertable.fastertable.adapters.IngredientHeaderAdapter
 import com.fastertable.fastertable.adapters.IngredientsAdapter
 import com.fastertable.fastertable.adapters.ModifierAdapter
 import com.fastertable.fastertable.adapters.OrderItemAdapter
@@ -83,17 +84,24 @@ class OrderFragment : BaseFragment() {
             viewModel.onModItemClicked(item)
         })
 
+        val ingHeaderAdapter = IngredientHeaderAdapter()
         val ingAdapter = IngredientsAdapter(IngredientsAdapter.IngredientListener { item ->
             viewModel.onIngredientClicked(item)
         })
+        val ingConcatAdapter = ConcatAdapter(ingHeaderAdapter, ingAdapter)
 
 
         viewModel.activeItem.observe(viewLifecycleOwner, Observer { item ->
-            modAdapter.submitList(item.modifiers)
-            ingAdapter.submitList(viewModel.createIngredientList(item))
+            modAdapter.submitList(item?.modifiers)
+            modAdapter.notifyDataSetChanged()
         })
 
-        val concatAdapter = ConcatAdapter(modAdapter, ingAdapter)
+        viewModel.changedIngredients.observe(viewLifecycleOwner, Observer {
+            ingAdapter.submitList(viewModel.changedIngredients.value)
+            ingAdapter.notifyDataSetChanged()
+        })
+
+        val concatAdapter = ConcatAdapter(modAdapter, ingConcatAdapter)
 
 
         binding.orderItems.adapter = OrderItemAdapter()

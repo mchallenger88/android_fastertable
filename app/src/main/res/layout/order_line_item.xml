@@ -51,15 +51,15 @@
             style="@style/mods_ingredients"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/string_mods"
-            android:textAlignment="textStart" />
+            android:textAlignment="textStart"
+            app:orderLineMods="@{orderItem}" />
 
         <TextView
             android:id="@+id/txt_ingredients"
             style="@style/mods_ingredients"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/string_ingredients" />
+            app:orderLineIngredients="@{orderItem}" />
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

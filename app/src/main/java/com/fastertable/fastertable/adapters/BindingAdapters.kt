@@ -1,6 +1,7 @@
 package com.fastertable.fastertable.adapters
 
 import android.annotation.SuppressLint
+import android.view.View
 import android.widget.Button
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
@@ -66,19 +67,19 @@ fun timeStamp(textView: TextView, value: Long?) {
 @BindingAdapter("modSelection")
 fun modSelectionText(textView: TextView, mod: Modifier){
     if (mod.selectionLimitMin == 0 && mod.selectionLimitMax == 0){
-        textView.text = ""
+        textView.text = "Select as many options as needed"
     }
 
     if (mod.selectionLimitMin == 0 && mod.selectionLimitMax > 0){
-        textView.text = "Select as many options as needed"
+        textView.text = "Select up to ${mod.selectionLimitMax}"
     }
 
     if (mod.selectionLimitMin == 1 && mod.selectionLimitMax == 1){
         textView.text = "Selection required"
     }
 
-    if (mod.selectionLimitMin >= 1 && mod.selectionLimitMin > 1){
-        textView.text = "Select at least one"
+    if (mod.selectionLimitMin >= 1 && mod.selectionLimitMax > 1){
+        textView.text = "Select at least 1 and up to ${mod.selectionLimitMax}"
     }
 
 //    if (mod.selectionLimitMin > 1 && mod.selectionLimitMax > 1){
@@ -86,11 +87,6 @@ fun modSelectionText(textView: TextView, mod: Modifier){
 //    }
 }
 
-//@BindingAdapter("orderListData")
-//fun bindRecyclerView(recyclerView: RecyclerView, data: List<Order>?) {
-//    val adapter = recyclerView.adapter as OrderListAdapter
-//    adapter.submitList(data)
-//}
 
 @BindingAdapter("priceDouble")
 fun bindDouble(textView: TextView, value: Double){
@@ -175,5 +171,42 @@ fun addRemoveIngredient(textView: TextView, item: ItemIngredient){
         0 -> textView.text = "Remove ${item.name}"
         1 -> textView.text = item.name
         2 -> textView.text = "Add ${item.name}"
+    }
+}
+
+@SuppressLint("SetTextI18n")
+@BindingAdapter("orderLineMods")
+fun addOrderLineMods(textView: TextView, item: OrderItem){
+    if (item.orderMods != null){
+        var mods: String = String()
+        item.orderMods.forEach { mod ->
+            mods += mod.itemName + ", "
+        }
+        mods = "- $mods"
+        mods = mods.dropLast(2)
+        textView.text = mods
+    }else{
+        textView.visibility = View.GONE
+    }
+}
+
+@SuppressLint("SetTextI18n")
+@BindingAdapter("orderLineIngredients")
+fun addOrderLineIngredients(textView: TextView, item: OrderItem){
+    if (item.ingredients != null){
+        var ingredients: String = String()
+        item.ingredients?.forEach{ ing ->
+            if (ing.orderValue == 0){
+                ingredients += "No ${ing.name}, "
+            }
+            if (ing.orderValue == 2){
+                ingredients += "Extra ${ing.name}, "
+            }
+        }
+        ingredients = "- $ingredients"
+        ingredients = ingredients.dropLast(2)
+        textView.text = ingredients
+    }else{
+        textView.visibility = View.GONE
     }
 }

@@ -7,7 +7,9 @@ import com.fastertable.fastertable.LoginActivity
 import com.fastertable.fastertable.api.GetOrdersUseCase
 import com.fastertable.fastertable.api.LoginUserUseCase
 import com.fastertable.fastertable.data.models.Terminal
+import com.fastertable.fastertable.data.repository.GetOrders
 import com.fastertable.fastertable.data.repository.LoginRepository
+import com.fastertable.fastertable.data.repository.LoginUser
 import com.fastertable.fastertable.data.repository.OrderRepository
 import com.fastertable.fastertable.utils.GlobalUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -18,8 +20,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class UserLoginViewModel @Inject constructor(private val loginRepository: LoginRepository,
-                                             private val loginUserUseCase: LoginUserUseCase,
-                                             private val getOrdersUseCase: GetOrdersUseCase) : ViewModel() {
+                                             private val loginUser: LoginUser,
+                                             private val getOrders: GetOrders) : ViewModel() {
 
     private var cid: String = ""
     private var lid: String = ""
@@ -82,7 +84,7 @@ class UserLoginViewModel @Inject constructor(private val loginRepository: LoginR
 
     private suspend fun getUserLogin(pin: String, cid: String, lid: String, now: Long, midnight: Long){
         viewModelScope.launch {
-            loginUserUseCase.userLogin(pin, cid, lid, now, midnight)
+            loginUser.loginUser(pin, cid, lid, now, midnight)
         }
     }
 
@@ -91,7 +93,7 @@ class UserLoginViewModel @Inject constructor(private val loginRepository: LoginR
             val midnight = GlobalUtils().getMidnight()
             //    - 86400
             val rid = loginRepository.getStringSharedPreferences("rid")
-            getOrdersUseCase.getOrders(midnight, rid!!)
+            getOrders.getOrders(midnight, rid!!)
         }
     }
 

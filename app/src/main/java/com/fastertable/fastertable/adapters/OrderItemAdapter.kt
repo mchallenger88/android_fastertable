@@ -22,39 +22,10 @@ class OrderItemAdapter : ListAdapter<OrderItem, OrderItemAdapter.MenuItemViewHol
     class MenuItemViewHolder(private var binding: OrderLineItemBinding):
         RecyclerView.ViewHolder(binding.root) {
         fun bind(orderItem: OrderItem) {
+            binding.orderItem = null
             binding.orderItem = orderItem
             binding.executePendingBindings()
-            var mods: String = String()
-            orderItem.orderMods?.forEach { mod ->
-                mods += mod.itemName + ", "
-            }
 
-            var ingredients: String = String()
-            orderItem.ingredients?.forEach{ ing ->
-                if (ing.orderValue == 0){
-                    ingredients += "Remove $ing.name, "
-                }
-                if (ing.orderValue == 2){
-                    ingredients += "Extra $ing.name, "
-                }
-
-            }
-
-            if (mods == ""){
-                binding.txtMods.visibility = View.GONE
-            }else{
-                mods = "- $mods"
-                mods = mods.dropLast(2)
-                binding.txtMods.text = mods
-            }
-
-            if (ingredients == ""){
-                binding.txtIngredients.visibility = View.GONE
-            }else{
-                ingredients = ingredients.dropLast(2)
-                ingredients = "- $ingredients"
-                binding.txtIngredients.text = ingredients
-            }
         }
     }
 

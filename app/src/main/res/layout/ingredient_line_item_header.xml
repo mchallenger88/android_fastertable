@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android" >
+    <data>
+        <variable
+            name="ingredient"
+            type="com.fastertable.fastertable.data.models.ItemIngredient" />
+    </data>
+    <LinearLayout
+        android:id="@+id/layout_ingredient_test"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/txt_ingredient_title"
+            style="@style/large_title_bold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"
+            android:text="@string/string_ingredients"
+            android:textAlignment="center" />
+    </LinearLayout>
+</layout>

@@ -1,9 +1,6 @@
 package com.fastertable.fastertable.adapters
 
-import android.content.Context
-import android.content.res.ColorStateList
-import android.graphics.Typeface
-import android.graphics.drawable.Drawable
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.ImageButton
@@ -16,11 +13,19 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.fastertable.fastertable.R
+import com.fastertable.fastertable.data.models.IngredientChange
 import com.fastertable.fastertable.data.models.IngredientList
+import com.fastertable.fastertable.data.models.ItemIngredient
+import com.fastertable.fastertable.data.models.Order
 import com.fastertable.fastertable.databinding.IngredientLineItemBinding
-import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.fastertable.fastertable.databinding.IngredientLineItemHeaderBinding
+import com.fastertable.fastertable.databinding.OrderListLineHeaderBinding
 
-class IngredientsAdapter(private val clickListener: IngredientListener) : ListAdapter<IngredientList, IngredientsAdapter.IngredientViewHolder>(IngredientsAdapter) {
+enum class PlusMinus{
+    PLUS,
+    MINUS
+}
+class IngredientsAdapter(private val clickListener: IngredientListener) : ListAdapter<ItemIngredient, IngredientsAdapter.IngredientViewHolder>(IngredientsAdapter) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): IngredientViewHolder {
         return IngredientViewHolder(IngredientLineItemBinding.inflate(LayoutInflater.from(parent.context)), parent)
@@ -34,123 +39,142 @@ class IngredientsAdapter(private val clickListener: IngredientListener) : ListAd
     class IngredientViewHolder(private var binding: IngredientLineItemBinding,
                                private val parent: ViewGroup): RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(list: IngredientList, clickListener: IngredientListener) {
-            binding.ingredients = list
+        @SuppressLint("SetTextI18n")
+        fun bind(item: ItemIngredient, clickListener: IngredientListener) {
+            binding.layoutIngredient.removeAllViews()
+            binding.ingredients = item
             binding.clickListener = clickListener
             binding.executePendingBindings()
 
-            list.ingredients.forEach { it ->
-                val btnAdd = createAddButton()
-                val btnMinus = createMinusButton()
-//                val btnAdd = FloatingActionButton(parent.context)
-//                btnAdd.id = ViewCompat.generateViewId()
-//                val params = ViewGroup.LayoutParams(
-//                        ViewGroup.LayoutParams.WRAP_CONTENT,
-//                        ViewGroup.LayoutParams.WRAP_CONTENT
-//                )
-//                btnAdd.layoutParams = params
-//                btnAdd.contentDescription = "add"
-//                btnAdd.elevation = 2f
-//                val color = ContextCompat.getColor(parent.context, R.color.guest_toolbar)
-//                btnAdd.backgroundTintList = ColorStateList.valueOf(color)
-//                btnAdd.customSize = 50
-//                btnAdd.scaleType = ImageView.ScaleType.CENTER
-//                btnAdd.setImageResource(R.drawable.ic_baseline_add_24)
-//
-//                val btnMinus = FloatingActionButton(parent.context)
-//                btnMinus.id = ViewCompat.generateViewId()
-//                btnMinus.layoutParams = params
-//                btnMinus.contentDescription = "add"
-//                btnMinus.elevation = 2f
-//                btnMinus.backgroundTintList = ColorStateList.valueOf(color)
-//                btnMinus.customSize = 50
-//                btnMinus.scaleType = ImageView.ScaleType.CENTER
-//                btnMinus.setImageResource(R.drawable.ic_baseline_horizontal_rule_24)
+            val btnAdd = createPlusMinusButton(PlusMinus.PLUS, item, clickListener)
+            val btnMinus = createPlusMinusButton(PlusMinus.MINUS, item, clickListener)
 
-                val textView = TextView(parent.context)
-                textView.id = ViewCompat.generateViewId()
-                textView.text = it.name
-                textView.textSize = 24f
-                val textColor = ContextCompat.getColor(parent.context, R.color.default_text_color)
-                textView.setTextColor(textColor)
-//                textView.typeface = Typeface.defaultFromStyle(Typeface.BOLD)
-                val tvLayoutParams: LinearLayout.LayoutParams = LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.WRAP_CONTENT,
-                    LinearLayout.LayoutParams.WRAP_CONTENT
-                )
-//                val tvLayoutParams = textView.layoutParams as RelativeLayout.LayoutParams
-                tvLayoutParams.setMargins(18, 18, 0, 0)
-                textView.layoutParams = tvLayoutParams
-
-                val layout = LinearLayout(parent.context)
-                layout.id = ViewCompat.generateViewId()
-                val layoutPars = LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.WRAP_CONTENT,
-                    LinearLayout.LayoutParams.WRAP_CONTENT
-                )
-                layout.layoutParams = layoutPars
-                layout.orientation = LinearLayout.HORIZONTAL
-
-                layout.addView(btnMinus)
-                layout.addView(btnAdd)
-                layout.addView(textView)
-
-
-                binding.layoutIngredientTest.addView(layout)
-
-
+            val textView = TextView(parent.context)
+            textView.id = ViewCompat.generateViewId()
+            val surcharge = "$%.${2}f".format(item.surcharge)
+            when (item.orderValue){
+                0 -> textView.text = "No ${item.name}"
+                1 -> textView.text = if (item.surcharge > 0) "${item.name} (${surcharge})" else item.name
+                2 -> textView.text = "Extra ${item.name}"
+                else -> textView.text = item.name
             }
+
+            textView.textSize = 24f
+            val textColor = ContextCompat.getColor(parent.context, R.color.default_text_color)
+            textView.setTextColor(textColor)
+//                textView.typeface = Typeface.defaultFromStyle(Typeface.BOLD)
+            val tvLayoutParams: LinearLayout.LayoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            )
+            tvLayoutParams.setMargins(18, 18, 0, 0)
+            textView.layoutParams = tvLayoutParams
+
+            val layout = LinearLayout(parent.context)
+            layout.id = ViewCompat.generateViewId()
+            val layoutPars = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            )
+            layout.layoutParams = layoutPars
+            layout.orientation = LinearLayout.HORIZONTAL
+
+            layout.addView(btnMinus)
+            layout.addView(btnAdd)
+            layout.addView(textView)
+
+
+            binding.layoutIngredient.addView(layout)
+
         }
 
-        private fun createAddButton(): ImageButton {
-            val btnAdd = ImageButton(parent.context)
-            btnAdd.id = ViewCompat.generateViewId()
+        private fun createPlusMinusButton(type: PlusMinus,
+                                          item: ItemIngredient,
+                                          clickListener: IngredientListener): ImageButton {
+
+            val btn = ImageButton(parent.context)
+            btn.id = ViewCompat.generateViewId()
             val params = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.WRAP_CONTENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
             )
-            params.width = 50
-            params.height = 50
-            params.topMargin = 18
-            params.leftMargin = 25
-            btnAdd.layoutParams = params
-            btnAdd.contentDescription = "add"
-            btnAdd.background = ContextCompat.getDrawable(parent.context, R.drawable.customborder)
-            btnAdd.scaleType = ImageView.ScaleType.CENTER
-            btnAdd.setImageResource(R.drawable.ic_baseline_add_24)
-            return btnAdd
+            params.width = 66
+            params.height = 66
+            params.topMargin = 15
+            params.leftMargin = 35
+            btn.layoutParams = params
+            btn.contentDescription = "add"
+            btn.background = ContextCompat.getDrawable(parent.context, R.drawable.customborder)
+            btn.scaleType = ImageView.ScaleType.CENTER
+            if (type == PlusMinus.PLUS){
+                btn.setImageResource(R.drawable.ic_baseline_add_24)
+                val ic = IngredientChange(
+                        item = item,
+                        value = 1
+                )
+                btn.setOnClickListener { clickListener.onClick(ic) }
+            }
+
+            if (type == PlusMinus.MINUS){
+                btn.setImageResource(R.drawable.ic_baseline_horizontal_rule_24)
+                val ic = IngredientChange(
+                        item = item,
+                        value = -1
+                )
+                btn.setOnClickListener { clickListener.onClick(ic) }
+            }
+
+            return btn
         }
 
-        private fun createMinusButton(): ImageButton {
-            val btnAdd = ImageButton(parent.context)
-            btnAdd.id = ViewCompat.generateViewId()
-            val params = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.WRAP_CONTENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-            )
-            params.width = 50
-            params.height = 50
-            params.topMargin = 18
-            btnAdd.layoutParams = params
-            btnAdd.contentDescription = "add"
-            btnAdd.background = ContextCompat.getDrawable(parent.context, R.drawable.customborder)
-            btnAdd.scaleType = ImageView.ScaleType.CENTER
-            btnAdd.setImageResource(R.drawable.ic_baseline_horizontal_rule_24)
-            return btnAdd
-        }
     }
 
-    class IngredientListener(val clickListener: (item: IngredientList) -> Unit) {
-        fun onClick(item: IngredientList) = clickListener(item)
+    class IngredientListener(val clickListener: (item: IngredientChange) -> Unit) {
+        fun onClick(item: IngredientChange) = clickListener(item)
     }
 
-    companion object DiffCallback : DiffUtil.ItemCallback<IngredientList>() {
-        override fun areItemsTheSame(oldItem: IngredientList, newItem: IngredientList): Boolean {
+    companion object DiffCallback : DiffUtil.ItemCallback<ItemIngredient>() {
+        override fun areItemsTheSame(oldItem: ItemIngredient, newItem: ItemIngredient): Boolean {
             return oldItem === newItem
         }
 
-        override fun areContentsTheSame(oldItem: IngredientList, newItem: IngredientList): Boolean {
-            return oldItem.id == newItem.id
+        override fun areContentsTheSame(oldItem: ItemIngredient, newItem: ItemIngredient): Boolean {
+            return oldItem.name == newItem.name
         }
     }
+}
+
+
+
+class IngredientHeaderAdapter: ListAdapter<ItemIngredient, IngredientHeaderAdapter.HeaderViewHolder>(DiffCallback) {
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HeaderViewHolder {
+        return HeaderViewHolder(IngredientLineItemHeaderBinding.inflate(LayoutInflater.from(parent.context)))
+    }
+
+    override fun onBindViewHolder(holder: HeaderViewHolder, position: Int) {
+        holder.bind()
+    }
+
+    class HeaderViewHolder(private var binding: IngredientLineItemHeaderBinding):
+            RecyclerView.ViewHolder(binding.root) {
+        fun bind(){
+            binding.executePendingBindings()
+        }
+    }
+
+    override fun getItemCount(): Int {
+        return 1
+    }
+
+    companion object DiffCallback : DiffUtil.ItemCallback<ItemIngredient>() {
+        override fun areItemsTheSame(oldItem: ItemIngredient, newItem: ItemIngredient): Boolean {
+            return oldItem === newItem
+        }
+
+        override fun areContentsTheSame(oldItem: ItemIngredient, newItem: ItemIngredient): Boolean {
+            return oldItem == newItem
+        }
+    }
+
 }

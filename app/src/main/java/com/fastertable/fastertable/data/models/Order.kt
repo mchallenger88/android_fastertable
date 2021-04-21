@@ -160,8 +160,8 @@ data class OrderItem(
     val menuItemPrice: ItemPrice,
     val orderMods: MutableList<ModifierItem>?,
     val salesCategory: String,
-    val ingredientList: List<ItemIngredient>,
-    val ingredients: List<ItemIngredient>,
+    val ingredientList: List<ItemIngredient>?,
+    val ingredients: List<ItemIngredient>?,
     val prepStation: PrepStation,
     val printer: Printer,
     val priceAdjusted: Boolean,
@@ -209,9 +209,10 @@ data class OrderDetails(
 
 @Parcelize
 data class OrderMod(
-    val item: ModifierItem,
-    val mod: Modifier
+    var item: ModifierItem,
+    var mod: Modifier
 ): Parcelable
+
 
 @JsonClass(generateAdapter = true)
 @Parcelize
