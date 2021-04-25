@@ -2,14 +2,11 @@ package com.fastertable.fastertable.ui.order
 
 import android.annotation.SuppressLint
 import android.content.res.ColorStateList
-import android.graphics.Paint
 import android.graphics.Typeface
+import android.os.Build
 import android.os.Bundle
-import android.view.Gravity
-import android.view.LayoutInflater
-import android.view.View
+import android.view.*
 import android.view.View.TEXT_ALIGNMENT_CENTER
-import android.view.ViewGroup
 import android.widget.Button
 import android.widget.LinearLayout
 import androidx.constraintlayout.helper.widget.Flow
@@ -17,12 +14,10 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.children
-import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ConcatAdapter
 import com.fastertable.fastertable.R
-import com.fastertable.fastertable.adapters.IngredientHeaderAdapter
 import com.fastertable.fastertable.adapters.IngredientsAdapter
 import com.fastertable.fastertable.adapters.ModifierAdapter
 import com.fastertable.fastertable.adapters.OrderItemAdapter
@@ -31,32 +26,25 @@ import com.fastertable.fastertable.data.models.Menu
 import com.fastertable.fastertable.data.models.MenuCategory
 import com.fastertable.fastertable.data.models.MenuItem
 import com.fastertable.fastertable.databinding.OrderFragmentBinding
-import com.fastertable.fastertable.ui.menus.MenusViewModel
-import com.google.android.material.button.MaterialButton
-import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.android.material.tabs.TabItem
+import com.fastertable.fastertable.ui.dialogs.OrderNotesDialogFragment
 import com.google.android.material.tabs.TabLayout
 import dagger.hilt.android.AndroidEntryPoint
-import java.util.jar.Attributes
 
 @AndroidEntryPoint
 class OrderFragment : BaseFragment() {
-    private lateinit var viewModel: OrderViewModel
+    private val viewModel: OrderViewModel by activityViewModels()
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         val binding = OrderFragmentBinding.inflate(inflater)
-
-        viewModel = ViewModelProvider(this
-        ).get(OrderViewModel::class.java)
-
         binding.lifecycleOwner = viewLifecycleOwner
         binding.viewModel = viewModel
 
-        viewModel.guestAdd.observe(viewLifecycleOwner, Observer { it ->
+        viewModel.guestAdd.observe(viewLifecycleOwner, { it ->
             if (it) {
                 addGuestButtons(viewModel.order.value?.guests?.last()!!.id, binding)
                 viewModel.setGuestAdd(false)
@@ -64,7 +52,7 @@ class OrderFragment : BaseFragment() {
         })
 
 
-        viewModel.activeGuest.observe(viewLifecycleOwner, Observer { guestNumber ->
+        viewModel.activeGuest.observe(viewLifecycleOwner, { guestNumber ->
             binding.toolbarGuestSideBar.children.forEachIndexed { index, element ->
                 if (element is Button) {
                     if (index == guestNumber) {
@@ -84,25 +72,21 @@ class OrderFragment : BaseFragment() {
             viewModel.onModItemClicked(item)
         })
 
-        val ingHeaderAdapter = IngredientHeaderAdapter()
         val ingAdapter = IngredientsAdapter(IngredientsAdapter.IngredientListener { item ->
             viewModel.onIngredientClicked(item)
         })
-        val ingConcatAdapter = ConcatAdapter(ingHeaderAdapter, ingAdapter)
 
-
-        viewModel.activeItem.observe(viewLifecycleOwner, Observer { item ->
+        viewModel.activeItem.observe(viewLifecycleOwner, { item ->
             modAdapter.submitList(item?.modifiers)
             modAdapter.notifyDataSetChanged()
         })
 
-        viewModel.changedIngredients.observe(viewLifecycleOwner, Observer {
+        viewModel.changedIngredients.observe(viewLifecycleOwner, {
             ingAdapter.submitList(viewModel.changedIngredients.value)
             ingAdapter.notifyDataSetChanged()
         })
 
-        val concatAdapter = ConcatAdapter(modAdapter, ingConcatAdapter)
-
+         val concatAdapter = ConcatAdapter(modAdapter, ingAdapter)
 
         binding.orderItems.adapter = OrderItemAdapter()
         binding.modRecyclerView.adapter = concatAdapter
@@ -111,7 +95,7 @@ class OrderFragment : BaseFragment() {
             override fun onTabSelected(tab: TabLayout.Tab?) {
                 val menu = viewModel.menus.value?.find{it -> it.name == tab?.text!!}
                 if (menu != null){
-                    menuSelect(menu, binding)
+                    menuSelect(menu)
                     createCategoryButtons(menu, binding)
                     viewModel.setMenusNavigation(MenusNavigation.CATEGORIES)
                 }
@@ -121,7 +105,7 @@ class OrderFragment : BaseFragment() {
             override fun onTabReselected(tab: TabLayout.Tab?) {}
         })
 
-        viewModel.menusNavigation.observe(viewLifecycleOwner, Observer { it ->
+        viewModel.menusNavigation.observe(viewLifecycleOwner, { it ->
             when (it) {
                 MenusNavigation.CATEGORIES -> setCategoryVisibility(binding)
                 MenusNavigation.MENU_ITEMS -> setMenuItemsVisibility(binding)
@@ -129,6 +113,12 @@ class OrderFragment : BaseFragment() {
                 else -> setCategoryVisibility(binding)
             }
 
+        })
+
+        viewModel.showOrderNote.observe(viewLifecycleOwner, {
+            if (it){
+                OrderNotesDialogFragment().show(childFragmentManager, OrderNotesDialogFragment.TAG)
+            }
         })
 
             return binding.root
@@ -165,7 +155,7 @@ class OrderFragment : BaseFragment() {
     private fun addGuestButtons(int: Int, binding: OrderFragmentBinding){
         val btn = createGuestButton(int)
         binding.toolbarGuestSideBar.addView(btn)
-        viewModel.pageLoaded.observe(viewLifecycleOwner, Observer { it ->
+        viewModel.pageLoaded.observe(viewLifecycleOwner, { it ->
             if (it){
                 createMenuButtons(viewModel.menus.value!!, binding)
                 viewModel.setPageLoaded(false)
@@ -197,6 +187,7 @@ class OrderFragment : BaseFragment() {
         binding.layoutMenuItem.visibility = View.GONE
         binding.txtMenuCategory.visibility = View.GONE
         binding.txtMenuItemItemName.visibility = View.GONE
+        binding.btnAddOrderNote.visibility = View.GONE
         val offWhite = ContextCompat.getColor(requireContext(), R.color.offWhite_background)
         binding.layoutMenus.backgroundTintList = ColorStateList.valueOf(offWhite)
         binding.btnMenuBack.backgroundTintList = ColorStateList.valueOf(offWhite)
@@ -209,6 +200,7 @@ class OrderFragment : BaseFragment() {
         binding.layoutMenuItem.visibility = View.GONE
         binding.txtMenuCategory.visibility = View.VISIBLE
         binding.txtMenuItemItemName.visibility = View.GONE
+        binding.btnAddOrderNote.visibility = View.GONE
         val offWhite = ContextCompat.getColor(requireContext(), R.color.offWhite_background)
         binding.layoutMenus.backgroundTintList = ColorStateList.valueOf(offWhite)
         binding.btnMenuBack.backgroundTintList = ColorStateList.valueOf(offWhite)
@@ -221,12 +213,13 @@ class OrderFragment : BaseFragment() {
         binding.txtMenuCategory.visibility = View.GONE
         binding.layoutMenuItem.visibility = View.VISIBLE
         binding.txtMenuItemItemName.visibility = View.VISIBLE
+        binding.btnAddOrderNote.visibility = View.VISIBLE
         val white = ContextCompat.getColor(requireContext(), R.color.white)
         binding.layoutMenus.backgroundTintList = ColorStateList.valueOf(white)
         binding.btnMenuBack.backgroundTintList = ColorStateList.valueOf(white)
     }
 
-    private fun menuSelect(menu: Menu, binding: OrderFragmentBinding){
+    private fun menuSelect(menu: Menu){
         viewModel.setActiveMenu(menu)
 
     }
@@ -256,7 +249,6 @@ class OrderFragment : BaseFragment() {
             btnView.id = ViewCompat.generateViewId()
             val color = ContextCompat.getColor(requireContext(), R.color.primaryTextColor)
             val white = ContextCompat.getColor(requireContext(), R.color.white)
-            val accent = ContextCompat.getColor(requireContext(), R.color.secondaryColor)
             btnView.backgroundTintList = ColorStateList.valueOf(white)
             btnView.setTextColor(ColorStateList.valueOf(color))
 
@@ -307,7 +299,6 @@ class OrderFragment : BaseFragment() {
             btnView.id = ViewCompat.generateViewId()
             val color = ContextCompat.getColor(requireContext(), R.color.primaryTextColor)
             val white = ContextCompat.getColor(requireContext(), R.color.white)
-            val accent = ContextCompat.getColor(requireContext(), R.color.secondaryColor)
             btnView.backgroundTintList = ColorStateList.valueOf(white)
             btnView.setTextColor(ColorStateList.valueOf(color))
             btnView.text = menuItem.itemName
@@ -323,7 +314,7 @@ class OrderFragment : BaseFragment() {
             btnView.layoutParams = params
             btnView.width = 450
             btnView.height = 180
-            btnView.setOnClickListener { setMenuItem(menuItem, binding) }
+            btnView.setOnClickListener { setMenuItem(menuItem) }
 
             binding.layoutMenuItems.addView(btnView)
 
@@ -334,10 +325,30 @@ class OrderFragment : BaseFragment() {
 
     }
 
-    private fun setMenuItem(item: MenuItem, binding: OrderFragmentBinding){
+    private fun setMenuItem(item: MenuItem){
         viewModel.setMenusNavigation(MenusNavigation.MENU_ITEM)
         viewModel.setActiveItem(item)
 
+    }
+
+    fun hideSystemUI() {
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            requireActivity().window.setDecorFitsSystemWindows(false)
+            requireActivity().window.insetsController?.let {
+
+                it.hide(WindowInsets.Type.statusBars() or WindowInsets.Type.navigationBars())
+                it.systemBarsBehavior = WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+            }
+        } else {
+            @Suppress("DEPRECATION")
+            requireActivity().window.decorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_FULLSCREEN
+                    or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                    or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                    or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                    or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                    or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION)
+        }
     }
 
 

@@ -82,8 +82,6 @@ class RestaurantLoginViewModel @Inject constructor(
     }
 
     fun restLogin(){
-        println(restaurant.value?.loginPin)
-
         if (restaurant.value?.loginPin == pin.value?.toInt()){
             setPin(restaurant.value!!.loginPin.toString())
             viewModelScope.launch {

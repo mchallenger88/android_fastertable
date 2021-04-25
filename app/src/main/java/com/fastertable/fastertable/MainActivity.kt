@@ -3,8 +3,11 @@ package com.fastertable.fastertable
 import android.os.Build
 import android.os.Bundle
 import android.view.*
+import androidx.activity.viewModels
 import androidx.appcompat.widget.Toolbar
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
@@ -13,15 +16,18 @@ import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.fastertable.fastertable.common.base.BaseActivity
-import com.fastertable.fastertable.data.models.Modifier
-import com.fastertable.fastertable.data.models.ModifierItem
+import com.fastertable.fastertable.common.base.ViewModelEvent
+import com.fastertable.fastertable.ui.dialogs.DialogsNavigator
+import com.fastertable.fastertable.ui.order.OrderViewModel
 import com.google.android.material.navigation.NavigationView
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : BaseActivity() {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
+    private val orderViewModel: OrderViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,6 +51,10 @@ class MainActivity : BaseActivity() {
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
+
+        orderViewModel.closeOrderNote.observe(this, {
+            hideSystemUI()
+        })
 
         hideSystemUI()
     }
@@ -75,6 +85,5 @@ class MainActivity : BaseActivity() {
                     or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION)
         }
     }
-
 
 }

@@ -52,6 +52,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textAlignment="textStart"
+            android:visibility="gone"
             app:orderLineMods="@{orderItem}" />
 
         <TextView
@@ -59,7 +60,16 @@
             style="@style/mods_ingredients"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:visibility="gone"
             app:orderLineIngredients="@{orderItem}" />
+
+        <TextView
+            android:id="@+id/txt_order_item_note"
+            style="@style/mods_ingredients"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:orderLineNote="@{orderItem}" />
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

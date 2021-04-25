@@ -47,7 +47,7 @@ fun telephoneFormat(textView: TextView, value: String?){
 @BindingAdapter("terminalUsing")
 fun setTerminalName(textView: TextView, terminal: Terminal?){
     if (terminal != null) {
-        textView.text = "${terminal.terminalName}"
+        textView.text = terminal.terminalName
     }
 }
 
@@ -153,16 +153,16 @@ fun setGuestNumberTitle(textView: TextView, guestNumber: Int?){
         textView.text = "Guest"
     }
 }
-
-@SuppressLint("SetTextI18n")
-@BindingAdapter("bind:addItem", "bind:addQuantity")
-fun addItemToOrder(textView: TextView, addItem: MenuItem?, addQuantity: Int){
-    if (addItem?.prices?.size == 1){
-        val price = addItem.prices[0].price * addQuantity
-        textView.text = "$%.${2}f".format(price)
-    }
-
-}
+//
+//@SuppressLint("SetTextI18n")
+//@BindingAdapter("bind:addItem", "bind:addQuantity")
+//fun addItemToOrder(textView: TextView, addItem: MenuItem?, addQuantity: Int){
+//    if (addItem?.prices?.size == 1){
+//        val price = addItem.prices[0].price * addQuantity
+//        textView.text = "$%.${2}f".format(price)
+//    }
+//
+//}
 
 @SuppressLint("SetTextI18n")
 @BindingAdapter("addRemoveIngredient")
@@ -177,7 +177,7 @@ fun addRemoveIngredient(textView: TextView, item: ItemIngredient){
 @SuppressLint("SetTextI18n")
 @BindingAdapter("orderLineMods")
 fun addOrderLineMods(textView: TextView, item: OrderItem){
-    if (item.orderMods != null){
+    if (item.orderMods?.size!! > 0){
         var mods: String = String()
         item.orderMods.forEach { mod ->
             mods += mod.itemName + ", "
@@ -185,7 +185,15 @@ fun addOrderLineMods(textView: TextView, item: OrderItem){
         mods = "- $mods"
         mods = mods.dropLast(2)
         textView.text = mods
+        textView.visibility = View.VISIBLE
     }else{
+        textView.visibility = View.GONE
+    }
+}
+
+@BindingAdapter("checkIngredientHeader")
+fun checkIngredientHeader(textView: TextView, item: ItemIngredient){
+    if (item.name.isNullOrEmpty()){
         textView.visibility = View.GONE
     }
 }
@@ -193,7 +201,8 @@ fun addOrderLineMods(textView: TextView, item: OrderItem){
 @SuppressLint("SetTextI18n")
 @BindingAdapter("orderLineIngredients")
 fun addOrderLineIngredients(textView: TextView, item: OrderItem){
-    if (item.ingredients != null){
+    val flat = item.ingredients?.filter { it -> it.orderValue != 1 }
+    if (flat?.size!! > 0){
         var ingredients: String = String()
         item.ingredients?.forEach{ ing ->
             if (ing.orderValue == 0){
@@ -206,6 +215,18 @@ fun addOrderLineIngredients(textView: TextView, item: OrderItem){
         ingredients = "- $ingredients"
         ingredients = ingredients.dropLast(2)
         textView.text = ingredients
+        textView.visibility = View.VISIBLE
+    }else{
+        textView.visibility = View.GONE
+    }
+}
+
+@SuppressLint("SetTextI18n")
+@BindingAdapter("orderLineNote")
+fun addOrderLineNote(textView: TextView, item: OrderItem){
+    if (item.note.isNotEmpty() && item.note !== "null"){
+        textView.text = "Notes: ${item.note}"
+        textView.visibility = View.VISIBLE
     }else{
         textView.visibility = View.GONE
     }

@@ -14,12 +14,8 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.fastertable.fastertable.R
 import com.fastertable.fastertable.data.models.IngredientChange
-import com.fastertable.fastertable.data.models.IngredientList
 import com.fastertable.fastertable.data.models.ItemIngredient
-import com.fastertable.fastertable.data.models.Order
 import com.fastertable.fastertable.databinding.IngredientLineItemBinding
-import com.fastertable.fastertable.databinding.IngredientLineItemHeaderBinding
-import com.fastertable.fastertable.databinding.OrderListLineHeaderBinding
 
 enum class PlusMinus{
     PLUS,
@@ -33,14 +29,14 @@ class IngredientsAdapter(private val clickListener: IngredientListener) : ListAd
 
     override fun onBindViewHolder(holder: IngredientViewHolder, position: Int) {
         val ingredient = getItem(position)
-        holder.bind(ingredient, clickListener)
+        holder.bind(ingredient, clickListener, position)
     }
 
     class IngredientViewHolder(private var binding: IngredientLineItemBinding,
                                private val parent: ViewGroup): RecyclerView.ViewHolder(binding.root) {
 
         @SuppressLint("SetTextI18n")
-        fun bind(item: ItemIngredient, clickListener: IngredientListener) {
+        fun bind(item: ItemIngredient, clickListener: IngredientListener, position: Int) {
             binding.layoutIngredient.removeAllViews()
             binding.ingredients = item
             binding.clickListener = clickListener
@@ -82,6 +78,21 @@ class IngredientsAdapter(private val clickListener: IngredientListener) : ListAd
             layout.addView(btnMinus)
             layout.addView(btnAdd)
             layout.addView(textView)
+
+            if (position == 0){
+                val headerTV = TextView(parent.context)
+                headerTV.id = ViewCompat.generateViewId()
+                headerTV.text = "Ingredients"
+                headerTV.setTextAppearance(R.style.large_title_bold)
+                val headerTVParams: LinearLayout.LayoutParams = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                )
+                headerTVParams.setMargins(6, 16, 0, 16)
+                headerTV.layoutParams = headerTVParams
+
+                binding.layoutIngredient.addView(headerTV)
+            }
 
 
             binding.layoutIngredient.addView(layout)
@@ -146,35 +157,35 @@ class IngredientsAdapter(private val clickListener: IngredientListener) : ListAd
 
 
 
-class IngredientHeaderAdapter: ListAdapter<ItemIngredient, IngredientHeaderAdapter.HeaderViewHolder>(DiffCallback) {
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HeaderViewHolder {
-        return HeaderViewHolder(IngredientLineItemHeaderBinding.inflate(LayoutInflater.from(parent.context)))
-    }
-
-    override fun onBindViewHolder(holder: HeaderViewHolder, position: Int) {
-        holder.bind()
-    }
-
-    class HeaderViewHolder(private var binding: IngredientLineItemHeaderBinding):
-            RecyclerView.ViewHolder(binding.root) {
-        fun bind(){
-            binding.executePendingBindings()
-        }
-    }
-
-    override fun getItemCount(): Int {
-        return 1
-    }
-
-    companion object DiffCallback : DiffUtil.ItemCallback<ItemIngredient>() {
-        override fun areItemsTheSame(oldItem: ItemIngredient, newItem: ItemIngredient): Boolean {
-            return oldItem === newItem
-        }
-
-        override fun areContentsTheSame(oldItem: ItemIngredient, newItem: ItemIngredient): Boolean {
-            return oldItem == newItem
-        }
-    }
-
-}
+//class IngredientHeaderAdapter: ListAdapter<ItemIngredient, IngredientHeaderAdapter.HeaderViewHolder>(DiffCallback) {
+//
+//    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HeaderViewHolder {
+//        return HeaderViewHolder(IngredientLineItemHeaderBinding.inflate(LayoutInflater.from(parent.context)))
+//    }
+//
+//    override fun onBindViewHolder(holder: HeaderViewHolder, position: Int) {
+//        holder.bind()
+//    }
+//
+//    class HeaderViewHolder(private var binding: IngredientLineItemHeaderBinding):
+//            RecyclerView.ViewHolder(binding.root) {
+//        fun bind(){
+//            binding.executePendingBindings()
+//        }
+//    }
+//
+//    override fun getItemCount(): Int {
+//        return 1
+//    }
+//
+//    companion object DiffCallback : DiffUtil.ItemCallback<ItemIngredient>() {
+//        override fun areItemsTheSame(oldItem: ItemIngredient, newItem: ItemIngredient): Boolean {
+//            return oldItem === newItem
+//        }
+//
+//        override fun areContentsTheSame(oldItem: ItemIngredient, newItem: ItemIngredient): Boolean {
+//            return oldItem == newItem
+//        }
+//    }
+//
+//}

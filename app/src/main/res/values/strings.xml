@@ -44,6 +44,7 @@
     <string name="string_total">Total</string>
     <string name="string_mods">mods</string>
     <string name="string_ingredients">Ingredients</string>
+    <string name="save">Save</string>
 
     //Button pad
     <string name="string_one">1</string>
@@ -94,6 +95,9 @@
     <string name="reorder_drinks">Reorder Drinks</string>
     <string name="todo">TODO</string>
     <string name="guests">Guests</string>
+    <string name="order_item_notes_dialog_title">Order Item Notes</string>
+    <string name="order_item_notes_dialog_message">Enter specific notes for this item:</string>
+
 
     //Menu
     <string name="menu_categories">Categories</string>
@@ -104,4 +108,6 @@
     <string name="mod_required">Selection Required</string>
     <string name="string_add_guest">add guest</string>
     <string name="add_item_to_order">Add Item to Order</string>
+    <string name="button_order_note">button order note</string>
+    <string name="add_your_notes">Add your notes</string>
 </resources>

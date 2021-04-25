@@ -39,9 +39,7 @@ class ModifierAdapter(private val clickListener: ModifierListener) : ListAdapter
             binding.modifier = modifier
             binding.clickListener = clickListener
             binding.executePendingBindings()
-            binding.listCheckbox.removeAllViews()
-            binding.modifierRadioGroup.removeAllViews()
-            binding.layoutModtestbuttons.removeAllViews()
+            binding.layoutModButtons.removeAllViews()
             if (modifier.selectionLimitMin == 0){
                 binding.txtModRequired.visibility = View.GONE
             }
@@ -121,10 +119,10 @@ class ModifierAdapter(private val clickListener: ModifierListener) : ListAdapter
                 }else{
                     btn.text = item.itemName + ": (+" + "$%.${2}f".format(item.surcharge) + ")"
                 }
-                binding.layoutModtestbuttons.addView(btn)
+                binding.layoutModButtons.addView(btn)
                 flow.addView(btn)
             }
-            binding.layoutModtestbuttons.addView(flow)
+            binding.layoutModButtons.addView(flow)
 
         }
 

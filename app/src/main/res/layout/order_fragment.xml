@@ -122,7 +122,7 @@
                     style="@style/large_title"
                     android:layout_width="0dp"
                     android:layout_height="40dp"
-                    android:gravity="center_vertical"
+                    android:gravity="center_horizontal"
                     android:text="@string/string_guest"
                     android:textAlignment="center"
                     android:textStyle="bold"
@@ -189,6 +189,19 @@
                 app:tabTextColor="@color/offWhite">
 
             </com.google.android.material.tabs.TabLayout>
+
+            <ImageButton
+                android:id="@+id/btn_add_order_note"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                android:backgroundTint="#FFFFFF"
+                android:contentDescription="@string/button_order_note"
+                android:onClick="@{() -> viewModel.openNoteDialog()}"
+                app:layout_constraintEnd_toEndOf="@+id/menus_tab_bar"
+                app:layout_constraintTop_toBottomOf="@+id/menus_tab_bar"
+                app:srcCompat="@drawable/ic_outline_text_snippet_24" />
 
             <ImageButton
                 android:id="@+id/btn_menu_back"
@@ -270,13 +283,12 @@
                 android:id="@+id/layout_menuItem"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                android:layout_marginTop="80dp"
                 android:background="@color/white"
                 android:visibility="visible"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/menus_tab_bar">
+                app:layout_constraintTop_toTopOf="@+id/layout_menu_categories">
 
                 <TextView
                     android:id="@+id/txt_menu_item_description"
@@ -339,12 +351,11 @@
                     android:layout_marginStart="50dp"
                     android:layout_marginTop="16dp"
                     android:layout_marginEnd="50dp"
-                    android:layout_marginBottom="30dp"
                     android:scrollbarAlwaysDrawVerticalTrack="false"
                     android:scrollbarStyle="outsideInset"
                     android:scrollbars="vertical"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                    app:layout_constraintBottom_toTopOf="@+id/btn_add_item"
+                    app:layout_constraintBottom_toTopOf="@+id/layout_item_pricing"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/btn_minus_quantity"
@@ -352,33 +363,42 @@
 
                 </androidx.recyclerview.widget.RecyclerView>
 
-                <Button
-                    android:id="@+id/btn_add_item"
-                    style="@style/primary_button_large"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="10dp"
-                    android:drawableLeft="@drawable/ic_baseline_add_24_white"
-                    android:background="@drawable/rounded_button"
-                    android:onClick="@{() -> viewModel.addItemToOrder()}"
-                    android:text="@string/add_item_to_order"
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/layout_item_pricing"
+                    android:layout_width="match_parent"
+                    android:layout_height="125dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    tools:ignore="RtlHardcoded" />
+                    app:layout_constraintStart_toStartOf="parent">
 
-                <TextView
-                    android:id="@+id/txt_item_price"
-                    style="@style/large_title_bold"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginBottom="10dp"
-                    app:priceDouble="@{viewModel.workingItemPrice}"
-                    app:layout_constraintBottom_toTopOf="@+id/btn_add_item"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/mod_recycler_view" />
+                    <TextView
+                        android:id="@+id/txt_item_price"
+                        style="@style/large_title_bold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="@+id/layout_item_pricing"
+                        app:priceDouble="@{viewModel.workingItemPrice}" />
+
+                    <Button
+                        android:id="@+id/btn_add_item"
+                        style="@style/primary_button_large"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="16dp"
+                        android:background="@drawable/rounded_button"
+                        android:drawableLeft="@drawable/ic_baseline_add_24_white"
+                        android:onClick="@{() -> viewModel.addItemToOrder()}"
+                        android:text="@string/add_item_to_order"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/txt_item_price"
+                        tools:ignore="RtlHardcoded" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
             </androidx.constraintlayout.widget.ConstraintLayout>
 
 

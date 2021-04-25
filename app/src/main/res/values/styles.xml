@@ -12,7 +12,7 @@
 
     <style name="default_text">
     <item name="android:textSize">@dimen/default_text_size</item>
-    <item name="android:textStyle">bold</item>
+<!--    <item name="android:textStyle">bold</item>-->
     <item name="android:textColor">@color/default_text_color</item>
     <item name="android:layout_marginTop">@dimen/textView_margin</item>
     </style>

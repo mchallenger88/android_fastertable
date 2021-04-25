@@ -1,9 +1,10 @@
 package com.fastertable.fastertable.ui.order
 
+import androidx.databinding.ObservableField
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.fastertable.fastertable.common.base.BaseViewModel
 import com.fastertable.fastertable.data.models.*
 import com.fastertable.fastertable.data.repository.LoginRepository
 import com.fastertable.fastertable.data.repository.MenusRepository
@@ -26,10 +27,10 @@ enum class AddSubtract{
 @HiltViewModel
 class OrderViewModel @Inject constructor (private val menusRepository: MenusRepository,
                                           private val loginRepository: LoginRepository,
-                                          private val orderRepository: OrderRepository) : ViewModel() {
+                                          private val orderRepository: OrderRepository) : BaseViewModel() {
 
     private lateinit var user: OpsAuth
-
+    val orderNote = ObservableField<String>()
     //Settings
     private lateinit var settings: Settings
     //Live Data for Menus
@@ -56,10 +57,6 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
     private val _modifiers = MutableLiveData<List<Modifier>?>()
     val modifiers: LiveData<List<Modifier>?>
         get() = _modifiers
-
-//    private val _defaultIngredients = MutableLiveData<List<ItemIngredient>>()
-//    val defaultIngredients: LiveData<List<ItemIngredient>?>
-//        get() = _defaultIngredients
 
     private val _changedIngredients = MutableLiveData<ArrayList<ItemIngredient>>()
     val changedIngredients: LiveData<ArrayList<ItemIngredient>?>
@@ -95,6 +92,18 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
     private val _workingItemPrice = MutableLiveData<Double>()
     val workingItemPrice: LiveData<Double>
         get() = _workingItemPrice
+
+    private val _showOrderNote = MutableLiveData<Boolean>()
+    val showOrderNote: LiveData<Boolean>
+        get() = _showOrderNote
+
+    private val _closeOrderNote = MutableLiveData<Boolean>()
+    val closeOrderNote: LiveData<Boolean>
+        get() = _closeOrderNote
+
+    private val _orderNotes = MutableLiveData<String>()
+    val orderNotes: LiveData<String>
+        get() = _orderNotes
 
     private val orderMods = arrayListOf<OrderMod>()
     private val modItems = arrayListOf<ModifierItem>()
@@ -132,7 +141,7 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
 
     fun setActiveGuest(int: Int){
         _activeGuest.value = int
-        _order.value = orderRepository.getNewOrder()
+//        _order.value = orderRepository.getNewOrder()
     }
 
     fun addGuest(){
@@ -189,7 +198,7 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
                 val qty = it?.quantity
                 it?.quantity = 0
                 if (it?.surcharge!! > 0){
-                    AddSubtract.SUBTRACT.updateWorkingPrice(it?.surcharge!!.times(qty!!))
+                    AddSubtract.SUBTRACT.updateWorkingPrice(it.surcharge.times(qty!!))
                 }
 
             }
@@ -257,14 +266,13 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
             dontMake = false,
             rush = false,
             tax = activeItem.value!!.prices[0].tax,
-            note = "",
+            note = orderNotes.value.toString(),
             employeeId = user.employeeId,
             status = "Started",
         )
 
         _order.value!!.guests!![activeGuest.value!! - 1].orderItemAdd(item)
         _order.value = _order.value
-        orderRepository.saveNewOrder(order.value!!)
         _menusNavigation.value = MenusNavigation.CATEGORIES
         clearItemSettings()
     }
@@ -336,7 +344,7 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
         if (itemQuantity.value!! > 1){
             val unitPrice = _workingItemPrice.value!!.div(itemQuantity.value!!)
             _itemQuantity.value = _itemQuantity.value?.minus(1)
-            _workingItemPrice.value = unitPrice!!.times(itemQuantity.value!!)
+            _workingItemPrice.value = unitPrice.times(itemQuantity.value!!)
         }
     }
 
@@ -359,5 +367,14 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
         _workingItemPrice.value = 0.0
         _itemQuantity.value = 1
     }
+
+    fun openNoteDialog(){
+        _showOrderNote.value = true
     }
+
+    fun saveOrderNote(){
+        _closeOrderNote.postValue(false)
+        _orderNotes.value = orderNote.get().toString()
+    }
+}
 

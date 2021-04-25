@@ -58,7 +58,7 @@ class OrderRepository @Inject constructor(private val app: Application) {
     }
 
     fun getOrderFromFile(): Order?{
-        var gson = Gson()
+        val gson = Gson()
         if (File(app.filesDir, "orders.json").exists()){
             val bufferedReader: BufferedReader = File(app.filesDir, "order.json").bufferedReader()
             val inputString = bufferedReader.use { it.readText() }
@@ -76,7 +76,7 @@ class OrderRepository @Inject constructor(private val app: Application) {
     }
 
     fun getOrdersFromFile(): List<Order>?{
-        var gson = Gson()
+        val gson = Gson()
         if (File(app.filesDir, "orders.json").exists()){
             val bufferedReader: BufferedReader = File(app.filesDir, "orders.json").bufferedReader()
             val inputString = bufferedReader.use { it.readText() }
@@ -88,7 +88,7 @@ class OrderRepository @Inject constructor(private val app: Application) {
     }
 
     fun createNewOrder(orderType: String, settings: Settings, user: OpsAuth, tableNumber: Int?): Order {
-        val newGuest: Guest = Guest(
+        val newGuest = Guest(
             id = 1,
             startTime = GlobalUtils().getNowEpoch(),
             orderItems = null,
@@ -102,7 +102,7 @@ class OrderRepository @Inject constructor(private val app: Application) {
         guests.add(newGuest)
 
 
-        val order: Order = Order(
+        val order = Order(
             orderType = orderType,
             orderNumber = 99,
             tableNumber = tableNumber,
@@ -150,6 +150,7 @@ class OrderRepository @Inject constructor(private val app: Application) {
         val gson = Gson()
         val jsonString = gson.toJson(order)
         val file= File(app.filesDir, "new_order.json")
+        file.writeText("")
         file.writeText(jsonString)
         return order
     }
@@ -163,7 +164,7 @@ class OrderRepository @Inject constructor(private val app: Application) {
     }
 
     fun getNewOrder(): Order?{
-        var gson = Gson()
+        val gson = Gson()
         if (File(app.filesDir, "new_order.json").exists()){
             val bufferedReader: BufferedReader = File(app.filesDir, "new_order.json").bufferedReader()
             val inputString = bufferedReader.use { it.readText() }
