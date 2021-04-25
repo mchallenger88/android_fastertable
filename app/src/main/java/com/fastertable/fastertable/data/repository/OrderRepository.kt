@@ -163,6 +163,20 @@ class OrderRepository @Inject constructor(private val app: Application) {
         file.writeText(jsonString)
     }
 
+    fun clearNewOrder(){
+        val gson = Gson()
+        val jsonString = ""
+        val file= File(app.filesDir, "new_order.json")
+        file.writeText(jsonString)
+    }
+
+    fun clearOrder(){
+        val gson = Gson()
+        val jsonString = ""
+        val file= File(app.filesDir, "order.json")
+        file.writeText(jsonString)
+    }
+
     fun getNewOrder(): Order?{
         val gson = Gson()
         if (File(app.filesDir, "new_order.json").exists()){

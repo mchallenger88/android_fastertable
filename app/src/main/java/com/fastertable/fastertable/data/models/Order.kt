@@ -2,6 +2,7 @@ package com.fastertable.fastertable.data.models
 
 import android.os.Parcelable
 import com.fastertable.fastertable.utils.GlobalUtils
+import com.google.gson.Gson
 import kotlinx.parcelize.Parcelize
 import com.squareup.moshi.JsonClass
 
@@ -111,6 +112,11 @@ data class Order(
 
     fun getOrderTotal(): Double{
         return this.getSubtotal() + this.getSalesTax()
+    }
+
+    fun clone(): Order{
+        val order: String = Gson().toJson(this, Order::class.java)
+        return Gson().fromJson(order, Order::class.java)
     }
 }
 

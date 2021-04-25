@@ -70,6 +70,10 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
     val menusNavigation: LiveData<MenusNavigation>
         get() = _menusNavigation
 
+    private val _enableAddButton = MutableLiveData<Boolean>()
+    val enableAddButton: LiveData<Boolean>
+        get() = _enableAddButton
+
     private var modList = ArrayList<Modifier>()
 
     //Live Data for Order Info
@@ -105,8 +109,9 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
     val orderNotes: LiveData<String>
         get() = _orderNotes
 
-    private val orderMods = arrayListOf<OrderMod>()
-    private val modItems = arrayListOf<ModifierItem>()
+    private val _sendKitchen = MutableLiveData<Boolean>()
+    val sendKitchen: LiveData<Boolean>
+        get() = _sendKitchen
 
 
     init{
@@ -114,6 +119,7 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
         viewModelScope.launch {
             getOrder()
             getUser()
+            settings = loginRepository.getSettings()!!
             _menus.postValue(menusRepository.getMenus())
             _menusNavigation.value = MenusNavigation.CATEGORIES
             _itemQuantity.postValue(1)
@@ -172,6 +178,7 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
         val index = _activeItem.value?.modifiers!!.indexOfFirst { x -> x.id == item.mod.id }
         _activeItem.value!!.modifiers[index] = item.mod
         _activeItem.value = _activeItem.value
+        checkModifierValidation()
     }
 
     private fun checkboxMod(sum: Int, item: OrderMod){
@@ -278,7 +285,6 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
     }
 
     private fun findPrepStation(): PrepStation?{
-        settings = loginRepository.getSettings()!!
         val printerName = activeItem.value!!.printer.printerName
         return settings.prepStations.find{ it ->
             it.stationName == printerName
@@ -297,7 +303,7 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
         _modifiers.value = null
         modList.clear()
         _activeItem.value = menuItem.clone()
-
+        enableAddItemButton()
         activeItem.value?.modifiers?.forEachIndexed { int, mod ->
             mod.arrayId = int.toDouble()
             modList.add(mod)
@@ -306,6 +312,7 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
         _modifiers.value = modList
         _changedIngredients.value = activeItem.value?.ingredients
         _workingItemPrice.value = activeItem.value!!.prices[0].price
+
     }
 
     fun onIngredientClicked(item: IngredientChange){
@@ -375,6 +382,36 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
     fun saveOrderNote(){
         _closeOrderNote.postValue(false)
         _orderNotes.value = orderNote.get().toString()
+    }
+
+    private fun enableAddItemButton(){
+        var enable = true
+        activeItem.value?.modifiers?.forEach { it ->
+            if (it.selectionLimitMin >= 1){
+                enable = false
+            }
+        }
+        _enableAddButton.value = enable
+    }
+
+    private fun checkModifierValidation(){
+        var requireMet: Boolean = true
+        activeItem.value!!.modifiers.forEach { mod ->
+            var count = 0
+            mod.modifierItems.forEach { mi ->
+                if (mi.quantity > 0){
+                    count = count.plus(mi.quantity)
+                }
+            }
+            if (count < mod.selectionLimitMin){
+                requireMet = false
+            }
+        }
+        _enableAddButton.value = requireMet
+    }
+
+    fun sendToKitchen(){
+        _sendKitchen.value = true
     }
 }
 

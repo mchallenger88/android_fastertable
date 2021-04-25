@@ -110,4 +110,12 @@
     <string name="add_item_to_order">Add Item to Order</string>
     <string name="button_order_note">button order note</string>
     <string name="add_your_notes">Add your notes</string>
+    <string name="payment">Payment</string>
+    <string name="send_kitchen">Send to Kitchen</string>
+    <string name="fastertable_logo">fastertable logo</string>
+
+    //Dialogs
+    <string name="kitchen_warning_title">Kitchen Warning</string>
+    <string name="kitchen_warning_message">There are no unsent menu items.</string>
+    <string name="dialog_close">Close</string>
 </resources>

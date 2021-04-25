@@ -43,6 +43,7 @@ class OrderFragment : BaseFragment() {
         val binding = OrderFragmentBinding.inflate(inflater)
         binding.lifecycleOwner = viewLifecycleOwner
         binding.viewModel = viewModel
+        createAndSetAdapters(binding)
 
         viewModel.guestAdd.observe(viewLifecycleOwner, { it ->
             if (it) {
@@ -50,7 +51,6 @@ class OrderFragment : BaseFragment() {
                 viewModel.setGuestAdd(false)
             }
         })
-
 
         viewModel.activeGuest.observe(viewLifecycleOwner, { guestNumber ->
             binding.toolbarGuestSideBar.children.forEachIndexed { index, element ->
@@ -67,29 +67,6 @@ class OrderFragment : BaseFragment() {
                 }
             }
         })
-
-        val modAdapter = ModifierAdapter(ModifierAdapter.ModifierListener { item ->
-            viewModel.onModItemClicked(item)
-        })
-
-        val ingAdapter = IngredientsAdapter(IngredientsAdapter.IngredientListener { item ->
-            viewModel.onIngredientClicked(item)
-        })
-
-        viewModel.activeItem.observe(viewLifecycleOwner, { item ->
-            modAdapter.submitList(item?.modifiers)
-            modAdapter.notifyDataSetChanged()
-        })
-
-        viewModel.changedIngredients.observe(viewLifecycleOwner, {
-            ingAdapter.submitList(viewModel.changedIngredients.value)
-            ingAdapter.notifyDataSetChanged()
-        })
-
-         val concatAdapter = ConcatAdapter(modAdapter, ingAdapter)
-
-        binding.orderItems.adapter = OrderItemAdapter()
-        binding.modRecyclerView.adapter = concatAdapter
 
         binding.menusTabBar.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab?) {
@@ -331,24 +308,29 @@ class OrderFragment : BaseFragment() {
 
     }
 
-    fun hideSystemUI() {
+    private fun createAndSetAdapters(binding: OrderFragmentBinding){
+        val modAdapter = ModifierAdapter(ModifierAdapter.ModifierListener { item ->
+            viewModel.onModItemClicked(item)
+        })
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            requireActivity().window.setDecorFitsSystemWindows(false)
-            requireActivity().window.insetsController?.let {
+        val ingAdapter = IngredientsAdapter(IngredientsAdapter.IngredientListener { item ->
+            viewModel.onIngredientClicked(item)
+        })
 
-                it.hide(WindowInsets.Type.statusBars() or WindowInsets.Type.navigationBars())
-                it.systemBarsBehavior = WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
-            }
-        } else {
-            @Suppress("DEPRECATION")
-            requireActivity().window.decorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_FULLSCREEN
-                    or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                    or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-                    or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                    or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                    or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION)
-        }
+        viewModel.activeItem.observe(viewLifecycleOwner, { item ->
+            modAdapter.submitList(item?.modifiers)
+            modAdapter.notifyDataSetChanged()
+        })
+
+        viewModel.changedIngredients.observe(viewLifecycleOwner, {
+            ingAdapter.submitList(viewModel.changedIngredients.value)
+            ingAdapter.notifyDataSetChanged()
+        })
+
+        val concatAdapter = ConcatAdapter(modAdapter, ingAdapter)
+
+        binding.orderItems.adapter = OrderItemAdapter()
+        binding.modRecyclerView.adapter = concatAdapter
     }
 
 

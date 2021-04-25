@@ -17,15 +17,20 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.fastertable.fastertable.common.base.BaseActivity
 import com.fastertable.fastertable.common.base.ViewModelEvent
+import com.fastertable.fastertable.data.models.Order
+import com.fastertable.fastertable.data.repository.LoginRepository
+import com.fastertable.fastertable.data.repository.OrderRepository
 import com.fastertable.fastertable.ui.dialogs.DialogsNavigator
+import com.fastertable.fastertable.ui.dialogs.KitchenWarningDialogFragment
 import com.fastertable.fastertable.ui.order.OrderViewModel
 import com.google.android.material.navigation.NavigationView
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class MainActivity : BaseActivity() {
-
+class MainActivity: BaseActivity() {
+    @Inject lateinit var loginRepository: LoginRepository
+    @Inject lateinit var orderRepository: OrderRepository
     private lateinit var appBarConfiguration: AppBarConfiguration
     private val orderViewModel: OrderViewModel by viewModels()
 
@@ -56,6 +61,10 @@ class MainActivity : BaseActivity() {
             hideSystemUI()
         })
 
+        orderViewModel.sendKitchen.observe(this, {
+            sendToKitchen()
+        })
+
         hideSystemUI()
     }
 
@@ -63,6 +72,38 @@ class MainActivity : BaseActivity() {
     override fun onSupportNavigateUp(): Boolean {
         val navController = findNavController(R.id.nav_host_fragment)
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
+    }
+
+    private fun sendToKitchen(){
+        var send = false
+        val settings = loginRepository.getSettings()!!
+        val order = orderViewModel.order.value
+        order?.guests?.forEach { guest ->
+            guest.orderItems?.forEach {
+                if (it.status == "Started"){
+                    send = true }}}
+
+        if (send){
+            if (settings.restaurantType == "Counter Service"){
+                if (order?.orderNumber == 99 && order.tableNumber == null && order.orderType != "Takeout" && order.orderType != "Delivery"){
+                    orderRepository.saveNewOrder(order)
+                    //TODO Create Table Assignment Dialog
+                }else{
+                    //TODO Send to Kitchen that is print kitchen ticket
+                    //TODO Create a Payment and then Send to Payment Activity
+                }
+            }
+
+            if (settings.restaurantType === "Full Service"){
+                //TODO Send to Kitchen meaning print kitchen ticket
+                orderRepository.clearNewOrder()
+                //TODO: Clear new payment
+                //TODO: Go Back to Home;
+            }
+        }else{
+            KitchenWarningDialogFragment().show(supportFragmentManager, KitchenWarningDialogFragment.TAG)
+        }
+
     }
 
 
