@@ -3,6 +3,7 @@ package com.fastertable.fastertable.adapters
 import android.annotation.SuppressLint
 import android.view.View
 import android.widget.Button
+import android.widget.ImageButton
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -18,49 +19,12 @@ fun intToString(textView: TextView, value: Int) {
 }
 
 
-@BindingAdapter("orderTypeTableNumber")
-fun orderTypeTableNumber(textView: TextView, order: Order) {
-    if (order.orderType == "Takeout"){
-        textView.text = order.takeOutCustomer?.name
-    }
-
-    if (order.orderType == "Counter"){
-        textView.text = ""
-    }
-
-    if (order.orderType == "Table"){
-        textView.text = order.tableNumber.toString()
-    }
-}
-
-@SuppressLint("SetTextI18n")
-@BindingAdapter("telephone")
-fun telephoneFormat(textView: TextView, value: String?){
-    if (value?.contains("-") == true){
-        textView.text = value
-    }else{
-        textView.text = "${value?.substring(0, 3)}-${value?.substring(3, 6)}-${value?.substring(6, 10)}"
-    }
-}
-
 @SuppressLint("SetTextI18n")
 @BindingAdapter("terminalUsing")
 fun setTerminalName(textView: TextView, terminal: Terminal?){
     if (terminal != null) {
         textView.text = terminal.terminalName
     }
-}
-
-@BindingAdapter("timeStamp")
-fun timeStamp(textView: TextView, value: Long?) {
-
-    if (value != null){
-        textView.text = DateTimeFormatter.ofPattern("h:mm a").withZone(ZoneId.systemDefault())
-            .format(java.time.Instant.ofEpochSecond(value))
-    }else{
-        textView.text = ""
-    }
-
 }
 
 @SuppressLint("SetTextI18n")
@@ -93,16 +57,12 @@ fun bindDouble(textView: TextView, value: Double){
     textView.text = "$%.${2}f".format(value)
 }
 
-@BindingAdapter("itemQuantity")
-fun bindInteger(textView: TextView, value: Int){
 
-    textView.text = "$value" + "x"
+@BindingAdapter("bindTableNumber")
+fun bindTableNumber(textView: TextView, value: Int){
+    textView.text = value.toString()
 }
 
-@BindingAdapter("itemPrice")
-fun getItemPrice(textView: TextView, item: OrderItem){
-     textView.text = "$%.${2}f".format(item.getExtendedPrice())
-}
 
 @BindingAdapter("itemSubTotal")
 fun itemSubTotal(textView: TextView, item: Order){
@@ -133,16 +93,7 @@ fun bindModifierRecycler(recyclerView: RecyclerView?, data: List<Modifier>?){
     adapter.notifyDataSetChanged()
 }
 
-@SuppressLint("SetTextI18n")
-@BindingAdapter("setFullOrderType")
-fun fullOrderType(textView: TextView, orderType: String?){
-    if (orderType != null){
-        textView.text = "$orderType Order"
-    }else{
-        textView.text = "Order"
-    }
 
-}
 
 @SuppressLint("SetTextI18n")
 @BindingAdapter("setGuestNumberTitle")
@@ -174,22 +125,6 @@ fun addRemoveIngredient(textView: TextView, item: ItemIngredient){
     }
 }
 
-@SuppressLint("SetTextI18n")
-@BindingAdapter("orderLineMods")
-fun addOrderLineMods(textView: TextView, item: OrderItem){
-    if (item.orderMods?.size!! > 0){
-        var mods: String = String()
-        item.orderMods.forEach { mod ->
-            mods += mod.itemName + ", "
-        }
-        mods = "- $mods"
-        mods = mods.dropLast(2)
-        textView.text = mods
-        textView.visibility = View.VISIBLE
-    }else{
-        textView.visibility = View.GONE
-    }
-}
 
 @BindingAdapter("checkIngredientHeader")
 fun checkIngredientHeader(textView: TextView, item: ItemIngredient){
@@ -198,36 +133,4 @@ fun checkIngredientHeader(textView: TextView, item: ItemIngredient){
     }
 }
 
-@SuppressLint("SetTextI18n")
-@BindingAdapter("orderLineIngredients")
-fun addOrderLineIngredients(textView: TextView, item: OrderItem){
-    val flat = item.ingredients?.filter { it -> it.orderValue != 1 }
-    if (flat?.size!! > 0){
-        var ingredients: String = String()
-        item.ingredients?.forEach{ ing ->
-            if (ing.orderValue == 0){
-                ingredients += "No ${ing.name}, "
-            }
-            if (ing.orderValue == 2){
-                ingredients += "Extra ${ing.name}, "
-            }
-        }
-        ingredients = "- $ingredients"
-        ingredients = ingredients.dropLast(2)
-        textView.text = ingredients
-        textView.visibility = View.VISIBLE
-    }else{
-        textView.visibility = View.GONE
-    }
-}
 
-@SuppressLint("SetTextI18n")
-@BindingAdapter("orderLineNote")
-fun addOrderLineNote(textView: TextView, item: OrderItem){
-    if (item.note.isNotEmpty() && item.note !== "null"){
-        textView.text = "Notes: ${item.note}"
-        textView.visibility = View.VISIBLE
-    }else{
-        textView.visibility = View.GONE
-    }
-}

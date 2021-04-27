@@ -148,4 +148,20 @@
         <item name="android:textSize">@dimen/order_default_size</item>
         <item name="android:textStyle">bold</item>
     </style>
+
+    <style name="alert_title" parent="large_title_bold">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="alert_text" parent="large_title">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="alert_button">
+        <item name="android:textSize">@dimen/large_text_size</item>
+        <item name="android:textColor">@color/primaryLightColor</item>
+        <item name="android:backgroundTint">@color/white</item>
+    </style>
 </resources>

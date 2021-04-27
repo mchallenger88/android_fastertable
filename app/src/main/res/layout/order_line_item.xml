@@ -7,69 +7,123 @@
         <variable
             name="orderItem"
             type="com.fastertable.fastertable.data.models.OrderItem" />
+
+        <variable
+            name="clickListener"
+            type="com.fastertable.fastertable.adapters.OrderItemAdapter.OrderItemListener" />
     </data>
 
-<androidx.constraintlayout.widget.ConstraintLayout
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
-    <TextView
-        android:id="@+id/txt_quantity"
-        style="@style/menu_line_item"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:text="@string/string_quantity"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:itemQuantity="@{orderItem.quantity}" />
-
-    <TextView
-        android:id="@+id/txt_item"
-        style="@style/menu_line_item"
-        android:layout_width="300dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:text="@{orderItem.menuItemName}"
-        app:layout_constraintStart_toEndOf="@+id/txt_quantity"
-        app:layout_constraintTop_toTopOf="parent" />
-
-
-    <LinearLayout
-        android:id="@+id/mod_list_layout"
-        android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        android:layout_marginTop="4dp"
-        android:orientation="vertical"
-        app:layout_constraintStart_toStartOf="@+id/txt_item"
-        app:layout_constraintTop_toBottomOf="@+id/txt_item">
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
         <TextView
-            android:id="@+id/txt_mods"
-            style="@style/mods_ingredients"
-            android:layout_width="match_parent"
+            android:id="@+id/txt_quantity"
+            style="@style/menu_line_item"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAlignment="textStart"
-            android:visibility="gone"
-            app:orderLineMods="@{orderItem}" />
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:text="@string/string_quantity"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:itemQuantity="@{orderItem.quantity}" />
 
         <TextView
-            android:id="@+id/txt_ingredients"
-            style="@style/mods_ingredients"
-            android:layout_width="match_parent"
+            android:id="@+id/txt_item"
+            style="@style/menu_line_item"
+            android:layout_width="400dp"
             android:layout_height="wrap_content"
-            android:visibility="gone"
-            app:orderLineIngredients="@{orderItem}" />
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:text="@{orderItem.menuItemName}"
+            app:layout_constraintStart_toEndOf="@+id/txt_quantity"
+            app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
-            android:id="@+id/txt_order_item_note"
-            style="@style/mods_ingredients"
-            android:layout_width="match_parent"
+
+        <ImageView
+            android:id="@+id/img_takeout"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:visibility="gone"
-            app:orderLineNote="@{orderItem}" />
-    </LinearLayout>
-</androidx.constraintlayout.widget.ConstraintLayout>
+            android:layout_marginTop="21dp"
+            android:layout_marginEnd="8dp"
+            android:contentDescription="@string/takeout_order"
+            app:layout_constraintEnd_toStartOf="@+id/img_item_rush"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_takeout"
+            app:toggleItemTakeout="@{orderItem}"/>
+
+        <ImageView
+            android:id="@+id/img_item_rush"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="21dp"
+            android:contentDescription="@string/item_rush"
+            app:layout_constraintEnd_toStartOf="@+id/btn_item_more"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_rush"
+            app:toggleItemRush="@{orderItem}" />
+
+        <ImageView
+            android:id="@+id/img_no_make"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="21dp"
+            android:layout_marginEnd="8dp"
+            android:contentDescription="@string/dialog_NoMake"
+            app:layout_constraintEnd_toStartOf="@+id/img_takeout"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_nomake"
+            app:toggleItemNoMake="@{orderItem}"/>
+
+        <ImageButton
+            android:id="@+id/btn_item_more"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="10dp"
+            android:backgroundTint="@color/white"
+            android:contentDescription="@string/item_more"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:showItemMoreButton="@{ orderItem }"
+            app:srcCompat="@drawable/ic_baseline_more_vert_24" />
+
+        <LinearLayout
+            android:id="@+id/mod_list_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_marginTop="4dp"
+            android:orientation="vertical"
+            app:layout_constraintStart_toStartOf="@+id/txt_item"
+            app:layout_constraintTop_toBottomOf="@+id/txt_item">
+
+            <TextView
+                android:id="@+id/txt_mods"
+                style="@style/mods_ingredients"
+                android:layout_width="400dp"
+                android:layout_height="wrap_content"
+                android:textAlignment="textStart"
+                android:visibility="gone"
+                app:orderLineMods="@{orderItem}" />
+
+            <TextView
+                android:id="@+id/txt_ingredients"
+                style="@style/mods_ingredients"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="50dp"
+                android:visibility="gone"
+                app:orderLineIngredients="@{orderItem}" />
+
+            <TextView
+                android:id="@+id/txt_order_item_note"
+                style="@style/mods_ingredients"
+                android:layout_width="400dp"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                app:orderLineNote="@{orderItem}" />
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

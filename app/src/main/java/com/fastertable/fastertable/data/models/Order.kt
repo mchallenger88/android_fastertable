@@ -11,8 +11,8 @@ import com.squareup.moshi.JsonClass
 data class Order(
     val orderType: String,
     val orderNumber: Int,
-    val tableNumber: Int?,
-    val employeeId: String,
+    var tableNumber: Int?,
+    val employeeId: String?,
     val userName: String,
     val startTime: Long,
     val closeTime: Long?,
@@ -68,6 +68,38 @@ data class Order(
 
     fun guestRemove(guest: Guest){
         this.guests?.remove(guest)
+    }
+
+    fun orderItemRemove(item: OrderItem){
+        this.guests?.forEach{guest ->
+            guest.orderItems?.forEach { oi ->
+                if (oi == item){
+                    guest.orderItems?.remove(item)
+                }}}
+    }
+
+    fun toggleItemRush(item: OrderItem){
+        this.guests?.forEach{guest ->
+            guest.orderItems?.forEach { oi ->
+                if (oi == item){
+                    oi.rush = !oi.rush
+                }}}
+    }
+
+    fun toggleItemTakeout(item: OrderItem){
+        this.guests?.forEach{guest ->
+            guest.orderItems?.forEach { oi ->
+                if (oi == item){
+                    oi.takeOutFlag = !oi.takeOutFlag
+                }}}
+    }
+
+    fun toggleItemNoMake(item: OrderItem){
+        this.guests?.forEach{guest ->
+            guest.orderItems?.forEach { oi ->
+                if (oi == item){
+                    oi.dontMake = !oi.dontMake
+                }}}
     }
 
     fun acceptTakeoutOrder(accept: Boolean, readyTime: Long) = if (accept){
@@ -172,9 +204,9 @@ data class OrderItem(
     val printer: Printer,
     val priceAdjusted: Boolean,
     val menuItemDiscount: Double?,
-    val takeOutFlag: Boolean,
-    val dontMake: Boolean,
-    val rush: Boolean,
+    var takeOutFlag: Boolean,
+    var dontMake: Boolean,
+    var rush: Boolean,
     val tax: String,
     val note: String,
     val employeeId: String,

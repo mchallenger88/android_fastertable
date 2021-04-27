@@ -74,6 +74,10 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
     val enableAddButton: LiveData<Boolean>
         get() = _enableAddButton
 
+    private val _orderItemClicked = MutableLiveData<OrderItem>()
+    val orderItemClicked: LiveData<OrderItem>
+        get() = _orderItemClicked
+
     private var modList = ArrayList<Modifier>()
 
     //Live Data for Order Info
@@ -412,6 +416,35 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
 
     fun sendToKitchen(){
         _sendKitchen.value = true
+    }
+
+    fun setTableNumber(table: Int){
+        _order.value?.tableNumber = table
+        _order.value = _order.value
+    }
+
+    fun orderItemClicked(item:OrderItem){
+        _orderItemClicked.value = item
+    }
+
+    fun actionOnItemClicked(action: String){
+        when (action) {
+            "Delete" -> {
+                _order.value?.orderItemRemove(orderItemClicked.value!!)
+            }
+            "Toggle Rush" -> {
+                _order.value?.toggleItemRush(orderItemClicked.value!!)
+            }
+            "Toggle Takeout"-> {
+                _order.value?.toggleItemTakeout(orderItemClicked.value!!)
+            }
+            "Toggle No Make"-> {
+                _order.value?.toggleItemNoMake(orderItemClicked.value!!)
+            }
+            else -> {
+            }
+        }
+        _order.value = _order.value
     }
 }
 

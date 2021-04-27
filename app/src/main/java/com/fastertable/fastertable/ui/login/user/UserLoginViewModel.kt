@@ -29,8 +29,8 @@ class UserLoginViewModel @Inject constructor(private val loginRepository: LoginR
     val pin: LiveData<String>
         get() = _pin
 
-    private val _terminal = MutableLiveData<Terminal>()
-    val terminal: LiveData<Terminal>
+    private val _terminal = MutableLiveData<Terminal?>()
+    val terminal: LiveData<Terminal?>
         get() = _terminal
 
     private val _navigate = MutableLiveData<Boolean>()

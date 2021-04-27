@@ -13,8 +13,16 @@
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
         <item name="textInputStyle">@style/AppTextField</item>
+        <item name="materialAlertDialogTheme">@style/MyThemeOverlay.MaterialDialogAlert</item>
     </style>
 
+    <style name="MyThemeOverlay.MaterialDialogAlert" parent="@style/ThemeOverlay.MaterialComponents.MaterialAlertDialog">
+        <!-- Title -->
+        <item name="materialAlertDialogTitleTextStyle">@style/alert_title</item>
+        <!-- Body -->
+        <item name="materialAlertDialogBodyTextStyle">@style/alert_text</item>
+        <item name="buttonBarPositiveButtonStyle">@style/alert_button</item>
+    </style>
 
 
     <style name="Theme.Fastertable.NoActionBar">

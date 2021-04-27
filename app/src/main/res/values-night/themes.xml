@@ -13,7 +13,14 @@
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
         <item name="textInputStyle">@style/AppTextField</item>
+        <item name="materialAlertDialogTitleTextStyle">@style/large_title_bold</item>
     </style>
 
+    <style name="Theme.Fastertable.MaterialDialogAlert" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
+        <!-- Title -->
+        <item name="materialAlertDialogTitleTextStyle">@style/large_title_bold</item>
+        <!-- Body -->
+        <item name="materialAlertDialogBodyTextStyle">@style/large_title_bold</item>
+    </style>
 
 </resources>

@@ -152,7 +152,7 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:setFullOrderType="@{viewModel.order.orderType}" />
+                    app:setFullOrderType="@{viewModel.order}" />
 
                 <TextView
                     android:id="@+id/txt_guest_number"
@@ -186,7 +186,7 @@
                     android:layout_marginEnd="10dp"
                     android:layout_marginBottom="16dp"
                     android:scrollbarStyle="outsideInset"
-                    app:itemListData="@{viewModel.order.guests[viewModel.activeGuest -1 ].getOrderItems()}"
+                    app:itemListData="@{viewModel.order.guests[viewModel.activeGuest -1].getOrderItems()}"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -436,7 +436,7 @@
                         android:layout_marginBottom="16dp"
                         android:background="@drawable/rounded_button"
                         android:drawableLeft="@drawable/ic_baseline_add_24_white"
-                        android:enabled="@{viewModel.enableAddButton}"
+                        android:enabled="@{ viewModel.enableAddButton }"
                         android:onClick="@{() -> viewModel.addItemToOrder()}"
                         android:text="@string/add_item_to_order"
                         app:layout_constraintBottom_toBottomOf="parent"

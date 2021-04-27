@@ -115,7 +115,15 @@
     <string name="fastertable_logo">fastertable logo</string>
 
     //Dialogs
-    <string name="kitchen_warning_title">Kitchen Warning</string>
-    <string name="kitchen_warning_message">There are no unsent menu items.</string>
+    <string name="kitchen_warning_title">No Changes to Send</string>
+    <string name="kitchen_warning_message">All order items have already been sent to the kitchen.</string>
     <string name="dialog_close">Close</string>
+    <string name="dialog_delete">Delete</string>
+    <string name="dialog_NoMake">Do Not Make</string>
+    <string name="dialog_Takeout">Takeout</string>
+    <string name="assign_table_title">Assign Order to Table</string>
+    <string name="assign_table_message">Enter a table number:</string>
+    <string name="item_more">item more</string>
+    <string name="rush">Rush</string>
+    <string name="item_rush">item rush</string>
 </resources>

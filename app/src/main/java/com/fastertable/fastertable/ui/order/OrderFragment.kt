@@ -3,7 +3,6 @@ package com.fastertable.fastertable.ui.order
 import android.annotation.SuppressLint
 import android.content.res.ColorStateList
 import android.graphics.Typeface
-import android.os.Build
 import android.os.Bundle
 import android.view.*
 import android.view.View.TEXT_ALIGNMENT_CENTER
@@ -15,7 +14,6 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.children
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.ConcatAdapter
 import com.fastertable.fastertable.R
 import com.fastertable.fastertable.adapters.IngredientsAdapter
@@ -27,6 +25,7 @@ import com.fastertable.fastertable.data.models.MenuCategory
 import com.fastertable.fastertable.data.models.MenuItem
 import com.fastertable.fastertable.databinding.OrderFragmentBinding
 import com.fastertable.fastertable.ui.dialogs.OrderNotesDialogFragment
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.tabs.TabLayout
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -47,7 +46,7 @@ class OrderFragment : BaseFragment() {
 
         viewModel.guestAdd.observe(viewLifecycleOwner, { it ->
             if (it) {
-                addGuestButtons(viewModel.order.value?.guests?.last()!!.id, binding)
+                addGuestButtons(viewModel.order.value?.guests?.last()?.id, binding)
                 viewModel.setGuestAdd(false)
             }
         })
@@ -98,6 +97,7 @@ class OrderFragment : BaseFragment() {
             }
         })
 
+
             return binding.root
     }
 
@@ -129,17 +129,18 @@ class OrderFragment : BaseFragment() {
         return btn
     }
 
-    private fun addGuestButtons(int: Int, binding: OrderFragmentBinding){
-        val btn = createGuestButton(int)
-        binding.toolbarGuestSideBar.addView(btn)
-        viewModel.pageLoaded.observe(viewLifecycleOwner, { it ->
-            if (it){
-                createMenuButtons(viewModel.menus.value!!, binding)
-                viewModel.setPageLoaded(false)
-            }
+    private fun addGuestButtons(int: Int?, binding: OrderFragmentBinding){
+        if (int != null){
+            val btn = createGuestButton(int!!)
+            binding.toolbarGuestSideBar.addView(btn)
+            viewModel.pageLoaded.observe(viewLifecycleOwner, { it ->
+                if (it){
+                    createMenuButtons(viewModel.menus.value!!, binding)
+                    viewModel.setPageLoaded(false)
+                }
 
-        })
-
+            })
+        }
     }
 
     private fun createMenuButtons(menus: List<Menu>, binding: OrderFragmentBinding){
@@ -329,7 +330,9 @@ class OrderFragment : BaseFragment() {
 
         val concatAdapter = ConcatAdapter(modAdapter, ingAdapter)
 
-        binding.orderItems.adapter = OrderItemAdapter()
+        binding.orderItems.adapter = OrderItemAdapter(OrderItemAdapter.OrderItemListener { item ->
+            viewModel.orderItemClicked(item)
+        })
         binding.modRecyclerView.adapter = concatAdapter
     }
 
