@@ -97,6 +97,7 @@
     <string name="guests">Guests</string>
     <string name="order_item_notes_dialog_title">Order Item Notes</string>
     <string name="order_item_notes_dialog_message">Enter specific notes for this item:</string>
+    <string name="guest_with_number">Guest %1$s</string>
 
 
     //Menu
@@ -116,7 +117,7 @@
 
     //Dialogs
     <string name="kitchen_warning_title">No Changes to Send</string>
-    <string name="kitchen_warning_message">All order items have already been sent to the kitchen.</string>
+    <string name="kitchen_warning_message">All order items have been sent to the kitchen.</string>
     <string name="dialog_close">Close</string>
     <string name="dialog_delete">Delete</string>
     <string name="dialog_NoMake">Do Not Make</string>

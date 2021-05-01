@@ -22,21 +22,6 @@ class LoginActivity : BaseActivity() {
         val navController: NavController = navLoginFragment.navController
         navView.setupWithNavController(navController)
 
-//        val userViewModel: UserLoginViewModel by viewModels()
-//        userViewModel.navigate.observe(this, Observer {
-//                val intent = Intent(this, MainActivity::class.java)
-//                intent.setFlags(FLAG_ACTIVITY_NEW_TASK)
-//                startActivity(intent)
-//
-//                this.findNavController(R.id.login_nav_view).navigate(UserLoginFragmentDirections.actionUserLoginFragmentToHomeFragment())
-//        })
-    }
-
-    public fun goHome(){
-//        val intent = Intent(this, MainActivity::class.java)
-//        intent.setFlags(FLAG_ACTIVITY_NEW_TASK)
-//        app.startActivity(intent)
-
     }
 
 

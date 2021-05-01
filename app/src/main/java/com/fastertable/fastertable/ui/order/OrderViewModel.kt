@@ -1,14 +1,11 @@
 package com.fastertable.fastertable.ui.order
 
-import androidx.databinding.ObservableField
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.fastertable.fastertable.common.base.BaseViewModel
 import com.fastertable.fastertable.data.models.*
-import com.fastertable.fastertable.data.repository.LoginRepository
-import com.fastertable.fastertable.data.repository.MenusRepository
-import com.fastertable.fastertable.data.repository.OrderRepository
+import com.fastertable.fastertable.data.repository.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -27,10 +24,12 @@ enum class AddSubtract{
 @HiltViewModel
 class OrderViewModel @Inject constructor (private val menusRepository: MenusRepository,
                                           private val loginRepository: LoginRepository,
-                                          private val orderRepository: OrderRepository) : BaseViewModel() {
+                                          private val orderRepository: OrderRepository,
+                                          private val saveOrder: SaveOrder,
+                                          private val updateOrder: UpdateOrder) : BaseViewModel() {
 
     private lateinit var user: OpsAuth
-    val orderNote = ObservableField<String>()
+    private var itemNote = ""
     //Settings
     private lateinit var settings: Settings
     //Live Data for Menus
@@ -82,16 +81,12 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
 
     //Live Data for Order Info
     private val _order = MutableLiveData<Order>()
-    val order: LiveData<Order>
+    val liveOrder: LiveData<Order>
         get() = _order
 
     private val _guestAdd = MutableLiveData<Boolean>()
     val guestAdd: LiveData<Boolean>
         get() = _guestAdd
-
-    private val _activeGuest = MutableLiveData<Int>()
-    val activeGuest: LiveData<Int>
-        get() = _activeGuest
 
     private val _orderItem = MutableLiveData<OrderItem>()
     val orderItem: LiveData<OrderItem>
@@ -105,12 +100,8 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
     val showOrderNote: LiveData<Boolean>
         get() = _showOrderNote
 
-    private val _closeOrderNote = MutableLiveData<Boolean>()
-    val closeOrderNote: LiveData<Boolean>
-        get() = _closeOrderNote
-
-    private val _orderNotes = MutableLiveData<String>()
-    val orderNotes: LiveData<String>
+    private val _orderNotes = MutableLiveData<String?>()
+    val orderNotes: LiveData<String?>
         get() = _orderNotes
 
     private val _sendKitchen = MutableLiveData<Boolean>()
@@ -121,11 +112,17 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
     init{
         setPageLoaded(false)
         viewModelScope.launch {
-            getOrder()
             getUser()
             settings = loginRepository.getSettings()!!
             _menus.postValue(menusRepository.getMenus())
             _menusNavigation.value = MenusNavigation.CATEGORIES
+        }
+    }
+
+    fun initOrder(){
+        viewModelScope.launch {
+            _order.postValue(orderRepository.getNewOrder())
+            _guestAdd.postValue(true)
             _itemQuantity.postValue(1)
             _pageLoaded.postValue(true)
         }
@@ -144,27 +141,20 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
     private fun getOrder(){
         viewModelScope.launch {
             _order.postValue(orderRepository.getNewOrder())
-            _guestAdd.postValue(true)
-            _activeGuest.postValue(1)
         }
     }
 
-    fun setActiveGuest(int: Int){
-        _activeGuest.value = int
-//        _order.value = orderRepository.getNewOrder()
+    fun setActiveGuest(g: Guest){
+        _order.value?.guests?.forEach { guest ->
+            guest.uiActive = guest.id == g.id
+        }
+        _order.value = _order.value
     }
 
     fun addGuest(){
-        val ord = _order.value
-        ord?.guestAdd()
-        _order.value = ord!!
-        _activeGuest.value = ord.guests?.last()?.id
+        _order.value?.guestAdd()
+        _order.value = _order.value
         _guestAdd.value = true
-
-    }
-
-    fun setGuestAdd(b: Boolean){
-        _guestAdd.value = b
     }
 
     fun onModItemClicked(item: OrderMod) {
@@ -277,12 +267,14 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
             dontMake = false,
             rush = false,
             tax = activeItem.value!!.prices[0].tax,
-            note = orderNotes.value.toString(),
+            note = itemNote,
             employeeId = user.employeeId,
             status = "Started",
         )
 
-        _order.value!!.guests!![activeGuest.value!! - 1].orderItemAdd(item)
+        val g = _order.value!!.guests!!.find{it -> it.uiActive }
+        g?.orderItemAdd(item)
+
         _order.value = _order.value
         _menusNavigation.value = MenusNavigation.CATEGORIES
         clearItemSettings()
@@ -383,9 +375,8 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
         _showOrderNote.value = true
     }
 
-    fun saveOrderNote(){
-        _closeOrderNote.postValue(false)
-        _orderNotes.value = orderNote.get().toString()
+    fun saveOrderNote(note: String){
+        itemNote = note
     }
 
     private fun enableAddItemButton(){
@@ -445,6 +436,26 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
             }
         }
         _order.value = _order.value
+    }
+
+    fun saveOrderToCloud(ord: Order){
+        viewModelScope.launch {
+            var o: Order
+            if (ord.orderNumber == 99){
+                o = saveOrder.saveOrder(ord)
+                //After tickets are printed the status of the order items is changed from "Started" to "Kitchen"
+                o.printKitchenTicket()
+                _order.postValue(o)
+                o = updateOrder.saveOrder(liveOrder.value!!)
+                _order.postValue(o)
+            }
+
+            if (ord.orderNumber != 99){
+                o = updateOrder.saveOrder(ord)
+                o.printKitchenTicket()
+                _order.postValue(o)
+            }
+        }
     }
 }
 

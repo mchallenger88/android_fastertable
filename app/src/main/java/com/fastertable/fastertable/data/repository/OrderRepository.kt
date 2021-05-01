@@ -3,6 +3,8 @@ package com.fastertable.fastertable.data.repository
 import android.app.Application
 import com.fastertable.fastertable.api.GetOrderUseCase
 import com.fastertable.fastertable.api.GetOrdersUseCase
+import com.fastertable.fastertable.api.SaveOrderUseCase
+import com.fastertable.fastertable.api.UpdateOrderUseCase
 import com.fastertable.fastertable.data.models.Guest
 import com.fastertable.fastertable.data.models.OpsAuth
 import com.fastertable.fastertable.data.models.Order
@@ -16,6 +18,36 @@ import java.lang.RuntimeException
 import java.util.*
 import javax.inject.Inject
 import kotlin.collections.ArrayList
+
+class SaveOrder @Inject constructor(private val saveOrderUseCase: SaveOrderUseCase,
+                                    private val orderRepository: OrderRepository){
+    suspend fun saveOrder(order: Order): Order{
+        val o: Order
+        val result = saveOrderUseCase.saveOrder(order)
+        if (result is SaveOrderUseCase.Result.Success){
+            o = result.order
+            orderRepository.saveOrder(o)
+        }else{
+            throw RuntimeException("fetch failure")
+        }
+        return o
+    }
+}
+
+class UpdateOrder @Inject constructor(private val updateOrderUseCase: UpdateOrderUseCase,
+                                    private val orderRepository: OrderRepository){
+    suspend fun saveOrder(order: Order): Order{
+        val o: Order
+        val result = updateOrderUseCase.saveOrder(order)
+        if (result is UpdateOrderUseCase.Result.Success){
+            o = result.order
+            orderRepository.saveOrder(o)
+        }else{
+            throw RuntimeException("fetch failure")
+        }
+        return o
+    }
+}
 
 class GetOrder @Inject constructor(private val getOrderUseCase: GetOrderUseCase,
                                    private val orderRepository: OrderRepository){
@@ -89,13 +121,14 @@ class OrderRepository @Inject constructor(private val app: Application) {
 
     fun createNewOrder(orderType: String, settings: Settings, user: OpsAuth, tableNumber: Int?): Order {
         val newGuest = Guest(
-            id = 1,
+            id = 0,
             startTime = GlobalUtils().getNowEpoch(),
             orderItems = null,
             subTotal = null,
             tax = null,
             gratuity = 0.00,
-            total = null
+            total = null,
+            uiActive = true
         )
 
         val guests = ArrayList<Guest>()
@@ -117,7 +150,7 @@ class OrderRepository @Inject constructor(private val app: Application) {
 
             guests = guests,
             splitChecks = null,
-            note = null,
+            note = "",
 
             customer = null,
             takeOutCustomer = null,
@@ -150,7 +183,9 @@ class OrderRepository @Inject constructor(private val app: Application) {
         val gson = Gson()
         val jsonString = gson.toJson(order)
         val file= File(app.filesDir, "new_order.json")
-        file.writeText("")
+        if (file.exists()){
+            file.delete()
+        }
         file.writeText(jsonString)
         return order
     }

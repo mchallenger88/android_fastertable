@@ -1,5 +1,6 @@
 package com.fastertable.fastertable.ui.home
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -10,6 +11,8 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.fastertable.fastertable.MainActivity
+import com.fastertable.fastertable.OrderActivity
 import com.fastertable.fastertable.R
 import com.fastertable.fastertable.api.CompanyLoginUseCase
 import com.fastertable.fastertable.common.base.BaseFragment
@@ -30,7 +33,6 @@ class HomeFragment : BaseFragment() {
             savedInstanceState: Bundle?
     ): View? {
         val binding = HomeFragmentBinding.inflate(inflater)
-        val application = requireNotNull(activity).application
 
         val navController = findNavController()
 
@@ -60,6 +62,7 @@ class HomeFragment : BaseFragment() {
         viewModel.navigateToOrder.observe(viewLifecycleOwner, Observer { it ->
             if (it == "Counter"){
                 navController.navigate(HomeFragmentDirections.actionNavHomeToOrderFragment())
+                viewModel.navigationEnd()
             }
         })
 
@@ -118,5 +121,11 @@ class HomeFragment : BaseFragment() {
         binding.chipOpenOrders.setChipBackgroundColorResource(R.color.primaryColor)
         binding.chipOpenOrders.setTextAppearance(R.style.ChipTextAppearance)
         binding.chipOpenOrders.setOnClickListener{ viewModel.onOpenClicked()}
+    }
+
+    private fun startOrderActivity(){
+        val intent = Intent(this.context, OrderActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        startActivity(intent)
     }
 }

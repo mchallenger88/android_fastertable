@@ -30,7 +30,7 @@ class UserLoginViewModel @Inject constructor(private val loginRepository: LoginR
         get() = _pin
 
     private val _terminal = MutableLiveData<Terminal?>()
-    val terminal: LiveData<Terminal?>
+    val liveTerminal: LiveData<Terminal?>
         get() = _terminal
 
     private val _navigate = MutableLiveData<Boolean>()
@@ -77,7 +77,6 @@ class UserLoginViewModel @Inject constructor(private val loginRepository: LoginR
            getUserLogin(pin.value.toString(), cid, lid, now, midnight)
            getOrders()
            _showProgressBar.postValue(false)
-           goHome()
            _navigate.value = true
        }
     }
@@ -97,13 +96,5 @@ class UserLoginViewModel @Inject constructor(private val loginRepository: LoginR
         }
     }
 
-
-    private fun goHome(){
-        Handler(Looper.getMainLooper()).post {
-            val activity: LoginActivity = LoginActivity()
-            activity.goHome()
-        }
-
-    }
 
 }

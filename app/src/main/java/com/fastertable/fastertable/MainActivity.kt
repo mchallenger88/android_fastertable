@@ -1,11 +1,8 @@
 package com.fastertable.fastertable
 
-import android.content.Context
 import android.os.Build
 import android.os.Bundle
-import android.print.PrintManager
 import android.view.*
-import android.widget.ImageButton
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.widget.Toolbar
@@ -22,17 +19,15 @@ import com.fastertable.fastertable.common.base.DismissListener
 import com.fastertable.fastertable.data.models.OrderItem
 import com.fastertable.fastertable.data.repository.LoginRepository
 import com.fastertable.fastertable.data.repository.OrderRepository
-import com.fastertable.fastertable.ui.dialogs.AssignTableDialog
-import com.fastertable.fastertable.ui.dialogs.DialogListener
-import com.fastertable.fastertable.ui.dialogs.ItemMoreBottomSheetDialog
+import com.fastertable.fastertable.ui.dialogs.*
 import com.fastertable.fastertable.ui.order.OrderViewModel
-import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.navigation.NavigationView
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class MainActivity: BaseActivity(), DismissListener, DialogListener {
+class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteListener {
     @Inject lateinit var loginRepository: LoginRepository
     @Inject lateinit var orderRepository: OrderRepository
     private lateinit var appBarConfiguration: AppBarConfiguration
@@ -61,18 +56,20 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener {
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
 
-        orderViewModel.closeOrderNote.observe(this, {
-            hideSystemUI()
-        })
-
         orderViewModel.sendKitchen.observe(this, {
             sendToKitchen()
+
         })
 
         orderViewModel.orderItemClicked.observe(this, {
             orderItemClicked(it)
         })
 
+        orderViewModel.showOrderNote.observe(this, {
+            if (it){
+                OrderNotesDialogFragment().show(supportFragmentManager, OrderNotesDialogFragment.TAG)
+            }
+        })
 
 
         hideSystemUI()
@@ -87,17 +84,19 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener {
     private fun sendToKitchen(){
         var send = false
         val settings = loginRepository.getSettings()!!
-        val order = orderViewModel.order.value
-        order?.guests?.forEach { guest ->
+        var order = orderViewModel.liveOrder.value!!
+        order.guests?.forEach { guest ->
             guest.orderItems?.forEach {
                 if (it.status == "Started"){
                     send = true }}}
 
         if (send){
             if (settings.restaurantType == "Counter Service"){
-                if (order?.orderNumber == 99 && order.tableNumber == null && order.orderType == "Counter"){
-                    orderRepository.saveNewOrder(order)
+                if (order.orderNumber == 99 && order.tableNumber == null && order.orderType == "Counter"){
                     AssignTableDialog().show(supportFragmentManager, AssignTableDialog.TAG)
+
+
+//                    orderViewModel.saveOrderToCloud(order)
                     //TODO Send to Kitchen that is print kitchen ticket
                     //TODO Create a Payment and then Send to Payment Activity
                 }else{
@@ -106,14 +105,19 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener {
                 }
             }
             if (settings.restaurantType == "Full Service"){
-                //TODO Send to Kitchen meaning print kitchen ticket
+                orderViewModel.saveOrderToCloud(order)
+                //Send to Kitchen printing
+                order.printKitchenTicket()
                 orderRepository.clearNewOrder()
                 //TODO: Clear new payment
                 //TODO: Go Back to Home;
             }
         }
 
-        if (!send){Toast.makeText(this, R.string.kitchen_warning_message, Toast.LENGTH_LONG).show()}
+        if (!send){
+            val view = findViewById<View>(R.id.nav_host_fragment)
+            Snackbar.make(view, R.string.kitchen_warning_message, Snackbar.LENGTH_LONG).show()
+        }
     }
 
     private fun hideSystemUI() {
@@ -136,18 +140,25 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener {
         }
     }
 
-    fun orderItemClicked(item: OrderItem){
+    private fun orderItemClicked(item: OrderItem){
         ItemMoreBottomSheetDialog().show(supportFragmentManager, ItemMoreBottomSheetDialog.TAG)
     }
 
     override fun getReturnValue(value: String) {
-        orderViewModel.setTableNumber(value.toInt())
+        if (value != ""){
+            orderViewModel.setTableNumber(value.toInt())
+            orderViewModel.saveOrderToCloud(orderViewModel.liveOrder.value!!)
+        }
+
     }
 
     override fun returnValue(value: String) {
         orderViewModel.actionOnItemClicked(value)
     }
 
+    override fun returnNote(value: String) {
+        orderViewModel.saveOrderNote(value)
+    }
 
 }
 

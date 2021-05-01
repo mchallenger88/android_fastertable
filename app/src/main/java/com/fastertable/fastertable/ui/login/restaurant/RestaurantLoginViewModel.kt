@@ -78,7 +78,7 @@ class RestaurantLoginViewModel @Inject constructor(
     }
 
     fun pinClear(){
-        checkPin()
+        _pin.value = ""
     }
 
     fun restLogin(){

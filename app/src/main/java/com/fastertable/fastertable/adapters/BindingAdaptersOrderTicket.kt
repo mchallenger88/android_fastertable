@@ -12,18 +12,21 @@ import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
 @BindingAdapter("orderTypeTableNumber")
-fun orderTypeTableNumber(textView: TextView, order: Order) {
-    if (order.orderType == "Takeout"){
-        textView.text = order.takeOutCustomer?.name
+fun orderTypeTableNumber(textView: TextView, order: Order?) {
+    if (order != null){
+        if (order.orderType == "Takeout"){
+            textView.text = order.takeOutCustomer?.name
+        }
+
+        if (order.orderType == "Counter"){
+            textView.text = ""
+        }
+
+        if (order.orderType == "Table"){
+            textView.text = order.tableNumber.toString()
+        }
     }
 
-    if (order.orderType == "Counter"){
-        textView.text = ""
-    }
-
-    if (order.orderType == "Table"){
-        textView.text = order.tableNumber.toString()
-    }
 }
 
 @SuppressLint("SetTextI18n")
@@ -48,44 +51,49 @@ fun timeStamp(textView: TextView, value: Long?) {
 }
 
 @BindingAdapter("itemQuantity")
-fun bindItemQuantity(textView: TextView, value: Int){
+fun bindItemQuantity(textView: TextView, value: Int?){
     textView.text = "$value" + "x"
 }
 
 
 @BindingAdapter("itemPrice")
-fun getItemPrice(textView: TextView, item: OrderItem){
-    textView.text = "$%.${2}f".format(item.getExtendedPrice())
+fun getItemPrice(textView: TextView, item: OrderItem?){
+    textView.text = "$%.${2}f".format(item?.getExtendedPrice())
 }
 
 @SuppressLint("SetTextI18n")
 @BindingAdapter("setFullOrderType")
-fun fullOrderType(textView: TextView, order: Order){
-    textView.text = "${order.orderType} Order"
+fun fullOrderType(textView: TextView, order: Order?){
+    if (order != null) {
+        textView.text = "${order.orderType} Order"
+    }
+
 
 }
 
 @SuppressLint("SetTextI18n")
 @BindingAdapter("orderLineMods")
-fun addOrderLineMods(textView: TextView, item: OrderItem){
-    if (item.orderMods?.size!! > 0){
-        var mods: String = String()
-        item.orderMods.forEach { mod ->
-            mods += mod.itemName + ", "
+fun addOrderLineMods(textView: TextView, item: OrderItem?){
+    if (item != null) {
+        if (item.orderMods?.size!! > 0){
+            var mods: String = String()
+            item.orderMods.forEach { mod ->
+                mods += mod.itemName + ", "
+            }
+            mods = "- $mods"
+            mods = mods.dropLast(2)
+            textView.text = mods
+            textView.visibility = View.VISIBLE
+        }else{
+            textView.visibility = View.GONE
         }
-        mods = "- $mods"
-        mods = mods.dropLast(2)
-        textView.text = mods
-        textView.visibility = View.VISIBLE
-    }else{
-        textView.visibility = View.GONE
     }
 }
 
 @SuppressLint("SetTextI18n")
 @BindingAdapter("orderLineIngredients")
-fun addOrderLineIngredients(textView: TextView, item: OrderItem){
-    val flat = item.ingredients?.filter { it -> it.orderValue != 1 }
+fun addOrderLineIngredients(textView: TextView, item: OrderItem?){
+    val flat = item?.ingredients?.filter { it -> it.orderValue != 1 }
     if (flat?.size!! > 0){
         var ingredients: String = String()
         item.ingredients?.forEach{ ing ->
@@ -108,48 +116,55 @@ fun addOrderLineIngredients(textView: TextView, item: OrderItem){
 
 @SuppressLint("SetTextI18n")
 @BindingAdapter("orderLineNote")
-fun addOrderLineNote(textView: TextView, item: OrderItem){
-    if (item.note.isNotEmpty() && item.note !== "null"){
-        textView.text = "Notes: ${item.note}"
-        textView.visibility = View.VISIBLE
-    }else{
-        textView.visibility = View.GONE
+fun addOrderLineNote(textView: TextView, item: OrderItem?){
+    if (item != null) {
+        if (item.note!!.isNotEmpty()){
+            textView.text = "Notes: ${item.note}"
+            textView.visibility = View.VISIBLE
+        }else{
+            textView.visibility = View.GONE
+        }
     }
 }
 
 @BindingAdapter("showItemMoreButton")
-fun showItemMoreButton(btn: ImageButton, item: OrderItem){
-    if (item.status != "Started"){
-        btn.visibility = View.GONE
+fun showItemMoreButton(btn: ImageButton, item: OrderItem?){
+    if (item != null) {
+        if (item.status != "Started"){
+            btn.visibility = View.GONE
+        }
     }
 }
 
 @BindingAdapter("toggleItemRush")
-fun toggleItemRush(image: ImageView, item: OrderItem){
-    println("In the Binding Adapter: ${item.rush}")
-    if (item.rush){
-        image.visibility = View.VISIBLE
-    }else{
-        image.visibility = View.INVISIBLE
+fun toggleItemRush(image: ImageView, item: OrderItem?){
+    if (item != null) {
+        if (item.rush){
+            image.visibility = View.VISIBLE
+        }else{
+            image.visibility = View.INVISIBLE
+        }
     }
 }
 
 @BindingAdapter("toggleItemTakeout")
-fun toggleItemTakeout(image: ImageView, item: OrderItem){
-    println("In the Binding Adapter: ${item.rush}")
-    if (item.takeOutFlag){
-        image.visibility = View.VISIBLE
-    }else{
-        image.visibility = View.INVISIBLE
+fun toggleItemTakeout(image: ImageView, item: OrderItem?){
+    if (item != null) {
+        if (item.takeOutFlag){
+            image.visibility = View.VISIBLE
+        }else{
+            image.visibility = View.INVISIBLE
+        }
     }
 }
 
 @BindingAdapter("toggleItemNoMake")
-fun toggleItemNoMake(image: ImageView, item: OrderItem){
-    println("In the Binding Adapter: ${item.rush}")
-    if (item.dontMake){
-        image.visibility = View.VISIBLE
-    }else{
-        image.visibility = View.INVISIBLE
+fun toggleItemNoMake(image: ImageView, item: OrderItem?){
+    if (item != null) {
+        if (item.dontMake){
+            image.visibility = View.VISIBLE
+        }else{
+            image.visibility = View.INVISIBLE
+        }
     }
 }

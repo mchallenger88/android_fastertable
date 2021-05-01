@@ -14,6 +14,7 @@
         <!-- Customize your theme here. -->
         <item name="textInputStyle">@style/AppTextField</item>
         <item name="materialAlertDialogTheme">@style/MyThemeOverlay.MaterialDialogAlert</item>
+        <item name="snackbarTextViewStyle">@style/MyThemeOverlay.SnackBarStyle.TextView</item>
     </style>
 
     <style name="MyThemeOverlay.MaterialDialogAlert" parent="@style/ThemeOverlay.MaterialComponents.MaterialAlertDialog">
@@ -22,6 +23,10 @@
         <!-- Body -->
         <item name="materialAlertDialogBodyTextStyle">@style/alert_text</item>
         <item name="buttonBarPositiveButtonStyle">@style/alert_button</item>
+    </style>
+
+    <style name="MyThemeOverlay.SnackBarStyle.TextView" parent="@style/Widget.MaterialComponents.Snackbar.TextView">
+        <item name="android:textSize">@dimen/large_text_size</item>
     </style>
 
 

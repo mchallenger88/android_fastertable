@@ -2,9 +2,7 @@ package com.fastertable.fastertable.api
 
 import com.fastertable.fastertable.data.models.*
 import retrofit2.Response
-import retrofit2.http.GET
-import retrofit2.http.Path
-import retrofit2.http.Query
+import retrofit2.http.*
 
 interface FastertableApi {
 
@@ -35,6 +33,12 @@ interface FastertableApi {
 
     @GET("orders/{id}/{lid}")
     suspend fun getOrder(@Path("id") id: String?, @Path("lid") lid: String?): Response<Order>
+
+    @POST("orders/")
+    suspend fun saveOrder(@Body order: Order): Response<Order>
+
+    @POST("orders/{id}")
+    suspend fun updateOrder(@Path("id") id: String, @Body order: Order): Response<Order>
 }
 
 

@@ -51,7 +51,6 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
-            android:text="@={viewModel.orderNote}"
             android:textSize="@dimen/large_text_size" />
     </com.google.android.material.textfield.TextInputLayout>
 

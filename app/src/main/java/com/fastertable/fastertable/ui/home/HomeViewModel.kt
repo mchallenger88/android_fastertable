@@ -129,5 +129,9 @@ class HomeViewModel @Inject constructor (private val loginRepository: LoginRepos
 
     }
 
+    fun navigationEnd(){
+        _navigateToOrder.value = ""
+    }
+
 
 }

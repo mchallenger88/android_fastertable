@@ -23,7 +23,7 @@ data class Order(
 
     var guests: MutableList<Guest>?,
     var splitChecks: MutableList<Check>?,
-    var note: String?,
+    var note: String,
 
     var customer: Customer?,
     var takeOutCustomer: TakeOutCustomer?,
@@ -53,17 +53,22 @@ data class Order(
     val _ts: Long?
 ): Parcelable {
     fun guestAdd(){
-        val count = this.guests?.size
-        val newGuest: Guest = Guest(
-            id = count!!.plus(1),
+        val newGuest = Guest(
+            id = this.guests?.size!!,
             startTime = GlobalUtils().getNowEpoch(),
             orderItems = null,
             subTotal = null,
             tax = null,
             gratuity = 0.00,
-            total = null
+            total = null,
+            uiActive = true
         )
         this.guests?.add(newGuest)
+        this.guests?.forEach{guest ->
+            if (guest.id != newGuest.id){
+                guest.uiActive = false
+            }
+        }
     }
 
     fun guestRemove(guest: Guest){
@@ -99,6 +104,14 @@ data class Order(
             guest.orderItems?.forEach { oi ->
                 if (oi == item){
                     oi.dontMake = !oi.dontMake
+                }}}
+    }
+
+    fun addItemNote(item: OrderItem){
+        this.guests?.forEach{guest ->
+            guest.orderItems?.forEach { oi ->
+                if (oi == item){
+                    oi.note = item.note
                 }}}
     }
 
@@ -142,6 +155,15 @@ data class Order(
         return subTotal * 0.09
     }
 
+    fun printKitchenTicket(){
+        //Just Setting Status to Kitchen. TODO: Add Printing
+        this.guests?.forEach{ guest ->
+            guest.orderItems?.forEach { item ->
+                item.status = "Kitchen"
+            }
+        }
+    }
+
     fun getOrderTotal(): Double{
         return this.getSubtotal() + this.getSalesTax()
     }
@@ -161,7 +183,8 @@ data class Guest(
     var subTotal: Double?,
     var tax: Double?,
     var gratuity: Double?,
-    var total: Double?
+    var total: Double?,
+    var uiActive: Boolean = false
 ): Parcelable{
     fun orderItemAdd(oi: OrderItem){
         if (this.orderItems == null){
@@ -208,9 +231,9 @@ data class OrderItem(
     var dontMake: Boolean,
     var rush: Boolean,
     val tax: String,
-    val note: String,
+    var note: String?,
     val employeeId: String,
-    val status: String,
+    var status: String,
 ): Parcelable {
     fun getExtendedPrice(): Double{
         var price: Double = this.quantity * this.menuItemPrice.price

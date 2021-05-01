@@ -46,7 +46,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:terminalUsing="@{viewModel.terminal}" />
+            tools:terminalUsing="@{viewModel.liveTerminal}" />
 
         <TextView
             android:id="@+id/txt_user_login_title"

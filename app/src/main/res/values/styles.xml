@@ -164,4 +164,9 @@
         <item name="android:textColor">@color/primaryLightColor</item>
         <item name="android:backgroundTint">@color/white</item>
     </style>
+
+    <style name="snackBar">
+        <item name="android:textSize">@dimen/large_text_size</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
 </resources>

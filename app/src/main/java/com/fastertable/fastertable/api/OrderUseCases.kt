@@ -60,3 +60,55 @@ class GetOrdersUseCase @Inject constructor(private val fastertableApi: Fastertab
         }
     }
 }
+
+class SaveOrderUseCase @Inject constructor(private val fastertableApi: FastertableApi){
+    sealed class Result {
+        data class Success(val order: Order) : Result()
+        object Failure: Result()
+    }
+
+    suspend fun saveOrder(order: Order): Result {
+        return withContext(Dispatchers.IO){
+            try{
+                val response = fastertableApi.saveOrder(order)
+                if (response.isSuccessful && response.body() != null){
+                    return@withContext Result.Success(response.body()!!)
+                }else{
+                    return@withContext Result.Failure
+                }
+            }catch (t: Throwable){
+                if (t !is CancellationException){
+                    return@withContext  Result.Failure
+                }else{
+                    throw t
+                }
+            }
+        }
+    }
+}
+
+class UpdateOrderUseCase @Inject constructor(private val fastertableApi: FastertableApi){
+    sealed class Result {
+        data class Success(val order: Order) : Result()
+        object Failure: Result()
+    }
+
+    suspend fun saveOrder(order: Order): Result {
+        return withContext(Dispatchers.IO){
+            try{
+                val response = fastertableApi.updateOrder(order.id, order)
+                if (response.isSuccessful && response.body() != null){
+                    return@withContext Result.Success(response.body()!!)
+                }else{
+                    return@withContext Result.Failure
+                }
+            }catch (t: Throwable){
+                if (t !is CancellationException){
+                    return@withContext  Result.Failure
+                }else{
+                    throw t
+                }
+            }
+        }
+    }
+}

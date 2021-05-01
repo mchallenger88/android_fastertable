@@ -47,7 +47,7 @@ class UserLoginFragment: BaseFragment() {
 
         viewModel.navigate.observe(viewLifecycleOwner, Observer { it ->
             if (it){
-                 val intent = Intent(this.context, MainActivity::class.java)
+                val intent = Intent(this.context, MainActivity::class.java)
                 intent.setFlags(FLAG_ACTIVITY_NEW_TASK)
                 startActivity(intent)
             }

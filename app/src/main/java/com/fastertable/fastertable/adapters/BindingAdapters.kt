@@ -1,13 +1,18 @@
 package com.fastertable.fastertable.adapters
 
 import android.annotation.SuppressLint
+import android.content.res.ColorStateList
 import android.view.View
 import android.widget.Button
 import android.widget.ImageButton
 import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
 import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.fastertable.fastertable.R
 import com.fastertable.fastertable.data.models.*
+import com.fastertable.fastertable.ui.order.MenusNavigation
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
@@ -79,12 +84,21 @@ fun getOrderTotal(textView: TextView, total: Double){
     textView.text = "Total: $%.${2}f".format(total)
 }
 
-@BindingAdapter("itemListData")
-fun bindRecyclerView(recyclerView: RecyclerView?, data: List<OrderItem>?) {
+@BindingAdapter("orderItemListData")
+fun bindRecyclerView(recyclerView: RecyclerView?, order: Order?) {
     val adapter = recyclerView?.adapter as OrderItemAdapter
+    val guest = order?.guests?.find{it -> it.uiActive}
+    adapter.submitList(guest?.getOrderItems())
+    adapter.notifyDataSetChanged()
+}
+
+@BindingAdapter("guestListData")
+fun bindGuestRecyclerView(recyclerView: RecyclerView?, data: List<Guest>?) {
+    val adapter = recyclerView?.adapter as GuestSideBarAdapter
     adapter.submitList(data)
     adapter.notifyDataSetChanged()
 }
+
 
 @BindingAdapter("itemModifiers")
 fun bindModifierRecycler(recyclerView: RecyclerView?, data: List<Modifier>?){
@@ -95,14 +109,17 @@ fun bindModifierRecycler(recyclerView: RecyclerView?, data: List<Modifier>?){
 
 
 
+
 @SuppressLint("SetTextI18n")
 @BindingAdapter("setGuestNumberTitle")
-fun setGuestNumberTitle(textView: TextView, guestNumber: Int?){
-    if (guestNumber != null){
-        textView.text = "Guest ${guestNumber.toString()}"
-    }else{
-        textView.text = "Guest"
+fun setGuestNumberTitle(textView: TextView, guests: List<Guest>?){
+    guests?.forEach {
+        if (it.uiActive){
+            textView.text = "Guest ${it.id.plus(1)}"
+        }
     }
+
+
 }
 //
 //@SuppressLint("SetTextI18n")
@@ -125,7 +142,6 @@ fun addRemoveIngredient(textView: TextView, item: ItemIngredient){
     }
 }
 
-
 @BindingAdapter("checkIngredientHeader")
 fun checkIngredientHeader(textView: TextView, item: ItemIngredient){
     if (item.name.isNullOrEmpty()){
@@ -133,4 +149,30 @@ fun checkIngredientHeader(textView: TextView, item: ItemIngredient){
     }
 }
 
-
+@SuppressLint("SetTextI18n")
+@BindingAdapter("setGuestButton")
+fun setGuestButton(btn: Button, guest: Guest){
+    println("In the binding")
+    println(guest.id)
+    btn.text = "Guest ${guest.id.plus(1)}"
+    val color = ContextCompat.getColor(btn.context, android.R.color.transparent)
+    if (guest.uiActive){
+        val white = ContextCompat.getColor(btn.context, R.color.white)
+        btn.setTextColor(ColorStateList.valueOf(white))
+        btn.setCompoundDrawablesRelativeWithIntrinsicBounds(
+            0,
+            R.drawable.ic_user_white,
+            0,
+            0
+        )
+    }else{
+        val offWhite = ContextCompat.getColor(btn.context, R.color.offWhite)
+        btn.setTextColor(ColorStateList.valueOf(color))
+        btn.setCompoundDrawablesRelativeWithIntrinsicBounds(
+            0,
+            R.drawable.ic_user_offwhite,
+            0,
+            0
+        )
+    }
+}

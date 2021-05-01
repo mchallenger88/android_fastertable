@@ -9,3 +9,8 @@ open class BaseDialog: DialogFragment() {
 interface DialogListener{
     fun returnValue(value: String)
 }
+
+
+interface ItemNoteListener{
+    fun returnNote(value: String)
+}

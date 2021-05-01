@@ -112,6 +112,21 @@
                     android:onClick="@{() -> viewModel.addGuest()}"
                     app:srcCompat="@drawable/ic_baseline_add_24" />
 
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/guest_recycler"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:guestListData="@{viewModel.liveOrder.guests}"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/txt_guest_number"
+                    tools:listitem="@layout/guest_button"
+                    >
+
+                </androidx.recyclerview.widget.RecyclerView>
+
 
             </LinearLayout>
         </ScrollView>
@@ -152,7 +167,7 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:setFullOrderType="@{viewModel.order}" />
+                    app:setFullOrderType="@{viewModel.liveOrder}" />
 
                 <TextView
                     android:id="@+id/txt_guest_number"
@@ -168,7 +183,7 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/txt_Order"
                     app:layout_constraintVertical_bias="0.5"
-                    app:setGuestNumberTitle="@{viewModel.activeGuest}" />
+                    app:setGuestNumberTitle="@{viewModel.liveOrder.guests}" />
 
                 <View
                     android:id="@+id/viewLine1"
@@ -186,7 +201,7 @@
                     android:layout_marginEnd="10dp"
                     android:layout_marginBottom="16dp"
                     android:scrollbarStyle="outsideInset"
-                    app:itemListData="@{viewModel.order.guests[viewModel.activeGuest -1].getOrderItems()}"
+                    app:orderItemListData="@{viewModel.liveOrder}"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -206,6 +221,7 @@
             android:layout_width="580dp"
             android:layout_height="0dp"
             android:background="@color/offWhite_background"
+            app:backgroundLayoutMenus="@{viewModel.menusNavigation}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/order_fastertoolbar">
@@ -236,6 +252,7 @@
                 android:backgroundTint="#FFFFFF"
                 android:contentDescription="@string/button_order_note"
                 android:onClick="@{() -> viewModel.openNoteDialog()}"
+                app:menuItemNoteVisibility="@{viewModel.menusNavigation}"
                 app:layout_constraintEnd_toEndOf="@+id/menus_tab_bar"
                 app:layout_constraintTop_toBottomOf="@+id/menus_tab_bar"
                 app:srcCompat="@drawable/ic_outline_text_snippet_24" />
@@ -249,7 +266,7 @@
                 android:backgroundTint="@color/offWhite_background"
                 android:contentDescription="@string/back"
                 android:onClick="@{() -> viewModel.arrowBack()}"
-                android:visibility="visible"
+                app:btnMenuBackVisibility="@{viewModel.menusNavigation}"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/menus_tab_bar"
                 app:srcCompat="@drawable/ic_back_arrow" />
@@ -263,6 +280,7 @@
                 android:text="@{viewModel.activeCategory.category}"
                 android:textAlignment="center"
                 android:visibility="gone"
+                app:menuItemsTextViewVisibility="@{viewModel.menusNavigation}"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="@+id/btn_menu_back"
                 app:layout_constraintTop_toBottomOf="@+id/menus_tab_bar" />
@@ -274,7 +292,7 @@
                 android:layout_height="60dp"
                 android:layout_marginTop="24dp"
                 android:text="@{viewModel.activeItem.itemName}"
-                android:visibility="gone"
+                app:menuItemTvVisibility="@{viewModel.menusNavigation}"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="@+id/btn_menu_back"
                 app:layout_constraintTop_toBottomOf="@+id/menus_tab_bar" />
@@ -286,6 +304,7 @@
                 android:layout_marginTop="50dp"
                 android:orientation="horizontal"
                 app:flow_wrapMode="aligned"
+                app:menuCategoryVisibility="@{viewModel.menusNavigation}"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/btn_menu_back"
                 app:layout_constraintVertical_bias="0.0"
@@ -298,7 +317,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_marginTop="25dp"
-                android:visibility="gone"
+                app:setScrollViewVisibility="@{viewModel.menusNavigation}"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/btn_menu_back">
 
@@ -322,6 +341,7 @@
                 android:layout_height="0dp"
                 android:background="@color/white"
                 android:visibility="visible"
+                app:menuItemVisibility="@{viewModel.menusNavigation}"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
