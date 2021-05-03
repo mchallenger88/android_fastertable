@@ -13,6 +13,9 @@
         <action
             android:id="@+id/action_nav_home_to_orderFragment"
             app:destination="@id/orderFragment" />
+        <action
+            android:id="@+id/action_nav_home_to_paymentFragment"
+            app:destination="@id/paymentFragment" />
     </fragment>
     <fragment
         android:id="@+id/orderFragment"
@@ -25,6 +28,30 @@
             app:launchSingleTop="false"
             app:popUpTo="@+id/nav_home"
             app:popUpToInclusive="true"/>
+        <action
+            android:id="@+id/action_orderFragment_to_paymentFragment"
+            app:destination="@id/paymentFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/paymentFragment"
+        android:name="com.fastertable.fastertable.ui.payment.PaymentFragment"
+        android:label="PaymentFragment"
+        tools:layout="@layout/payment_fragment">
+        <action
+            android:id="@+id/action_paymentFragment_to_orderFragment"
+            app:destination="@id/orderFragment" />
+        <action
+            android:id="@+id/action_paymentFragment_to_nav_home"
+            app:destination="@id/nav_home" />
+    </fragment>
+    <fragment
+        android:id="@+id/paymentSplitFragment"
+        android:name="com.fastertable.fastertable.ui.payment.SplitPaymentFragment"
+        android:label="PaymentSplitFragment"
+        tools:layout="@layout/payment_split_fragment">
+        <action
+            android:id="@+id/action_paymentSplitFragment_to_paymentFragment"
+            app:destination="@id/paymentFragment" />
     </fragment>
 
 

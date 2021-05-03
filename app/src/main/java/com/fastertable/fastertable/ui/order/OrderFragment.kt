@@ -29,7 +29,6 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class OrderFragment : BaseFragment() {
     private val viewModel: OrderViewModel by activityViewModels()
-//    private lateinit var guestAdapter: GuestSideBarAdapter
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -46,7 +45,6 @@ class OrderFragment : BaseFragment() {
             override fun onTabSelected(tab: TabLayout.Tab?) {
                 val menu = viewModel.menus.value?.find{it -> it.name == tab?.text!!}
                 if (menu != null){
-                    menuSelect(menu)
                     createCategoryButtons(menu, binding)
                     viewModel.setMenusNavigation(MenusNavigation.CATEGORIES)
                 }
@@ -78,13 +76,8 @@ class OrderFragment : BaseFragment() {
         }
 
         menus.forEachIndexed{ int, menu ->
-            binding.menusTabBar.getTabAt(int)?.setText(menus[int].name)
+            binding.menusTabBar.getTabAt(int)?.text = menus[int].name
         }
-    }
-
-    private fun menuSelect(menu: Menu){
-        viewModel.setActiveMenu(menu)
-
     }
 
     private fun createCategoryButtons(menu: Menu, binding: OrderFragmentBinding){

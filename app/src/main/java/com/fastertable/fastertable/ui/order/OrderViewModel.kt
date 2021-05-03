@@ -37,10 +37,6 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
     val menus: LiveData<List<Menu>>
         get() = _menus
 
-    private val _activeMenu = MutableLiveData<Menu>()
-    val activeMenu: LiveData<Menu>
-        get() = _activeMenu
-
     private val _activeCategory = MutableLiveData<MenuCategory>()
     val activeCategory: LiveData<MenuCategory>
         get() = _activeCategory
@@ -77,16 +73,20 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
     val orderItemClicked: LiveData<OrderItem>
         get() = _orderItemClicked
 
+    private val _paymentClicked = MutableLiveData<Boolean>()
+    val paymentClicked: LiveData<Boolean>
+        get() = _paymentClicked
+
     private var modList = ArrayList<Modifier>()
 
     //Live Data for Order Info
+    private val _currentOrderId = MutableLiveData<String?>()
+    val currentOrderId: LiveData<String?>
+        get() = _currentOrderId
+
     private val _order = MutableLiveData<Order>()
     val liveOrder: LiveData<Order>
         get() = _order
-
-    private val _guestAdd = MutableLiveData<Boolean>()
-    val guestAdd: LiveData<Boolean>
-        get() = _guestAdd
 
     private val _orderItem = MutableLiveData<OrderItem>()
     val orderItem: LiveData<OrderItem>
@@ -121,8 +121,12 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
 
     fun initOrder(){
         viewModelScope.launch {
-            _order.postValue(orderRepository.getNewOrder())
-            _guestAdd.postValue(true)
+            if (currentOrderId.value != null){
+                _order.postValue(orderRepository.getOrderById(currentOrderId.value!!))
+            }else{
+                _order.postValue(orderRepository.getNewOrder())
+            }
+
             _itemQuantity.postValue(1)
             _pageLoaded.postValue(true)
         }
@@ -154,7 +158,6 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
     fun addGuest(){
         _order.value?.guestAdd()
         _order.value = _order.value
-        _guestAdd.value = true
     }
 
     fun onModItemClicked(item: OrderMod) {
@@ -285,10 +288,6 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
         return settings.prepStations.find{ it ->
             it.stationName == printerName
         }
-    }
-
-    fun setActiveMenu(menu: Menu){
-        _activeMenu.value = menu
     }
 
     fun setActiveCategory(cat: MenuCategory){
@@ -446,7 +445,7 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
                 //After tickets are printed the status of the order items is changed from "Started" to "Kitchen"
                 o.printKitchenTicket()
                 _order.postValue(o)
-                o = updateOrder.saveOrder(liveOrder.value!!)
+                o = updateOrder.saveOrder(o)
                 _order.postValue(o)
             }
 
@@ -456,6 +455,14 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
                 _order.postValue(o)
             }
         }
+    }
+
+    fun navToPayment(b: Boolean){
+        _paymentClicked.value = b
+    }
+
+    fun setCurrentOrderId(id: String){
+        _currentOrderId.value = id
     }
 }
 

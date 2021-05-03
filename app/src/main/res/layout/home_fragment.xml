@@ -7,6 +7,10 @@
         <variable
             name="viewModel"
             type="com.fastertable.fastertable.ui.home.HomeViewModel" />
+
+        <variable
+            name="clickListener"
+            type="com.fastertable.fastertable.ui.home.OrderListListener" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

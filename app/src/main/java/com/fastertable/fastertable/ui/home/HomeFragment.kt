@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
@@ -25,7 +26,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class HomeFragment : BaseFragment() {
 
-    private lateinit var viewModel: HomeViewModel
+    private val viewModel: HomeViewModel by activityViewModels()
 
     override fun onCreateView(
             inflater: LayoutInflater,
@@ -36,14 +37,10 @@ class HomeFragment : BaseFragment() {
 
         val navController = findNavController()
 
-        viewModel = ViewModelProvider(this).get(HomeViewModel::class.java)
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
 
         setChipDefaults(binding)
-
-        viewModel = ViewModelProvider(this).get(HomeViewModel::class.java)
-
 
         viewModel.showProgressBar.observe(viewLifecycleOwner, Observer { it ->
             if (it){
@@ -59,12 +56,6 @@ class HomeFragment : BaseFragment() {
             }
         })
 
-        viewModel.navigateToOrder.observe(viewLifecycleOwner, Observer { it ->
-            if (it == "Counter"){
-                navController.navigate(HomeFragmentDirections.actionNavHomeToOrderFragment())
-                viewModel.navigationEnd()
-            }
-        })
 
         viewModel.orderFilter.observe(viewLifecycleOwner, Observer {  it ->
 

@@ -107,6 +107,16 @@ class OrderRepository @Inject constructor(private val app: Application) {
         file.writeText(jsonString)
     }
 
+    fun getOrderById(id: String): Order? {
+        val orders = getOrdersFromFile()
+        if (orders != null) {
+            val o = orders.find{it -> it.id == id}!!
+            o.setActiveGuestFirst()
+            return o
+        }
+        return null
+    }
+
     fun getOrdersFromFile(): List<Order>?{
         val gson = Gson()
         if (File(app.filesDir, "orders.json").exists()){

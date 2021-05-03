@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+    <data>
+        <variable
+            name="viewModel"
+            type="com.fastertable.fastertable.ui.payment.SplitPaymentViewModel" />
+
+    </data>
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/view_background">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/order_fastertoolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/fasterToolBar"
+            android:paddingStart="80dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:popupTheme="@style/Theme.Fastertable.PopupOverlay"
+            tools:ignore="RtlSymmetry">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/layout_payment_split_buttons"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <Button
+                    android:id="@+id/btn_single_ticket"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:text="@string/single_ticket"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/toolbar_button"
+                    app:layout_constraintStart_toStartOf="@+id/layout_payment_split_buttons"
+                    app:layout_constraintTop_toTopOf="@+id/layout_payment_split_buttons"
+                    app:strokeColor="@color/white" />
+
+                <Button
+                    android:id="@+id/btn_split_by_guest"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:text="@string/split_by_guest"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/toolbar_button"
+                    app:layout_constraintStart_toEndOf="@+id/btn_single_ticket"
+                    app:layout_constraintTop_toTopOf="@+id/layout_payment_split_buttons"
+                    app:strokeColor="@color/white" />
+
+                <Button
+                    android:id="@+id/btn_split_evenly"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:text="@string/split_evenly"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/toolbar_button"
+                    app:layout_constraintStart_toEndOf="@+id/btn_split_by_guest"
+                    app:layout_constraintTop_toTopOf="@+id/layout_payment_split_buttons"
+                    app:strokeColor="@color/white" />
+
+
+                <Button
+                    android:id="@+id/btn_payment"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:text="@string/payment"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/toolbar_button"
+                    app:layout_constraintEnd_toEndOf="@+id/layout_payment_split_buttons"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:strokeColor="@color/white" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </androidx.appcompat.widget.Toolbar>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

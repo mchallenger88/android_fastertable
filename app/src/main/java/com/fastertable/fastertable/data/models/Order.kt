@@ -3,6 +3,7 @@ package com.fastertable.fastertable.data.models
 import android.os.Parcelable
 import com.fastertable.fastertable.utils.GlobalUtils
 import com.google.gson.Gson
+import com.google.gson.annotations.SerializedName
 import kotlinx.parcelize.Parcelize
 import com.squareup.moshi.JsonClass
 
@@ -43,6 +44,7 @@ data class Order(
     var estDeliveryTime: Long?,
 
     val id: String,
+    @SerializedName("locationid")
     val locationId: String,
     val archived: Boolean,
     val type: String,
@@ -68,6 +70,12 @@ data class Order(
             if (guest.id != newGuest.id){
                 guest.uiActive = false
             }
+        }
+    }
+
+    fun setActiveGuestFirst(){
+        this.guests?.forEach{guest ->
+            guest.uiActive = guest.id == 0
         }
     }
 
@@ -162,6 +170,25 @@ data class Order(
                 item.status = "Kitchen"
             }
         }
+    }
+
+    fun createSingleTicket(): Ticket{
+        return Ticket(
+            orderId = this.id,
+            id = 0,
+            ticketItems = arrayListOf<TicketItem>(),
+            subTotal = getSubtotal(),
+            tax = getSalesTax(),
+            total = getOrderTotal(),
+            paymentType = "",
+            gratuity = 0.00,
+            deliveryFee = 0.00,
+            paymentTotal = 0.00,
+            stageResponse = arrayListOf<StageResponse>(),
+            creditCardTransactions = arrayListOf<CreditCardTransaction>(),
+            partialPayment = false,
+            uiActive = true
+        )
     }
 
     fun getOrderTotal(): Double{

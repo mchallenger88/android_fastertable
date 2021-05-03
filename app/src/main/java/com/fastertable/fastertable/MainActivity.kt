@@ -3,7 +3,6 @@ package com.fastertable.fastertable
 import android.os.Build
 import android.os.Bundle
 import android.view.*
-import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.widget.Toolbar
 import androidx.drawerlayout.widget.DrawerLayout
@@ -19,8 +18,14 @@ import com.fastertable.fastertable.common.base.DismissListener
 import com.fastertable.fastertable.data.models.OrderItem
 import com.fastertable.fastertable.data.repository.LoginRepository
 import com.fastertable.fastertable.data.repository.OrderRepository
+import com.fastertable.fastertable.data.repository.PaymentRepository
 import com.fastertable.fastertable.ui.dialogs.*
+import com.fastertable.fastertable.ui.home.HomeFragmentDirections
+import com.fastertable.fastertable.ui.home.HomeViewModel
+import com.fastertable.fastertable.ui.order.OrderFragmentDirections
 import com.fastertable.fastertable.ui.order.OrderViewModel
+import com.fastertable.fastertable.ui.payment.SplitPaymentViewModel
+import com.fastertable.fastertable.ui.payment.PaymentViewModel
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
@@ -30,8 +35,12 @@ import javax.inject.Inject
 class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteListener {
     @Inject lateinit var loginRepository: LoginRepository
     @Inject lateinit var orderRepository: OrderRepository
+    @Inject lateinit var paymentRepository: PaymentRepository
     private lateinit var appBarConfiguration: AppBarConfiguration
+    private val homeViewModel: HomeViewModel by viewModels()
     private val orderViewModel: OrderViewModel by viewModels()
+    private val paymentViewModel: PaymentViewModel by viewModels()
+    private val splitViewModel: SplitPaymentViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,6 +65,19 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
 
+        homeViewModel.navigateToOrder.observe(this, { it ->
+            if (it == "Counter"){
+                navController.navigate(HomeFragmentDirections.actionNavHomeToOrderFragment())
+                homeViewModel.navigationEnd()
+            }
+
+            if (it.contains("O_")){
+                orderViewModel.setCurrentOrderId(it)
+                navController.navigate(HomeFragmentDirections.actionNavHomeToOrderFragment())
+                homeViewModel.navigationEnd()
+            }
+        })
+
         orderViewModel.sendKitchen.observe(this, {
             sendToKitchen()
 
@@ -68,6 +90,12 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
         orderViewModel.showOrderNote.observe(this, {
             if (it){
                 OrderNotesDialogFragment().show(supportFragmentManager, OrderNotesDialogFragment.TAG)
+            }
+        })
+
+        orderViewModel.paymentClicked.observe(this, {
+            if (it){
+               goToPayment(navController)
             }
         })
 
@@ -120,6 +148,31 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
         }
     }
 
+    private fun goToPayment(navController: NavController){
+        var okToPay = true
+        val terminal = loginRepository.getTerminal()!!
+        val order = orderViewModel.liveOrder.value!!
+        val flatten = order.getAllOrderItems()
+        if (flatten.size > 0){
+            order.guests?.forEach { guest ->
+                guest.orderItems?.forEach {
+                    if (it.status == "Started"){
+                        okToPay = false }}}
+
+            if (okToPay){
+                val payment = paymentRepository.createNewPayment(order, terminal)
+                paymentViewModel.setLivePayment(payment)
+                navController.navigate(OrderFragmentDirections.actionOrderFragmentToPaymentFragment())
+                orderViewModel.navToPayment(false)
+            }
+        }else{
+            val view = findViewById<View>(R.id.nav_host_fragment)
+            Snackbar.make(view, R.string.payment_warning_message1, Snackbar.LENGTH_LONG).show()
+        }
+
+
+    }
+
     private fun hideSystemUI() {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
@@ -147,6 +200,8 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
     override fun getReturnValue(value: String) {
         if (value != ""){
             orderViewModel.setTableNumber(value.toInt())
+            orderViewModel.saveOrderToCloud(orderViewModel.liveOrder.value!!)
+        }else{
             orderViewModel.saveOrderToCloud(orderViewModel.liveOrder.value!!)
         }
 

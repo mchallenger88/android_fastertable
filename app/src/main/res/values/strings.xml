@@ -118,6 +118,7 @@
     //Dialogs
     <string name="kitchen_warning_title">No Changes to Send</string>
     <string name="kitchen_warning_message">All order items have been sent to the kitchen.</string>
+    <string name="payment_warning_message1">The order has no order items.</string>
     <string name="dialog_close">Close</string>
     <string name="dialog_delete">Delete</string>
     <string name="dialog_NoMake">Do Not Make</string>
@@ -127,4 +128,14 @@
     <string name="item_more">item more</string>
     <string name="rush">Rush</string>
     <string name="item_rush">item rush</string>
+
+    //Payment
+    <string name="single_ticket">Single Ticket</string>
+    <string name="manage_payment">Manage Payment</string>
+    <string name="pay_cash">Pay Cash</string>
+    <string name="pay_credit">Pay Credit</string>
+    <string name="cancel_credit">Cancel Credit</string>
+    <string name="split_evenly">Split Evenly</string>
+    <string name="split_by_guest">Split by Guest</string>
+    <string name="ticket_with_number">Ticket %1$s</string>
 </resources>

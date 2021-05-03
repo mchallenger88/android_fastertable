@@ -1,6 +1,7 @@
 package com.fastertable.fastertable.data.models
 
 import android.os.Parcelable
+import com.google.gson.annotations.SerializedName
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
@@ -8,21 +9,22 @@ data class Payment(
     val id: String,
     val orderId: String,
     val orderNumber: Int,
-    val tableNumber: Int,
+    val tableNumber: Int?,
     val timeStamp: Long,
     val orderStartTime: Long,
     val orderCloseTime: Long?,
     val orderType: String,
     val guestCount: Int,
     val splitType: String,
-    val splitTicket: Int,
+    val splitTicket: Int?,
     val employeeId: String,
     val userName: String,
     val tickets: ArrayList<Ticket>,
     val terminalId: String,
-    val statusApproval: String,
-    val newApproval: Approval,
+    val statusApproval: String?,
+    val newApproval: Approval?,
     val closed: Boolean,
+    @SerializedName("locationid")
     val locationId: String,
     val archived: Boolean,
     val type: String,
@@ -48,6 +50,7 @@ data class Ticket(
     val stageResponse: ArrayList<StageResponse>,
     val creditCardTransactions: ArrayList<CreditCardTransaction>,
     val partialPayment: Boolean,
+    var uiActive: Boolean = false
 
     ): Parcelable
 

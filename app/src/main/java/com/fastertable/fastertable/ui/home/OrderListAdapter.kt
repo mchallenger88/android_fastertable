@@ -14,12 +14,10 @@ import kotlinx.coroutines.Dispatchers
 class OrderListAdapter(val clickListener: OrderListListener): ListAdapter<Order, OrderListAdapter.OrderViewHolder>(
     DiffCallback
 ) {
-    private val adapterScope = CoroutineScope(Dispatchers.Default)
-
 
     override fun onBindViewHolder(holder: OrderViewHolder, position: Int) {
         val order = getItem(position)
-        holder.bind(order)
+        holder.bind(order, clickListener)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): OrderViewHolder {
@@ -28,9 +26,14 @@ class OrderListAdapter(val clickListener: OrderListListener): ListAdapter<Order,
 
 
     class OrderViewHolder(private var binding: OrderListLineItemBinding) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(order: Order) {
+        fun bind(order: Order, clickListener: OrderListListener) {
             binding.order = order
+            binding.clickListener = clickListener
             binding.executePendingBindings()
+
+            binding.root.setOnClickListener{
+                clickListener.onClick(order)
+            }
         }
 
     }

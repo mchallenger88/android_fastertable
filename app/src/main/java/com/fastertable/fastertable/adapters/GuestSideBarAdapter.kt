@@ -18,7 +18,7 @@ import com.fastertable.fastertable.databinding.GuestButtonBinding
 
 class GuestSideBarAdapter(private val clickListener: GuestSideBarListener) : ListAdapter<Guest, GuestSideBarAdapter.GuestSideBarViewHolder>(DiffCallback) {
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GuestSideBarAdapter.GuestSideBarViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GuestSideBarViewHolder {
         return GuestSideBarViewHolder(GuestButtonBinding.inflate(LayoutInflater.from(parent.context)), parent)
     }
 
