@@ -14,7 +14,7 @@
     android:background="@color/view_background">
 
     <androidx.appcompat.widget.Toolbar
-        android:id="@+id/order_fastertoolbar"
+        android:id="@+id/payment_fastertoolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:background="@color/fasterToolBar"
@@ -98,7 +98,7 @@
         android:padding="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/order_fastertoolbar">
+        app:layout_constraintTop_toBottomOf="@+id/payment_fastertoolbar">
 
         <LinearLayout
             android:id="@+id/toolbar_ticketSideBar"
@@ -109,7 +109,7 @@
             android:orientation="vertical"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/order_fastertoolbar"
+            app:layout_constraintTop_toBottomOf="@+id/payment_fastertoolbar"
             app:layout_constraintVertical_bias="0.5">
 
             <androidx.recyclerview.widget.RecyclerView
@@ -123,6 +123,108 @@
         </LinearLayout>
 
     </ScrollView>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/ticket_card_view"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:fitsSystemWindows="true"
+        android:paddingBottom="10dp"
+        app:cardBackgroundColor="#E8EAF6"
+        app:cardElevation="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/tickets_scrollView"
+        app:layout_constraintTop_toBottomOf="@+id/payment_fastertoolbar"
+        app:layout_constraintVertical_bias="0.0">
+
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/layout_order"
+            android:layout_width="450dp"
+            android:layout_height="match_parent"
+            android:layout_marginStart="@dimen/default_margin"
+            android:layout_marginEnd="@dimen/default_margin"
+            android:background="#ffffff"
+            android:elevation="4dp">
+
+
+            <TextView
+                android:id="@+id/txt_Ticket"
+                style="@style/header"
+                android:layout_width="0dp"
+                android:layout_height="60dp"
+                android:background="@color/primary_payment_color"
+                android:gravity="center_horizontal|center_vertical"
+                android:text="@string/ticket_with_number"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:ticketNumber="@{viewModel.livePayment.tickets}" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/ticketItemsRecycler"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginBottom="16dp"
+                android:scrollbarStyle="outsideInset"
+                app:ticketListData="@{viewModel.livePayment}"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/txt_Ticket"
+                tools:listitem="@layout/ticket_line_item" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/constraint_totals"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="parent"
+                tools:layout_editor_absoluteX="0dp">
+
+                <TextView
+                    android:id="@+id/text_subtotal"
+                    style="@style/menu_line_item"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="24dp"
+                    android:text="@string/string_subtotal"
+                    app:layout_constraintBottom_toTopOf="@+id/text_salesTax"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    tools:ticketSubTotal="@{viewModel.livePayment}" />
+
+                <TextView
+                    android:id="@+id/text_salesTax"
+                    style="@style/menu_line_item"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="24dp"
+                    android:text="@string/string_saleTax"
+                    app:layout_constraintBottom_toTopOf="@+id/text_total"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    tools:ticketTax="@{viewModel.livePayment}" />
+
+                <TextView
+                    android:id="@+id/text_total"
+                    style="@style/menu_line_item"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="24dp"
+                    android:layout_marginBottom="16dp"
+                    android:text="@string/string_total"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    tools:ticketTotal="@{viewModel.livePayment}" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    </androidx.cardview.widget.CardView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

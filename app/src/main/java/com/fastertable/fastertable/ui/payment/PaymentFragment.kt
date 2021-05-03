@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
+import com.fastertable.fastertable.adapters.TicketItemAdapter
 import com.fastertable.fastertable.adapters.TicketSideBarAdapter
 import com.fastertable.fastertable.common.base.BaseFragment
 import com.fastertable.fastertable.databinding.PaymentFragmentBinding
@@ -26,10 +27,27 @@ class PaymentFragment: BaseFragment() {
     }
 
     private fun createAdapters(binding: PaymentFragmentBinding){
-        val ticketAdapter = TicketSideBarAdapter(TicketSideBarAdapter.TicketSideBarListener { it ->
+        val ticketNummberAdapter = TicketSideBarAdapter(TicketSideBarAdapter.TicketSideBarListener { it ->
             viewModel.setActiveTicket(it)
         })
 
-        binding.ticketRecycler.adapter = ticketAdapter
+        val ticketsAdapter = TicketItemAdapter(TicketItemAdapter.TicketItemListener { it ->
+
+        })
+
+        binding.ticketRecycler.adapter = ticketNummberAdapter
+
+        binding.ticketItemsRecycler.adapter = ticketsAdapter
+
+        viewModel.livePayment.observe(viewLifecycleOwner, { item ->
+            item.tickets.forEach { ticket ->
+                if (ticket.uiActive){
+                    ticketsAdapter.submitList(ticket.ticketItems)
+                    ticketsAdapter.notifyDataSetChanged()
+
+                }
+            }
+
+        })
     }
 }

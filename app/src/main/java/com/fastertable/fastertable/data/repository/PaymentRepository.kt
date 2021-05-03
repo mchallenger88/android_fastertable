@@ -29,7 +29,7 @@ class PaymentRepository @Inject constructor(private val app: Application) {
             userName = order.userName,
             terminalId =  terminal.terminalId.toString(),
             tickets = arrayListOf(order.createSingleTicket()),
-
+            taxRate = order.taxRate,
             statusApproval = null,
             newApproval = null,
             closed = false,

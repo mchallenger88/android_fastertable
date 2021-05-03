@@ -173,6 +173,7 @@ class OrderRepository @Inject constructor(private val app: Application) {
             gratuity = 0.00,
             subTotal = 0.00,
             tax = 0.00,
+            taxRate = settings.taxRate.rate.times(0.01)    ,
             total = 0.00,
 
             accepted = null,

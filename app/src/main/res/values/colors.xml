@@ -22,6 +22,7 @@
     <color name="side_window">#FAFAFA</color>
     <color name="title_background">#E0E0E0</color>
     <color name="view_background">#E8EAF6</color>
+    <color name="primary_payment_color">#009688</color>
 
     //Mod Buttons
     <color name="mod1">#FFECB3</color>

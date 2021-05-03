@@ -118,8 +118,6 @@ fun setGuestNumberTitle(textView: TextView, guests: List<Guest>?){
             textView.text = "Guest ${it.id.plus(1)}"
         }
     }
-
-
 }
 //
 //@SuppressLint("SetTextI18n")

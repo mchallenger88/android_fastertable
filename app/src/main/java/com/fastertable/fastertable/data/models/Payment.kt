@@ -24,6 +24,7 @@ data class Payment(
     val statusApproval: String?,
     val newApproval: Approval?,
     val closed: Boolean,
+    val taxRate: Double,
     @SerializedName("locationid")
     val locationId: String,
     val archived: Boolean,
@@ -52,7 +53,15 @@ data class Ticket(
     val partialPayment: Boolean,
     var uiActive: Boolean = false
 
-    ): Parcelable
+    ): Parcelable{
+        fun getTicketSubTotal(): Double{
+            var price: Double = 0.00
+            ticketItems.forEach{ticketItem ->
+                price += price.plus(ticketItem.ticketItemPrice)
+            }
+            return price
+        }
+    }
 
 @Parcelize
 data class CreditCardTransaction(
@@ -76,7 +85,7 @@ data class TicketItem(
     val itemName: String,
     val itemSize: String,
     val itemPrice: Double,
-    val discountPrice: Double,
+    val discountPrice: Double?,
     val priceModified: Boolean,
     val itemMods: ArrayList<ModifierItem>,
     val salesCategory: String,

@@ -10,49 +10,50 @@ import com.squareup.moshi.JsonClass
 @JsonClass(generateAdapter = true)
 @Parcelize
 data class Order(
-    val orderType: String,
-    val orderNumber: Int,
-    var tableNumber: Int?,
-    val employeeId: String?,
-    val userName: String,
-    val startTime: Long,
-    val closeTime: Long?,
-    val midnight: Long,
-    val orderStatus: String,
-    val kitchenStatus: Boolean,
-    val rush: Boolean?,
+        val orderType: String,
+        val orderNumber: Int,
+        var tableNumber: Int?,
+        val employeeId: String?,
+        val userName: String,
+        val startTime: Long,
+        val closeTime: Long?,
+        val midnight: Long,
+        val orderStatus: String,
+        val kitchenStatus: Boolean,
+        val rush: Boolean?,
 
-    var guests: MutableList<Guest>?,
-    var splitChecks: MutableList<Check>?,
-    var note: String,
+        var guests: MutableList<Guest>?,
+        var splitChecks: MutableList<Check>?,
+        var note: String,
 
-    var customer: Customer?,
-    var takeOutCustomer: TakeOutCustomer?,
-    var outsideDelivery: DeliveryCustomer?,
+        var customer: Customer?,
+        var takeOutCustomer: TakeOutCustomer?,
+        var outsideDelivery: DeliveryCustomer?,
 
-    val orderFees: Double?,
-    val orderDiscount: Double?,
-    val pendingApproval: Boolean,
+        val orderFees: Double?,
+        val orderDiscount: Double?,
+        val pendingApproval: Boolean,
 
-    val gratuity: Double,
-    val subTotal: Double,
-    val tax: Double,
-    val total: Double,
+        val gratuity: Double,
+        val subTotal: Double,
+        val tax: Double,
+        val taxRate: Double,
+        val total: Double,
 
-    var accepted: Boolean?,
-    var estReadyTime: Long?,
-    var estDeliveryTime: Long?,
+        var accepted: Boolean?,
+        var estReadyTime: Long?,
+        var estDeliveryTime: Long?,
 
-    val id: String,
-    @SerializedName("locationid")
+        var id: String,
+        @SerializedName("locationid")
     val locationId: String,
-    val archived: Boolean,
-    val type: String,
-    val _rid: String?,
-    val _self: String?,
-    val _etag: String?,
-    val _attachments: String?,
-    val _ts: Long?
+        val archived: Boolean,
+        val type: String,
+        val _rid: String?,
+        val _self: String?,
+        val _etag: String?,
+        val _attachments: String?,
+        val _ts: Long?
 ): Parcelable {
     fun guestAdd(){
         val newGuest = Guest(
@@ -173,13 +174,36 @@ data class Order(
     }
 
     fun createSingleTicket(): Ticket{
+        val ticketItems = arrayListOf<TicketItem>()
+        this.guests?.forEach { guest ->
+            guest.orderItems?.forEachIndexed { index, orderItem ->
+                val ticketItem = TicketItem(
+                    id = index,
+                    orderGuestNo = guest.id,
+                    orderItemId = orderItem.id,
+                    quantity = orderItem.quantity,
+                    itemName = orderItem.menuItemName,
+                    itemSize = orderItem.menuItemPrice.size,
+                    itemPrice = orderItem.menuItemPrice.price,
+                    discountPrice = null,
+                    priceModified = orderItem.priceAdjusted,
+                    itemMods = ArrayList(orderItem.orderMods),
+                    salesCategory = orderItem.salesCategory,
+                    ticketItemPrice = orderItem.getTicketExtendedPrice(this.taxRate),
+                    tax = orderItem.getSalesTax(this.taxRate)
+                )
+                ticketItems.add(ticketItem)
+            }
+        }
+
+
         return Ticket(
             orderId = this.id,
             id = 0,
-            ticketItems = arrayListOf<TicketItem>(),
-            subTotal = getSubtotal(),
-            tax = getSalesTax(),
-            total = getOrderTotal(),
+            ticketItems = ticketItems,
+            subTotal = ticketItems.sumByDouble { it -> it.ticketItemPrice },
+            tax = ticketItems.sumByDouble { it -> it.tax },
+            total = ticketItems.sumByDouble { it -> it.ticketItemPrice }.plus(ticketItems.sumByDouble { it -> it.tax }),
             paymentType = "",
             gratuity = 0.00,
             deliveryFee = 0.00,
@@ -246,7 +270,7 @@ data class OrderItem(
     val menuItemId: String,
     val menuItemName: String,
     val menuItemPrice: ItemPrice,
-    val orderMods: MutableList<ModifierItem>?,
+    val orderMods: List<ModifierItem>?,
     val salesCategory: String,
     val ingredientList: List<ItemIngredient>?,
     val ingredients: List<ItemIngredient>?,
@@ -276,6 +300,29 @@ data class OrderItem(
 
         return price
     }
+
+    fun getTicketExtendedPrice(taxRate: Double): Double{
+        var price = this.getExtendedPrice()
+        if (this.tax === "Tax Included"){
+            price = price.minus(this.getSalesTax(taxRate))
+        }
+        return price
+    }
+
+    fun getSalesTax(taxRate: Double): Double{
+        return when (this.tax){
+            "Taxable" -> getExtendedPrice().times(taxRate)
+            "Tax Exempt" -> 0.00
+            "Tax Included" -> getExtendedPrice().times(taxRate)
+            else -> getExtendedPrice().times(taxRate)
+        }
+    }
+}
+
+enum class TaxTypes{
+    TAXABLE,
+    TAX_INCLUDED,
+    TAX_EXEMPT
 }
 
 
