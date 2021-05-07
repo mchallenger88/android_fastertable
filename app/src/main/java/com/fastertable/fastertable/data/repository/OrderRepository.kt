@@ -218,9 +218,8 @@ class OrderRepository @Inject constructor(private val app: Application) {
 
     fun clearOrder(){
         val gson = Gson()
-        val jsonString = ""
         val file= File(app.filesDir, "order.json")
-        file.writeText(jsonString)
+        file.delete()
     }
 
     fun getNewOrder(): Order?{

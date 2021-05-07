@@ -44,13 +44,13 @@ data class Ticket(
     val subTotal: Double,
     val tax: Double,
     val total: Double,
-    val paymentType: String,
+    var paymentType: String,
     val gratuity: Double,
     val deliveryFee: Double,
-    val paymentTotal: Double?,
+    var paymentTotal: Double?,
     val stageResponse: ArrayList<StageResponse>,
     val creditCardTransactions: ArrayList<CreditCardTransaction>,
-    val partialPayment: Boolean,
+    var partialPayment: Boolean,
     var uiActive: Boolean = false
 
     ): Parcelable{

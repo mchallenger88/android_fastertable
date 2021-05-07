@@ -44,25 +44,28 @@ class CompanyLoginViewModel @Inject constructor(
     val status: LiveData<ApiStatus>
         get() = _status
 
+    private val _loginEnabled = MutableLiveData<Boolean>()
+    val loginEnabled: LiveData<Boolean>
+        get() = _loginEnabled
+
     init{
         _showProgressBar.value = false
         _error.value = false
+        _loginEnabled.value = true
         checkCompany()
     }
 
     private suspend fun loginCompany(loginName: String, password: String){
         viewModelScope.launch {
-            _status.postValue(ApiStatus.LOADING)
             try {
                 loginCompany.loginCompany(loginName, password)
                 val comp = loginRepository.getCompany()
                 _company.postValue(comp!!)
                 _locations.postValue(comp.locations)
-                _status.postValue(ApiStatus.SUCCESS)
                 _error.postValue(false)
                 saveLogin(loginName, password, comp.id)
             }catch (e: Exception) {
-                _status.postValue(ApiStatus.ERROR)
+                _loginEnabled.postValue(true)
                 _error.postValue(true)
             }
         }
@@ -80,9 +83,9 @@ class CompanyLoginViewModel @Inject constructor(
 
     fun getRestaurants(){
         _showProgressBar.value = true
+        _loginEnabled.value = false
         viewModelScope.launch {
             loginCompany(loginName.get()!!, password.get()!!)
-
             _showProgressBar.value = false
         }
     }

@@ -220,7 +220,7 @@ class OrderFragment : BaseFragment() {
         })
 
         viewModel.liveOrder.observe(viewLifecycleOwner, { item ->
-            guestAdapter.submitList(item.guests)
+//            guestAdapter.submitList(item?.guests)
             guestAdapter.notifyDataSetChanged()
 
         })

@@ -46,7 +46,7 @@ class GuestSideBarAdapter(private val clickListener: GuestSideBarListener) : Lis
                 binding.guestButton.setTextColor(ColorStateList.valueOf(offwhite))
                 binding.guestButton.setCompoundDrawablesRelativeWithIntrinsicBounds(0, R.drawable.ic_user_offwhite, 0, 0)
             }
-            binding.guestButton.textSize = 16f
+            binding.guestButton.textSize = 17f
 
             binding.guestButton.textAlignment = View.TEXT_ALIGNMENT_CENTER
 

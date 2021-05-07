@@ -37,7 +37,7 @@
 
         <TextView
             android:id="@+id/txt_terminal_using"
-            style="@style/view_titles"
+            style="@style/view_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="50dp"
@@ -50,7 +50,7 @@
 
         <TextView
             android:id="@+id/txt_user_login_title"
-            style="@style/view_titles"
+            style="@style/view_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/user_login"
@@ -74,7 +74,7 @@
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="@dimen/large_text_size"
+                android:textSize="@dimen/d21"
                 android:textAlignment="center"
                 android:inputType="textPassword"
                 android:text="@{ viewModel.pin }" />
@@ -87,7 +87,7 @@
             android:layout_height="@dimen/login_button"
             android:text="@string/string_one"
             android:textColor="@color/white"
-            android:textSize="@dimen/large_text_size"
+            android:textSize="@dimen/d21"
             android:backgroundTint="@color/secondaryColor"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -104,7 +104,7 @@
             android:backgroundTint="@color/secondaryColor"
             android:text="@string/string_two"
             android:textColor="@color/white"
-            android:textSize="@dimen/large_text_size"
+            android:textSize="@dimen/d21"
             app:layout_constraintStart_toEndOf="@+id/btn_user_one"
             app:layout_constraintTop_toTopOf="@+id/btn_user_one" />
 
@@ -116,7 +116,7 @@
             android:backgroundTint="@color/secondaryColor"
             android:text="@string/string_three"
             android:textColor="@color/white"
-            android:textSize="@dimen/large_text_size"
+            android:textSize="@dimen/d21"
             app:layout_constraintStart_toEndOf="@+id/btn_user_two"
             app:layout_constraintTop_toTopOf="@+id/btn_user_two" />
 
@@ -126,7 +126,7 @@
             android:layout_height="@dimen/login_button"
             android:text="@string/string_four"
             android:textColor="@color/white"
-            android:textSize="@dimen/large_text_size"
+            android:textSize="@dimen/d21"
             android:backgroundTint="@color/secondaryColor"
             app:layout_constraintStart_toStartOf="@+id/btn_user_one"
             app:layout_constraintTop_toBottomOf="@+id/btn_user_one" />
@@ -139,7 +139,7 @@
             android:backgroundTint="@color/secondaryColor"
             android:text="@string/string_five"
             android:textColor="@color/white"
-            android:textSize="@dimen/large_text_size"
+            android:textSize="@dimen/d21"
             app:layout_constraintStart_toEndOf="@+id/btn_user_four"
             app:layout_constraintTop_toBottomOf="@+id/btn_user_two" />
 
@@ -151,7 +151,7 @@
             android:backgroundTint="@color/secondaryColor"
             android:text="@string/string_six"
             android:textColor="@color/white"
-            android:textSize="@dimen/large_text_size"
+            android:textSize="@dimen/d21"
             app:layout_constraintStart_toEndOf="@+id/btn_user_five"
             app:layout_constraintTop_toBottomOf="@+id/btn_user_three" />
 
@@ -161,7 +161,7 @@
             android:layout_height="@dimen/login_button"
             android:text="@string/string_seven"
             android:textColor="@color/white"
-            android:textSize="@dimen/large_text_size"
+            android:textSize="@dimen/d21"
             android:backgroundTint="@color/secondaryColor"
             app:layout_constraintStart_toStartOf="@+id/btn_user_four"
             app:layout_constraintTop_toBottomOf="@+id/btn_user_four" />
@@ -174,7 +174,7 @@
             android:backgroundTint="@color/secondaryColor"
             android:text="@string/string_eight"
             android:textColor="@color/white"
-            android:textSize="@dimen/large_text_size"
+            android:textSize="@dimen/d21"
             app:layout_constraintStart_toEndOf="@+id/btn_user_seven"
             app:layout_constraintTop_toBottomOf="@+id/btn_user_five" />
 
@@ -186,7 +186,7 @@
             android:backgroundTint="@color/secondaryColor"
             android:text="@string/string_nine"
             android:textColor="@color/white"
-            android:textSize="@dimen/large_text_size"
+            android:textSize="@dimen/d21"
             app:layout_constraintStart_toEndOf="@+id/btn_user_eight"
             app:layout_constraintTop_toBottomOf="@+id/btn_user_six" />
 
@@ -209,7 +209,7 @@
             android:backgroundTint="@color/secondaryColor"
             android:text="@string/string_zero"
             android:textColor="@color/white"
-            android:textSize="@dimen/large_text_size"
+            android:textSize="@dimen/d21"
             app:layout_constraintStart_toStartOf="@+id/btn_user_seven"
             app:layout_constraintTop_toBottomOf="@+id/btn_user_seven" />
 

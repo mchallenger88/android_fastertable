@@ -94,9 +94,12 @@ fun bindRecyclerView(recyclerView: RecyclerView?, order: Order?) {
 
 @BindingAdapter("guestListData")
 fun bindGuestRecyclerView(recyclerView: RecyclerView?, data: List<Guest>?) {
-    val adapter = recyclerView?.adapter as GuestSideBarAdapter
-    adapter.submitList(data)
-    adapter.notifyDataSetChanged()
+    if (data != null){
+        val adapter = recyclerView?.adapter as GuestSideBarAdapter
+        adapter.submitList(data)
+        adapter.notifyDataSetChanged()
+    }
+
 }
 
 
@@ -150,8 +153,6 @@ fun checkIngredientHeader(textView: TextView, item: ItemIngredient){
 @SuppressLint("SetTextI18n")
 @BindingAdapter("setGuestButton")
 fun setGuestButton(btn: Button, guest: Guest){
-    println("In the binding")
-    println(guest.id)
     btn.text = "Guest ${guest.id.plus(1)}"
     val color = ContextCompat.getColor(btn.context, android.R.color.transparent)
     if (guest.uiActive){

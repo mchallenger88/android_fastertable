@@ -15,7 +15,7 @@
 
     <TextView
         android:id="@+id/txt_comp_login_title"
-        style="@style/view_titles"
+        style="@style/view_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/company_login_title"
@@ -54,7 +54,7 @@
         <com.google.android.material.textfield.TextInputEditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="@dimen/large_text_size"
+            android:textSize="@dimen/d21"
             android:text="@={viewModel.loginName}" />
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -72,7 +72,7 @@
         <com.google.android.material.textfield.TextInputEditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="@dimen/large_text_size"
+            android:textSize="@dimen/d21"
             android:inputType="textPassword"
             android:text="@={viewModel.password}" />
     </com.google.android.material.textfield.TextInputLayout>
@@ -90,12 +90,14 @@
 
     <Button
         android:id="@+id/btn_company_login"
+        style="@style/Widget.MaterialComponents.Button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:text="@string/login"
-        android:textColor="@color/white"
-        android:textSize="@dimen/large_text_size"
+        android:textSize="@dimen/d21"
+        android:onClick="@{() -> viewModel.getRestaurants()}"
+        android:enabled="@{viewModel.loginEnabled}"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/edit_company_password"
@@ -107,7 +109,7 @@
         android:layout_height="wrap_content"
         android:text="@string/company_error"
         android:textColor="@color/secondaryDarkColor"
-        android:textSize="@dimen/default_text_size"
+        android:textSize="@dimen/d18"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btn_company_login"

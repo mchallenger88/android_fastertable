@@ -3,11 +3,13 @@ package com.fastertable.fastertable.adapters
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.fastertable.fastertable.R
 import com.fastertable.fastertable.data.models.IngredientChange
 import com.fastertable.fastertable.data.models.Order
 import com.fastertable.fastertable.data.models.OrderItem
@@ -19,20 +21,36 @@ import dagger.hilt.android.internal.managers.ViewComponentManager
 class OrderItemAdapter(private val clickListener: OrderItemListener) : ListAdapter<OrderItem, OrderItemAdapter.MenuItemViewHolder>(DiffCallback), DialogListener {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MenuItemViewHolder {
-        return MenuItemViewHolder(OrderLineItemBinding.inflate(LayoutInflater.from(parent.context)))
+        return MenuItemViewHolder(OrderLineItemBinding.inflate(LayoutInflater.from(parent.context)), parent)
     }
 
     override fun onBindViewHolder(holder: MenuItemViewHolder, position: Int) {
         val orderItem = getItem(position)
         holder.bind(orderItem, clickListener)
     }
-    class MenuItemViewHolder(private var binding: OrderLineItemBinding):
+    class MenuItemViewHolder(private var binding: OrderLineItemBinding, private val parent: ViewGroup):
         RecyclerView.ViewHolder(binding.root) {
         fun bind(orderItem: OrderItem, clickListener: OrderItemListener) {
             binding.orderItem = null
             binding.orderItem = orderItem
             binding.clickListener = clickListener
             binding.executePendingBindings()
+
+            if (orderItem.status == "Started"){
+                val typeface = ResourcesCompat.getFont(parent.context, R.font.open_sans_semibold)
+                binding.txtItem.typeface = typeface
+                binding.txtQuantity.typeface = typeface
+                binding.txtIngredients.typeface = typeface
+                binding.txtMods.typeface = typeface
+                binding.txtOrderItemNote.typeface = typeface
+            }else{
+                val typeface = ResourcesCompat.getFont(parent.context, R.font.open_sans)
+                binding.txtItem.typeface = typeface
+                binding.txtQuantity.typeface = typeface
+                binding.txtIngredients.typeface = typeface
+                binding.txtMods.typeface = typeface
+                binding.txtOrderItemNote.typeface = typeface
+            }
 
             binding.btnItemMore.setOnClickListener{
                 clickListener.onClick(orderItem)

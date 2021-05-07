@@ -80,24 +80,15 @@
 
         </androidx.appcompat.widget.Toolbar>
 
-        <ScrollView
-            android:id="@+id/toolbar_scrollView"
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:background="@color/guest_toolbar"
-            android:elevation="10dp"
-            android:padding="10dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/order_fastertoolbar">
-
             <LinearLayout
                 android:id="@+id/toolbar_guestSideBar"
-                android:layout_width="60dp"
-                android:layout_height="wrap_content"
+                android:layout_width="76dp"
+                android:layout_height="0dp"
                 android:background="@color/guest_toolbar"
                 android:gravity="fill_vertical"
                 android:orientation="vertical"
+                android:elevation="10dp"
+                android:padding="10dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/order_fastertoolbar"
@@ -111,24 +102,24 @@
                     android:contentDescription="@string/string_add_guest"
                     android:focusable="true"
                     android:onClick="@{() -> viewModel.addGuest()}"
+                    android:visibility="visible"
                     app:srcCompat="@drawable/ic_baseline_add_24" />
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/guest_recycler"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
                     app:guestListData="@{viewModel.liveOrder.guests}"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/txt_guest_number"
-                    tools:listitem="@layout/guest_button"
-                    />
-
+                    tools:listitem="@layout/guest_button" />
 
             </LinearLayout>
-        </ScrollView>
+
 
 
         <androidx.cardview.widget.CardView
@@ -140,7 +131,7 @@
             app:cardBackgroundColor="#E8EAF6"
             app:cardElevation="0dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/toolbar_scrollView"
+            app:layout_constraintStart_toEndOf="@+id/toolbar_guestSideBar"
             app:layout_constraintTop_toBottomOf="@+id/order_fastertoolbar"
             app:layout_constraintVertical_bias="0.0">
 
@@ -174,6 +165,7 @@
                     android:layout_width="0dp"
                     android:layout_height="40dp"
                     android:gravity="center_horizontal"
+                    android:paddingTop="5dp"
                     android:text="@string/string_guest"
                     android:textAlignment="center"
                     android:textStyle="bold"
@@ -196,7 +188,7 @@
                     android:id="@+id/orderItems"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
-                    android:layout_marginTop="10dp"
+                    android:layout_marginTop="4dp"
                     android:layout_marginEnd="10dp"
                     android:layout_marginBottom="16dp"
                     android:scrollbarStyle="outsideInset"
@@ -380,7 +372,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
-                    android:textSize="@dimen/order_default_size"
                     app:intToString="@{viewModel.itemQuantity}"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"

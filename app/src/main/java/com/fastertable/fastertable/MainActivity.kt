@@ -67,11 +67,13 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
 
         homeViewModel.navigateToOrder.observe(this, { it ->
             if (it == "Counter"){
+                orderViewModel.clearOrder()
                 navController.navigate(HomeFragmentDirections.actionNavHomeToOrderFragment())
                 homeViewModel.navigationEnd()
             }
 
             if (it.contains("O_")){
+                orderViewModel.clearOrder()
                 orderViewModel.setCurrentOrderId(it)
                 navController.navigate(HomeFragmentDirections.actionNavHomeToOrderFragment())
                 homeViewModel.navigationEnd()
@@ -99,6 +101,10 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
             }
         })
 
+        paymentViewModel.amountOwed.observe(this, {
+            CashBackDialogFragment().show(supportFragmentManager, CashBackDialogFragment.TAG)
+        })
+
 
         hideSystemUI()
     }
@@ -122,13 +128,9 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
             if (settings.restaurantType == "Counter Service"){
                 if (order.orderNumber == 99 && order.tableNumber == null && order.orderType == "Counter"){
                     AssignTableDialog().show(supportFragmentManager, AssignTableDialog.TAG)
-
-
-//                    orderViewModel.saveOrderToCloud(order)
-                    //TODO Send to Kitchen that is print kitchen ticket
                     //TODO Create a Payment and then Send to Payment Activity
                 }else{
-                    //TODO Send to Kitchen that is print kitchen ticket
+                    orderViewModel.saveOrderToCloud(order)
                     //TODO Create a Payment and then Send to Payment Activity
                 }
             }

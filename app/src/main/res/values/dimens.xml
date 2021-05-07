@@ -8,14 +8,23 @@
     <dimen name="fab_margin">16dp</dimen>
 
     //Text Sizes
-    <dimen name="title_size">40sp</dimen>
-    <dimen name="order_default_size">26sp</dimen>
-    <dimen name="header_size">24sp</dimen>
-    <dimen name="large_text_size">21sp</dimen>
-    <dimen name="default_text_size">18sp</dimen>
+    <dimen name="d48">48sp</dimen>
+    <dimen name="d34">34sp</dimen>
+    <dimen name="d28">28sp</dimen>
+    <dimen name="d26">26sp</dimen>
+    <dimen name="d24">24sp</dimen>
+    <dimen name="d21">21sp</dimen>
+    <dimen name="d20">20sp</dimen>
+    <dimen name="d18">18sp</dimen>
+    <dimen name="d16">16sp</dimen>
+    <dimen name="d14">14sp</dimen>
+    <dimen name="d12">12sp</dimen>
+    <dimen name="d10">10sp</dimen>
+
+
     <dimen name="default_text_small">16sp</dimen>
     <dimen name="hint_size">14sp</dimen>
-
+    <dimen name="keypad_button">90dp</dimen>
 
 
 

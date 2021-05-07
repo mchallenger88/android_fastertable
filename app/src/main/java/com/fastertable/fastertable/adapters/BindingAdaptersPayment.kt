@@ -1,5 +1,6 @@
 package com.fastertable.fastertable.adapters
 
+import android.view.View
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -31,21 +32,20 @@ fun setTicketNumber(textView: TextView, tickets: List<Ticket>?){
 fun bindTicketRecyclerView(recyclerView: RecyclerView?, payment: Payment?) {
     val adapter = recyclerView?.adapter as TicketItemAdapter
     val ticket = payment?.tickets?.find{ it -> it.uiActive }
-    println(payment)
     adapter.submitList(ticket?.ticketItems)
     adapter.notifyDataSetChanged()
 }
 
 @BindingAdapter("ticketItemPrice")
 fun getItemPrice(textView: TextView, item: TicketItem){
-    textView.text = "$%.${2}f".format(item.ticketItemPrice)
+    textView.text = textView.context.getString(R.string.item_price, "%.${2}f".format(item.ticketItemPrice))
 }
 
 @BindingAdapter("ticketSubTotal")
 fun getTicketSubtotal(textView: TextView, payment: Payment){
     payment.tickets.forEach { item ->
         if (item.uiActive){
-            textView.text = "Subtotal:  $%.${2}f".format(item.subTotal)
+            textView.text = textView.context.getString(R.string.subtotal_price, "%.${2}f".format(item.subTotal))
         }
     }
 }
@@ -54,7 +54,7 @@ fun getTicketSubtotal(textView: TextView, payment: Payment){
 fun getTicketTax(textView: TextView, payment: Payment){
     payment.tickets.forEach { item ->
         if (item.uiActive){
-            textView.text = "Tax:  $%.${2}f".format(item.tax)
+            textView.text = textView.context.getString(R.string.tax_price, "%.${2}f".format(item.tax))
         }
     }
 }
@@ -63,7 +63,29 @@ fun getTicketTax(textView: TextView, payment: Payment){
 fun getTicketTotal(textView: TextView, payment: Payment){
     payment.tickets.forEach { item ->
         if (item.uiActive){
-            textView.text = "Total:  $%.${2}f".format(item.total)
+            textView.text = textView.context.getString(R.string.total_price, "%.${2}f".format(item.total))
+        }
+    }
+}
+
+@BindingAdapter("amountOwed")
+fun getAmountOwed(textView: TextView, payment: Payment){
+    payment.tickets.forEach { item ->
+        if (item.uiActive){
+            textView.text = textView.context.getString(R.string.amount_owed, "%.${2}f".format(item.total))
+        }
+    }
+}
+
+@BindingAdapter("paidInFull")
+fun setPaidInFull(textView: TextView, payment: Payment){
+    payment.tickets.forEach { item ->
+        if (item.uiActive){
+            if (item.paymentTotal!! >= item.total){
+                textView.visibility = View.VISIBLE
+            }else{
+                textView.visibility = View.GONE
+            }
         }
     }
 }

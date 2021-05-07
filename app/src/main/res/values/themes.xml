@@ -15,6 +15,12 @@
         <item name="textInputStyle">@style/AppTextField</item>
         <item name="materialAlertDialogTheme">@style/MyThemeOverlay.MaterialDialogAlert</item>
         <item name="snackbarTextViewStyle">@style/MyThemeOverlay.SnackBarStyle.TextView</item>
+        <item name="android:fontFamily">@style/DefaultFont</item>
+
+    </style>
+
+    <style name="DefaultFont" parent="@style/Widget.MaterialComponents.TextView">
+        <item name="fontFamily">@font/open_sans</item>
     </style>
 
     <style name="MyThemeOverlay.MaterialDialogAlert" parent="@style/ThemeOverlay.MaterialComponents.MaterialAlertDialog">
@@ -26,7 +32,7 @@
     </style>
 
     <style name="MyThemeOverlay.SnackBarStyle.TextView" parent="@style/Widget.MaterialComponents.Snackbar.TextView">
-        <item name="android:textSize">@dimen/large_text_size</item>
+        <item name="android:textSize">@dimen/d21</item>
     </style>
 
 

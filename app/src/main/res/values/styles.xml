@@ -1,24 +1,71 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="view_titles">
-        <item name="android:textSize">@dimen/header_size</item>
+    <style name="default_font">
+        <item name="fontFamily">@font/open_sans</item>
+        <item name="android:textColor">@color/default_text_color</item>
+    </style>
+
+    //Base Styles
+    <style name="F3" parent="default_font">
+        <item name="android:textSize">@dimen/d48</item>
+        <item name="android:letterSpacing">0</item>
+    </style>
+    <style name="F4" parent="default_font">
+        <item name="android:textSize">@dimen/d34</item>
+        <item name="android:letterSpacing">0.07</item>
+    </style>
+    <style name="F4_5" parent="default_font">
+        <item name="android:textSize">@dimen/d28</item>
+        <item name="android:letterSpacing">0.05</item>
+    </style>
+    <style name="F4_6" parent="default_font">
+        <item name="android:textSize">@dimen/d26</item>
+        <item name="android:letterSpacing">0</item>
+    </style>
+    <style name="F5" parent="default_font">
+        <item name="android:textSize">@dimen/d24</item>
+        <item name="android:letterSpacing">0</item>
+    </style>
+    <style name="F6" parent="default_font">
+        <item name="android:textSize">@dimen/d20</item>
+        <item name="fontFamily">@font/open_sans_semibold</item>
+        <item name="android:letterSpacing">0.03</item>
+    </style>
+    <style name="F_Subtitle1" parent="default_font">
+        <item name="android:textSize">@dimen/d16</item>
+        <item name="android:letterSpacing">0.03</item>
+    </style>
+    <style name="F_Subtitle2" parent="default_font">
+        <item name="android:textSize">@dimen/d14</item>
+        <item name="fontFamily">@font/open_sans_semibold</item>
+        <item name="android:letterSpacing">0.03</item>
+    </style>
+    <style name="F_Body" parent="default_font">
+        <item name="android:textSize">@dimen/d16</item>
+        <item name="android:letterSpacing">0.03</item>
+    </style>
+
+    //Fastertable Styles
+    <style name="view_title" parent="F4_5">
         <item name="android:textStyle">bold</item>
         <item name="android:textAlignment">viewEnd</item>
         <item name="android:textAllCaps">true</item>
-        <item name="android:textColor">@color/default_text_color</item>
         <item name="android:layout_marginTop">@dimen/textView_margin</item>
     </style>
 
-    <style name="default_text">
-    <item name="android:textSize">@dimen/default_text_size</item>
-<!--    <item name="android:textStyle">bold</item>-->
-    <item name="android:textColor">@color/default_text_color</item>
+    <style name="view_subtitle" parent="F4_6">
+        <item name="android:textStyle">bold</item>
+        <item name="android:textAlignment">viewEnd</item>
+        <item name="android:layout_marginTop">@dimen/textView_margin</item>
+    </style>
+
+    <style name="default_text" parent="F_Body">
     <item name="android:layout_marginTop">@dimen/textView_margin</item>
     </style>
 
-    <style name="order_grid">
-        <item name="android:textSize">@dimen/default_text_size</item>
+    <style name="order_grid" parent="default_font">
+        <item name="android:textSize">@dimen/d21</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textColor">@color/default_text_color</item>
         <item name="android:layout_marginTop">@dimen/textView_margin</item>
@@ -26,8 +73,8 @@
         <item name="android:padding">@dimen/grid_cell_padding</item>
     </style>
 
-    <style name="order_header_grid">
-        <item name="android:textSize">@dimen/default_text_size</item>
+    <style name="order_header_grid" parent="default_font">
+        <item name="android:textSize">@dimen/d20</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textColor">@color/white</item>
         <item name="android:background">@color/primaryColor</item>
@@ -36,16 +83,16 @@
         <item name="android:padding">@dimen/grid_cell_padding</item>
     </style>
 
-    <style name="edit_hint">
-        <item name="android:textSize">@dimen/default_text_size</item>
+    <style name="edit_hint" parent="default_font">
+        <item name="android:textSize">@dimen/d18</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textColor">@color/default_text_color</item>
         <item name="android:layout_marginTop">@dimen/textView_margin</item>
         <item name="android:textAlignment">center</item>
     </style>
 
-    <style name="edit_text_title">
-        <item name="android:textSize">@dimen/large_text_size</item>
+    <style name="edit_text_title" parent="default_font">
+        <item name="android:textSize">@dimen/d21</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textAlignment">viewEnd</item>
         <item name="android:textColor">@color/default_text_color</item>
@@ -54,32 +101,40 @@
 
     <style name="ChipTextAppearance" parent="TextAppearance.MaterialComponents.Chip">
         <item name="android:textColor">@android:color/white</item>
-        <item name="android:textSize">@dimen/default_text_size</item>
+        <item name="android:textSize">@dimen/d21</item>
         <item name="android:background">@color/primaryColor</item>
     </style>
 
-    <style name="default_bold">
-        <item name="android:textSize">@dimen/default_text_size</item>
+    <style name="default_bold" parent="default_font">
+        <item name="android:textSize">@dimen/d18</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textColor">@color/default_text_color</item>
         <item name="android:layout_marginTop">@dimen/textView_margin</item>
     </style>
 
-    <style name="tab_text">
-        <item name="android:textSize">@dimen/large_text_size</item>
+    <style name="tab_text" parent="default_font">
+        <item name="android:textSize">@dimen/d21</item>
         <item name="android:textColor">@color/white</item>
         <item name="android:textAllCaps">true</item>
     </style>
 
-    <style name="item_description">
-        <item name="android:textSize">@dimen/large_text_size</item>
+    <style name="item_description" parent="default_font">
+        <item name="android:textSize">@dimen/d21</item>
         <item name="android:textColor">@color/default_text_color</item>
         <item name="android:layout_marginTop">@dimen/textView_margin</item>
     </style>
 
-    <style name="menu_line_item">
-        <item name="android:textSize">@dimen/order_default_size</item>
-        <item name="android:textColor">@color/default_text_color</item>
+    <style name="menu_line_item" parent="F4_5">
+        <item name="android:layout_marginTop">@dimen/textView_margin</item>
+        <item name="android:letterSpacing">0.01</item>
+    </style>
+
+    <style name="payment_line_item" parent="F4_6">
+        <item name="android:layout_marginTop">@dimen/textView_margin</item>
+    </style>
+
+    <style name="payment_totals" parent="F4_6">
+        <item name="android:fontFamily">@font/open_sans_bold</item>
         <item name="android:layout_marginTop">@dimen/textView_margin</item>
     </style>
 
@@ -88,8 +143,8 @@
         <item name="android:paddingBottom">@dimen/default_padding</item>
     </style>
 
-    <style name="mods_ingredients">
-        <item name="android:textSize">@dimen/large_text_size</item>
+    <style name="mods_ingredients" parent="default_font">
+        <item name="android:textSize">@dimen/d21</item>
         <item name="android:textColor">@color/light_gray</item>
         <item name="android:layout_marginTop">@dimen/textView_margin</item>
     </style>
@@ -99,32 +154,32 @@
     </style>
 
     <style name="primary_button" parent="Widget.MaterialComponents.Button">
-        <item name="android:textSize">@dimen/default_text_size</item>
+        <item name="android:textSize">@dimen/d18</item>
         <item name="android:textColor">@android:color/white</item>
         <item name="android:background">@color/primaryColor</item>
     </style>
 
     <style name="primary_button_large" parent="Widget.MaterialComponents.Button">
-        <item name="android:textSize">@dimen/large_text_size</item>
+        <item name="android:textSize">@dimen/d21</item>
         <item name="android:textColor">@android:color/white</item>
         <item name="android:background">@color/primaryColor</item>
     </style>
 
 
-    <style name="header">
-        <item name="android:textSize">@dimen/header_size</item>
+    <style name="header" parent="default_font">
+        <item name="android:textSize">@dimen/d24</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textColor">@color/white</item>
     </style>
 
-    <style name="subtitle">
-        <item name="android:textSize">@dimen/header_size</item>
+    <style name="subtitle" parent="default_font">
+        <item name="android:textSize">@dimen/d24</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textColor">@color/default_text_color</item>
         <item name="android:layout_marginTop">@dimen/default_padding</item>
     </style>
 
-    <style name="subtitle_hint">
+    <style name="subtitle_hint" parent="default_font">
         <item name="android:textSize">@dimen/hint_size</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textColor">@color/default_text_color</item>
@@ -132,20 +187,20 @@
     </style>
 
 
-    <style name="large_text">
-        <item name="android:textSize">@dimen/large_text_size</item>
+    <style name="large_text" parent="default_font">
+        <item name="android:textSize">@dimen/d21</item>
         <item name="android:textColor">@color/default_text_color</item>
         <item name="android:layout_marginTop">@dimen/textView_margin</item>
     </style>
 
-    <style name="large_title">
-        <item name="android:textSize">@dimen/header_size</item>
+    <style name="large_title" parent="default_font">
+        <item name="android:textSize">@dimen/d24</item>
         <item name="android:textColor">@color/default_text_color</item>
         <item name="android:layout_marginTop">@dimen/textView_margin</item>
     </style>
 
     <style name="large_title_bold" parent="large_title">
-        <item name="android:textSize">@dimen/order_default_size</item>
+        <item name="android:textSize">@dimen/d24</item>
         <item name="android:textStyle">bold</item>
     </style>
 
@@ -159,14 +214,25 @@
         <item name="android:layout_height">wrap_content</item>
     </style>
 
-    <style name="alert_button">
-        <item name="android:textSize">@dimen/large_text_size</item>
+    <style name="alert_button" parent="default_font">
+        <item name="android:textSize">@dimen/d21</item>
         <item name="android:textColor">@color/primaryLightColor</item>
         <item name="android:backgroundTint">@color/white</item>
     </style>
 
-    <style name="snackBar">
-        <item name="android:textSize">@dimen/large_text_size</item>
+    <style name="snackBar" parent="default_font">
+        <item name="android:textSize">@dimen/d21</item>
         <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="mimic_text_box" parent="default_font">
+        <item name="android:textSize">@dimen/d34</item>
+        <item name="android:background">@color/editText</item>
+        <item name="android:padding">@dimen/default_padding</item>
+    </style>
+
+    <style name="error_style" parent="default_font">
+        <item name="android:textColor">@color/secondaryDarkColor</item>
+        <item name="android:textSize">@dimen/d34</item>
     </style>
 </resources>

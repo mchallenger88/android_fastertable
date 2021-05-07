@@ -2,6 +2,7 @@ package com.fastertable.fastertable.data.models
 
 import android.os.Parcelable
 import com.fastertable.fastertable.utils.GlobalUtils
+import com.fastertable.fastertable.utils.round
 import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
 import kotlinx.parcelize.Parcelize
@@ -46,7 +47,7 @@ data class Order(
 
         var id: String,
         @SerializedName("locationid")
-    val locationId: String,
+        val locationId: String,
         val archived: Boolean,
         val type: String,
         val _rid: String?,
@@ -201,9 +202,9 @@ data class Order(
             orderId = this.id,
             id = 0,
             ticketItems = ticketItems,
-            subTotal = ticketItems.sumByDouble { it -> it.ticketItemPrice },
-            tax = ticketItems.sumByDouble { it -> it.tax },
-            total = ticketItems.sumByDouble { it -> it.ticketItemPrice }.plus(ticketItems.sumByDouble { it -> it.tax }),
+            subTotal = ticketItems.sumByDouble { it -> it.ticketItemPrice }.round(2),
+            tax = ticketItems.sumByDouble { it -> it.tax }.round(2),
+            total = ticketItems.sumByDouble { it -> it.ticketItemPrice }.plus(ticketItems.sumByDouble { it -> it.tax }).round(2),
             paymentType = "",
             gratuity = 0.00,
             deliveryFee = 0.00,

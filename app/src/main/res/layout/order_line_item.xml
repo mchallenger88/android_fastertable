@@ -23,7 +23,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="8dp"
             android:text="@string/string_quantity"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -35,7 +35,7 @@
             android:layout_width="400dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="8dp"
             android:text="@{orderItem.menuItemName}"
             app:layout_constraintStart_toEndOf="@+id/txt_quantity"
             app:layout_constraintTop_toTopOf="parent" />
@@ -45,19 +45,19 @@
             android:id="@+id/img_takeout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="21dp"
+            android:layout_marginTop="13dp"
             android:layout_marginEnd="8dp"
             android:contentDescription="@string/takeout_order"
             app:layout_constraintEnd_toStartOf="@+id/img_item_rush"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_takeout"
-            app:toggleItemTakeout="@{orderItem}"/>
+            app:toggleItemTakeout="@{orderItem}" />
 
         <ImageView
             android:id="@+id/img_item_rush"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="21dp"
+            android:layout_marginTop="13dp"
             android:contentDescription="@string/item_rush"
             app:layout_constraintEnd_toStartOf="@+id/btn_item_more"
             app:layout_constraintTop_toTopOf="parent"
@@ -68,19 +68,19 @@
             android:id="@+id/img_no_make"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="21dp"
+            android:layout_marginTop="13dp"
             android:layout_marginEnd="8dp"
             android:contentDescription="@string/dialog_NoMake"
             app:layout_constraintEnd_toStartOf="@+id/img_takeout"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_nomake"
-            app:toggleItemNoMake="@{orderItem}"/>
+            app:toggleItemNoMake="@{orderItem}" />
 
         <ImageButton
             android:id="@+id/btn_item_more"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="5dp"
             android:layout_marginEnd="10dp"
             android:backgroundTint="@color/white"
             android:contentDescription="@string/item_more"
@@ -124,6 +124,17 @@
                 android:visibility="gone"
                 app:orderLineNote="@{orderItem}" />
         </LinearLayout>
+
+        <View
+            android:id="@+id/divider"
+            android:layout_width="898dp"
+            android:layout_height="1dp"
+            android:layout_marginTop="8dp"
+            android:background="?android:attr/listDivider"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/mod_list_layout" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

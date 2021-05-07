@@ -138,4 +138,21 @@
     <string name="split_evenly">Split Evenly</string>
     <string name="split_by_guest">Split by Guest</string>
     <string name="ticket_with_number">Ticket %1$s</string>
+    <string name="item_price">$%1$s</string>
+    <string name="subtotal">Subtotal:</string>
+    <string name="tax">Tax:</string>
+    <string name="total">Total:</string>
+    <string name="subtotal_price">$%1$s</string>
+    <string name="tax_price">$%1$s</string>
+    <string name="total_price">$%1$s</string>
+    <string name="amount_owed">Amount Owed: $%1$s</string>
+    <string name="string_exact_amount">Exact</string>
+    <string name="twenty_bucks">$20</string>
+    <string name="forty_bucks">$40</string>
+    <string name="string_decimal">.</string>
+    <string name="hundred_bucks">$100</string>
+    <string name="paid_amount">$</string>
+    <string name="submit_payment">Submit Payment</string>
+    <string name="cash_back_change_due">Cash Back - Change Due!</string>
+    <string name="paid_in_full">--- PAID IN FULL ---</string>
 </resources>

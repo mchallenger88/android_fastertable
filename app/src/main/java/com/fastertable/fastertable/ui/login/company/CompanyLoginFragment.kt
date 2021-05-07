@@ -1,5 +1,6 @@
 package com.fastertable.fastertable.ui.login.company
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,10 +10,12 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import com.fastertable.fastertable.R
 import com.fastertable.fastertable.api.CompanyLoginUseCase
 import com.fastertable.fastertable.data.models.Location
 import com.fastertable.fastertable.data.repository.LoginRepository
 import com.fastertable.fastertable.databinding.CompanyLoginFragmentBinding
+import com.google.android.material.button.MaterialButton
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -35,10 +38,9 @@ class CompanyLoginFragment : Fragment()  {
 
         viewModel.locations.observe(viewLifecycleOwner, Observer { l ->
             l?.forEach { loc ->
-                val btnView = Button(activity)
+                val btnView = MaterialButton(requireContext(), null, R.attr.materialButtonOutlinedStyle)
                 btnView.text = loc.locationName
-                btnView.textSize = 18F
-                btnView.setPadding(25, 20, 25, 20)
+                btnView.textSize = 21F
                 btnView.setOnClickListener { setRestaurant(loc) }
 
                 binding.locationsLayout.addView(btnView)
@@ -62,11 +64,6 @@ class CompanyLoginFragment : Fragment()  {
             }
         })
 
-
-        binding.btnCompanyLogin.setOnClickListener{
-//            binding.editCompanyLogin.error = "Incorrect value"
-            viewModel.getRestaurants()
-        }
 
     return binding.root
 }
