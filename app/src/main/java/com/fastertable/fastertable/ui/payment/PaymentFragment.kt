@@ -23,7 +23,23 @@ class PaymentFragment: BaseFragment() {
         binding.lifecycleOwner = viewLifecycleOwner
         binding.viewModel = viewModel
         createAdapters(binding)
+        createObservers(binding)
         return binding.root
+    }
+
+    private fun createObservers(binding: PaymentFragmentBinding){
+        viewModel.paymentScreen.observe(viewLifecycleOwner, {it ->
+            when (it){
+                ShowPayment.NONE -> {
+                    binding.cashLayout.visibility = View.GONE
+                }
+                ShowPayment.CASH -> {
+                    binding.cashLayout.visibility = View.VISIBLE
+                }
+            }
+        })
+
+
     }
 
     private fun createAdapters(binding: PaymentFragmentBinding){

@@ -437,11 +437,11 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
         _liveOrder.value = _liveOrder.value
     }
 
-    fun saveOrderToCloud(ord: Order){
+    fun saveOrderToCloud(){
         viewModelScope.launch {
             var o: Order
-            if (ord.orderNumber == 99){
-                o = saveOrder.saveOrder(ord)
+            if (liveOrder.value?.orderNumber!! == 99){
+                o = saveOrder.saveOrder(liveOrder.value!!)
                 //After tickets are printed the status of the order items is changed from "Started" to "Kitchen"
                 o.printKitchenTicket()
                 _liveOrder.postValue(o)
@@ -449,9 +449,9 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
                 _liveOrder.postValue(o)
             }
 
-            if (ord.orderNumber != 99){
-                ord.printKitchenTicket()
-                o = updateOrder.saveOrder(ord)
+            if (liveOrder.value?.orderNumber != 99){
+                liveOrder.value?.printKitchenTicket()
+                o = updateOrder.saveOrder(liveOrder.value!!)
                 _liveOrder.postValue(o)
             }
         }
@@ -471,5 +471,13 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
         _liveOrder.value = null
         _liveOrder.value = _liveOrder.value
     }
+
+    fun closeOrder(){
+        _liveOrder.value?.close()
+        _liveOrder.value = _liveOrder.value
+        saveOrderToCloud()
+    }
+
+
 }
 

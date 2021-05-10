@@ -25,7 +25,7 @@
     <dimen name="default_text_small">16sp</dimen>
     <dimen name="hint_size">14sp</dimen>
     <dimen name="keypad_button">90dp</dimen>
-
+    <dimen name="keypad_margin">2dp</dimen>
 
 
     <dimen name="default_padding">16dp</dimen>

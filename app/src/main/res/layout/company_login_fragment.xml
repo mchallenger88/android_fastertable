@@ -42,20 +42,17 @@
         android:id="@+id/edit_company_login"
         android:layout_width="@dimen/company_login_widths"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:autofillHints=""
-        android:ems="10"
         android:hint="@string/company_login_edit"
-        android:inputType="textPersonName"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txt_comp_login_title"
-         >
+        app:layout_constraintTop_toBottomOf="@+id/txt_comp_login_title">
+
         <com.google.android.material.textfield.TextInputEditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="@dimen/d21"
-            android:text="@={viewModel.loginName}" />
+            android:text="@={viewModel.loginName}"
+            android:textSize="@dimen/d21" />
+
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
@@ -63,19 +60,20 @@
         android:layout_width="@dimen/company_login_widths"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:autofillHints=""
-        android:ems="10"
         android:hint="@string/company_password_edit"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/edit_company_login">
+
         <com.google.android.material.textfield.TextInputEditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="@dimen/d21"
             android:inputType="textPassword"
-            android:text="@={viewModel.password}" />
+            android:text="@={viewModel.password}"
+            android:textSize="@dimen/d21" />
+
     </com.google.android.material.textfield.TextInputLayout>
+
 
     <ImageView
         android:id="@+id/imageView5"

@@ -1,8 +1,11 @@
 package com.fastertable.fastertable.data.models
 
 import android.os.Parcelable
+import com.fastertable.fastertable.utils.GlobalUtils
+import com.fastertable.fastertable.utils.round
 import com.google.gson.annotations.SerializedName
 import kotlinx.parcelize.Parcelize
+import java.time.OffsetDateTime
 
 @Parcelize
 data class Payment(
@@ -12,18 +15,18 @@ data class Payment(
     val tableNumber: Int?,
     val timeStamp: Long,
     val orderStartTime: Long,
-    val orderCloseTime: Long?,
+    var orderCloseTime: Long?,
     val orderType: String,
     val guestCount: Int,
     val splitType: String,
     val splitTicket: Int?,
     val employeeId: String,
     val userName: String,
-    val tickets: ArrayList<Ticket>,
+    var tickets: ArrayList<Ticket>,
     val terminalId: String,
     val statusApproval: String?,
     val newApproval: Approval?,
-    val closed: Boolean,
+    var closed: Boolean,
     val taxRate: Double,
     @SerializedName("locationid")
     val locationId: String,
@@ -34,7 +37,86 @@ data class Payment(
     val _etag: String?,
     val _attachments: String?,
     val _ts: Long?
-): Parcelable
+): Parcelable{
+    fun close(){
+        this.orderCloseTime = GlobalUtils().getNowEpoch()
+        this.closed = true
+    }
+
+    fun allTicketsPaid(): Boolean{
+        var paid: Boolean = true
+        this.tickets.forEach { ticket ->
+            if (ticket.paymentTotal < ticket.total){
+                paid = false
+            }
+        }
+        return paid
+    }
+
+    private fun anyTicketsPaid(): Boolean{
+        var paid: Boolean = false
+        this.tickets.forEach { ticket ->
+            if (ticket.paymentTotal >= ticket.total){
+                paid = true
+            }
+        }
+        return paid
+    }
+
+    fun createSingleTicket(order: Order){
+        if (!anyTicketsPaid()){
+            val tickets = arrayListOf<Ticket>()
+            val ticketItems = arrayListOf<TicketItem>()
+            order.guests?.forEach { guest ->
+                guest.orderItems?.forEachIndexed { index, orderItem ->
+                    val ticketItem = order.createTicketItem(index, orderItem)
+                    ticketItems.add(ticketItem)
+                }
+            }
+            val ticket = order.createTicket(0, ticketItems)
+            tickets.add(ticket)
+            this.tickets = tickets
+        }
+
+    }
+
+    fun splitByGuest(order: Order) {
+        if (!anyTicketsPaid()) {
+            val tickets = arrayListOf<Ticket>()
+            order.guests?.forEach {guest ->
+                val ticketItems = arrayListOf<TicketItem>()
+                guest.orderItems?.forEachIndexed { index, orderItem ->
+                    val ti = order.createTicketItem(index, orderItem)
+                    ticketItems.add(ti)
+                }
+
+                val ticket = order.createTicket(guest.id, ticketItems)
+                ticket.uiActive = ticket.id == 0
+                tickets.add(ticket)
+            }
+            this.tickets = tickets
+        }
+    }
+
+    fun splitEvenly(order: Order){
+        if (!anyTicketsPaid()) {
+            val tickets = arrayListOf<Ticket>()
+            val orderItems = order.getAllOrderItems()
+            val ticketItems = arrayListOf<TicketItem>()
+            orderItems.forEachIndexed { index, orderItem ->
+                val ti = order.createTicketItemSplit(index, orderItem, order.guests?.size!!)
+                ticketItems.add(ti)
+            }
+            order.guests?.forEach { guest ->
+                val ticket = order.createTicket(guest.id, ticketItems)
+                ticket.uiActive = ticket.id == 0
+                tickets.add(ticket)
+            }
+           this.tickets = tickets
+
+        }
+    }
+}
 
 @Parcelize
 data class Ticket(
@@ -47,7 +129,7 @@ data class Ticket(
     var paymentType: String,
     val gratuity: Double,
     val deliveryFee: Double,
-    var paymentTotal: Double?,
+    var paymentTotal: Double = 0.00,
     val stageResponse: ArrayList<StageResponse>,
     val creditCardTransactions: ArrayList<CreditCardTransaction>,
     var partialPayment: Boolean,

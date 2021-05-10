@@ -7,54 +7,55 @@ import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
 import kotlinx.parcelize.Parcelize
 import com.squareup.moshi.JsonClass
+import java.time.OffsetDateTime
 
 @JsonClass(generateAdapter = true)
 @Parcelize
 data class Order(
-        val orderType: String,
-        val orderNumber: Int,
-        var tableNumber: Int?,
-        val employeeId: String?,
-        val userName: String,
-        val startTime: Long,
-        val closeTime: Long?,
-        val midnight: Long,
-        val orderStatus: String,
-        val kitchenStatus: Boolean,
-        val rush: Boolean?,
+    val orderType: String,
+    val orderNumber: Int,
+    var tableNumber: Int?,
+    val employeeId: String?,
+    val userName: String,
+    val startTime: Long,
+    var closeTime: Long?,
+    val midnight: Long,
+    var orderStatus: String,
+    val kitchenStatus: Boolean,
+    val rush: Boolean?,
 
-        var guests: MutableList<Guest>?,
-        var splitChecks: MutableList<Check>?,
-        var note: String,
+    var guests: MutableList<Guest>?,
+    var splitChecks: MutableList<Check>?,
+    var note: String,
 
-        var customer: Customer?,
-        var takeOutCustomer: TakeOutCustomer?,
-        var outsideDelivery: DeliveryCustomer?,
+    var customer: Customer?,
+    var takeOutCustomer: TakeOutCustomer?,
+    var outsideDelivery: DeliveryCustomer?,
 
-        val orderFees: Double?,
-        val orderDiscount: Double?,
-        val pendingApproval: Boolean,
+    val orderFees: Double?,
+    val orderDiscount: Double?,
+    val pendingApproval: Boolean,
 
-        val gratuity: Double,
-        val subTotal: Double,
-        val tax: Double,
-        val taxRate: Double,
-        val total: Double,
+    val gratuity: Double,
+    val subTotal: Double,
+    val tax: Double,
+    val taxRate: Double,
+    val total: Double,
 
-        var accepted: Boolean?,
-        var estReadyTime: Long?,
-        var estDeliveryTime: Long?,
+    var accepted: Boolean?,
+    var estReadyTime: Long?,
+    var estDeliveryTime: Long?,
 
-        var id: String,
-        @SerializedName("locationid")
+    var id: String,
+    @SerializedName("locationid")
         val locationId: String,
-        val archived: Boolean,
-        val type: String,
-        val _rid: String?,
-        val _self: String?,
-        val _etag: String?,
-        val _attachments: String?,
-        val _ts: Long?
+    val archived: Boolean,
+    val type: String,
+    val _rid: String?,
+    val _self: String?,
+    val _etag: String?,
+    val _attachments: String?,
+    val _ts: Long?
 ): Parcelable {
     fun guestAdd(){
         val newGuest = Guest(
@@ -178,33 +179,59 @@ data class Order(
         val ticketItems = arrayListOf<TicketItem>()
         this.guests?.forEach { guest ->
             guest.orderItems?.forEachIndexed { index, orderItem ->
-                val ticketItem = TicketItem(
-                    id = index,
-                    orderGuestNo = guest.id,
-                    orderItemId = orderItem.id,
-                    quantity = orderItem.quantity,
-                    itemName = orderItem.menuItemName,
-                    itemSize = orderItem.menuItemPrice.size,
-                    itemPrice = orderItem.menuItemPrice.price,
-                    discountPrice = null,
-                    priceModified = orderItem.priceAdjusted,
-                    itemMods = ArrayList(orderItem.orderMods),
-                    salesCategory = orderItem.salesCategory,
-                    ticketItemPrice = orderItem.getTicketExtendedPrice(this.taxRate),
-                    tax = orderItem.getSalesTax(this.taxRate)
-                )
+                val ticketItem = createTicketItem(guest.id, orderItem)
                 ticketItems.add(ticketItem)
             }
         }
+        return createTicket(0, ticketItems)
+    }
 
 
+    fun createTicketItem(index: Int, orderItem: OrderItem): TicketItem{
+        return TicketItem(
+            id = index,
+            orderGuestNo = index,
+            orderItemId = orderItem.id,
+            quantity = orderItem.quantity,
+            itemName = orderItem.menuItemName,
+            itemSize = orderItem.menuItemPrice.size,
+            itemPrice = orderItem.menuItemPrice.price,
+            discountPrice = null,
+            priceModified = orderItem.priceAdjusted,
+            itemMods = ArrayList(orderItem.orderMods),
+            salesCategory = orderItem.salesCategory,
+            ticketItemPrice = orderItem.getTicketExtendedPrice(this.taxRate).round(2),
+            tax = orderItem.getSalesTax(this.taxRate).round(2)
+        )
+    }
+
+    //Used when there is splitting tickets by guest
+    fun createTicketItemSplit(index: Int, orderItem: OrderItem, split: Int): TicketItem{
+        return TicketItem(
+            id = index,
+            orderGuestNo = index,
+            orderItemId = orderItem.id,
+            quantity = orderItem.quantity,
+            itemName = orderItem.menuItemName,
+            itemSize = orderItem.menuItemPrice.size,
+            itemPrice = orderItem.menuItemPrice.price,
+            discountPrice = null,
+            priceModified = orderItem.priceAdjusted,
+            itemMods = ArrayList(orderItem.orderMods),
+            salesCategory = orderItem.salesCategory,
+            ticketItemPrice = orderItem.getTicketExtendedPrice(this.taxRate).div(split).round(2),
+            tax = orderItem.getSalesTax(this.taxRate).div(split).round(2)
+        )
+    }
+
+    fun createTicket(ticketId: Int, items: ArrayList<TicketItem>): Ticket{
         return Ticket(
             orderId = this.id,
-            id = 0,
-            ticketItems = ticketItems,
-            subTotal = ticketItems.sumByDouble { it -> it.ticketItemPrice }.round(2),
-            tax = ticketItems.sumByDouble { it -> it.tax }.round(2),
-            total = ticketItems.sumByDouble { it -> it.ticketItemPrice }.plus(ticketItems.sumByDouble { it -> it.tax }).round(2),
+            id = ticketId,
+            ticketItems = items,
+            subTotal = items.sumByDouble { it -> it.ticketItemPrice }.round(2),
+            tax = items.sumByDouble { it -> it.tax }.round(2),
+            total = items.sumByDouble { it -> it.ticketItemPrice }.plus(items.sumByDouble { it -> it.tax }).round(2),
             paymentType = "",
             gratuity = 0.00,
             deliveryFee = 0.00,
@@ -214,6 +241,11 @@ data class Order(
             partialPayment = false,
             uiActive = true
         )
+    }
+
+    fun close(){
+        this.closeTime = GlobalUtils().getNowEpoch()
+        this.orderStatus = "Paid"
     }
 
     fun getOrderTotal(): Double{

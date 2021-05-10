@@ -43,6 +43,9 @@
         <action
             android:id="@+id/action_paymentFragment_to_nav_home"
             app:destination="@id/nav_home" />
+        <action
+            android:id="@+id/action_paymentFragment_to_paymentSplitFragment"
+            app:destination="@id/paymentSplitFragment" />
     </fragment>
     <fragment
         android:id="@+id/paymentSplitFragment"

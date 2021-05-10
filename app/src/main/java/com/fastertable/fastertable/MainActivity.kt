@@ -24,12 +24,14 @@ import com.fastertable.fastertable.ui.home.HomeFragmentDirections
 import com.fastertable.fastertable.ui.home.HomeViewModel
 import com.fastertable.fastertable.ui.order.OrderFragmentDirections
 import com.fastertable.fastertable.ui.order.OrderViewModel
+import com.fastertable.fastertable.ui.payment.PaymentFragmentDirections
 import com.fastertable.fastertable.ui.payment.SplitPaymentViewModel
 import com.fastertable.fastertable.ui.payment.PaymentViewModel
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
+
 
 @AndroidEntryPoint
 class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteListener {
@@ -105,6 +107,24 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
             CashBackDialogFragment().show(supportFragmentManager, CashBackDialogFragment.TAG)
         })
 
+        paymentViewModel.ticketPaid.observe(this, { it ->
+            if (it){
+                paymentViewModel.savePaymentToCloud()
+            }
+        })
+
+        paymentViewModel.livePayment.observe(this, {it ->
+            if (it.closed){
+                orderViewModel.closeOrder()
+            }
+        })
+
+        paymentViewModel.managePayment.observe(this, { it ->
+            if (it){
+                goToManagePayment(navController)
+            }
+        })
+
 
         hideSystemUI()
     }
@@ -130,12 +150,12 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
                     AssignTableDialog().show(supportFragmentManager, AssignTableDialog.TAG)
                     //TODO Create a Payment and then Send to Payment Activity
                 }else{
-                    orderViewModel.saveOrderToCloud(order)
+                    orderViewModel.saveOrderToCloud()
                     //TODO Create a Payment and then Send to Payment Activity
                 }
             }
             if (settings.restaurantType == "Full Service"){
-                orderViewModel.saveOrderToCloud(order)
+                orderViewModel.saveOrderToCloud()
                 //Send to Kitchen printing
                 order.printKitchenTicket()
                 orderRepository.clearNewOrder()
@@ -171,8 +191,11 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
             val view = findViewById<View>(R.id.nav_host_fragment)
             Snackbar.make(view, R.string.payment_warning_message1, Snackbar.LENGTH_LONG).show()
         }
+    }
 
-
+    private fun goToManagePayment(navController: NavController){
+        navController.navigate(PaymentFragmentDirections.actionPaymentFragmentToPaymentSplitFragment())
+        paymentViewModel.setManagePayment()
     }
 
     private fun hideSystemUI() {
@@ -202,9 +225,9 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
     override fun getReturnValue(value: String) {
         if (value != ""){
             orderViewModel.setTableNumber(value.toInt())
-            orderViewModel.saveOrderToCloud(orderViewModel.liveOrder.value!!)
+            orderViewModel.saveOrderToCloud()
         }else{
-            orderViewModel.saveOrderToCloud(orderViewModel.liveOrder.value!!)
+            orderViewModel.saveOrderToCloud()
         }
 
     }
