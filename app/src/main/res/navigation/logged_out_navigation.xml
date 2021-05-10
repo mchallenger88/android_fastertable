@@ -14,6 +14,9 @@
         <action
             android:id="@+id/action_companyLoginFragment_to_restaurantLoginFragment"
             app:destination="@id/restaurantLoginFragment" />
+        <action
+            android:id="@+id/action_companyLoginFragment_to_userLoginFragment"
+            app:destination="@id/userLoginFragment" />
     </fragment>
     <fragment
         android:id="@+id/restaurantLoginFragment"

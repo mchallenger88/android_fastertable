@@ -121,6 +121,12 @@ class LoginRepository @Inject constructor(private val app: Application) {
         return null
     }
 
+    fun clearUser(){
+        val gson = Gson()
+        val file= File(app.filesDir, "user.json")
+        file.delete()
+    }
+
     fun getTerminal(): Terminal?{
         var gson = Gson()
         if (File(app.filesDir, "terminal.json").exists()){

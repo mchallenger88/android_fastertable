@@ -1,11 +1,11 @@
 package com.fastertable.fastertable
 
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.fastertable.fastertable.common.base.BaseActivity
+import com.fastertable.fastertable.ui.login.company.CompanyLoginFragmentDirections
 import com.google.android.material.navigation.NavigationView
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -22,6 +22,10 @@ class LoginActivity : BaseActivity() {
         val navController: NavController = navLoginFragment.navController
         navView.setupWithNavController(navController)
 
+        val intentFragment = intent.extras?.getString("fragmentToLoad")
+        if (intentFragment != null){
+            navController.navigate(CompanyLoginFragmentDirections.actionCompanyLoginFragmentToUserLoginFragment())
+        }
     }
 
 

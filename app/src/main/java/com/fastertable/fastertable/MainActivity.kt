@@ -1,8 +1,10 @@
 package com.fastertable.fastertable
 
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.view.*
+import android.widget.ImageButton
 import androidx.activity.viewModels
 import androidx.appcompat.widget.Toolbar
 import androidx.drawerlayout.widget.DrawerLayout
@@ -22,6 +24,7 @@ import com.fastertable.fastertable.data.repository.PaymentRepository
 import com.fastertable.fastertable.ui.dialogs.*
 import com.fastertable.fastertable.ui.home.HomeFragmentDirections
 import com.fastertable.fastertable.ui.home.HomeViewModel
+import com.fastertable.fastertable.ui.login.user.UserLoginFragment
 import com.fastertable.fastertable.ui.order.OrderFragmentDirections
 import com.fastertable.fastertable.ui.order.OrderViewModel
 import com.fastertable.fastertable.ui.payment.PaymentFragmentDirections
@@ -56,6 +59,11 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
         val navHostFragment =
             supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         val navController: NavController = navHostFragment.navController
+
+        val exitButton: ImageButton = findViewById(R.id.exit_button)
+        exitButton.setOnClickListener{
+            exitUser(navController)
+        }
 
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
@@ -238,6 +246,14 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
 
     override fun returnNote(value: String) {
         orderViewModel.saveOrderNote(value)
+    }
+
+    fun exitUser(navController: NavController){
+        loginRepository.clearUser()
+        val intent = Intent(this, LoginActivity::class.java)
+        intent.putExtra("fragmentToLoad", "User")
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        startActivity(intent)
     }
 
 }
