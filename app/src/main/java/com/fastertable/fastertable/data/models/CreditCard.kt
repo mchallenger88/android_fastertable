@@ -45,12 +45,12 @@ data class CayanCardTransaction (
     val merchantName: String,
     val merchantSiteId: String,
     val merchantKey: String,
-    val request: Request,
-    val requestWithTip: RequestWithTip,
+    val request: CayanRequest,
+    val requestWithTip: RequestWithTip?,
 ): Parcelable
 
 @Parcelize
-data class Request(
+data class CayanRequest(
     val transactionType: String,
     val amount: Double,
     val clerkId: String,
@@ -62,7 +62,7 @@ data class Request(
     val forceDuplicate: Boolean,
     val taxAmount: Double,
     val terminalId: String,
-    val ticketItems: TransactionDetails,
+    val ticketItems: TransactionDetails?,
     val enablePartialAuthorization: Boolean,
 ): Parcelable
 
@@ -103,9 +103,9 @@ data class StageResponse(
 
 @Parcelize
 data class TerminalResponse(
-    val status: String,
-    val responseMessage: String,
-    val additionalParameters: String,
+    val Status: String,
+    val ResponseMessage: String,
+    val AdditionalParameters: String,
 ): Parcelable
 @Parcelize
 data class GiftTerminalResponse(
@@ -138,24 +138,24 @@ data class CayanTransaction(
 ): Parcelable
 @Parcelize
 data class EMV(
-    val ApplicationInformation: ApplicationInformation,
-    val cardInformation: CardInformation,
-    val applicationCryptogram: ApplicationCryptogram,
-    val cvmResults: String,
-    val issuerApplicationData: String,
-    val terminalVerificationResults: String,
-    val unpredictableNumber: String,
-    val amount: Amount,
+    val ApplicationInformation: ApplicationInformation?,
+    val cardInformation: CardInformation?,
+    val applicationCryptogram: ApplicationCryptogram?,
+    val cvmResults: String?,
+    val issuerApplicationData: String?,
+    val terminalVerificationResults: String?,
+    val unpredictableNumber: String?,
+    val amount: Amount?,
     val posEntryMode: String?,
-    val terminalInformation: TerminalInformation,
-    val transactionInformation: TransactionInformation,
-    val cryptogramInformationData: String,
-    val PINStatement: String,
-    val cvmMethod: String,
-    val issuerActionCodeDefault: String,
-    val issuerActionCodeDenial: String,
-    val issuerActionCodeOnline: String,
-    val authorizationResponseCode: String,
+    val terminalInformation: TerminalInformation?,
+    val transactionInformation: TransactionInformation?,
+    val cryptogramInformationData: String?,
+    val PINStatement: String?,
+    val cvmMethod: String?,
+    val issuerActionCodeDefault: String?,
+    val issuerActionCodeDenial: String?,
+    val issuerActionCodeOnline: String?,
+    val authorizationResponseCode: String?,
 ): Parcelable
 @Parcelize
 data class ApplicationInformation(
@@ -211,18 +211,24 @@ data class AdditionalParameters(
     val Loyalty: Loyalty?,
     val Survey: Survey?,
     val DebitTraceNumber: String?,
-    val EMV: EMV,
+    var EMV: EMV?,
 ): Parcelable
 
 @Parcelize
 data class AmountDetails(
     val Cashback: String,
-    val Discount: String?,
+    val Discount: CayanDiscount?,
     val Donation: String,
     val RemainingCardBalance: String,
     val Surcharge: String,
     val UserTip: String,
 ): Parcelable
+
+@Parcelize
+data class CayanDiscount(
+    val Total: String
+): Parcelable
+
 @Parcelize
 data class EBTDetails(
     val EBTType: String,

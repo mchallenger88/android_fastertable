@@ -54,6 +54,18 @@ interface FastertableApi {
 
     @GET("payments/{id}/{lid}")
     suspend fun getPayment(@Path("id") id: String?, @Path("lid") lid: String?): Response<Payment>
+
+    @GET
+    suspend fun startCredit(@Url url: String): Response<TerminalResponse>
+
+    @GET
+    suspend fun cancelCredit(@Url url: String): Response<TerminalResponse>
+
+    @POST("payments/getkey")
+    suspend fun stageTransaction(@Body transaction: CayanCardTransaction): Response<StageResponse>
+
+    @GET
+    suspend fun initiateTransaction(@Url url: String): Response<CayanTransaction>
 }
 
 

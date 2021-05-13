@@ -9,11 +9,13 @@ import com.fastertable.fastertable.adapters.TicketItemAdapter
 import com.fastertable.fastertable.adapters.TicketSideBarAdapter
 import com.fastertable.fastertable.common.base.BaseFragment
 import com.fastertable.fastertable.databinding.PaymentFragmentBinding
+import com.fastertable.fastertable.ui.order.OrderViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class PaymentFragment: BaseFragment() {
     private val viewModel: PaymentViewModel by activityViewModels()
+    private val orderViewModel: OrderViewModel by activityViewModels()
     override fun onCreateView(
             inflater: LayoutInflater,
             container: ViewGroup?,
@@ -22,6 +24,7 @@ class PaymentFragment: BaseFragment() {
         val binding = PaymentFragmentBinding.inflate(inflater)
         binding.lifecycleOwner = viewLifecycleOwner
         binding.viewModel = viewModel
+        binding.orderViewModel = orderViewModel
         createAdapters(binding)
         createObservers(binding)
         return binding.root

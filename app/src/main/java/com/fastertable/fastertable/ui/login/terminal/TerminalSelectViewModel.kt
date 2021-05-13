@@ -45,6 +45,7 @@ class TerminalSelectViewModel @Inject constructor(private val loginRepository: L
 
     fun setTerminal(terminal: Terminal){
         viewModelScope.launch {
+            _terminal.postValue(terminal)
             loginRepository.saveTerminal(terminal)
         }
     }

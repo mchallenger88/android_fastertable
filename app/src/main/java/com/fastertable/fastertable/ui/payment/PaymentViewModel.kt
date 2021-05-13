@@ -1,16 +1,30 @@
 package com.fastertable.fastertable.ui.payment
 
+import android.annotation.SuppressLint
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.fastertable.fastertable.common.Constants.BAD_VALUE
+import com.fastertable.fastertable.common.Constants.COMMUNICATION_ERROR
+import com.fastertable.fastertable.common.Constants.DECLINED
+import com.fastertable.fastertable.common.Constants.DECLINED_MORE_INFO
+import com.fastertable.fastertable.common.Constants.DUPLICATE
+import com.fastertable.fastertable.common.Constants.INSUFFICIENT_FUNDS
+import com.fastertable.fastertable.common.Constants.SERVER_CANCEL
+import com.fastertable.fastertable.common.Constants.STAGING_ERROR
+import com.fastertable.fastertable.common.Constants.TERMINAL_ERROR
+import com.fastertable.fastertable.common.Constants.TIMEOUT_ERROR
+import com.fastertable.fastertable.common.Constants.USER_CANCEL
 import com.fastertable.fastertable.common.base.BaseViewModel
 import com.fastertable.fastertable.data.models.*
 import com.fastertable.fastertable.data.repository.*
 import com.fastertable.fastertable.utils.round
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.math.absoluteValue
+
 
 enum class ShowPayment{
     NONE,
@@ -20,10 +34,15 @@ enum class ShowPayment{
 
 @HiltViewModel
 class PaymentViewModel @Inject constructor (private val loginRepository: LoginRepository,
-                                           private val orderRepository: OrderRepository,
-                                           private val savePayment: SavePayment,
-                                           private val updatePayment: UpdatePayment,
-                                           private val paymentRepository: PaymentRepository): BaseViewModel() {
+                                            private val orderRepository: OrderRepository,
+                                            private val savePayment: SavePayment,
+                                            private val updatePayment: UpdatePayment,
+                                            private val startCredit: StartCredit,
+                                            private val cancelCredit: CancelCredit,
+                                            private val stageTransaction: StageTransaction,
+                                            private val creditCardRepository: CreditCardRepository,
+                                            private val initiateCreditTransaction: InitiateCreditTransaction,
+                                            private val paymentRepository: PaymentRepository): BaseViewModel() {
 
     private lateinit var user: OpsAuth
     private lateinit var settings: Settings
@@ -59,6 +78,28 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
     private val _managePayment = MutableLiveData<Boolean>()
     val managePayment: LiveData<Boolean>
         get() = _managePayment
+
+    private val _error = MutableLiveData<Boolean>()
+    val error: LiveData<Boolean>
+        get() = _error
+
+    private val _errorTitle = MutableLiveData<String>()
+    val errorTitle: LiveData<String>
+        get() = _errorTitle
+
+    private val _errorMessage = MutableLiveData<String>()
+    val errorMessage: LiveData<String>
+        get() = _errorMessage
+
+    private var paid: Boolean = false
+    private var send: Boolean = false
+    private var approved: Boolean = false
+    private var showMessage: Boolean = false
+    private var showErrorMessage: Boolean = false
+    private var processing: Boolean = false
+    private var message: String = ""
+    private var showPartial: Boolean = false
+    private var tooMuch: Boolean = false
 
     init{
         _managePayment.value = false
@@ -158,6 +199,184 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
         }
     }
 
+
+
+    fun startCredit(order: Order){
+        viewModelScope.launch {
+            val terminal = loginRepository.getTerminal()!!
+            try{
+                val url = "http://" + terminal.ccEquipment.ipAddress + ":8080/pos?Action=StartOrder&Order=" + order.orderNumber.toString() + "&Format=JSON"
+                val response: TerminalResponse = startCredit.startCreditProcess(url)
+                if (response.Status == "Success"){
+                    val settings = loginRepository.getSettings()!!
+                    creditStaging(order, settings, terminal)
+                }else{
+                    setError("Error Notification", TERMINAL_ERROR)
+                }
+            }catch(ex: Exception){
+                setError("Error Notification", TIMEOUT_ERROR)
+            }
+
+        }
+    }
+
+
+    suspend fun creditStaging(order: Order, settings: Settings, terminal: Terminal){
+        viewModelScope.launch {
+        //TODO: Handle partial payments
+            try{
+                val transaction: CayanCardTransaction = creditCardRepository.createCayanTransaction(order, livePayment.value?.activeTicket()!!, settings, terminal)
+                val stageResponse: Any = stageTransaction.stageTransaction(transaction)
+
+                if (stageResponse is String){
+                    cancelCredit()
+                    setError("Error Notification", STAGING_ERROR)
+                }
+
+                if (stageResponse is StageResponse){
+                    _payment.value?.activeTicket()?.stageResponse?.add(stageResponse)
+                    initiateTransaction(stageResponse, terminal)
+                }
+            }catch(ex: Exception){
+                setError("Error Notification", "Did not Suspend")
+            }
+        }
+    }
+
+    @SuppressLint("DefaultLocale")
+    suspend fun initiateTransaction(stageResponse: StageResponse, terminal: Terminal){
+        viewModelScope.launch {
+            val transportURL: String = "http://" + terminal.ccEquipment.ipAddress + ":8080/v2/pos?TransportKey=" + stageResponse.transportKey + "&Format=JSON"
+            val cayanTransaction: Any = initiateCreditTransaction.initiateTransaction(transportURL)
+//            println(cayanTransaction)
+            if (cayanTransaction is String){
+                cancelCredit()
+                _error.postValue(true)
+            }
+
+            if (cayanTransaction is CayanTransaction){
+                if (cayanTransaction.Status.toUpperCase() == "APPROVED"){
+                    processApproval(livePayment.value!!.activeTicket()!!, cayanTransaction)
+                }else{
+                    processDecline(cayanTransaction)
+                }
+            }
+        }
+    }
+
+    fun processApproval(ticket: Ticket, cayanTransaction: CayanTransaction){
+        if (cayanTransaction.PaymentType == "GIFT"){
+            ticket.paymentType = "Gift"
+        }else{
+            ticket.paymentType = "Credit"
+        }
+
+        ticket.paymentTotal = cayanTransaction.AmountApproved.toDouble()
+
+        val cc: CreditCardTransaction = creditCardRepository.createCreditCardTransaction(ticket, cayanTransaction);
+        ticket.creditCardTransactions.add(cc);
+
+        if (ticket.paymentTotal > ticket.total){
+            ticket.gratuity = ticket.paymentTotal.minus(ticket.total).round(2)
+            _amountOwed.value = 0.00
+            ticket.paymentTotal = ticket.total
+            setError("Credit Card Process", "A tip was added to the payment. The Tip Amount is: $${ticket.gratuity}")
+            //TODO: Need to make sure tip is added to the cc receipt
+        }
+
+        if (ticket.paymentTotal == ticket.total){
+            _amountOwed.value = 0.00
+            ticket.paymentTotal = ticket.total
+            setError("Credit Card Process","The credit was approved. Print Receipt?")
+        }
+
+        if (ticket.paymentTotal < ticket.total){
+            _amountOwed.value = ticket.total.minus(ticket.paymentTotal).round(2)
+            ticket.paymentTotal = amountOwed.value!!
+            ticket.partialPayment = true
+            setError("Credit Card Process","The credit was approved. Print Receipt?")
+        }
+
+        if (livePayment.value!!.allTicketsPaid()){
+            _payment.value!!.close()
+            _payment.value = _payment.value
+        }else{
+            _payment.value = _payment.value
+        }
+        _ticketPaid.value = true
+    }
+
+    @SuppressLint("DefaultLocale")
+    fun processDecline(cayanTransaction: CayanTransaction){
+        val status = cayanTransaction.Status.toUpperCase()
+        val error = cayanTransaction.ErrorMessage.toLowerCase()
+
+        if (status == "DECLINED"){
+            if (error.contains("insufficient funds")){
+                setError("Credit Declined", DECLINED)
+            };
+            if (error.contains("referral")){
+                setError("Credit Declined", DECLINED_MORE_INFO)
+            };
+            if (error == ""){
+                setError("Credit Declined", DECLINED_MORE_INFO)
+            };
+            if (error.contains("field format error")){
+                setError("Credit Declined", BAD_VALUE)
+            };
+            if (error.contains("declined insufficient funds available")){
+                setError("Credit Declined", INSUFFICIENT_FUNDS)
+            }
+        };
+
+        if (status == "REFERRAL"){
+            if (error.contains("referral")){
+                setError("Credit Declined", DECLINED_MORE_INFO)
+            };
+        }
+
+        if (status == "DECLINED_DUPLICATE"){
+            setError("Credit Declined", DUPLICATE)
+        };
+
+        if (status == "FAILED"){
+            setError("Credit Declined", COMMUNICATION_ERROR)
+        }
+
+        if (status == "USERCANCELLED"){
+            setError("Credit Declined", USER_CANCEL)
+        }
+
+        if (status == "POSCANCELLED"){
+            setError("Credit Declined", SERVER_CANCEL)
+        }
+    }
+
+    fun cancelCredit(){
+        viewModelScope.launch {
+            val terminal = loginRepository.getTerminal()
+            try {
+                val url =
+                    "http://" + terminal?.ccEquipment?.ipAddress + ":8080/pos?Action=Cancel&Format=JSON"
+                val response = cancelCredit.cancelCreditProcess(url)
+            }catch(ex: Exception){
+                setError("Error Notification", "An error occurred. Please try again or contact your system administrator.")
+            }
+        }
+
+    }
+
+    fun clearError(){
+        _error.value = false
+    }
+
+    fun setError(title: String, message: String){
+        _errorTitle.value = title
+        _errorMessage.value = message
+        _error.value = true
+
+    }
+
     fun setManagePayment(){
         _managePayment.value = !managePayment.value!!
     }
@@ -177,8 +396,6 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
         _payment.value?.splitEvenly(order)
         _payment.value = _payment.value
     }
-
-
 }
 
 

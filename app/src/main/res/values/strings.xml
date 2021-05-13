@@ -29,6 +29,10 @@
     <string name="fastertable_notification_channel_name" translatable="true">Faster Orders</string>
     <string name="accept">Accept</string>
 
+    //Error Dialog
+    <string name="error_title">Error Notification</string>
+    <string name="error_message">An error occurred. Please try again or contact your system admininstrator.</string>
+
     <string name="string_order">Order</string>
     <string name="string_customer">Customer</string>
     <string name="string_telephone">Telephone</string>

@@ -2,10 +2,8 @@ package com.fastertable.fastertable.data.models
 
 import android.os.Parcelable
 import com.fastertable.fastertable.utils.GlobalUtils
-import com.fastertable.fastertable.utils.round
 import com.google.gson.annotations.SerializedName
 import kotlinx.parcelize.Parcelize
-import java.time.OffsetDateTime
 
 @Parcelize
 data class Payment(
@@ -61,6 +59,10 @@ data class Payment(
             }
         }
         return paid
+    }
+
+    fun activeTicket(): Ticket?{
+        return tickets.find{it -> it.uiActive}
     }
 
     fun createSingleTicket(order: Order){
@@ -127,7 +129,7 @@ data class Ticket(
     val tax: Double,
     val total: Double,
     var paymentType: String,
-    val gratuity: Double,
+    var gratuity: Double,
     val deliveryFee: Double,
     var paymentTotal: Double = 0.00,
     val stageResponse: ArrayList<StageResponse>,
@@ -153,9 +155,9 @@ data class CreditCardTransaction(
     val refundTotal: Double?,
     val voidTotal: Double?,
     val creditTransaction: CayanTransaction,
-    val captureTransaction: TransactionResponse45,
-    val refundTransaction: TransactionResponse45,
-    val voidTransaction: TransactionResponse45,
+    val captureTransaction: TransactionResponse45?,
+    val refundTransaction: TransactionResponse45?,
+    val voidTransaction: TransactionResponse45?,
 ): Parcelable
 
 @Parcelize

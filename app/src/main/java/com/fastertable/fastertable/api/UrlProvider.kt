@@ -7,3 +7,4 @@ class UrlProvider {
         return Constants.BASE_URL
     }
 }
+

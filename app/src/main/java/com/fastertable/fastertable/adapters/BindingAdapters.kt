@@ -175,3 +175,11 @@ fun setGuestButton(btn: Button, guest: Guest){
         )
     }
 }
+
+@BindingAdapter("alertDialog")
+fun setAlertDialog(textView: TextView, message: String?){
+    if (message != null){
+        textView.text = message
+    }
+
+}

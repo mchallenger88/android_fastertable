@@ -138,7 +138,11 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
 
     private fun getUser(){
         viewModelScope.launch {
-            user = loginRepository.getOpsUser()!!
+            if (loginRepository.getOpsUser() != null){
+                user = loginRepository.getOpsUser()!!
+            }else{
+                //TODO: Request User Info again
+            }
         }
     }
 

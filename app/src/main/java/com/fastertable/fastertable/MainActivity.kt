@@ -133,6 +133,13 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
             }
         })
 
+        paymentViewModel.error.observe(this, {it ->
+            if (it){
+                AlertDialogBottomSheet().show(supportFragmentManager, AlertDialogBottomSheet.TAG)
+                paymentViewModel.clearError()
+            }
+        })
+
 
         hideSystemUI()
     }

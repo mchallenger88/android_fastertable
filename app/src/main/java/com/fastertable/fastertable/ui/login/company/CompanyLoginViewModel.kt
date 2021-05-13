@@ -85,8 +85,14 @@ class CompanyLoginViewModel @Inject constructor(
         _showProgressBar.value = true
         _loginEnabled.value = false
         viewModelScope.launch {
-            loginCompany(loginName.get()!!, password.get()!!)
-            _showProgressBar.value = false
+            if (loginName.get() != null && password.get() != null){
+                loginCompany(loginName.get()!!, password.get()!!)
+                _showProgressBar.value = false
+            }else{
+                //TODO: Add error message
+                _showProgressBar.value = false
+                _loginEnabled.value = true
+            }
         }
     }
 
