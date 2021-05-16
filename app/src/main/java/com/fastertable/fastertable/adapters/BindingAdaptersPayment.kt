@@ -1,6 +1,7 @@
 package com.fastertable.fastertable.adapters
 
 import android.view.View
+import android.widget.Button
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -88,5 +89,22 @@ fun setPaidInFull(textView: TextView, payment: Payment){
             }
         }
     }
+}
+
+@BindingAdapter("approvalPending")
+fun showApprovalPending(textView: TextView, payment: Payment){
+    if (payment.statusApproval == "Pending"){
+        textView.visibility = View.VISIBLE
+    }else{
+        textView.visibility = View.GONE
+    }
+}
+
+@BindingAdapter("disablePayButton")
+fun disablePayButton(button: Button, value: String?){
+    if (value != null){
+        button.isEnabled = value != "Pending"
+    }
+
 }
 
