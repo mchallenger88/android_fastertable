@@ -6,6 +6,8 @@ import androidx.lifecycle.*
 import com.fastertable.fastertable.LoginActivity
 import com.fastertable.fastertable.api.GetOrdersUseCase
 import com.fastertable.fastertable.api.LoginUserUseCase
+import com.fastertable.fastertable.common.base.BaseViewModel
+import com.fastertable.fastertable.data.models.OpsAuth
 import com.fastertable.fastertable.data.models.Terminal
 import com.fastertable.fastertable.data.repository.GetOrders
 import com.fastertable.fastertable.data.repository.LoginRepository
@@ -21,7 +23,7 @@ import javax.inject.Inject
 @HiltViewModel
 class UserLoginViewModel @Inject constructor(private val loginRepository: LoginRepository,
                                              private val loginUser: LoginUser,
-                                             private val getOrders: GetOrders) : ViewModel() {
+                                             private val getOrders: GetOrders) : BaseViewModel() {
 
     private var cid: String = ""
     private var lid: String = ""
@@ -40,6 +42,10 @@ class UserLoginViewModel @Inject constructor(private val loginRepository: LoginR
     private val _showProgressBar = MutableLiveData<Boolean>()
     val showProgressBar: LiveData<Boolean>
         get() = _showProgressBar
+
+    private val _validUser = MutableLiveData<Boolean?>()
+    val validUser: LiveData<Boolean?>
+        get() = _validUser
 
 
     init{
@@ -75,15 +81,23 @@ class UserLoginViewModel @Inject constructor(private val loginRepository: LoginR
            val now = GlobalUtils().getNowEpoch()
            val midnight = GlobalUtils().getMidnight()
            getUserLogin(pin.value.toString(), cid, lid, now, midnight)
-           getOrders()
-           _showProgressBar.postValue(false)
-           _navigate.value = true
+
        }
     }
 
     private suspend fun getUserLogin(pin: String, cid: String, lid: String, now: Long, midnight: Long){
         viewModelScope.launch {
-            loginUser.loginUser(pin, cid, lid, now, midnight)
+            val user: OpsAuth? = loginUser.loginUser(pin, cid, lid, now, midnight)
+            if (user?.isAuthenticated!!){
+                _validUser.postValue(true)
+                getOrders()
+                _showProgressBar.postValue(false)
+                _navigate.postValue(true)
+            }else{
+                _validUser.postValue(false)
+                _pin.value = ""
+                _showProgressBar.postValue(false)
+            }
         }
     }
 
@@ -94,6 +108,10 @@ class UserLoginViewModel @Inject constructor(private val loginRepository: LoginR
             val rid = loginRepository.getStringSharedPreferences("rid")
             getOrders.getOrders(midnight, rid!!)
         }
+    }
+
+    fun setUserValid(){
+        _validUser.value = null
     }
 
 

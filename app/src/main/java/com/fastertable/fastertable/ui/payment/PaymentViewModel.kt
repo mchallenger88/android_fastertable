@@ -35,13 +35,17 @@ enum class ShowPayment{
 @HiltViewModel
 class PaymentViewModel @Inject constructor (private val loginRepository: LoginRepository,
                                             private val orderRepository: OrderRepository,
+                                            private val approvalRepository: ApprovalRepository,
                                             private val savePayment: SavePayment,
                                             private val updatePayment: UpdatePayment,
+                                            private val getPayment: GetPayment,
                                             private val startCredit: StartCredit,
                                             private val cancelCredit: CancelCredit,
                                             private val stageTransaction: StageTransaction,
                                             private val creditCardRepository: CreditCardRepository,
                                             private val initiateCreditTransaction: InitiateCreditTransaction,
+                                            private val saveApproval: SaveApproval,
+                                            private val updateApproval: UpdateApproval,
                                             private val paymentRepository: PaymentRepository): BaseViewModel() {
 
     private lateinit var user: OpsAuth
@@ -51,8 +55,8 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
     val liveOrder: LiveData<Order>
         get() = _order
 
-    private val _payment = MutableLiveData<Payment>()
-    val livePayment: LiveData<Payment>
+    private val _payment = MutableLiveData<Payment?>()
+    val livePayment: LiveData<Payment?>
         get() = _payment
 
     private val _cashAmount = MutableLiveData<Double>()
@@ -91,6 +95,15 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
     val errorMessage: LiveData<String>
         get() = _errorMessage
 
+    private val _showTicketMore = MutableLiveData<Boolean>()
+    val showTicketMore: LiveData<Boolean>
+        get() = _showTicketMore
+
+    private val _showTicketItemMore = MutableLiveData<Boolean>()
+    val showTicketItemMore: LiveData<Boolean>
+        get() = _showTicketItemMore
+
+
     private var paid: Boolean = false
     private var send: Boolean = false
     private var approved: Boolean = false
@@ -103,6 +116,8 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
 
     init{
         _managePayment.value = false
+        _showTicketItemMore.value = false
+        _showTicketMore.value = false
         _paymentScreen.value = ShowPayment.NONE
         _calculatingCash.value = ""
     }
@@ -140,6 +155,18 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
         _payment.value = payment
     }
 
+    suspend fun getCloudPayment(id: String, lid: String){
+        viewModelScope.launch {
+            getPayment.getPayment(id, lid)
+            val payment = paymentRepository.getPayment()
+            if (payment != null){
+                _payment.postValue(payment!!)
+            }
+
+        }
+
+    }
+
     fun setActiveTicket(ticket: Ticket){
         _payment.value?.tickets?.forEach { t ->
             t.uiActive = t.id == ticket.id
@@ -171,8 +198,14 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
         _cashAmount.value = number.toDouble()
     }
 
-    fun clearPayment(){
+    fun clearCashAmount(){
         _cashAmount.value = 0.00
+    }
+
+    fun clearPayment(){
+        paymentRepository.clearPayment()
+        _payment.value = null
+        _payment.value = _payment.value
     }
 
 
@@ -395,6 +428,37 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
     fun evenSplit(order: Order){
         _payment.value?.splitEvenly(order)
         _payment.value = _payment.value
+    }
+
+    fun toggleTicketMore(){
+        _showTicketMore.value = !_showTicketMore.value!!
+    }
+
+    fun toggleTicketItemMore(){
+        _showTicketItemMore.value = !_showTicketItemMore.value!!
+    }
+
+
+    fun voidTicket(order: Order){
+        _payment.value?.voidTicket()
+        _payment.value = _payment.value
+
+        val approval = approvalRepository.createVoidTicketApproval(order, livePayment.value!!)
+
+        savePaymentToCloud()
+        saveApprovalToCloud(approval)
+    }
+
+    private fun saveApprovalToCloud(approval: Approval){
+        viewModelScope.launch {
+            var a: Approval
+            if (approval._rid == ""){
+                a = saveApproval.saveApproval(approval)
+            }else{
+                a = updateApproval.saveApproval(approval)
+            }
+        }
+
     }
 }
 

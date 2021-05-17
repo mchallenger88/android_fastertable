@@ -1,0 +1,47 @@
+<resources>
+    <!-- Base application theme. -->
+    <style name="Theme.Fastertable" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+        <!-- Primary brand color. -->
+        <item name="colorPrimary">@color/primaryColor</item>
+        <item name="colorPrimaryVariant">@color/primaryDarkColor</item>
+        <item name="colorOnPrimary">@color/secondaryTextColor</item>
+        <!-- Secondary brand color. -->
+        <item name="colorSecondary">@color/secondaryColor</item>
+        <item name="colorSecondaryVariant">@color/secondaryDarkColor</item>
+        <item name="colorOnSecondary">@color/secondaryTextColor</item>
+        <!-- Status bar color. -->
+        <!-- Customize your theme here. -->
+        <item name="textInputStyle">@style/AppTextField</item>
+        <item name="materialAlertDialogTheme">@style/MyThemeOverlay.MaterialDialogAlert</item>
+        <item name="snackbarTextViewStyle">@style/MyThemeOverlay.SnackBarStyle.TextView</item>
+        <item name="android:fontFamily">@style/DefaultFont</item>
+
+
+    </style>
+
+    <style name="DefaultFont" parent="@style/Widget.MaterialComponents.TextView">
+        <item name="fontFamily">@font/open_sans</item>
+    </style>
+
+    <style name="MyThemeOverlay.MaterialDialogAlert" parent="@style/ThemeOverlay.MaterialComponents.MaterialAlertDialog">
+        <!-- Title -->
+        <item name="materialAlertDialogTitleTextStyle">@style/alert_title</item>
+        <!-- Body -->
+        <item name="materialAlertDialogBodyTextStyle">@style/alert_text</item>
+        <item name="buttonBarPositiveButtonStyle">@style/alert_button</item>
+    </style>
+
+    <style name="MyThemeOverlay.SnackBarStyle.TextView" parent="@style/Widget.MaterialComponents.Snackbar.TextView">
+        <item name="android:textSize">@dimen/d21</item>
+    </style>
+
+
+    <style name="Theme.Fastertable.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="Theme.Fastertable.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="Theme.Fastertable.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+</resources>

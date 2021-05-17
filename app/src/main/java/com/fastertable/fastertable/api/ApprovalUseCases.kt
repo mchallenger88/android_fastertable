@@ -1,22 +1,22 @@
 package com.fastertable.fastertable.api
 
-import com.fastertable.fastertable.data.models.Payment
-import com.fastertable.fastertable.data.repository.PaymentRepository
+import com.fastertable.fastertable.data.models.Approval
+import com.fastertable.fastertable.data.models.TimeBasedRequest
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
-class SavePaymentUseCase @Inject constructor(private val fastertableApi: FastertableApi){
+class SaveApprovalUseCase @Inject constructor(private val fastertableApi: FastertableApi){
     sealed class Result {
-        data class Success(val payment: Payment) : Result()
+        data class Success(val approval: Approval) : Result()
         object Failure: Result()
     }
 
-    suspend fun savePayment(payment: Payment): Result {
+    suspend fun saveApproval(approval: Approval): Result {
         return withContext(Dispatchers.IO){
             try{
-                val response = fastertableApi.savePayment(payment)
+                val response = fastertableApi.saveApproval(approval)
                 if (response.isSuccessful && response.body() != null){
                     return@withContext Result.Success(response.body()!!)
                 }else{
@@ -33,16 +33,16 @@ class SavePaymentUseCase @Inject constructor(private val fastertableApi: Fastert
     }
 }
 
-class UpdatePaymentUseCase @Inject constructor(private val fastertableApi: FastertableApi){
+class UpdateApprovalUseCase @Inject constructor(private val fastertableApi: FastertableApi){
     sealed class Result {
-        data class Success(val payment: Payment) : Result()
+        data class Success(val approval: Approval) : Result()
         object Failure: Result()
     }
 
-    suspend fun savePayment(payment: Payment): Result {
+    suspend fun saveApproval(approval: Approval): Result {
         return withContext(Dispatchers.IO){
             try{
-                val response = fastertableApi.updatePayment(payment.id, payment)
+                val response = fastertableApi.updateApproval(approval.id, approval)
                 if (response.isSuccessful && response.body() != null){
                     return@withContext Result.Success(response.body()!!)
                 }else{
@@ -59,36 +59,23 @@ class UpdatePaymentUseCase @Inject constructor(private val fastertableApi: Faste
     }
 }
 
-class GetPaymentUseCase @Inject constructor(private val fastertableApi: FastertableApi){
+class GetApprovalUseCase @Inject constructor(private val fastertableApi: FastertableApi){
 
     sealed class Result {
-        data class Success(val payment: Payment?) : Result()
+        data class Success(val approval: Approval) : Result()
         object Failure: Result()
     }
 
-    suspend fun getPayment(id: String, lid: String): Result {
+    suspend fun getApproval(id: String, lid: String): Result {
         return withContext(Dispatchers.IO){
             try{
-                val response = fastertableApi.getPayment(id, lid)
-
-                when (response.isSuccessful){
-                    response.body() != null -> {
-                        return@withContext Result.Success(response.body()!!)
-                    }
-                    response.body() == null -> {
-                        return@withContext Result.Success(null)
-                    }
-                    else ->  return@withContext Result.Failure
+                val response = fastertableApi.getApproval(id, lid)
+                if (response.isSuccessful && response.body() != null){
+                    return@withContext Result.Success(response.body()!!)
+                }else{
+                    return@withContext Result.Failure
                 }
-
-//                if (response.isSuccessful && response.body() != null){
-//                    return@withContext Result.Success(response.body()!!)
-//                }
-//                else{
-//                    return@withContext Result.Failure
-//                }
             }catch (t: Throwable){
-                println(t)
                 if (t !is CancellationException){
                     return@withContext Result.Failure
                 }else{
@@ -99,17 +86,17 @@ class GetPaymentUseCase @Inject constructor(private val fastertableApi: Fasterta
     }
 }
 
-class GetPaymentsUseCase @Inject constructor(private val fastertableApi: FastertableApi){
+class GetApprovalsUseCase @Inject constructor(private val fastertableApi: FastertableApi){
 
     sealed class Result {
-        data class Success(val payments: List<Payment>) : Result()
+        data class Success(val approvals: List<Approval>) : Result()
         object Failure: Result()
     }
 
-    suspend fun getPayments(midnight: Long, rid: String): Result {
+    suspend fun getApprovals(timeBasedRequest: TimeBasedRequest): Result {
         return withContext(Dispatchers.IO){
             try{
-                val response = fastertableApi.getPayments(midnight, rid)
+                val response = fastertableApi.getApprovals(timeBasedRequest)
                 if (response.isSuccessful && response.body() != null){
                     return@withContext Result.Success(response.body()!!)
                 }else{

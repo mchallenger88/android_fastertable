@@ -5,33 +5,25 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.fastertable.fastertable.databinding.BottomSheetOrderLineItemBinding
+import com.fastertable.fastertable.databinding.BottomSheetTicketMoreBinding
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import dagger.hilt.android.AndroidEntryPoint
 
-@AndroidEntryPoint
-class ItemMoreBottomSheetDialog: BottomSheetDialogFragment() {
+class TicketMoreBottomSheet: BottomSheetDialogFragment() {
     private lateinit var dialogListener: DialogListener
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        val binding = BottomSheetOrderLineItemBinding.inflate(inflater)
+        val binding = BottomSheetTicketMoreBinding.inflate(inflater)
 
-        binding.btnItemDelete.setOnClickListener {
-            dialogListener.returnValue("Delete")
+        binding.btnTicketVoid.setOnClickListener {
+            dialogListener.returnValue("Void Ticket")
             dismiss()
         }
-        binding.btnItemRush.setOnClickListener {
-            dialogListener.returnValue("Toggle Rush")
+
+        binding.btnTicketDiscount.setOnClickListener {
+            dialogListener.returnValue("Discount")
             dismiss()
         }
+
         binding.btnItemClose.setOnClickListener {
-            dismiss()
-        }
-        binding.btnItemNoMake.setOnClickListener {
-            dialogListener.returnValue("Toggle No Make")
-            dismiss()
-        }
-        binding.btnItemTakeout.setOnClickListener {
-            dialogListener.returnValue("Toggle Takeout")
             dismiss()
         }
         return binding.root
@@ -49,16 +41,16 @@ class ItemMoreBottomSheetDialog: BottomSheetDialogFragment() {
 
     override fun onStart() {
         super.onStart()
-        val width = 500
+        val width = 800
+        val height = 500
         dialog!!.window?.setLayout(width, ViewGroup.LayoutParams.WRAP_CONTENT)
     }
 
     companion object {
-        fun newInstance(): OrderNotesDialogFragment {
-            return OrderNotesDialogFragment()
+        fun newInstance(): TicketMoreBottomSheet {
+            return TicketMoreBottomSheet()
         }
 
-        const val TAG = "ItemMoreBottomSheetDialog"
+        const val TAG = "TicketMoreBottomSheet"
     }
-
 }

@@ -22,7 +22,7 @@ data class Payment(
     val userName: String,
     var tickets: ArrayList<Ticket>,
     val terminalId: String,
-    val statusApproval: String?,
+    var statusApproval: String?,
     val newApproval: Approval?,
     var closed: Boolean,
     val taxRate: Double,
@@ -118,6 +118,15 @@ data class Payment(
 
         }
     }
+
+    fun voidTicket(){
+        activeTicket()?.ticketItems?.forEach { ti ->
+            ti.discountPrice = 0.00
+            ti.tax = 0.00
+            ti.priceModified = true
+        }
+        statusApproval = "Pending"
+    }
 }
 
 @Parcelize
@@ -169,12 +178,12 @@ data class TicketItem(
     val itemName: String,
     val itemSize: String,
     val itemPrice: Double,
-    val discountPrice: Double?,
-    val priceModified: Boolean,
+    var discountPrice: Double?,
+    var priceModified: Boolean,
     val itemMods: ArrayList<ModifierItem>,
     val salesCategory: String,
     val ticketItemPrice: Double,
-    val tax: Double,
+    var tax: Double,
 ): Parcelable
 
 @Parcelize
@@ -214,6 +223,9 @@ data class Approval(
     val approvalItems: ArrayList<ApprovalItem>,
     val timeRequested: Long,
     val type: String,
+    @SerializedName("locationid")
+    val locationId: String,
+    val archived: Boolean,
     val _rid: String?,
     val _self: String?,
     val _etag: String?,
@@ -225,14 +237,14 @@ data class Approval(
 data class ApprovalItem(
     val id: Int,
     val approvalType: String, //Price, Discount, Discount Ticket, Void Item, Void Order
-    val discount: String,
-    val ticketItem: TicketItem,
+    val discount: String?,
+    val ticketItem: TicketItem?,
     val ticket: Ticket,
     val amount: Double,
     val timeRequested: Long,
     val approved: Boolean?,
-    val timeHandled: Long,
-    val managerId: String,
+    val timeHandled: Long?,
+    val managerId: String?,
 ): Parcelable
 
 @Parcelize

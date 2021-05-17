@@ -59,7 +59,7 @@ class PaymentFragment: BaseFragment() {
         binding.ticketItemsRecycler.adapter = ticketsAdapter
 
         viewModel.livePayment.observe(viewLifecycleOwner, { item ->
-            item.tickets.forEach { ticket ->
+            item?.tickets?.forEach { ticket ->
                 if (ticket.uiActive){
                     ticketsAdapter.submitList(ticket.ticketItems)
                     ticketsAdapter.notifyDataSetChanged()

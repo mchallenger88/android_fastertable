@@ -2,11 +2,10 @@ package com.fastertable.fastertable.data.repository
 
 import android.app.Application
 import com.fastertable.fastertable.api.*
-import com.fastertable.fastertable.data.models.Order
-import com.fastertable.fastertable.data.models.Payment
-import com.fastertable.fastertable.data.models.Terminal
+import com.fastertable.fastertable.data.models.*
 import com.fastertable.fastertable.utils.GlobalUtils
 import com.google.gson.Gson
+import java.io.BufferedReader
 import java.io.File
 import java.lang.RuntimeException
 import javax.inject.Inject
@@ -45,7 +44,9 @@ class GetPayment @Inject constructor(private val getPaymentUseCase: GetPaymentUs
                                    private val paymentRepository: PaymentRepository){
 
     suspend fun getPayment(id: String, lid: String){
-        val payment: Payment
+        println(id)
+        println(lid)
+        val payment: Payment?
         val result = getPaymentUseCase.getPayment(id, lid)
         if (result is GetPaymentUseCase.Result.Success){
             payment = result.payment
@@ -73,12 +74,15 @@ class GetPayments @Inject constructor(private val getPaymentsUseCase: GetPayment
 
 class PaymentRepository @Inject constructor(private val app: Application) {
 
-    fun savePayment(payment: Payment) {
+    fun savePayment(payment: Payment?) {
         //Save payment json to file
-        val gson = Gson()
-        val jsonString = gson.toJson(payment)
-        val file= File(app.filesDir, "payment.json")
-        file.writeText(jsonString)
+        if (payment != null){
+            val gson = Gson()
+            val jsonString = gson.toJson(payment)
+            val file= File(app.filesDir, "payment.json")
+            file.writeText(jsonString)
+        }
+
     }
 
     fun savePayments(payments: List<Payment>){
@@ -87,6 +91,22 @@ class PaymentRepository @Inject constructor(private val app: Application) {
         val jsonString = gson.toJson(payments)
         val file= File(app.filesDir, "payments.json")
         file.writeText(jsonString)
+    }
+
+    fun getPayment(): Payment?{
+        val gson = Gson()
+        if (File(app.filesDir, "payment.json").exists()){
+            val bufferedReader: BufferedReader = File(app.filesDir, "payment.json").bufferedReader()
+            val inputString = bufferedReader.use { it.readText() }
+            return gson.fromJson(inputString, Payment::class.java)
+        }
+        return null
+    }
+
+    fun clearPayment(){
+        val gson = Gson()
+        val file= File(app.filesDir, "payment.json")
+        file.delete()
     }
 
     fun createNewPayment(order: Order, terminal: Terminal): Payment{
@@ -129,4 +149,6 @@ class PaymentRepository @Inject constructor(private val app: Application) {
         file.writeText(jsonString)
         return payment
     }
+
+
 }

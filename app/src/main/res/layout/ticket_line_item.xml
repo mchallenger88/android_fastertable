@@ -14,7 +14,7 @@
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
+        android:layout_width="450dp"
         android:layout_height="match_parent">
 
         <TextView
@@ -23,10 +23,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:layout_marginTop="8dp"
             android:text="@string/string_quantity"
+            app:layout_constraintBottom_toBottomOf="@+id/txt_item"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
             tools:itemQuantity="@{ticketItem.quantity}" />
 
         <TextView
@@ -35,24 +34,36 @@
             android:layout_width="400dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="10dp"
             android:text="@{ticketItem.itemName}"
+            app:layout_constraintBottom_toBottomOf="@+id/txt_price"
             app:layout_constraintStart_toEndOf="@+id/txt_quantity"
             app:layout_constraintTop_toTopOf="parent" />
+
 
         <TextView
             android:id="@+id/txt_price"
             style="@style/payment_line_item"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="24dp"
+            android:layout_marginEnd="10dp"
             android:text="@string/string_price"
             android:textAlignment="viewEnd"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="@+id/txt_quantity"
+            app:layout_constraintEnd_toStartOf="@+id/btn_ticket_item_more"
             tools:ticketItemPrice="@{ticketItem}" />
 
+        <ImageButton
+            android:id="@+id/btn_ticket_item_more"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:background="@color/white"
+            android:contentDescription="@string/ticket_item_options"
+            android:paddingTop="8dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_baseline_more_vert_24" />
 
         <LinearLayout
             android:id="@+id/mod_list_layout"

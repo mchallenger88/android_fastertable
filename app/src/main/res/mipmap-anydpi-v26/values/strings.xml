@@ -159,9 +159,8 @@
     <string name="submit_payment">Submit Payment</string>
     <string name="cash_back_change_due">Cash Back - Change Due!</string>
     <string name="paid_in_full">--- PAID IN FULL ---</string>
-    <string name="ticket_options">Ticket Options</string>
     <string name="void_ticket">Void All Ticket Items</string>
     <string name="discount_ticket">Discount Ticket</string>
-    <string name="ticket_item_options">Ticket Item Options</string>
     <string name="approval_pending">Approval Pending</string>
+    <string name="ticket_options">Ticket Options</string>
 </resources>

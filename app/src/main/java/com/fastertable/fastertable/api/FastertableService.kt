@@ -47,14 +47,28 @@ interface FastertableApi {
     @POST("payments/{id}")
     suspend fun updatePayment(@Path("id")id: String, @Body payment: Payment): Response<Payment>
 
-    //Order
     @GET("payments/")
     suspend fun getPayments(@Query("midnight") midnight: Long,
                           @Query("locationId") locationId: String): Response<List<Payment>>
 
     @GET("payments/{id}/{lid}")
-    suspend fun getPayment(@Path("id") id: String?, @Path("lid") lid: String?): Response<Payment>
+    suspend fun getPayment(@Path("id") id: String, @Path("lid") lid: String): Response<Payment>
 
+    //Approvals
+    //Payment
+    @POST("approval")
+    suspend fun saveApproval(@Body approval: Approval): Response<Approval>
+
+    @POST("approval/{id}")
+    suspend fun updateApproval(@Path("id")id: String, @Body approval: Approval): Response<Approval>
+
+    @POST("approval/getapprovalsnew")
+    suspend fun getApprovals(@Body timeBasedRequest: TimeBasedRequest): Response<List<Approval>>
+
+    @GET("approval/{id}/{lid}")
+    suspend fun getApproval(@Path("id") id: String?, @Path("lid") lid: String?): Response<Approval>
+
+    //Credit
     @GET
     suspend fun startCredit(@Url url: String): Response<TerminalResponse>
 

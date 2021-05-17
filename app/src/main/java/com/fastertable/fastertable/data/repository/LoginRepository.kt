@@ -48,13 +48,14 @@ class GetRestaurantSettings @Inject constructor(private val getSettingsUseCase: 
 
 class LoginUser @Inject constructor(private val loginUserUseCase: LoginUserUseCase,
                                     private val loginRepository: LoginRepository){
-    suspend fun loginUser(pin: String, cid: String, rid: String, now: Long, midnight: Long){
+    suspend fun loginUser(pin: String, cid: String, rid: String, now: Long, midnight: Long): OpsAuth{
         val result = loginUserUseCase.userLogin(pin, cid, rid, now, midnight)
         val user: OpsAuth
 
         if (result is LoginUserUseCase.Result.Success){
             user = result.user
             loginRepository.saveUserLogin(user)
+            return user
         }else{
             throw RuntimeException("fetch failed")
         }

@@ -8,6 +8,7 @@ import android.widget.ImageButton
 import androidx.activity.viewModels
 import androidx.appcompat.widget.Toolbar
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
@@ -33,6 +34,7 @@ import com.fastertable.fastertable.ui.payment.PaymentViewModel
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
@@ -62,7 +64,7 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
 
         val exitButton: ImageButton = findViewById(R.id.exit_button)
         exitButton.setOnClickListener{
-            exitUser(navController)
+            exitUser()
         }
 
         // Passing each menu ID as a set of Ids because each
@@ -78,12 +80,14 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
         homeViewModel.navigateToOrder.observe(this, { it ->
             if (it == "Counter"){
                 orderViewModel.clearOrder()
+                paymentViewModel.clearPayment()
                 navController.navigate(HomeFragmentDirections.actionNavHomeToOrderFragment())
                 homeViewModel.navigationEnd()
             }
 
             if (it.contains("O_")){
                 orderViewModel.clearOrder()
+                paymentViewModel.clearPayment()
                 orderViewModel.setCurrentOrderId(it)
                 navController.navigate(HomeFragmentDirections.actionNavHomeToOrderFragment())
                 homeViewModel.navigationEnd()
@@ -122,8 +126,10 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
         })
 
         paymentViewModel.livePayment.observe(this, {it ->
-            if (it.closed){
-                orderViewModel.closeOrder()
+            if (it != null) {
+                if (it.closed){
+                    orderViewModel.closeOrder()
+                }
             }
         })
 
@@ -137,6 +143,12 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
             if (it){
                 AlertDialogBottomSheet().show(supportFragmentManager, AlertDialogBottomSheet.TAG)
                 paymentViewModel.clearError()
+            }
+        })
+
+        paymentViewModel.showTicketMore.observe(this, {it ->
+            if (it){
+                TicketMoreBottomSheet().show(supportFragmentManager, TicketMoreBottomSheet.TAG)
             }
         })
 
@@ -189,22 +201,31 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
         var okToPay = true
         val terminal = loginRepository.getTerminal()!!
         val order = orderViewModel.liveOrder.value!!
-        val flatten = order.getAllOrderItems()
-        if (flatten.size > 0){
-            order.guests?.forEach { guest ->
-                guest.orderItems?.forEach {
-                    if (it.status == "Started"){
-                        okToPay = false }}}
 
-            if (okToPay){
-                val payment = paymentRepository.createNewPayment(order, terminal)
-                paymentViewModel.setLivePayment(payment)
+        lifecycleScope.launch{
+            paymentViewModel.getCloudPayment(order.id.replace("O", "P"), order.locationId)
+            if (paymentViewModel.livePayment.value == null){
+                val flatten = order.getAllOrderItems()
+                if (flatten.size > 0){
+                    order.guests?.forEach { guest ->
+                        guest.orderItems?.forEach {
+                            if (it.status == "Started"){
+                                okToPay = false }}}
+
+                    if (okToPay){
+                        val payment = paymentRepository.createNewPayment(order, terminal)
+                        paymentViewModel.setLivePayment(payment)
+                        navController.navigate(OrderFragmentDirections.actionOrderFragmentToPaymentFragment())
+                        orderViewModel.navToPayment(false)
+                    }else{
+                        val view = findViewById<View>(R.id.nav_host_fragment)
+                        Snackbar.make(view, R.string.payment_warning_message1, Snackbar.LENGTH_LONG).show()
+                    }
+                }
+            }else{
                 navController.navigate(OrderFragmentDirections.actionOrderFragmentToPaymentFragment())
                 orderViewModel.navToPayment(false)
             }
-        }else{
-            val view = findViewById<View>(R.id.nav_host_fragment)
-            Snackbar.make(view, R.string.payment_warning_message1, Snackbar.LENGTH_LONG).show()
         }
     }
 
@@ -248,14 +269,32 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
     }
 
     override fun returnValue(value: String) {
-        orderViewModel.actionOnItemClicked(value)
+        when (value){
+            "Void Ticket" -> {
+                paymentViewModel.voidTicket(orderViewModel.liveOrder.value!!)
+            }
+            "Discount" -> {}
+            "Delete" -> {
+                orderViewModel.actionOnItemClicked(value)
+            }
+            "Toggle Rush" -> {
+                orderViewModel.actionOnItemClicked(value)
+            }
+            "Toggle No Make" -> {
+                orderViewModel.actionOnItemClicked(value)
+            }
+            "Toggle Takeout" -> {
+                orderViewModel.actionOnItemClicked(value)
+            }
+        }
+
     }
 
     override fun returnNote(value: String) {
         orderViewModel.saveOrderNote(value)
     }
 
-    fun exitUser(navController: NavController){
+    fun exitUser(){
         loginRepository.clearUser()
         val intent = Intent(this, LoginActivity::class.java)
         intent.putExtra("fragmentToLoad", "User")

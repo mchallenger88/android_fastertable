@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.fastertable.fastertable.MainActivity
@@ -18,7 +19,7 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class UserLoginFragment: BaseFragment() {
-    private lateinit var viewModel: UserLoginViewModel
+    private val viewModel: UserLoginViewModel by activityViewModels()
 
     override fun onCreateView(
             inflater: LayoutInflater,
@@ -27,7 +28,6 @@ class UserLoginFragment: BaseFragment() {
 
         val binding = UserLoginFragmentBinding.inflate(inflater)
 
-        viewModel = ViewModelProvider(this).get(UserLoginViewModel::class.java)
         binding.lifecycleOwner = viewLifecycleOwner
         binding.viewModel = viewModel
 

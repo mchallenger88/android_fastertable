@@ -59,6 +59,7 @@
                 android:textColor="@color/white"
                 android:textSize="@dimen/toolbar_button"
                 android:onClick="@{() -> viewModel.showCashView()}"
+                app:disablePayButton="@{viewModel.livePayment.statusApproval}"
                 app:layout_constraintStart_toEndOf="@+id/btn_manage_payment"
                 app:layout_constraintTop_toTopOf="@+id/layout_payment_buttons"
                 app:strokeColor="@color/white" />
@@ -74,6 +75,7 @@
                 android:textColor="@color/white"
                 android:textSize="@dimen/toolbar_button"
                 android:onClick="@{() -> viewModel.startCredit(orderViewModel.liveOrder)}"
+                app:disablePayButton="@{viewModel.livePayment.statusApproval}"
                 app:layout_constraintStart_toEndOf="@+id/btn_pay_cash"
                 app:layout_constraintTop_toTopOf="@+id/layout_payment_buttons"
                 app:strokeColor="@color/white" />
@@ -144,19 +146,53 @@
             android:background="?android:attr/windowBackground"
             android:elevation="4dp">
 
-
-            <TextView
-                android:id="@+id/txt_Ticket"
-                style="@style/header"
-                android:layout_width="0dp"
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/layout_order_header"
+                android:layout_width="match_parent"
                 android:layout_height="60dp"
-                android:background="@color/primary_payment_color"
-                android:gravity="center_horizontal|center_vertical"
-                android:text="@string/ticket_with_number"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:ticketNumber="@{viewModel.livePayment.tickets}" />
+                app:layout_constraintTop_toTopOf="parent">
+
+                <TextView
+                    android:id="@+id/txt_Ticket"
+                    style="@style/header"
+                    android:layout_width="0dp"
+                    android:layout_height="60dp"
+                    android:background="@color/primary_payment_color"
+                    android:gravity="center_horizontal|center_vertical"
+                    android:text="@string/ticket_with_number"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:ticketNumber="@{viewModel.livePayment.tickets}" />
+
+                <ImageButton
+                    android:id="@+id/btn_ticket_more"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="10dp"
+                    android:background="@color/primary_payment_color"
+                    android:contentDescription="@string/ticket_options"
+                    android:onClick="@{() -> viewModel.toggleTicketMore()}"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/ic_baseline_more_vert_24_white" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <TextView
+                android:id="@+id/txt_approval_pending"
+                style="@style/error_style_small"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="@string/approval_pending"
+                app:approvalPending="@{viewModel.livePayment}"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/layout_order_header" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/ticketItemsRecycler"
@@ -170,7 +206,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/txt_Ticket"
+                app:layout_constraintTop_toBottomOf="@+id/txt_approval_pending"
                 app:ticketListData="@{viewModel.livePayment}"
                 tools:listitem="@layout/ticket_line_item" />
 
