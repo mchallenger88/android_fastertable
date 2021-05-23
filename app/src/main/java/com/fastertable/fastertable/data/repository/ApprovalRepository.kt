@@ -8,6 +8,7 @@ import com.fastertable.fastertable.api.UpdateApprovalUseCase
 import com.fastertable.fastertable.data.models.*
 import com.fastertable.fastertable.utils.GlobalUtils
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import java.io.BufferedReader
 import java.io.File
 import java.lang.RuntimeException
@@ -61,12 +62,13 @@ class GetApproval @Inject constructor(private val getApprovalUseCase: GetApprova
 class GetApprovals @Inject constructor(private val getApprovalsUseCase: GetApprovalsUseCase,
                                       private val approvalRepository: ApprovalRepository){
 
-    suspend fun getApprovals(timeBasedRequest: TimeBasedRequest){
+    suspend fun getApprovals(timeBasedRequest: TimeBasedRequest): List<Approval>{
         val approvals: List<Approval>
         val result = getApprovalsUseCase.getApprovals(timeBasedRequest)
         if (result is GetApprovalsUseCase.Result.Success){
             approvals = result.approvals
             approvalRepository.saveApprovals(approvals)
+            return approvals
         }else{
             throw RuntimeException("fetch failed")
         }
@@ -80,6 +82,18 @@ class ApprovalRepository @Inject constructor(private val app: Application) {
             val bufferedReader: BufferedReader = File(app.filesDir, "approval.json").bufferedReader()
             val inputString = bufferedReader.use { it.readText() }
             return gson.fromJson(inputString, Approval::class.java)
+        }
+        return null
+    }
+
+    fun getApprovalsFromFile(): List<Approval>?{
+        val gson = Gson()
+        if (File(app.filesDir, "approvals.json").exists()){
+            val bufferedReader: BufferedReader = File(app.filesDir, "approvals.json").bufferedReader()
+            val inputString = bufferedReader.use { it.readText() }
+            val arrayList: ArrayList<Approval> = gson.fromJson(inputString, object : TypeToken<List<Approval?>?>() {}.type)
+            val list: List<Approval> = arrayList
+            return list
         }
         return null
     }
@@ -122,18 +136,14 @@ class ApprovalRepository @Inject constructor(private val app: Application) {
         if (file.exists()){
             file.delete()
         }
+
         file.writeText(jsonString)
         return approval
     }
 
 
     fun createVoidTicketApproval(order: Order, payment: Payment): Approval{
-        val approval: Approval =
-            if (getApproval() == null){
-                createApproval(order)
-            }else{
-                getApproval()!!
-            }
+        val approval: Approval = createApproval(order)
 
         val ai = ApprovalItem(
             id = approval.approvalItems.size,
@@ -150,5 +160,26 @@ class ApprovalRepository @Inject constructor(private val app: Application) {
         approval.approvalItems.add(ai)
 
         return approval
+    }
+
+    fun createDiscountTicketApproval(order: Order, payment: Payment, discount: Discount, disTotal: Double): Approval{
+        val approval: Approval = createApproval(order)
+
+        val ai = ApprovalItem(
+            id = approval.approvalItems.size,
+            approvalType = "Discount Ticket",
+            discount = discount.discountName,
+            ticketItem = null,
+            ticket = payment.activeTicket()!!,
+            amount = disTotal,
+            timeRequested = GlobalUtils().getNowEpoch(),
+            approved = null,
+            timeHandled = null,
+            managerId = null
+        )
+        approval.approvalItems.add(ai)
+
+        return approval
+
     }
 }

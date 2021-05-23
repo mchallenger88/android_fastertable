@@ -7,37 +7,39 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.fastertable.fastertable.R
+import com.fastertable.fastertable.data.models.ApprovalItem
 import com.fastertable.fastertable.data.models.TicketItem
+import com.fastertable.fastertable.databinding.ApprovalLineItemBinding
 import com.fastertable.fastertable.databinding.TicketLineItemBinding
 import com.fastertable.fastertable.ui.dialogs.DialogListener
 
-class TicketItemAdapter(private val clickListener: TicketItemListener) : ListAdapter<TicketItem, TicketItemAdapter.TicketItemViewHolder>(DiffCallback), DialogListener {
+class ApprovalAdapter(private val clickListener: ApprovalListener) : ListAdapter<TicketItem, ApprovalAdapter.ApprovalItemViewHolder>(ApprovalAdapter), DialogListener {
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TicketItemViewHolder {
-        return TicketItemViewHolder(TicketLineItemBinding.inflate(LayoutInflater.from(parent.context)), parent)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ApprovalItemViewHolder {
+        return ApprovalItemViewHolder(ApprovalLineItemBinding.inflate(LayoutInflater.from(parent.context)), parent)
     }
 
-    override fun onBindViewHolder(holder: TicketItemViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: ApprovalItemViewHolder, position: Int) {
         val ticketItem = getItem(position)
         holder.bind(ticketItem, clickListener)
     }
-    class TicketItemViewHolder(private var binding: TicketLineItemBinding, private val parent:ViewGroup):
-            RecyclerView.ViewHolder(binding.root) {
-        fun bind(ticketItem: TicketItem, clickListener: TicketItemListener) {
+    class ApprovalItemViewHolder(private var binding: ApprovalLineItemBinding, private val parent:ViewGroup):
+        RecyclerView.ViewHolder(binding.root) {
+        fun bind(ticketItem: TicketItem, clickListener: ApprovalListener) {
             binding.ticketItem = null
             binding.ticketItem = ticketItem
-            binding.clickListener = clickListener
             binding.executePendingBindings()
+
             val typeface = ResourcesCompat.getFont(parent.context, R.font.open_sans)
-            binding.txtItem.typeface = typeface
-            binding.txtQuantity.typeface = typeface
-            binding.txtPrice.typeface = typeface
-            binding.txtMods.typeface = typeface
+            binding.txtApprovalItem.typeface = typeface
+            binding.txtApprovalItemPrice.typeface = typeface
+            binding.txtApprovalItemQuantity.typeface = typeface
+            binding.txtItemDiscount.typeface = typeface
 
         }
     }
 
-    class TicketItemListener(val clickListener: (item: TicketItem) -> Unit) {
+    class ApprovalListener(val clickListener: (item: TicketItem) -> Unit) {
         fun onClick(item: TicketItem) = clickListener(item)
     }
 
@@ -52,6 +54,6 @@ class TicketItemAdapter(private val clickListener: TicketItemListener) : ListAda
     }
 
     override fun returnValue(value: String) {
-        println(value)
+        TODO("Not yet implemented")
     }
 }

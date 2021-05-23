@@ -28,7 +28,7 @@ fun intToString(textView: TextView, value: Int) {
 @BindingAdapter("terminalUsing")
 fun setTerminalName(textView: TextView, terminal: Terminal?){
     if (terminal != null) {
-        textView.text = terminal.terminalName
+        textView.text = "Currently using ${terminal.terminalName}"
     }
 }
 

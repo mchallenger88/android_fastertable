@@ -29,7 +29,8 @@ import kotlin.math.absoluteValue
 enum class ShowPayment{
     NONE,
     CASH,
-    CREDIT
+    CREDIT,
+    DISCOUNT
 }
 
 @HiltViewModel
@@ -49,7 +50,7 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
                                             private val paymentRepository: PaymentRepository): BaseViewModel() {
 
     private lateinit var user: OpsAuth
-    private lateinit var settings: Settings
+    public lateinit var settings: Settings
 
     private val _order = MutableLiveData<Order>()
     val liveOrder: LiveData<Order>
@@ -120,6 +121,7 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
         _showTicketMore.value = false
         _paymentScreen.value = ShowPayment.NONE
         _calculatingCash.value = ""
+        settings = loginRepository.getSettings()!!
     }
 
     fun payNow(){
@@ -229,6 +231,7 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
             ShowPayment.NONE -> _paymentScreen.value = ShowPayment.CASH
             ShowPayment.CASH -> _paymentScreen.value = ShowPayment.NONE
             ShowPayment.CREDIT -> _paymentScreen.value = ShowPayment.CASH
+            ShowPayment.DISCOUNT -> _paymentScreen.value = ShowPayment.DISCOUNT
         }
     }
 
@@ -434,8 +437,8 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
         _showTicketMore.value = !_showTicketMore.value!!
     }
 
-    fun toggleTicketItemMore(){
-        _showTicketItemMore.value = !_showTicketItemMore.value!!
+    fun setPaymentScreen(showPayment: ShowPayment){
+        _paymentScreen.value = showPayment
     }
 
 
@@ -449,6 +452,21 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
         saveApprovalToCloud(approval)
     }
 
+    fun discountTicket(order: Order, discount: Discount){
+        var disTotal: Double = 0.00
+        disTotal = _payment.value?.discountTicket(discount)!!
+        _payment.value = _payment.value
+        _paymentScreen.value = ShowPayment.NONE
+        val approval = approvalRepository.createDiscountTicketApproval(order, livePayment.value!!, discount, disTotal)
+
+        savePaymentToCloud()
+        saveApprovalToCloud(approval)
+    }
+
+    fun cancelDiscount(){
+        _paymentScreen.value = ShowPayment.NONE
+    }
+
     private fun saveApprovalToCloud(approval: Approval){
         viewModelScope.launch {
             var a: Approval
@@ -458,7 +476,6 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
                 a = updateApproval.saveApproval(approval)
             }
         }
-
     }
 }
 

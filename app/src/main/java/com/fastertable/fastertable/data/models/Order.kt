@@ -34,7 +34,7 @@ data class Order(
 
     val orderFees: Double?,
     val orderDiscount: Double?,
-    val pendingApproval: Boolean,
+    var pendingApproval: Boolean,
 
     val gratuity: Double,
     val subTotal: Double,
@@ -162,8 +162,7 @@ data class Order(
 
     fun getSalesTax(): Double{
         val subTotal: Double = this.getSubtotal()
-        //TODO: change this 9% to variable
-        return subTotal * 0.09
+        return subTotal * taxRate
     }
 
     fun printKitchenTicket(){

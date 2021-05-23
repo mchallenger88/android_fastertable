@@ -44,8 +44,6 @@ class GetPayment @Inject constructor(private val getPaymentUseCase: GetPaymentUs
                                    private val paymentRepository: PaymentRepository){
 
     suspend fun getPayment(id: String, lid: String){
-        println(id)
-        println(lid)
         val payment: Payment?
         val result = getPaymentUseCase.getPayment(id, lid)
         if (result is GetPaymentUseCase.Result.Success){

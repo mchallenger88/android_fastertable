@@ -44,4 +44,5 @@
     <style name="Theme.Fastertable.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="Theme.Fastertable.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
 </resources>

@@ -54,6 +54,12 @@
         <item name="android:layout_marginTop">@dimen/textView_margin</item>
     </style>
 
+    <style name="title_note" parent="F4_5">
+        <item name="android:textStyle">bold</item>
+        <item name="android:textAlignment">viewEnd</item>
+        <item name="android:layout_marginTop">@dimen/textView_margin</item>
+    </style>
+
     <style name="view_subtitle" parent="F4_6">
         <item name="android:textStyle">bold</item>
         <item name="android:textAlignment">viewEnd</item>
@@ -133,6 +139,10 @@
         <item name="android:layout_marginTop">@dimen/textView_margin</item>
     </style>
 
+    <style name="approval_line_item" parent="payment_line_item">
+        <item name="android:textColor">@color/secondaryColor</item>
+    </style>
+
     <style name="payment_totals" parent="F4_6">
         <item name="android:fontFamily">@font/open_sans_bold</item>
         <item name="android:layout_marginTop">@dimen/textView_margin</item>
@@ -162,9 +172,8 @@
     <style name="primary_button_large" parent="Widget.MaterialComponents.Button">
         <item name="android:textSize">@dimen/d21</item>
         <item name="android:textColor">@android:color/white</item>
-        <item name="android:background">@color/primaryColor</item>
+        <item name="android:backgroundTint">@color/primaryColor</item>
     </style>
-
 
     <style name="header" parent="default_font">
         <item name="android:textSize">@dimen/d24</item>
@@ -248,5 +257,11 @@
         <item name="android:textSize">@dimen/d26</item>
         <item name="android:textAllCaps">false</item>
         <item name="android:textColor">@color/primaryTextColor</item>
+    </style>
+
+    <style name="navigation_drawer" parent="default_font">
+        <item name="android:textSize">@dimen/d26</item>
+        <item name="backgroundColor">@android:color/transparent</item>
+        <item name="android:textColor">@color/default_text_color</item>
     </style>
 </resources>

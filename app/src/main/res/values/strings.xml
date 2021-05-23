@@ -18,6 +18,7 @@
     <string name="company_password_edit">Company Password</string>
 
     <string name="login">Login</string>
+    <string name="dashboard">Dashboard</string>
 
     <string name="notification_title">Faster Orders</string>
     <string name="notification_text">A new order has arrived!!</string>
@@ -163,5 +164,20 @@
     <string name="void_ticket">Void All Ticket Items</string>
     <string name="discount_ticket">Discount Ticket</string>
     <string name="ticket_item_options">Ticket Item Options</string>
+
+    //Approvals
     <string name="approval_pending">Approval Pending</string>
+    <string name="manager_approvals">Manager Approvals</string>
+    <string name="pending_approvals">Pending</string>
+    <string name="completed_approvals">Completed</string>
+    <string name="order_with_number">Order %1$s</string>
+    <string name="approval">Approval</string>
+    <string name="discount_price">Discount Price</string>
+    <string name="approve_or_reject_the_manager_approval">Manager Approval</string>
+    <string name="approve">Approve</string>
+    <string name="reject">Reject</string>
+    <string name="discount">Discount</string>
+    <string name="cancel_discount">Cancel Discount</string>
+    <string name="requested_by">Requested by %1$s</string>
+    <string name="discount_total_price">Total: $%1$s</string>
 </resources>

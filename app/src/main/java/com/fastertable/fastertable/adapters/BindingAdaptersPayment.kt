@@ -106,8 +106,16 @@ fun showApprovalPending(textView: TextView, payment: Payment){
 fun disablePayButton(button: Button, value: String?){
     if (value != null){
         button.isEnabled = value != "Pending"
-        val white = ContextCompat.getColor(button.context, R.color.offWhite)
-        button.setTextColor(ColorStateList.valueOf(white))
+        if (value == "Pending"){
+            button.isEnabled = false
+            val offWhite = ContextCompat.getColor(button.context, R.color.offWhite)
+            button.setTextColor(ColorStateList.valueOf(offWhite))
+        }else{
+            button.isEnabled = true
+            val white = ContextCompat.getColor(button.context, R.color.white)
+            button.setTextColor(ColorStateList.valueOf(white))
+        }
+
     }
 
 }

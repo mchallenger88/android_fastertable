@@ -2,6 +2,7 @@ package com.fastertable.fastertable.data.models
 
 import android.os.Parcelable
 import com.fastertable.fastertable.utils.GlobalUtils
+import com.fastertable.fastertable.utils.round
 import com.google.gson.annotations.SerializedName
 import kotlinx.parcelize.Parcelize
 
@@ -127,6 +128,43 @@ data class Payment(
         }
         statusApproval = "Pending"
     }
+
+    fun discountTicket(discount: Discount): Double{
+        var disTotal: Double = 0.00
+        if (discount.discountType == "Flat Amount"){
+            val ticketItem = TicketItem(
+                id = activeTicket()!!.ticketItems.size + 1,
+                orderGuestNo = 0,
+                orderItemId = 0,
+                quantity = 1,
+                itemName = "Discount",
+                itemSize = "Regular",
+                itemPrice = 0.00,
+                discountPrice = -discount.discountAmount.round(2),
+                priceModified = true,
+                itemMods = arrayListOf<ModifierItem>(),
+                salesCategory = "Discount",
+                ticketItemPrice = -discount.discountAmount,
+                tax = 0.00
+            )
+            activeTicket()!!.ticketItems.add(ticketItem)
+            statusApproval = "Pending"
+            disTotal = activeTicket()!!.total.minus(discount.discountAmount)
+        }
+
+        if (discount.discountType == "Percentage"){
+
+            activeTicket()?.ticketItems?.forEach { ti ->
+                val dis = ti.ticketItemPrice * (discount.discountAmount.div(100)).round(2)
+                disTotal = disTotal.plus(ti.ticketItemPrice.minus(dis))
+                ti.discountPrice = ti.ticketItemPrice.minus(dis)
+                ti.tax = (ti.discountPrice!! * taxRate).round(2)
+                ti.priceModified = true
+            }
+            statusApproval = "Pending"
+        }
+        return disTotal
+    }
 }
 
 @Parcelize
@@ -134,9 +172,9 @@ data class Ticket(
     val orderId: String,
     val id: Int,
     val ticketItems: ArrayList<TicketItem>,
-    val subTotal: Double,
-    val tax: Double,
-    val total: Double,
+    var subTotal: Double,
+    var tax: Double,
+    var total: Double,
     var paymentType: String,
     var gratuity: Double,
     val deliveryFee: Double,
@@ -153,6 +191,12 @@ data class Ticket(
                 price += price.plus(ticketItem.ticketItemPrice)
             }
             return price
+        }
+
+        fun recalculateAfterApproval(taxRate: Double){
+            subTotal = ticketItems.sumByDouble { it -> it.ticketItemPrice }.round(2)
+            tax = subTotal.times(taxRate).round(2)
+            total = subTotal.plus(tax)
         }
     }
 
@@ -182,9 +226,18 @@ data class TicketItem(
     var priceModified: Boolean,
     val itemMods: ArrayList<ModifierItem>,
     val salesCategory: String,
-    val ticketItemPrice: Double,
+    var ticketItemPrice: Double,
     var tax: Double,
-): Parcelable
+): Parcelable{
+    fun approve(){
+        ticketItemPrice = discountPrice!!
+    }
+
+    fun reject(){
+        discountPrice = null
+        priceModified = false
+    }
+}
 
 @Parcelize
 data class PaymentTransaction(
@@ -196,56 +249,8 @@ data class PaymentTransaction(
     val paidInFull: Boolean,
 ): Parcelable
 
-@Parcelize
-data class ManagerApproval(
-    val id: String,
-    val order: Order,
-    val approvalItem: ApprovalItem,
-    val timeRequested: Long,
-    val approved: Boolean?,
-    val timeHandled: Long,
-    val managerId: String,
-    val locationId: String,
-    val archived: Boolean,
-    val type: String,
-    val _rid: String?,
-    val _self: String?,
-    val _etag: String?,
-    val _attachments: String?,
-    val _ts: Long?
 
-): Parcelable
 
-@Parcelize
-data class Approval(
-    val id: String,
-    val order: Order,
-    val approvalItems: ArrayList<ApprovalItem>,
-    val timeRequested: Long,
-    val type: String,
-    @SerializedName("locationid")
-    val locationId: String,
-    val archived: Boolean,
-    val _rid: String?,
-    val _self: String?,
-    val _etag: String?,
-    val _attachments: String?,
-    val _ts: Long?
-): Parcelable
-
-@Parcelize
-data class ApprovalItem(
-    val id: Int,
-    val approvalType: String, //Price, Discount, Discount Ticket, Void Item, Void Order
-    val discount: String?,
-    val ticketItem: TicketItem?,
-    val ticket: Ticket,
-    val amount: Double,
-    val timeRequested: Long,
-    val approved: Boolean?,
-    val timeHandled: Long?,
-    val managerId: String?,
-): Parcelable
 
 @Parcelize
 data class TicketItemSelected(

@@ -5,10 +5,7 @@ import com.fastertable.fastertable.api.GetOrderUseCase
 import com.fastertable.fastertable.api.GetOrdersUseCase
 import com.fastertable.fastertable.api.SaveOrderUseCase
 import com.fastertable.fastertable.api.UpdateOrderUseCase
-import com.fastertable.fastertable.data.models.Guest
-import com.fastertable.fastertable.data.models.OpsAuth
-import com.fastertable.fastertable.data.models.Order
-import com.fastertable.fastertable.data.models.Settings
+import com.fastertable.fastertable.data.models.*
 import com.fastertable.fastertable.utils.GlobalUtils
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -89,9 +86,10 @@ class OrderRepository @Inject constructor(private val app: Application) {
         file.writeText(jsonString)
     }
 
-    fun getOrderFromFile(): Order?{
+
+    fun getOrder(): Order?{
         val gson = Gson()
-        if (File(app.filesDir, "orders.json").exists()){
+        if (File(app.filesDir, "order.json").exists()){
             val bufferedReader: BufferedReader = File(app.filesDir, "order.json").bufferedReader()
             val inputString = bufferedReader.use { it.readText() }
             return gson.fromJson(inputString, Order::class.java)

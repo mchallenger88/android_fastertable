@@ -38,11 +38,9 @@ class TicketSideBarAdapter(private val clickListener: TicketSideBarListener) : L
 
                     binding.ticketButton.text = parent.context.getString(R.string.ticket_with_number, ticket.id.plus(1).toString())
                     if (ticket.uiActive){
-                        println("Active")
                         binding.ticketButton.setTextColor(ColorStateList.valueOf(white))
                         binding.ticketButton.setCompoundDrawablesRelativeWithIntrinsicBounds(0, R.drawable.ic_receipt_white, 0, 0)
                     }else{
-                        println("Inactive")
                         binding.ticketButton.setTextColor(ColorStateList.valueOf(offwhite))
                         binding.ticketButton.setCompoundDrawablesRelativeWithIntrinsicBounds(0, R.drawable.ic_receipt_offwhite, 0, 0)
                     }

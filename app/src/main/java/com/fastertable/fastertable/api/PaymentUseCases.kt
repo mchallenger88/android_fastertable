@@ -88,7 +88,6 @@ class GetPaymentUseCase @Inject constructor(private val fastertableApi: Fasterta
 //                    return@withContext Result.Failure
 //                }
             }catch (t: Throwable){
-                println(t)
                 if (t !is CancellationException){
                     return@withContext Result.Failure
                 }else{

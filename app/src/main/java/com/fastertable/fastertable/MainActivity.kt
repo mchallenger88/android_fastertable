@@ -3,7 +3,10 @@ package com.fastertable.fastertable
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import android.view.*
+import android.view.MenuItem
+import android.view.View
+import android.view.WindowInsets
+import android.view.WindowInsetsController
 import android.widget.ImageButton
 import androidx.activity.viewModels
 import androidx.appcompat.widget.Toolbar
@@ -12,25 +15,23 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.navigateUp
-import androidx.navigation.ui.setupActionBarWithNavController
-import androidx.navigation.ui.setupWithNavController
+import androidx.navigation.ui.*
 import com.fastertable.fastertable.common.base.BaseActivity
 import com.fastertable.fastertable.common.base.DismissListener
 import com.fastertable.fastertable.data.models.OrderItem
 import com.fastertable.fastertable.data.repository.LoginRepository
 import com.fastertable.fastertable.data.repository.OrderRepository
 import com.fastertable.fastertable.data.repository.PaymentRepository
+import com.fastertable.fastertable.ui.approvals.ApprovalsViewModel
 import com.fastertable.fastertable.ui.dialogs.*
 import com.fastertable.fastertable.ui.home.HomeFragmentDirections
 import com.fastertable.fastertable.ui.home.HomeViewModel
-import com.fastertable.fastertable.ui.login.user.UserLoginFragment
 import com.fastertable.fastertable.ui.order.OrderFragmentDirections
 import com.fastertable.fastertable.ui.order.OrderViewModel
 import com.fastertable.fastertable.ui.payment.PaymentFragmentDirections
-import com.fastertable.fastertable.ui.payment.SplitPaymentViewModel
 import com.fastertable.fastertable.ui.payment.PaymentViewModel
+import com.fastertable.fastertable.ui.payment.ShowPayment
+import com.fastertable.fastertable.ui.payment.SplitPaymentViewModel
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
@@ -47,7 +48,7 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
     private val homeViewModel: HomeViewModel by viewModels()
     private val orderViewModel: OrderViewModel by viewModels()
     private val paymentViewModel: PaymentViewModel by viewModels()
-    private val splitViewModel: SplitPaymentViewModel by viewModels()
+    private val approvalsViewModel: ApprovalsViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -71,7 +72,8 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
         // menu should be considered as top level destinations.
         appBarConfiguration = AppBarConfiguration(
             setOf(
-                R.id.nav_home
+                R.id.nav_home,
+                R.id.approvalsFragment
             ), drawerLayout
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
@@ -161,6 +163,12 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
         val navController = findNavController(R.id.nav_host_fragment)
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
     }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return item.onNavDestinationSelected(findNavController(R.id.nav_host_fragment))
+    }
+
+
 
     private fun sendToKitchen(){
         var send = false
@@ -271,20 +279,22 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
     override fun returnValue(value: String) {
         when (value){
             "Void Ticket" -> {
-                paymentViewModel.voidTicket(orderViewModel.liveOrder.value!!)
+                return paymentViewModel.voidTicket(orderViewModel.liveOrder.value!!)
             }
-            "Discount" -> {}
+            "Discount" -> {
+                return paymentViewModel.setPaymentScreen(ShowPayment.DISCOUNT)
+            }
             "Delete" -> {
-                orderViewModel.actionOnItemClicked(value)
+                return orderViewModel.actionOnItemClicked(value)
             }
             "Toggle Rush" -> {
-                orderViewModel.actionOnItemClicked(value)
+                return orderViewModel.actionOnItemClicked(value)
             }
             "Toggle No Make" -> {
-                orderViewModel.actionOnItemClicked(value)
+                return orderViewModel.actionOnItemClicked(value)
             }
             "Toggle Takeout" -> {
-                orderViewModel.actionOnItemClicked(value)
+                return orderViewModel.actionOnItemClicked(value)
             }
         }
 
