@@ -44,8 +44,13 @@ class ApprovalsViewModel @Inject constructor(
     val liveApprovalItem: LiveData<ApprovalItem>
         get() = _liveApprovalItem
 
+    private val _showProgress = MutableLiveData<Boolean>()
+    val showProgress: LiveData<Boolean>
+        get() = _showProgress
+
     init{
         viewModelScope.launch {
+            _showProgress.postValue(true)
             loadApprovals()
         }
 
@@ -61,6 +66,7 @@ class ApprovalsViewModel @Inject constructor(
                 val list = getApprovals.getApprovals(timeBasedRequest)
                 _approvals.postValue(list)
                 _showPending.postValue(true)
+                _showProgress.postValue(false)
             }
         }
     }
@@ -106,15 +112,15 @@ class ApprovalsViewModel @Inject constructor(
 
     fun approveApproval(){
         viewModelScope.launch {
-            getPayment.getPayment(liveApproval.value?.id!!.replace("A_", "P_"), liveApproval.value?.locationId!!)
-            getOrder.getOrder(liveApproval.value?.id!!.replace("A_", "O_"), liveApproval.value?.locationId!!)
+            _showProgress.postValue(true)
+            getOrderPayment()
             val payment = paymentRepository.getPayment()
             val order = orderRepository.getOrder()
 
             if (payment != null && order != null){
                 when (liveApprovalItem.value?.approvalType){
-                    "Discount" -> { approveTicketItem(payment, order) }
-                    "Price" -> { approveTicketItem(payment, order) }
+                    "Discount Item" -> { approveTicketItem(payment, order) }
+                    "Modify Price" -> { approveTicketItem(payment, order) }
                     "Void Item" -> { approveTicketItem(payment, order) }
                     "Void Ticket" -> { approveTicket(payment, order) }
                     "Discount Ticket" -> { approveTicket(payment, order) }
@@ -127,15 +133,25 @@ class ApprovalsViewModel @Inject constructor(
 
                 order.pendingApproval = false
                 updateOrder.saveOrder(order)
+                setApprovalsView(true)
+                _showProgress.postValue(false)
             }
         }
+    }
+
+    private suspend fun getOrderPayment(){
+        viewModelScope.launch {
+            getPayment.getPayment(liveApproval.value?.id!!.replace("A_", "P_"), liveApproval.value?.locationId!!)
+            getOrder.getOrder(liveApproval.value?.id!!.replace("A_", "O_"), liveApproval.value?.locationId!!)
+        }
+
     }
 
     private fun approveTicketItem(payment: Payment, order: Order){
         viewModelScope.launch {
             val ticket = payment.tickets.find{it -> it.id == _liveApprovalItem.value?.ticket?.id}
-            val ticketItem = ticket?.ticketItems?.find{ it -> it.id == _liveApprovalItem.value?.ticketItem?.id }
-            ticketItem?.approve()
+            val ticketItem = _liveApprovalItem.value?.ticketItem
+            ticket?.ticketItems?.find{ it -> it.id == ticketItem?.id}?.approve()
             ticket?.recalculateAfterApproval(order.taxRate)
             payment.statusApproval = "Approved"
             updatePayment.savePayment(payment)
@@ -155,14 +171,60 @@ class ApprovalsViewModel @Inject constructor(
 
             //TODO: If there are no other tickets and this is a void then we can close the order and payment
         }
+    }
 
+    private fun rejectTicketItem(payment: Payment, order: Order){
+        viewModelScope.launch {
+            val ticket = payment.tickets.find{it -> it.id == _liveApprovalItem.value?.ticket?.id}
+            val ticketItem = _liveApprovalItem.value?.ticketItem
+            ticketItem?.reject()
+            payment.statusApproval = "Rejected"
+            updatePayment.savePayment(payment)
+        }
+    }
+
+
+    private fun rejectTicket(payment: Payment, order: Order){
+        viewModelScope.launch {
+            val ticket = payment.tickets.find{it -> it.id == _liveApprovalItem.value?.ticket?.id}
+            ticket?.ticketItems?.forEach { it ->
+                it.reject()
+            }
+            payment.statusApproval = "Rejected"
+            updatePayment.savePayment(payment)
+
+        }
     }
 
     fun rejectApproval(){
+        viewModelScope.launch {
+            _showProgress.postValue(true)
+            getOrderPayment()
+            val payment = paymentRepository.getPayment()
+            val order = orderRepository.getOrder()
+            if (payment != null && order != null){
+                when (liveApprovalItem.value?.approvalType){
+                    "Discount" -> { rejectTicketItem(payment, order) }
+                    "Modify Price" -> { rejectTicketItem(payment, order) }
+                    "Void Item" -> { rejectTicketItem(payment, order) }
+                    "Void Ticket" -> { rejectTicket(payment, order) }
+                    "Discount Ticket" -> { rejectTicket(payment, order) }
+                }
+                _liveApprovalItem.value?.approved = false
+                _liveApprovalItem.value?.timeHandled = GlobalUtils().getNowEpoch()
+                _liveApprovalItem.value?.managerId = loginRepository.getOpsUser()?.employeeId
+                _liveApprovalItem.value = _liveApprovalItem.value
+                updateApproval.saveApproval(liveApproval.value!!)
 
+                order.pendingApproval = false
+                updateOrder.saveOrder(order)
+                setApprovalsView(true)
+                _showProgress.postValue(false)
+            }
+        }
     }
 
-    fun onApprovalButtonClick(approvalItem: ApprovalItem){
+    fun onApprovalSidebarClick(approvalItem: ApprovalItem){
         _approvalItems.value?.forEach { it ->
             if (it.timeRequested == approvalItem.timeRequested){
                 it.uiActive = true

@@ -28,3 +28,9 @@ data class DeletePrinterDialogData(
     val continueX: Boolean,
     val message: String,
 ): Parcelable
+
+@Parcelize
+data class OrderPayment(
+    val order: Order,
+    val payment: Payment
+): Parcelable

@@ -48,7 +48,7 @@ data class ApprovalItem(
     val approvalType: String, //Price, Discount, Discount Ticket, Void Item, Void Ticket
     val discount: String?,
     val ticketItem: TicketItem?,
-    val ticket: Ticket,
+    val ticket: Ticket?,
     val amount: Double,
     val timeRequested: Long,
     var approved: Boolean?,
@@ -58,7 +58,7 @@ data class ApprovalItem(
 ): Parcelable {
     fun ticketSubtotal(): Double{
         var price: Double = 0.00
-        ticket.ticketItems.forEach{ticketItem ->
+        ticket?.ticketItems?.forEach{ticketItem ->
             if (ticketItem.discountPrice != null){
                 price += price.plus(ticketItem.discountPrice!!)
             }else{
@@ -69,7 +69,7 @@ data class ApprovalItem(
     }
     fun ticketSalesTax(): Double{
         var tax: Double = 0.00
-        ticket.ticketItems.forEach{ticketItem ->
+        ticket?.ticketItems?.forEach{ticketItem ->
             tax += tax.plus(ticketItem.tax)
         }
         return tax
@@ -84,7 +84,10 @@ data class ApprovalItem(
                 return ticketTotal()
             }
             "Discount Ticket" -> {
-                return ticket.ticketItems.sumByDouble{ it -> it.discountPrice!!}.round(2)
+                return ticket?.ticketItems?.sumByDouble{ it -> it.discountPrice!!}!!.round(2)
+            }
+            "Void Item" -> {
+                return ticketItem?.ticketItemPrice!!
             }
             else -> {return 0.00}
         }

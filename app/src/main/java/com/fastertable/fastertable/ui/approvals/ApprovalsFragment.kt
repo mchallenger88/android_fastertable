@@ -7,9 +7,8 @@ import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import com.fastertable.fastertable.adapters.ApprovalAdapter
 import com.fastertable.fastertable.adapters.ApprovalsSideBarAdapter
-import com.fastertable.fastertable.adapters.TicketItemAdapter
-import com.fastertable.fastertable.adapters.TicketSideBarAdapter
 import com.fastertable.fastertable.common.base.BaseFragment
+import com.fastertable.fastertable.data.models.TicketItem
 import com.fastertable.fastertable.databinding.ApprovalsFragmentBinding
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -30,7 +29,7 @@ class ApprovalsFragment : BaseFragment() {
 
     private fun createAdapters(binding: ApprovalsFragmentBinding){
         val approvalsSideBarAdapter = ApprovalsSideBarAdapter(ApprovalsSideBarAdapter.ApprovalSideBarListener { it ->
-            viewModel.onApprovalButtonClick(it)
+            viewModel.onApprovalSidebarClick(it)
         })
 
         val ticketsAdapter = ApprovalAdapter(ApprovalAdapter.ApprovalListener { it ->
@@ -45,12 +44,17 @@ class ApprovalsFragment : BaseFragment() {
             viewModel.setApprovalsView(it)
         })
 
-//        viewModel.approvals.observe(viewLifecycleOwner, {
-//            viewModel.setApprovalsView()
-//        })
-
         viewModel.liveApprovalItem.observe(viewLifecycleOwner, {
-            ticketsAdapter.submitList(it.ticket.ticketItems)
+            if (it.ticket != null){
+                ticketsAdapter.submitList(it.ticket?.ticketItems)
+            }
+
+            if (it.ticketItem != null){
+                val ticketItems = arrayListOf<TicketItem>()
+                ticketItems.add(it.ticketItem)
+                ticketsAdapter.submitList(ticketItems)
+            }
+
             ticketsAdapter.notifyDataSetChanged()
         })
 

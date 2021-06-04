@@ -32,7 +32,7 @@ fun bindApprovalItemTicketRecyclerView(recyclerView: RecyclerView?, approvalItem
             val approvalItem = approvalItems.find { it -> it.uiActive }
             if (approvalItem != null){
                 val ticket = approvalItem.ticket
-                adapter.submitList(ticket.ticketItems)
+                adapter.submitList(ticket?.ticketItems)
                 adapter.notifyDataSetChanged()
             }
         }
@@ -68,8 +68,16 @@ fun getApprovalTotal(textView: TextView, item: ApprovalItem?){
 
 @BindingAdapter("approvalDiscount")
 fun getApprovalDiscount(textView: TextView, item: ApprovalItem?){
-    if (item != null){
-        val dis = item.ticket.subTotal - item.totalDiscount()
+    var dis = 0.00
+        if (item != null){
+        if (item.ticket != null){
+            dis = item.ticket.subTotal.minus(item.totalDiscount())
+        }
+
+        if (item.ticketItem != null){
+            dis = item.ticketItem.ticketItemPrice.minus(item.totalDiscount())
+        }
+
         textView.setTextColor(textView.context.getColor(R.color.secondaryColor))
         textView.text = textView.context.getString(R.string.discount_total_price, "%.${2}f".format(dis))
     }

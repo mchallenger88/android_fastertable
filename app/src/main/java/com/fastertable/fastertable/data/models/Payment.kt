@@ -129,9 +129,45 @@ data class Payment(
         statusApproval = "Pending"
     }
 
+    fun voidTicketItem(ticketItem: TicketItem){
+        ticketItem.discountPrice = 0.00
+        ticketItem.tax = 0.00
+        ticketItem.priceModified = true
+        statusApproval = "Pending"
+    }
+
+    fun discountTicketItem(ticketItem: TicketItem, discount: Discount): Double{
+        var disTotal: Double = 0.00
+        if (discount.discountType == "Flat Amount"){
+            if (ticketItem.ticketItemPrice < discount.discountAmount){
+                ticketItem.discountPrice = ticketItem.ticketItemPrice.minus(discount.discountAmount).round(2)
+                ticketItem.tax = (ticketItem.discountPrice!! * taxRate).round(2)
+                ticketItem.priceModified = true
+                disTotal = discount.discountAmount
+            }else{
+                ticketItem.discountPrice = 0.00
+                ticketItem.tax = 0.00
+                ticketItem.priceModified = true
+                disTotal = ticketItem.ticketItemPrice
+            }
+        }
+
+        if (discount.discountType == "Percentage"){
+            val dis = ticketItem.ticketItemPrice * (discount.discountAmount.div(100)).round(2)
+            disTotal = disTotal.plus(ticketItem.ticketItemPrice.minus(dis))
+            ticketItem.discountPrice = ticketItem.ticketItemPrice.minus(dis)
+            ticketItem.tax = (ticketItem.discountPrice!! * taxRate).round(2)
+            ticketItem.priceModified = true
+        }
+        statusApproval = "Pending"
+        return disTotal
+    }
+
+
     fun discountTicket(discount: Discount): Double{
         var disTotal: Double = 0.00
         if (discount.discountType == "Flat Amount"){
+            //Because it's a flat amount have to create a new ticket item to hold the discount amount
             val ticketItem = TicketItem(
                 id = activeTicket()!!.ticketItems.size + 1,
                 orderGuestNo = 0,
@@ -144,7 +180,7 @@ data class Payment(
                 priceModified = true,
                 itemMods = arrayListOf<ModifierItem>(),
                 salesCategory = "Discount",
-                ticketItemPrice = -discount.discountAmount,
+                ticketItemPrice = -discount.discountAmount.round(2),
                 tax = 0.00
             )
             activeTicket()!!.ticketItems.add(ticketItem)
@@ -230,13 +266,19 @@ data class TicketItem(
     var tax: Double,
 ): Parcelable{
     fun approve(){
+        println("Discount")
+        println(discountPrice)
         ticketItemPrice = discountPrice!!
+        println("Final:")
+        println(ticketItemPrice)
     }
 
     fun reject(){
         discountPrice = null
         priceModified = false
     }
+
+
 }
 
 @Parcelize

@@ -381,13 +381,6 @@ data class OrderMod(
 ): Parcelable
 
 
-@JsonClass(generateAdapter = true)
-@Parcelize
-data class OrderPayment(
-    val o: Order,
-    val p: Payment
-): Parcelable
-
 //export interface OrderItemSelected{
 //    item: OrderItem,
 //    selected: boolean

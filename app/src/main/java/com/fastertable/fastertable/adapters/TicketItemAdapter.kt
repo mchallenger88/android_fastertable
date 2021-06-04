@@ -34,6 +34,10 @@ class TicketItemAdapter(private val clickListener: TicketItemListener) : ListAda
             binding.txtPrice.typeface = typeface
             binding.txtMods.typeface = typeface
 
+            binding.btnTicketItemMore.setOnClickListener {
+                clickListener.onClick(ticketItem)
+            }
+
         }
     }
 

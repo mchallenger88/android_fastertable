@@ -20,7 +20,6 @@ import com.fastertable.fastertable.data.models.*
 import com.fastertable.fastertable.data.repository.*
 import com.fastertable.fastertable.utils.round
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.math.absoluteValue
@@ -45,6 +44,7 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
                                             private val stageTransaction: StageTransaction,
                                             private val creditCardRepository: CreditCardRepository,
                                             private val initiateCreditTransaction: InitiateCreditTransaction,
+                                            private val getApproval: GetApproval,
                                             private val saveApproval: SaveApproval,
                                             private val updateApproval: UpdateApproval,
                                             private val paymentRepository: PaymentRepository): BaseViewModel() {
@@ -72,15 +72,15 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
     val ticketPaid: LiveData<Boolean>
         get() = _ticketPaid
 
-    private val _calculatingCash = MutableLiveData<String>()
+    private val _calculatingCash = MutableLiveData<String>("")
     private val calculatingCash: LiveData<String>
         get() = _calculatingCash
 
-    private val _paymentScreen = MutableLiveData<ShowPayment>()
+    private val _paymentScreen = MutableLiveData<ShowPayment>(ShowPayment.NONE)
     val paymentScreen: LiveData<ShowPayment>
         get() = _paymentScreen
 
-    private val _managePayment = MutableLiveData<Boolean>()
+    private val _managePayment = MutableLiveData<Boolean>(false)
     val managePayment: LiveData<Boolean>
         get() = _managePayment
 
@@ -96,31 +96,23 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
     val errorMessage: LiveData<String>
         get() = _errorMessage
 
-    private val _showTicketMore = MutableLiveData<Boolean>()
+    private val _showTicketMore = MutableLiveData<Boolean>(false)
     val showTicketMore: LiveData<Boolean>
         get() = _showTicketMore
 
-    private val _showTicketItemMore = MutableLiveData<Boolean>()
+    private val _showTicketItemMore = MutableLiveData<Boolean>(false)
     val showTicketItemMore: LiveData<Boolean>
         get() = _showTicketItemMore
 
+    private val _liveTicketItem = MutableLiveData<TicketItem>()
+    val liveTicketItem: LiveData<TicketItem>
+        get() = _liveTicketItem
 
-    private var paid: Boolean = false
-    private var send: Boolean = false
-    private var approved: Boolean = false
-    private var showMessage: Boolean = false
-    private var showErrorMessage: Boolean = false
-    private var processing: Boolean = false
-    private var message: String = ""
-    private var showPartial: Boolean = false
-    private var tooMuch: Boolean = false
+    private val _discountType = MutableLiveData<String>()
+    val discountType: LiveData<String>
+        get() = _discountType
 
     init{
-        _managePayment.value = false
-        _showTicketItemMore.value = false
-        _showTicketMore.value = false
-        _paymentScreen.value = ShowPayment.NONE
-        _calculatingCash.value = ""
         settings = loginRepository.getSettings()!!
     }
 
@@ -437,30 +429,95 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
         _showTicketMore.value = !_showTicketMore.value!!
     }
 
-    fun setPaymentScreen(showPayment: ShowPayment){
+    fun toggleTicketItemMore(item: TicketItem){
+        _liveTicketItem.value = item
+        _showTicketItemMore.value = !_showTicketItemMore.value!!
+    }
+
+    fun setPaymentScreen(showPayment: ShowPayment, type: String?){
+        when (type){
+            "Discount Ticket" -> _discountType.value = "Discount Ticket"
+            "Discount Item" -> _discountType.value = "Discount Item"
+        }
         _paymentScreen.value = showPayment
     }
 
 
     fun voidTicket(order: Order){
-        _payment.value?.voidTicket()
-        _payment.value = _payment.value
+        viewModelScope.launch {
+            _payment.value?.voidTicket()
+            _payment.postValue(_payment.value)
+            val id: String = order.id.replace("O", "A")
+            getApproval.getApproval(id, order.locationId)
+            if (approvalRepository.getApproval() == null){
+                val approval = approvalRepository.createVoidTicketApproval(order, livePayment.value!!, null)
+                savePaymentToCloud()
+                saveApprovalToCloud(approval)
+            }else{
+                val approval = approvalRepository.createVoidTicketApproval(order, livePayment.value!!, approvalRepository.getApproval())
+                savePaymentToCloud()
+                saveApprovalToCloud(approval)
+            }
+        }
 
-        val approval = approvalRepository.createVoidTicketApproval(order, livePayment.value!!)
+    }
 
-        savePaymentToCloud()
-        saveApprovalToCloud(approval)
+    fun voidTicketItem(order: Order){
+        viewModelScope.launch {
+            _payment.value?.voidTicketItem(liveTicketItem.value!!)
+            _payment.value = _payment.value
+            val id: String = order.id.replace("O", "A")
+            getApproval.getApproval(id, order.locationId)
+            if (approvalRepository.getApprovalbyId(id) == null){
+                val approval = approvalRepository.createVoidTicketItemApproval(order, livePayment.value!!,liveTicketItem.value!!, null)
+                saveApprovalToCloud(approval)
+                savePaymentToCloud()
+            }else{
+                val approval = approvalRepository.createVoidTicketItemApproval(order, livePayment.value!!,liveTicketItem.value!!, approvalRepository.getApproval())
+                savePaymentToCloud()
+                saveApprovalToCloud(approval)
+            }
+        }
+
     }
 
     fun discountTicket(order: Order, discount: Discount){
-        var disTotal: Double = 0.00
-        disTotal = _payment.value?.discountTicket(discount)!!
-        _payment.value = _payment.value
-        _paymentScreen.value = ShowPayment.NONE
-        val approval = approvalRepository.createDiscountTicketApproval(order, livePayment.value!!, discount, disTotal)
+        viewModelScope.launch {
+            var disTotal: Double = 0.00
+            if (discountType.value == "Discount Ticket"){
+                disTotal = _payment.value?.discountTicket(discount)!!
+                _payment.value = _payment.value
+                _paymentScreen.value = ShowPayment.NONE
+                val id: String = order.id.replace("O", "A")
+                getApproval.getApproval(id, order.locationId)
+                if (approvalRepository.getApproval() == null){
+                    val approval = approvalRepository.createDiscountTicketApproval(order, livePayment.value!!,discount, disTotal, null)
+                    saveApprovalToCloud(approval)
+                }else{
+                    val approval = approvalRepository.createDiscountTicketApproval(order, livePayment.value!!,discount, disTotal, approvalRepository.getApproval())
+                    savePaymentToCloud()
+                    saveApprovalToCloud(approval)
+                }
+            }
 
-        savePaymentToCloud()
-        saveApprovalToCloud(approval)
+            if (discountType.value == "Discount Item"){
+                disTotal = _payment.value?.discountTicketItem(liveTicketItem.value!!, discount)!!
+                _payment.value = _payment.value
+                _paymentScreen.value = ShowPayment.NONE
+                val id: String = order.id.replace("O", "A")
+                getApproval.getApproval(id, order.locationId)
+                if (approvalRepository.getApproval() == null){
+                    val approval = approvalRepository.createDiscountTicketItemApproval(order, livePayment.value!!, liveTicketItem.value!!, discount, disTotal, null)
+                    saveApprovalToCloud(approval)
+                }else{
+                    val approval = approvalRepository.createDiscountTicketItemApproval(order, livePayment.value!!,liveTicketItem.value!!, discount, disTotal, approvalRepository.getApproval())
+                    savePaymentToCloud()
+                    saveApprovalToCloud(approval)
+                }
+            }
+
+
+        }
     }
 
     fun cancelDiscount(){

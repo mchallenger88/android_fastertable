@@ -314,8 +314,20 @@
                     android:textSize="@dimen/d21"
                     android:onClick="@{() -> viewModel.rejectApproval()}"
                     android:backgroundTint="@color/secondaryColor"
-                    android:text="@string/reject" />
+                    android:text="@string/reject"
+                    style="?android:attr/buttonBarButtonStyle" />
             </LinearLayout>
+
+            <ProgressBar
+                android:id="@+id/progressBar_approvals"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                app:layout_constraintBottom_toTopOf="@+id/text_approve_reject_title"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:showProgress="@{viewModel.showProgress}" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

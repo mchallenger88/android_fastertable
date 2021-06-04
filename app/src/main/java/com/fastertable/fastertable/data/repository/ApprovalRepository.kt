@@ -48,7 +48,7 @@ class GetApproval @Inject constructor(private val getApprovalUseCase: GetApprova
                                      private val approvalRepository: ApprovalRepository){
 
     suspend fun getApproval(id: String, lid: String){
-        val approval: Approval
+        val approval: Approval?
         val result = getApprovalUseCase.getApproval(id, lid)
         if (result is GetApprovalUseCase.Result.Success){
             approval = result.approval
@@ -86,6 +86,23 @@ class ApprovalRepository @Inject constructor(private val app: Application) {
         return null
     }
 
+    fun getApprovalbyId(id: String): Approval?{
+        val gson = Gson()
+        var approval: Approval
+        if (File(app.filesDir, "approval.json").exists()){
+            val bufferedReader: BufferedReader = File(app.filesDir, "approval.json").bufferedReader()
+            val inputString = bufferedReader.use { it.readText() }
+            approval = gson.fromJson(inputString, Approval::class.java)
+
+            if (approval.id == id){
+                return approval
+            }else{
+                return null
+            }
+        }
+        return null
+    }
+
     fun getApprovalsFromFile(): List<Approval>?{
         val gson = Gson()
         if (File(app.filesDir, "approvals.json").exists()){
@@ -98,12 +115,19 @@ class ApprovalRepository @Inject constructor(private val app: Application) {
         return null
     }
 
-    fun saveApproval(approval: Approval) {
+    fun saveApproval(approval: Approval?) {
         //Save order json to file
         val gson = Gson()
-        val jsonString = gson.toJson(approval)
-        val file= File(app.filesDir, "approval.json")
-        file.writeText(jsonString)
+        if (approval != null) {
+            val jsonString = gson.toJson(approval)
+            val file = File(app.filesDir, "approval.json")
+            file.writeText(jsonString)
+        }else{
+            val file= File(app.filesDir, "approval.json")
+            if (file.exists()){
+                file.delete()
+            }
+        }
     }
 
     fun saveApprovals(approvals: List<Approval>){
@@ -114,8 +138,9 @@ class ApprovalRepository @Inject constructor(private val app: Application) {
         file.writeText(jsonString)
     }
 
-    fun createApproval(order: Order): Approval {
+    private fun createApproval(order: Order): Approval {
         val id: String = order.id.replace("O", "A")
+
         val approval = Approval(
             id = id,
             order = order,
@@ -123,7 +148,7 @@ class ApprovalRepository @Inject constructor(private val app: Application) {
             locationId = order.locationId,
             timeRequested = GlobalUtils().getNowEpoch(),
             archived = false,
-            type = "",
+            type = "Approval",
             _rid = "",
             _self = "",
             _etag = "",
@@ -142,11 +167,11 @@ class ApprovalRepository @Inject constructor(private val app: Application) {
     }
 
 
-    fun createVoidTicketApproval(order: Order, payment: Payment): Approval{
-        val approval: Approval = createApproval(order)
+    fun createVoidTicketApproval(order: Order, payment: Payment, approval: Approval?): Approval{
+        val app = approval ?: createApproval(order)
 
         val ai = ApprovalItem(
-            id = approval.approvalItems.size,
+            id = app.approvalItems.size,
             approvalType = "Void Ticket",
             discount = null,
             ticketItem = null,
@@ -157,16 +182,36 @@ class ApprovalRepository @Inject constructor(private val app: Application) {
             timeHandled = null,
             managerId = null
         )
-        approval.approvalItems.add(ai)
+        app.approvalItems.add(ai)
 
-        return approval
+        return app
     }
 
-    fun createDiscountTicketApproval(order: Order, payment: Payment, discount: Discount, disTotal: Double): Approval{
-        val approval: Approval = createApproval(order)
+    fun createVoidTicketItemApproval(order: Order, payment: Payment, ticketItem: TicketItem, approval: Approval?): Approval{
+        val app = approval ?: createApproval(order)
 
         val ai = ApprovalItem(
-            id = approval.approvalItems.size,
+            id = app.approvalItems.size,
+            approvalType = "Void Item",
+            discount = null,
+            ticketItem = ticketItem,
+            ticket = payment.activeTicket()!!,
+            amount = ticketItem.ticketItemPrice,
+            timeRequested = GlobalUtils().getNowEpoch(),
+            approved = null,
+            timeHandled = null,
+            managerId = null
+        )
+        app.approvalItems.add(ai)
+
+        return app
+    }
+
+    fun createDiscountTicketApproval(order: Order, payment: Payment, discount: Discount, disTotal: Double, approval: Approval?): Approval{
+        val app = approval ?: createApproval(order)
+
+        val ai = ApprovalItem(
+            id = app.approvalItems.size,
             approvalType = "Discount Ticket",
             discount = discount.discountName,
             ticketItem = null,
@@ -177,9 +222,29 @@ class ApprovalRepository @Inject constructor(private val app: Application) {
             timeHandled = null,
             managerId = null
         )
-        approval.approvalItems.add(ai)
+        app.approvalItems.add(ai)
 
-        return approval
+        return app
 
+    }
+
+    fun createDiscountTicketItemApproval(order: Order, payment: Payment, ticketItem: TicketItem, discount: Discount, disTotal: Double, approval: Approval?): Approval{
+        val app = approval ?: createApproval(order)
+
+        val ai = ApprovalItem(
+            id = app.approvalItems.size,
+            approvalType = "Discount Item",
+            discount = discount.discountName,
+            ticketItem = ticketItem,
+            ticket = payment.activeTicket()!!,
+            amount = disTotal,
+            timeRequested = GlobalUtils().getNowEpoch(),
+            approved = null,
+            timeHandled = null,
+            managerId = null
+        )
+        app.approvalItems.add(ai)
+
+        return app
     }
 }

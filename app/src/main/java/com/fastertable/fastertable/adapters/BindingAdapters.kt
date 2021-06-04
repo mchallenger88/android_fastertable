@@ -4,17 +4,13 @@ import android.annotation.SuppressLint
 import android.content.res.ColorStateList
 import android.view.View
 import android.widget.Button
-import android.widget.ImageButton
+import android.widget.ProgressBar
 import android.widget.TextView
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.fastertable.fastertable.R
 import com.fastertable.fastertable.data.models.*
-import com.fastertable.fastertable.ui.order.MenusNavigation
-import java.time.ZoneId
-import java.time.format.DateTimeFormatter
 
 
 @SuppressLint("SetTextI18n")
@@ -181,5 +177,13 @@ fun setAlertDialog(textView: TextView, message: String?){
     if (message != null){
         textView.text = message
     }
+}
 
+@BindingAdapter("showProgress")
+fun showProgress(progressBar: ProgressBar, b: Boolean){
+    if (b){
+        progressBar.visibility = View.VISIBLE
+    }else{
+        progressBar.visibility = View.GONE
+    }
 }

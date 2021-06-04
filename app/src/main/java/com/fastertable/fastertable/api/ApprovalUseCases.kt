@@ -62,7 +62,7 @@ class UpdateApprovalUseCase @Inject constructor(private val fastertableApi: Fast
 class GetApprovalUseCase @Inject constructor(private val fastertableApi: FastertableApi){
 
     sealed class Result {
-        data class Success(val approval: Approval) : Result()
+        data class Success(val approval: Approval?) : Result()
         object Failure: Result()
     }
 
@@ -70,10 +70,14 @@ class GetApprovalUseCase @Inject constructor(private val fastertableApi: Fastert
         return withContext(Dispatchers.IO){
             try{
                 val response = fastertableApi.getApproval(id, lid)
-                if (response.isSuccessful && response.body() != null){
-                    return@withContext Result.Success(response.body()!!)
-                }else{
-                    return@withContext Result.Failure
+                when (response.isSuccessful){
+                    response.body() != null -> {
+                        return@withContext Result.Success(response.body()!!)
+                    }
+                    response.body() == null -> {
+                        return@withContext Result.Success(null)
+                    }
+                    else ->  return@withContext Result.Failure
                 }
             }catch (t: Throwable){
                 if (t !is CancellationException){

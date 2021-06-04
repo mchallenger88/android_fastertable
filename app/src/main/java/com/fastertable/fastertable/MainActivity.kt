@@ -31,7 +31,6 @@ import com.fastertable.fastertable.ui.order.OrderViewModel
 import com.fastertable.fastertable.ui.payment.PaymentFragmentDirections
 import com.fastertable.fastertable.ui.payment.PaymentViewModel
 import com.fastertable.fastertable.ui.payment.ShowPayment
-import com.fastertable.fastertable.ui.payment.SplitPaymentViewModel
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
@@ -151,6 +150,12 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
         paymentViewModel.showTicketMore.observe(this, {it ->
             if (it){
                 TicketMoreBottomSheet().show(supportFragmentManager, TicketMoreBottomSheet.TAG)
+            }
+        })
+
+        paymentViewModel.showTicketItemMore.observe(this, {it ->
+            if (it){
+                TicketItemMoreBottomSheet().show(supportFragmentManager, TicketItemMoreBottomSheet.TAG)
             }
         })
 
@@ -282,8 +287,15 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
                 return paymentViewModel.voidTicket(orderViewModel.liveOrder.value!!)
             }
             "Discount" -> {
-                return paymentViewModel.setPaymentScreen(ShowPayment.DISCOUNT)
+                return paymentViewModel.setPaymentScreen(ShowPayment.DISCOUNT, "Discount Ticket")
             }
+            "Void Item" -> {
+                return paymentViewModel.voidTicketItem(orderViewModel.liveOrder.value!!)
+            }
+            "Discount Item" -> {
+                return paymentViewModel.setPaymentScreen(ShowPayment.DISCOUNT, "Discount Item")
+            }
+            "Modify Price" -> {}
             "Delete" -> {
                 return orderViewModel.actionOnItemClicked(value)
             }

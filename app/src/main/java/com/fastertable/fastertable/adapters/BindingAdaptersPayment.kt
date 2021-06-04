@@ -8,7 +8,6 @@ import androidx.core.content.ContextCompat
 import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.fastertable.fastertable.R
-import com.fastertable.fastertable.data.models.Order
 import com.fastertable.fastertable.data.models.Payment
 import com.fastertable.fastertable.data.models.Ticket
 import com.fastertable.fastertable.data.models.TicketItem
@@ -45,8 +44,8 @@ fun getItemPrice(textView: TextView, item: TicketItem){
 }
 
 @BindingAdapter("ticketSubTotal")
-fun getTicketSubtotal(textView: TextView, payment: Payment){
-    payment.tickets.forEach { item ->
+fun getTicketSubtotal(textView: TextView, payment: Payment?){
+    payment?.tickets?.forEach { item ->
         if (item.uiActive){
             textView.text = textView.context.getString(R.string.subtotal_price, "%.${2}f".format(item.subTotal))
         }
@@ -54,8 +53,8 @@ fun getTicketSubtotal(textView: TextView, payment: Payment){
 }
 
 @BindingAdapter("ticketTax")
-fun getTicketTax(textView: TextView, payment: Payment){
-    payment.tickets.forEach { item ->
+fun getTicketTax(textView: TextView, payment: Payment?){
+    payment?.tickets?.forEach { item ->
         if (item.uiActive){
             textView.text = textView.context.getString(R.string.tax_price, "%.${2}f".format(item.tax))
         }
@@ -63,8 +62,8 @@ fun getTicketTax(textView: TextView, payment: Payment){
 }
 
 @BindingAdapter("ticketTotal")
-fun getTicketTotal(textView: TextView, payment: Payment){
-    payment.tickets.forEach { item ->
+fun getTicketTotal(textView: TextView, payment: Payment?){
+    payment?.tickets?.forEach { item ->
         if (item.uiActive){
             textView.text = textView.context.getString(R.string.total_price, "%.${2}f".format(item.total))
         }
@@ -72,8 +71,8 @@ fun getTicketTotal(textView: TextView, payment: Payment){
 }
 
 @BindingAdapter("amountOwed")
-fun getAmountOwed(textView: TextView, payment: Payment){
-    payment.tickets.forEach { item ->
+fun getAmountOwed(textView: TextView, payment: Payment?){
+    payment?.tickets?.forEach { item ->
         if (item.uiActive){
             textView.text = textView.context.getString(R.string.amount_owed, "%.${2}f".format(item.total))
         }

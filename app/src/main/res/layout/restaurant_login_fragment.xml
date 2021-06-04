@@ -39,11 +39,10 @@
             style="@style/view_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
+            android:layout_marginBottom="5dp"
             android:text="@string/restaurant_login"
             app:layout_constraintBottom_toTopOf="@+id/txt_rest_error"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.514"
             app:layout_constraintStart_toStartOf="parent" />
 
         <TextView
@@ -62,159 +61,161 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/edit_rest_password"
-            android:layout_width="300dp"
+            android:layout_width="312dp"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="5dp"
-            android:hint="@string/restaurant_pin"
             android:ems="10"
-            app:layout_constraintBottom_toTopOf="@+id/btn_two"
+            android:hint="@string/restaurant_pin"
+            app:layout_constraintBottom_toTopOf="@+id/layout_restaurant_pin_pad"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.52"
-            app:layout_constraintStart_toStartOf="parent"
-            >
+            app:layout_constraintStart_toStartOf="parent">
+
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="@dimen/d21"
-                android:textAlignment="center"
                 android:inputType="textPassword"
-                android:text="@{viewModel.pin}" />
+                android:text="@{viewModel.pin}"
+                android:textAlignment="center"
+                android:textSize="@dimen/d21" />
         </com.google.android.material.textfield.TextInputLayout>
 
-
-
-        <Button
-            android:id="@+id/btn_one"
-            android:layout_width="@dimen/login_button"
-            android:layout_height="@dimen/login_button"
-            android:text="@string/string_one"
-            android:textColor="@color/white"
-            android:textSize="@dimen/d21"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/layout_restaurant_pin_pad"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="100dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.43"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.39" />
+            app:layout_constraintStart_toStartOf="parent">
 
-        <Button
-            android:id="@+id/btn_two"
-            android:layout_width="@dimen/login_button"
-            android:layout_height="@dimen/login_button"
-            android:layout_marginStart="6dp"
-            android:text="@string/string_two"
-            android:textColor="@color/white"
-            android:textSize="@dimen/d21"
-            app:layout_constraintStart_toEndOf="@+id/btn_one"
-            app:layout_constraintTop_toTopOf="@+id/btn_one" />
 
-        <Button
-            android:id="@+id/btn_three"
-            android:layout_width="@dimen/login_button"
-            android:layout_height="@dimen/login_button"
-            android:layout_marginStart="6dp"
-            android:text="@string/string_three"
-            android:textColor="@color/white"
-            android:textSize="@dimen/d21"
-            app:layout_constraintStart_toEndOf="@+id/btn_two"
-            app:layout_constraintTop_toTopOf="@+id/btn_two" />
+            <Button
+                android:id="@+id/btn_one"
+                android:layout_width="@dimen/login_button"
+                android:layout_height="@dimen/login_button"
+                android:text="@string/string_one"
+                android:textColor="@color/white"
+                android:textSize="@dimen/d21"
+                app:layout_constraintStart_toStartOf="@id/layout_restaurant_pin_pad"
+                app:layout_constraintTop_toTopOf="@id/layout_restaurant_pin_pad" />
 
-        <Button
-            android:id="@+id/btn_four"
-            android:layout_width="@dimen/login_button"
-            android:layout_height="@dimen/login_button"
-            android:text="@string/string_four"
-            android:textColor="@color/white"
-            android:textSize="@dimen/d21"
-            app:layout_constraintStart_toStartOf="@+id/btn_one"
-            app:layout_constraintTop_toBottomOf="@+id/btn_one" />
+            <Button
+                android:id="@+id/btn_two"
+                android:layout_width="@dimen/login_button"
+                android:layout_height="@dimen/login_button"
+                android:layout_marginStart="6dp"
+                android:text="@string/string_two"
+                android:textColor="@color/white"
+                android:textSize="@dimen/d21"
+                app:layout_constraintStart_toEndOf="@id/btn_one"
+                app:layout_constraintTop_toTopOf="@id/layout_restaurant_pin_pad" />
 
-        <Button
-            android:id="@+id/btn_five"
-            android:layout_width="@dimen/login_button"
-            android:layout_height="@dimen/login_button"
-            android:layout_marginStart="6dp"
-            android:text="@string/string_five"
-            android:textColor="@color/white"
-            android:textSize="@dimen/d21"
-            app:layout_constraintStart_toEndOf="@+id/btn_four"
-            app:layout_constraintTop_toBottomOf="@+id/btn_two" />
+            <Button
+                android:id="@+id/btn_three"
+                android:layout_width="@dimen/login_button"
+                android:layout_height="@dimen/login_button"
+                android:layout_marginStart="6dp"
+                android:text="@string/string_three"
+                android:textColor="@color/white"
+                android:textSize="@dimen/d21"
+                app:layout_constraintStart_toEndOf="@id/btn_two"
+                app:layout_constraintTop_toTopOf="@id/layout_restaurant_pin_pad" />
 
-        <Button
-            android:id="@+id/btn_six"
-            android:layout_width="@dimen/login_button"
-            android:layout_height="@dimen/login_button"
-            android:layout_marginStart="6dp"
-            android:text="@string/string_six"
-            android:textColor="@color/white"
-            android:textSize="@dimen/d21"
-            app:layout_constraintStart_toEndOf="@+id/btn_five"
-            app:layout_constraintTop_toBottomOf="@+id/btn_three" />
+            <Button
+                android:id="@+id/btn_four"
+                android:layout_width="@dimen/login_button"
+                android:layout_height="@dimen/login_button"
+                android:text="@string/string_four"
+                android:textColor="@color/white"
+                android:textSize="@dimen/d21"
+                app:layout_constraintStart_toStartOf="@id/layout_restaurant_pin_pad"
+                app:layout_constraintTop_toBottomOf="@id/btn_one" />
 
-        <Button
-            android:id="@+id/btn_seven"
-            android:layout_width="@dimen/login_button"
-            android:layout_height="@dimen/login_button"
-            android:text="@string/string_seven"
-            android:textColor="@color/white"
-            android:textSize="@dimen/d21"
-            app:layout_constraintStart_toStartOf="@+id/btn_four"
-            app:layout_constraintTop_toBottomOf="@+id/btn_four" />
+            <Button
+                android:id="@+id/btn_five"
+                android:layout_width="@dimen/login_button"
+                android:layout_height="@dimen/login_button"
+                android:layout_marginStart="6dp"
+                android:text="@string/string_five"
+                android:textColor="@color/white"
+                android:textSize="@dimen/d21"
+                app:layout_constraintStart_toEndOf="@+id/btn_four"
+                app:layout_constraintTop_toBottomOf="@+id/btn_two" />
 
-        <Button
-            android:id="@+id/btn_eight"
-            android:layout_width="@dimen/login_button"
-            android:layout_height="@dimen/login_button"
-            android:layout_marginStart="6dp"
-            android:text="@string/string_eight"
-            android:textColor="@color/white"
-            android:textSize="@dimen/d21"
-            app:layout_constraintStart_toEndOf="@+id/btn_seven"
-            app:layout_constraintTop_toBottomOf="@+id/btn_five" />
+            <Button
+                android:id="@+id/btn_six"
+                android:layout_width="@dimen/login_button"
+                android:layout_height="@dimen/login_button"
+                android:layout_marginStart="6dp"
+                android:text="@string/string_six"
+                android:textColor="@color/white"
+                android:textSize="@dimen/d21"
+                app:layout_constraintStart_toEndOf="@+id/btn_five"
+                app:layout_constraintTop_toBottomOf="@+id/btn_three" />
 
-        <Button
-            android:id="@+id/btn_nine"
-            android:layout_width="@dimen/login_button"
-            android:layout_height="@dimen/login_button"
-            android:layout_marginStart="6dp"
-            android:text="@string/string_nine"
-            android:textColor="@color/white"
-            android:textSize="@dimen/d21"
-            app:layout_constraintStart_toEndOf="@+id/btn_eight"
-            app:layout_constraintTop_toBottomOf="@+id/btn_six" />
+            <Button
+                android:id="@+id/btn_seven"
+                android:layout_width="@dimen/login_button"
+                android:layout_height="@dimen/login_button"
+                android:text="@string/string_seven"
+                android:textColor="@color/white"
+                android:textSize="@dimen/d21"
+                app:layout_constraintStart_toStartOf="@id/layout_restaurant_pin_pad"
+                app:layout_constraintTop_toBottomOf="@id/btn_four" />
 
-        <Button
-            android:id="@+id/btn_clear"
-            android:layout_width="@dimen/login_button"
-            android:layout_height="@dimen/login_button"
-            android:layout_marginStart="6dp"
-            android:text="@string/string_clear"
-            android:textColor="@color/white"
-            android:textSize="@dimen/login_button_words"
-            app:layout_constraintStart_toEndOf="@+id/btn_zero"
-            app:layout_constraintTop_toBottomOf="@+id/btn_eight" />
+            <Button
+                android:id="@+id/btn_eight"
+                android:layout_width="@dimen/login_button"
+                android:layout_height="@dimen/login_button"
+                android:layout_marginStart="6dp"
+                android:text="@string/string_eight"
+                android:textColor="@color/white"
+                android:textSize="@dimen/d21"
+                app:layout_constraintStart_toEndOf="@+id/btn_seven"
+                app:layout_constraintTop_toBottomOf="@+id/btn_five" />
 
-        <Button
-            android:id="@+id/btn_zero"
-            android:layout_width="@dimen/login_button"
-            android:layout_height="@dimen/login_button"
-            android:text="@string/string_zero"
-            android:textColor="@color/white"
-            android:textSize="@dimen/d21"
-            app:layout_constraintStart_toStartOf="@+id/btn_seven"
-            app:layout_constraintTop_toBottomOf="@+id/btn_seven" />
+            <Button
+                android:id="@+id/btn_nine"
+                android:layout_width="@dimen/login_button"
+                android:layout_height="@dimen/login_button"
+                android:layout_marginStart="6dp"
+                android:text="@string/string_nine"
+                android:textColor="@color/white"
+                android:textSize="@dimen/d21"
+                app:layout_constraintStart_toEndOf="@+id/btn_eight"
+                app:layout_constraintTop_toBottomOf="@+id/btn_six" />
 
-        <Button
-            android:id="@+id/btn_enter"
-            android:layout_width="@dimen/login_button"
-            android:layout_height="@dimen/login_button"
-            android:layout_marginStart="6dp"
-            android:text="@string/string_enter"
-            android:textColor="@color/white"
-            android:textSize="@dimen/login_button_words"
-            app:layout_constraintStart_toEndOf="@+id/btn_clear"
-            app:layout_constraintTop_toBottomOf="@+id/btn_nine" />
+            <Button
+                android:id="@+id/btn_zero"
+                android:layout_width="@dimen/login_button"
+                android:layout_height="@dimen/login_button"
+                android:text="@string/string_zero"
+                android:textColor="@color/white"
+                android:textSize="@dimen/d21"
+                app:layout_constraintStart_toStartOf="@id/layout_restaurant_pin_pad"
+                app:layout_constraintTop_toBottomOf="@id/btn_seven" />
 
+            <Button
+                android:id="@+id/btn_clear"
+                android:layout_width="@dimen/login_button"
+                android:layout_height="@dimen/login_button"
+                android:layout_marginStart="6dp"
+                android:text="@string/string_clear"
+                android:textColor="@color/white"
+                android:textSize="@dimen/login_button_words"
+                app:layout_constraintStart_toEndOf="@+id/btn_zero"
+                app:layout_constraintTop_toBottomOf="@+id/btn_eight" />
+
+            <Button
+                android:id="@+id/btn_enter"
+                android:layout_width="@dimen/login_button"
+                android:layout_height="@dimen/login_button"
+                android:layout_marginStart="6dp"
+                android:text="@string/string_enter"
+                android:textColor="@color/white"
+                android:textSize="@dimen/login_button_words"
+                app:layout_constraintStart_toEndOf="@+id/btn_clear"
+                app:layout_constraintTop_toBottomOf="@+id/btn_nine" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

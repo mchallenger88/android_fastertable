@@ -65,7 +65,7 @@ class PaymentFragment: BaseFragment() {
         })
 
         val ticketsAdapter = TicketItemAdapter(TicketItemAdapter.TicketItemListener { it ->
-
+            viewModel.toggleTicketItemMore(it)
         })
 
         binding.ticketRecycler.adapter = ticketNumberAdapter
@@ -131,6 +131,7 @@ class PaymentFragment: BaseFragment() {
     }
 
     fun applyDiscount(discount: Discount){
+        //Is it dicount ticket or discount item
         viewModel.discountTicket(orderViewModel.liveOrder.value!!, discount)
     }
 
