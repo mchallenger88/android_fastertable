@@ -136,6 +136,13 @@ data class Payment(
         statusApproval = "Pending"
     }
 
+    fun modifyItemPrice(ticketItem: TicketItem, price: Double){
+        ticketItem.discountPrice = price
+        ticketItem.tax = (ticketItem.discountPrice!! * taxRate).round(2)
+        ticketItem.priceModified = true
+        statusApproval = "Pending"
+    }
+
     fun discountTicketItem(ticketItem: TicketItem, discount: Discount): Double{
         var disTotal: Double = 0.00
         if (discount.discountType == "Flat Amount"){
@@ -153,9 +160,8 @@ data class Payment(
         }
 
         if (discount.discountType == "Percentage"){
-            val dis = ticketItem.ticketItemPrice * (discount.discountAmount.div(100)).round(2)
-            disTotal = disTotal.plus(ticketItem.ticketItemPrice.minus(dis))
-            ticketItem.discountPrice = ticketItem.ticketItemPrice.minus(dis)
+            disTotal = ticketItem.ticketItemPrice * (discount.discountAmount.div(100)).round(2)
+            ticketItem.discountPrice = ticketItem.ticketItemPrice.minus(disTotal).round(2)
             ticketItem.tax = (ticketItem.discountPrice!! * taxRate).round(2)
             ticketItem.priceModified = true
         }

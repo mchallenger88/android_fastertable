@@ -34,6 +34,9 @@ class PaymentFragment: BaseFragment() {
         binding.lifecycleOwner = viewLifecycleOwner
         binding.viewModel = viewModel
         binding.orderViewModel = orderViewModel
+        binding.btnModifyPrice.setOnClickListener {
+            modifyPrice(binding)
+        }
         createAdapters(binding)
         createObservers(binding)
         return binding.root
@@ -45,15 +48,23 @@ class PaymentFragment: BaseFragment() {
                 ShowPayment.NONE -> {
                     binding.cashLayout.visibility = View.GONE
                     binding.discountLayout.visibility = View.GONE
+                    binding.priceLayout.visibility = View.GONE
                 }
                 ShowPayment.CASH -> {
                     binding.cashLayout.visibility = View.VISIBLE
                     binding.discountLayout.visibility = View.GONE
+                    binding.priceLayout.visibility = View.GONE
                 }
                 ShowPayment.DISCOUNT -> {
                     binding.discountLayout.visibility = View.VISIBLE
                     binding.cashLayout.visibility = View.GONE
+                    binding.priceLayout.visibility = View.GONE
                     discountButtons(binding)
+                }
+                ShowPayment.MODIFY_PRICE -> {
+                    binding.priceLayout.visibility = View.VISIBLE
+                    binding.cashLayout.visibility = View.GONE
+                    binding.discountLayout.visibility = View.GONE
                 }
             }
         })
@@ -130,9 +141,13 @@ class PaymentFragment: BaseFragment() {
 
     }
 
-    fun applyDiscount(discount: Discount){
-        //Is it dicount ticket or discount item
+    private fun applyDiscount(discount: Discount){
+        //Is it discount ticket or discount item
         viewModel.discountTicket(orderViewModel.liveOrder.value!!, discount)
+    }
+
+    private fun modifyPrice(binding: PaymentFragmentBinding){
+        viewModel.modifyPrice(orderViewModel.liveOrder.value!!, binding.editModifyPrice.editText?.text.toString())
     }
 
 }

@@ -295,7 +295,9 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
             "Discount Item" -> {
                 return paymentViewModel.setPaymentScreen(ShowPayment.DISCOUNT, "Discount Item")
             }
-            "Modify Price" -> {}
+            "Modify Price" -> {
+                return paymentViewModel.setPaymentScreen(ShowPayment.MODIFY_PRICE, null)
+            }
             "Delete" -> {
                 return orderViewModel.actionOnItemClicked(value)
             }

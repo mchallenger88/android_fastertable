@@ -178,9 +178,12 @@
     <string name="discount">Discount</string>
     <string name="cancel_discount">Cancel Discount</string>
     <string name="requested_by">Requested by %1$s</string>
-    <string name="discount_total_price">Total: $%1$s</string>
+    <string name="discount_total_price">Total Discount: $%1$s</string>
     <string name="ticket_item_options">Ticket Item Options</string>
     <string name="void_item">Void Item</string>
     <string name="discount_item">Discount Item</string>
     <string name="modify_price">Modify Price</string>
+    <string name="cancel_modify_price">Cancel Modify Price</string>
+    <string name="enter_the_new_price">Enter the new price:</string>
+    <string name="new_price">New Price</string>
 </resources>

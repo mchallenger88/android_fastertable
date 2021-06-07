@@ -7,6 +7,7 @@ import com.fastertable.fastertable.api.SaveApprovalUseCase
 import com.fastertable.fastertable.api.UpdateApprovalUseCase
 import com.fastertable.fastertable.data.models.*
 import com.fastertable.fastertable.utils.GlobalUtils
+import com.fastertable.fastertable.utils.round
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.io.BufferedReader
@@ -238,6 +239,26 @@ class ApprovalRepository @Inject constructor(private val app: Application) {
             ticketItem = ticketItem,
             ticket = payment.activeTicket()!!,
             amount = disTotal,
+            timeRequested = GlobalUtils().getNowEpoch(),
+            approved = null,
+            timeHandled = null,
+            managerId = null
+        )
+        app.approvalItems.add(ai)
+
+        return app
+    }
+
+    fun createModifyItemPriceApproval(order: Order, payment: Payment, ticketItem: TicketItem, approval: Approval?): Approval{
+        val app = approval ?: createApproval(order)
+
+        val ai = ApprovalItem(
+            id = app.approvalItems.size,
+            approvalType = "Modify Price",
+            discount = null,
+            ticketItem = ticketItem,
+            ticket = payment.activeTicket()!!,
+            amount = ticketItem.ticketItemPrice.minus(ticketItem.discountPrice!!).round(2),
             timeRequested = GlobalUtils().getNowEpoch(),
             approved = null,
             timeHandled = null,

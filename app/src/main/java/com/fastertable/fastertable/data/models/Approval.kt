@@ -89,6 +89,12 @@ data class ApprovalItem(
             "Void Item" -> {
                 return ticketItem?.ticketItemPrice!!
             }
+            "Modify Price" -> {
+                return ticketItem?.ticketItemPrice?.minus(ticketItem?.discountPrice!!)!!.round(2)
+            }
+            "Discount Item" -> {
+                return ticketItem?.ticketItemPrice?.minus(ticketItem?.discountPrice!!)!!.round(2)
+            }
             else -> {return 0.00}
         }
     }

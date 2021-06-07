@@ -68,18 +68,17 @@ fun getApprovalTotal(textView: TextView, item: ApprovalItem?){
 
 @BindingAdapter("approvalDiscount")
 fun getApprovalDiscount(textView: TextView, item: ApprovalItem?){
-    var dis = 0.00
         if (item != null){
-        if (item.ticket != null){
-            dis = item.ticket.subTotal.minus(item.totalDiscount())
-        }
-
-        if (item.ticketItem != null){
-            dis = item.ticketItem.ticketItemPrice.minus(item.totalDiscount())
-        }
+//        if (item.ticket != null){
+//            dis = item.ticket.subTotal.minus(item.totalDiscount())
+//        }
+//
+//        if (item.ticketItem != null){
+//            dis = item.ticketItem.ticketItemPrice.minus(item.totalDiscount())
+//        }
 
         textView.setTextColor(textView.context.getColor(R.color.secondaryColor))
-        textView.text = textView.context.getString(R.string.discount_total_price, "%.${2}f".format(dis))
+        textView.text = textView.context.getString(R.string.discount_total_price, "%.${2}f".format(item.amount))
     }
 }
 
