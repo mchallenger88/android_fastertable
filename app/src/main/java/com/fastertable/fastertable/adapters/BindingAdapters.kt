@@ -11,12 +11,23 @@ import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.fastertable.fastertable.R
 import com.fastertable.fastertable.data.models.*
+import java.time.LocalDate
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 
 
 @SuppressLint("SetTextI18n")
 @BindingAdapter("intToString")
 fun intToString(textView: TextView, value: Int) {
     textView.text = value.toString()
+}
+
+@BindingAdapter( "dateToString")
+fun dateToString(textView: TextView, date: LocalDate?){
+    if (date != null){
+        val formatter = DateTimeFormatter.ofPattern("MMM dd, yyyy")
+        textView.text = date.format(formatter)
+    }
 }
 
 

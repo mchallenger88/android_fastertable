@@ -1,7 +1,6 @@
 package com.fastertable.fastertable.api
 
 import com.fastertable.fastertable.data.models.Payment
-import com.fastertable.fastertable.data.repository.PaymentRepository
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -70,7 +69,6 @@ class GetPaymentUseCase @Inject constructor(private val fastertableApi: Fasterta
         return withContext(Dispatchers.IO){
             try{
                 val response = fastertableApi.getPayment(id, lid)
-
                 when (response.isSuccessful){
                     response.body() != null -> {
                         return@withContext Result.Success(response.body()!!)

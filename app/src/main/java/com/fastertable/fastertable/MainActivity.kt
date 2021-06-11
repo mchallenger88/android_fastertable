@@ -23,6 +23,7 @@ import com.fastertable.fastertable.data.repository.LoginRepository
 import com.fastertable.fastertable.data.repository.OrderRepository
 import com.fastertable.fastertable.data.repository.PaymentRepository
 import com.fastertable.fastertable.ui.approvals.ApprovalsViewModel
+import com.fastertable.fastertable.ui.checkout.CheckoutViewModel
 import com.fastertable.fastertable.ui.dialogs.*
 import com.fastertable.fastertable.ui.home.HomeFragmentDirections
 import com.fastertable.fastertable.ui.home.HomeViewModel
@@ -48,6 +49,7 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
     private val orderViewModel: OrderViewModel by viewModels()
     private val paymentViewModel: PaymentViewModel by viewModels()
     private val approvalsViewModel: ApprovalsViewModel by viewModels()
+    private val checkoutViewModel: CheckoutViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -216,7 +218,16 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
         val order = orderViewModel.liveOrder.value!!
 
         lifecycleScope.launch{
-            paymentViewModel.getCloudPayment(order.id.replace("O", "P"), order.locationId)
+            val p = paymentRepository.getPayment()
+            val pid = order.id.replace("O_", "P_")
+            if (p == null){
+                paymentViewModel.getCloudPayment(pid, order.locationId)
+            }else{
+                if (p.id != pid){
+                    paymentViewModel.getCloudPayment(pid, order.locationId)
+                }
+            }
+
             if (paymentViewModel.livePayment.value == null){
                 val flatten = order.getAllOrderItems()
                 if (flatten.size > 0){

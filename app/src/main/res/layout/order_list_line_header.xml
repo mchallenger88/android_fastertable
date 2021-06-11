@@ -9,14 +9,14 @@
     </data>
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:background="@drawable/cell_grid">
 
         <TextView
             android:id="@+id/txt_order_number"
             style="@style/order_header_grid"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
             android:width="80dp"
             android:text="@string/string_order_number"
             app:layout_constraintStart_toStartOf="parent"

@@ -7,6 +7,19 @@
     <dimen name="company_login_widths">250dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
 
+    //Body Sizes
+    <dimen name="s48">48dp</dimen>
+    <dimen name="s34">34dp</dimen>
+    <dimen name="s28">28dp</dimen>
+    <dimen name="s26">26dp</dimen>
+    <dimen name="s24">24dp</dimen>
+    <dimen name="s21">21dp</dimen>
+    <dimen name="s20">20dp</dimen>
+    <dimen name="s18">18dp</dimen>
+    <dimen name="s16">16dp</dimen>
+    <dimen name="s14">14dp</dimen>
+    <dimen name="s12">12dp</dimen>
+    <dimen name="s10">10dp</dimen>
     //Text Sizes
     <dimen name="d48">48sp</dimen>
     <dimen name="d34">34sp</dimen>
@@ -41,6 +54,7 @@
     <dimen name="login_button_words">14sp</dimen>
 
     <dimen name="order_grid_cell">120dp</dimen>
+    <dimen name="order_grid_cell_small">100dp</dimen>
 
     <!--Floating action button-->
     <dimen name="design_fab_image_size" tools:override="true">36dp</dimen>

@@ -80,6 +80,11 @@ interface FastertableApi {
 
     @GET
     suspend fun initiateTransaction(@Url url: String): Response<CayanTransaction>
+
+    //Checkout
+    @POST("employees/getcheckout")
+    suspend fun getCheckout(@Body checkoutRequest: CheckoutRequest): Response<ConfirmEmployee>
+
 }
 
 

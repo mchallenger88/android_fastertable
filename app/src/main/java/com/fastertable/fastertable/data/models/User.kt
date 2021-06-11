@@ -47,7 +47,7 @@ data class UserClaim(
 data class UserClock(
     val employeeId: String,
     val clockInTime: Long,
-    val clockOutTime: Long,
+    val clockOutTime: Long?,
     val checkout: Boolean,
     val checkoutApproved: Boolean,
 ): Parcelable

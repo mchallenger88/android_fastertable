@@ -1,0 +1,459 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="viewModel"
+            type="com.fastertable.fastertable.ui.checkout.CheckoutViewModel" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#E8EAF6">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/checkout_fastertoolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/fasterToolBar"
+            android:paddingStart="40dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:popupTheme="@style/Theme.Fastertable.PopupOverlay"
+            tools:ignore="RtlSymmetry">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/layout_checkout_buttons"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <Button
+                    android:id="@+id/btn_show_orders"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:text="@string/checkout_orders"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/toolbar_button"
+                    android:onClick="@{() -> viewModel.showOrders()}"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:strokeColor="@color/white" />
+
+                <Button
+                    android:id="@+id/btn_show_payments"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:layout_marginStart="12dp"
+                    android:text="@string/checkout_payments"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/toolbar_button"
+                    android:onClick="@{() -> viewModel.showPayments()}"
+                    app:layout_constraintStart_toEndOf="@+id/btn_show_orders"
+                    app:layout_constraintTop_toTopOf="@+id/layout_checkout_buttons"
+                    app:strokeColor="@color/white" />
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+        </androidx.appcompat.widget.Toolbar>
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/card_checkout_summary"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:fitsSystemWindows="true"
+            android:paddingBottom="10dp"
+            app:cardBackgroundColor="#E8EAF6"
+            app:cardElevation="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/checkout_fastertoolbar"
+            app:layout_constraintVertical_bias="0.0">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/layout_checkout_summary"
+                android:layout_width="450dp"
+                android:layout_height="match_parent"
+                android:layout_marginStart="@dimen/default_margin"
+                android:layout_marginEnd="@dimen/default_margin"
+                android:background="#ffffff"
+                android:elevation="4dp">
+
+                <TextView
+                    android:id="@+id/txt_checkout_summary"
+                    style="@style/header26"
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:background="@color/primaryLightColor"
+                    android:gravity="center_horizontal|center_vertical"
+                    android:text="@string/checkout"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/layout_date_up_down"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:background="@color/primaryLightColor"
+                    app:layout_constraintTop_toBottomOf="@+id/txt_checkout_summary">
+
+                    <ImageButton
+                        android:id="@+id/btnDateBack"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:backgroundTint="@android:color/transparent"
+                        android:contentDescription="@string/date_back"
+                        app:layout_constraintBottom_toBottomOf="@+id/layout_date_up_down"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="@+id/layout_date_up_down"
+                        android:onClick="@{() -> viewModel.dateBack()}"
+                        app:srcCompat="@drawable/ic_baseline_arrow_back_ios_24" />
+
+                    <TextView
+                        android:id="@+id/textView2"
+                        style="@style/header26"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:gravity="center_horizontal|center_vertical"
+                        android:text="@string/date"
+                        android:textColor="@color/white"
+                        app:dateToString="@{viewModel.activeDate}"
+                        app:layout_constraintBottom_toTopOf="@+id/btnDateBack"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <ImageButton
+                        android:id="@+id/btn_date_forward"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:backgroundTint="@android:color/transparent"
+                        android:contentDescription="@string/date_forward"
+                        app:layout_constraintBottom_toBottomOf="@+id/layout_date_up_down"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        android:onClick="@{() -> viewModel.dateForward()}"
+                        app:srcCompat="@drawable/ic_baseline_arrow_forward_ios_24" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:paddingStart="@dimen/s12"
+                    android:paddingEnd="@dimen/s12"
+                    app:checkoutNotNull="@{viewModel.checkoutNull}"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/layout_date_up_down">
+
+                    <TextView
+                        android:id="@+id/txt_no_shifts"
+                        style="@style/list_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="0dp"
+                        android:text="@string/no_shifts_for_today"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"/>
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:paddingStart="@dimen/s20"
+                    android:paddingEnd="@dimen/s20"
+                    app:checkoutNull="@{viewModel.checkoutNull}"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/layout_date_up_down">
+
+                    <TextView
+                        android:id="@+id/txt_total_owed"
+                        style="@style/list_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="0dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:totalOwed="@{viewModel.checkout}" />
+
+                    <TextView
+                        android:id="@+id/txt_total_owed1"
+                        style="@style/list_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="0dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:priceDouble="@{viewModel.checkout.totalOwed}" />
+
+                    <TextView
+                        android:id="@+id/txt_total_sales"
+                        style="@style/list_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/txt_total_owed"
+                        android:text="@string/total_sales" />
+
+                    <TextView
+                        android:id="@+id/txt_total_sales1"
+                        style="@style/list_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="0dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/txt_total_owed1"
+                        app:priceDouble="@{viewModel.checkout.orderTotal}" />
+
+                    <TextView
+                        android:id="@+id/txt_cash_sales"
+                        style="@style/list_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/txt_total_sales"
+                        android:text="@string/cash_sales" />
+
+                    <TextView
+                        android:id="@+id/txt_cash_sales1"
+                        style="@style/list_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/txt_total_sales1"
+                        app:priceDouble="@{viewModel.checkout.cashSalesTotal}" />
+
+                    <TextView
+                        android:id="@+id/txt_credit_sales"
+                        style="@style/list_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/txt_cash_sales"
+                        android:text="@string/credit_sales" />
+
+                    <TextView
+                        android:id="@+id/txt_credit_sales1"
+                        style="@style/list_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/txt_cash_sales1"
+                        app:priceDouble="@{viewModel.checkout.creditSalesTotal}" />
+
+                    <TextView
+                        android:id="@+id/txt_total_tips"
+                        style="@style/list_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/txt_credit_sales"
+                        android:text="@string/total_tips" />
+
+                    <TextView
+                        android:id="@+id/txt_total_tips1"
+                        style="@style/list_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/txt_credit_sales1"
+                        app:priceDouble="@{viewModel.checkout.creditTips}" />
+
+                    <TextView
+                        android:id="@+id/txt_order_count"
+                        style="@style/list_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/txt_total_tips"
+                        android:text="@string/order_count" />
+
+                    <TextView
+                        android:id="@+id/txt_order_count1"
+                        style="@style/list_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/txt_total_tips1"
+                        app:intToString="@{viewModel.checkout.orders.size()}" />
+
+                    <TextView
+                        android:id="@+id/txt_clock_in"
+                        style="@style/list_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/txt_order_count"
+                        android:text="@string/clock_in"  />
+
+                    <TextView
+                        android:id="@+id/txt_clock_in1"
+                        style="@style/list_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/txt_order_count1"
+                        app:timeToString="@{viewModel.checkout.shifts.clockInTime}" />
+
+                    <TextView
+                        android:id="@+id/txt_clock_out"
+                        style="@style/list_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/txt_clock_in"
+                        app:txtClockOut="@{viewModel.checkout}" />
+
+                    <TextView
+                        android:id="@+id/txt_clock_out1"
+                        style="@style/list_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/txt_clock_in1"
+                        app:timeToString="@{viewModel.checkout.shifts.clockOutTime}" />
+
+                    <TextView
+                        android:id="@+id/txt_voids"
+                        style="@style/list_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/txt_clock_out"
+                        android:text="@string/total_voids" />
+
+                    <TextView
+                        android:id="@+id/txt_voids1"
+                        style="@style/list_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/txt_clock_out1"
+                        app:priceDouble="@{viewModel.checkout.voidTotal}" />
+
+                    <TextView
+                        android:id="@+id/txt_discounts"
+                        style="@style/list_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/txt_voids"
+                        android:text="@string/total_discounts" />
+
+                    <TextView
+                        android:id="@+id/txt_discounts1"
+                        style="@style/list_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/txt_voids1"
+                        app:priceDouble="@{viewModel.checkout.discountTotal}" />
+
+                    <TextView
+                        android:id="@+id/txt_bus_tipshare"
+                        style="@style/list_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/txt_discounts"
+                        android:text="@string/bus_tip_share" />
+
+                    <TextView
+                        android:id="@+id/txt_bus_tipshare1"
+                        style="@style/list_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/txt_discounts1"
+                        app:priceDouble="@{viewModel.checkout.busShare}" />
+
+                    <TextView
+                        android:id="@+id/txt_bar_tipshare"
+                        style="@style/list_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/txt_bus_tipshare"
+                        android:text="@string/bar_tip_share" />
+
+                    <TextView
+                        android:id="@+id/txt_bar_tipshare1"
+                        style="@style/list_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/txt_bus_tipshare1"
+                        app:priceDouble="@{viewModel.checkout.barShare}" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/checkout_view_card_view"
+            android:layout_width="600dp"
+            android:layout_height="0dp"
+            android:animateLayoutChanges="true"
+            app:cardBackgroundColor="#E8EAF6"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/checkout_fastertoolbar">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/op_list_layout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/white">
+
+                <TextView
+                    android:id="@+id/text_checkout_title"
+                    style="@style/view_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="40dp"
+                    android:fontFamily="@font/open_sans_semibold"
+                    android:textAlignment="center"
+                    app:checkoutTitle="@{viewModel.showOrders}"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/checkout_order_recycler"
+                    android:layout_width="wrap_content"
+                    android:layout_height="500dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/text_checkout_title"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    tools:listitem="@layout/checkout_order_list_line_item"/>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/checkout_payment_recycler"
+                    android:layout_width="wrap_content"
+                    android:layout_height="500dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/text_checkout_title"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    tools:listitem="@layout/checkout_payment_list_line_item"/>
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+        </androidx.cardview.widget.CardView>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

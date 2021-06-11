@@ -25,6 +25,7 @@ enum class AddSubtract{
 class OrderViewModel @Inject constructor (private val menusRepository: MenusRepository,
                                           private val loginRepository: LoginRepository,
                                           private val orderRepository: OrderRepository,
+                                          private val getPayment: GetPayment,
                                           private val saveOrder: SaveOrder,
                                           private val updateOrder: UpdateOrder) : BaseViewModel() {
 
@@ -122,7 +123,9 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
     fun initOrder(){
         viewModelScope.launch {
             if (currentOrderId.value != null){
-                _liveOrder.postValue(orderRepository.getOrderById(currentOrderId.value!!))
+                val id = currentOrderId.value!!
+                _liveOrder.postValue(orderRepository.getOrderById(id))
+                getPayment.getPayment(id.replace("O_", "P_"), settings.locationId)
             }else{
                 _liveOrder.postValue(orderRepository.getNewOrder())
             }

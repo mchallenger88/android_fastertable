@@ -10,6 +10,10 @@
             android:title="@string/dashboard"
         />
         <item
+            android:id="@+id/checkoutFragment"
+            android:icon="@drawable/ic_outline_assignment_turned_in_24"
+            android:title="@string/checkout" />
+        <item
             android:id="@+id/approvalsFragment"
             android:icon="@drawable/ic_outline_fact_check_24"
             android:title="@string/manager_approvals" />

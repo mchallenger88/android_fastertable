@@ -5,7 +5,7 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Paint
 import com.fastertable.fastertable.R
-import java.time.OffsetDateTime
+import java.time.*
 
 
 class GlobalUtils() {
@@ -20,6 +20,17 @@ class GlobalUtils() {
         val now: OffsetDateTime = OffsetDateTime.now()
         val startOfDay: OffsetDateTime = now.withHour(0).withMinute(0).withSecond(0)
         return startOfDay.toEpochSecond()
+    }
+
+    fun unixMidnight(date: LocalDate): Long{
+        val zoneId: ZoneId = ZoneId.systemDefault()
+        return date.atStartOfDay(zoneId).toEpochSecond()
+    }
+
+    fun getMidnightfromUnix(unix: Long): LocalDateTime{
+        val zoneId: ZoneId = ZoneId.systemDefault()
+        val date: LocalDate = Instant.ofEpochSecond(unix).atZone(zoneId).toLocalDate()
+        return date.atStartOfDay()
     }
 
     @SuppressLint("ResourceAsColor")

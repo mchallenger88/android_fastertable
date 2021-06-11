@@ -19,6 +19,9 @@
         <action
             android:id="@+id/action_nav_home_to_approvalsFragment"
             app:destination="@id/approvalsFragment" />
+        <action
+            android:id="@+id/action_nav_home_to_checkoutFragment"
+            app:destination="@id/checkoutFragment" />
     </fragment>
     <fragment
         android:id="@+id/orderFragment"
@@ -64,6 +67,15 @@
         android:name="com.fastertable.fastertable.ui.approvals.ApprovalsFragment"
         android:label="ApprovalsFragment"
         tools:layout="@layout/approvals_fragment"/>
+    <fragment
+        android:id="@+id/checkoutFragment"
+        android:name="com.fastertable.fastertable.ui.checkout.CheckoutFragment"
+        android:label="CheckoutFragment"
+        tools:layout="@layout/checkout_fragment">
+        <action
+            android:id="@+id/action_checkoutFragment_to_orderFragment"
+            app:destination="@id/orderFragment" />
+    </fragment>
 
 
 </navigation>

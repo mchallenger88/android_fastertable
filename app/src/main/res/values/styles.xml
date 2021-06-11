@@ -70,13 +70,29 @@
     <item name="android:layout_marginTop">@dimen/textView_margin</item>
     </style>
 
+    <style name="list_text" parent="default_text">
+        <item name="android:layout_marginTop">@dimen/s12</item>
+        <item name="android:textSize">@dimen/d24</item>
+        <item name="android:textColor">@color/default_text_color</item>
+        <item name="fontFamily">@font/open_sans_semibold</item>
+    </style>
+
     <style name="order_grid" parent="default_font">
         <item name="android:textSize">@dimen/d21</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textColor">@color/default_text_color</item>
-        <item name="android:layout_marginTop">@dimen/textView_margin</item>
         <item name="android:width">@dimen/order_grid_cell</item>
         <item name="android:padding">@dimen/grid_cell_padding</item>
+    </style>
+
+    <style name="order_grid_small" parent="order_grid">
+        <item name="android:width">@dimen/order_grid_cell_small</item>
+    </style>
+
+    <style name="order_grid_small_error" parent="order_grid">
+        <item name="android:width">@dimen/order_grid_cell_small</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="backgroundColor">@color/secondaryLightColor</item>
     </style>
 
     <style name="order_header_grid" parent="default_font">
@@ -84,9 +100,14 @@
         <item name="android:textStyle">bold</item>
         <item name="android:textColor">@color/white</item>
         <item name="android:background">@color/primaryColor</item>
-        <item name="android:layout_marginTop">@dimen/textView_margin</item>
         <item name="android:width">@dimen/order_grid_cell</item>
         <item name="android:padding">@dimen/grid_cell_padding</item>
+    </style>
+
+    <style name="order_header_grid_small" parent="order_header_grid">
+        <item name="android:textSize">@dimen/d18</item>
+        <item name="android:width">@dimen/order_grid_cell_small</item>
+
     </style>
 
     <style name="edit_hint" parent="default_font">
@@ -177,6 +198,12 @@
 
     <style name="header" parent="default_font">
         <item name="android:textSize">@dimen/d24</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="header26" parent="default_font">
+        <item name="android:textSize">@dimen/d26</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textColor">@color/white</item>
     </style>

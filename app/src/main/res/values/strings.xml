@@ -186,4 +186,30 @@
     <string name="cancel_modify_price">Cancel Modify Price</string>
     <string name="enter_the_new_price">Enter the new price:</string>
     <string name="new_price">New Price</string>
+
+    //Checkout
+    <string name="checkout">Checkout</string>
+    <string name="today_s_orders">Today\'s Orders</string>
+    <string name="date_back">Date Back</string>
+    <string name="date">Date</string>
+    <string name="date_forward">Date Forward</string>
+    <string name="total_owed">Total Owed</string>
+    <string name="total_owed_you">Total Owed to you:</string>
+    <string name="total_owed_house">Total Owed from you:</string>
+    <string name="total_sales">Total Sales:</string>
+    <string name="cash_sales">Cash Sales:</string>
+    <string name="credit_sales">Credit Sales:</string>
+    <string name="order_count">Order Count:</string>
+    <string name="total_tips">Total Tips:</string>
+    <string name="clock_in">Clock In:</string>
+    <string name="clock_out">Clock Out:</string>
+    <string name="total_voids">Voids:</string>
+    <string name="total_discounts">Discounts:</string>
+    <string name="bus_tip_share">Busboy Tip Share:</string>
+    <string name="bar_tip_share">Bar Tip Share:</string>
+    <string name="still_on_shift">Still on Shift</string>
+    <string name="no_shifts_for_today">No shifts for today</string>
+    <string name="checkout_orders">Checkout Orders</string>
+    <string name="checkout_payments">Checkout Payments</string>
+    <string name="checkout_total">Total</string>
 </resources>

@@ -51,7 +51,7 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
                                             private val paymentRepository: PaymentRepository): BaseViewModel() {
 
     private lateinit var user: OpsAuth
-    public lateinit var settings: Settings
+    var settings: Settings = loginRepository.getSettings()!!
 
     private val _order = MutableLiveData<Order>()
     val liveOrder: LiveData<Order>
@@ -117,10 +117,6 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
     val modifyPriceType: LiveData<String>
         get() = _modifyPriceType
 
-    init{
-        settings = loginRepository.getSettings()!!
-    }
-
     fun payNow(){
         _payment.value?.tickets?.forEach{ t ->
             if (t.uiActive && cashAmount.value != null){
@@ -159,7 +155,7 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
             getPayment.getPayment(id, lid)
             val payment = paymentRepository.getPayment()
             if (payment != null){
-                _payment.postValue(payment!!)
+                _payment.postValue(payment)
             }
 
         }
