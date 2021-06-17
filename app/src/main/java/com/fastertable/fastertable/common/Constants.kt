@@ -2,6 +2,7 @@ package com.fastertable.fastertable.common
 
 object Constants {
     const val BASE_URL = "https://datadev.fastertable.com/api/"
+    const val DEBUG_BASE_URL = "https://localhost:5001/api/"
     const val TERMINAL_ERROR =  "There was an error communicating with the card terminal."
     const val STAGING_ERROR = "Invalid credentials. Please check your settings and ensure the Name, Site ID, and Key are entered correctly."
     const val UNKNOWN_ERROR = "An unknown error occurred during processing"

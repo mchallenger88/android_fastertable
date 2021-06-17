@@ -2,9 +2,7 @@ package com.fastertable.fastertable.data.repository
 
 
 import android.app.Application
-import com.fastertable.fastertable.api.InitiateCreditTransactionUseCase
-import com.fastertable.fastertable.api.StageResponseUseCase
-import com.fastertable.fastertable.api.StartCreditUseCase
+import com.fastertable.fastertable.api.*
 import com.fastertable.fastertable.data.models.*
 import javax.inject.Inject
 
@@ -45,6 +43,29 @@ class InitiateCreditTransaction @Inject constructor(private val initiateCreditTr
     suspend fun initiateTransaction(url: String): CayanTransaction{
         val result = initiateCreditTransactionUseCase.initiateTransaction(url)
         if (result is InitiateCreditTransactionUseCase.Result.Success){
+            return result.response
+        }else{
+            throw RuntimeException("fetch failed")
+        }
+    }
+}
+
+class AdjustTipTransaction @Inject constructor(private val adjustTipUseCase: AdjustTipUseCase){
+    suspend fun adjustTip(request: AdjustTipTest): Any{
+        val result = adjustTipUseCase.tipAdjust(request)
+        println(result)
+        if (result is AdjustTipUseCase.Result.Success){
+            return result.response
+        }else{
+            throw RuntimeException("fetch failed")
+        }
+    }
+}
+
+class CaptureTicketTransaction @Inject constructor(private val captureRequestUseCase: CaptureRequestUseCase){
+    suspend fun capture(request: CaptureRequest): TransactionResponse45{
+        val result = captureRequestUseCase.capture(request)
+        if (result is CaptureRequestUseCase.Result.Success){
             return result.response
         }else{
             throw RuntimeException("fetch failed")

@@ -1,15 +1,12 @@
 package com.fastertable.fastertable.ui.login.restaurant
 
 import androidx.lifecycle.*
-import com.fastertable.fastertable.api.GetMenusUseCase
-import com.fastertable.fastertable.api.GetSettingsUseCase
 import com.fastertable.fastertable.data.models.Company
 import com.fastertable.fastertable.data.models.Location
 import com.fastertable.fastertable.data.models.Settings
 import com.fastertable.fastertable.data.repository.GetMenus
 import com.fastertable.fastertable.data.repository.GetRestaurantSettings
 import com.fastertable.fastertable.data.repository.LoginRepository
-import com.fastertable.fastertable.data.repository.MenusRepository
 import com.fastertable.fastertable.utils.ApiStatus
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -116,6 +113,11 @@ class RestaurantLoginViewModel @Inject constructor(
                 getRestaurantSettings.getRestaurantSettings(restaurant.value!!.id)
                 val settings: Settings? = loginRepository.getSettings()
                 _settings.postValue(settings!!)
+
+                val terminal = loginRepository.getTerminal()
+                if (terminal != null){
+                    loginRepository.saveTerminal(settings.terminals.find{ it -> it.terminalId == terminal.terminalId}!!)
+                }
                 saveTaxRate(settings)
 
                 getMenus.getAllMenus(restaurant.value!!.id)

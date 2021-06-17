@@ -10,12 +10,12 @@ import javax.inject.Inject
 
 @HiltViewModel
 class TerminalSelectViewModel @Inject constructor(private val loginRepository: LoginRepository) : ViewModel() {
-    private val _settings = MutableLiveData<Settings>()
-    val settings: LiveData<Settings>
+    private val _settings = MutableLiveData<Settings?>()
+    val settings: LiveData<Settings?>
         get() = _settings
 
-    private val _terminal = MutableLiveData<Terminal>()
-    val terminal: LiveData<Terminal>
+    private val _terminal = MutableLiveData<Terminal?>()
+    val terminal: LiveData<Terminal?>
         get() = _terminal
 
     init{
@@ -23,22 +23,20 @@ class TerminalSelectViewModel @Inject constructor(private val loginRepository: L
         checkTerminal()
     }
 
-    @Suppress("UNNECESSARY_NOT_NULL_ASSERTION")
     private fun getSettings(){
         viewModelScope.launch {
             val set = loginRepository.getSettings()
             if (set != null){
-                _settings.postValue(set!!)
+                _settings.postValue(set)
             }
         }
     }
 
-    @Suppress("UNNECESSARY_NOT_NULL_ASSERTION")
     private fun checkTerminal(){
         viewModelScope.launch {
             val term = loginRepository.getTerminal()
             if (term != null){
-                _terminal.postValue(term!!)
+                _terminal.postValue(term)
             }
         }
     }

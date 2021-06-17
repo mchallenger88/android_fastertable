@@ -33,7 +33,7 @@ class AppModule {
         }.build()
 
         return Retrofit.Builder()
-            .baseUrl(urlProvider.getBaseUrl1())
+            .baseUrl(urlProvider.getBaseUrl())
             .addConverterFactory( NullOnEmptyConverterFactory())
             .addConverterFactory(GsonConverterFactory.create())
             .client(client)

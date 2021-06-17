@@ -6,8 +6,10 @@ import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
+import com.fastertable.fastertable.R
 import com.fastertable.fastertable.data.models.Order
 import com.fastertable.fastertable.data.models.OrderItem
+import com.fastertable.fastertable.data.models.PayTicket
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
@@ -15,7 +17,7 @@ import java.time.format.DateTimeFormatter
 fun orderTypeTableNumber(textView: TextView, order: Order?) {
     if (order != null){
         if (order.orderType == "Takeout"){
-            textView.text = order.takeOutCustomer?.name
+            textView.text = textView.context.getString(R.string.takeout)
         }
 
         if (order.orderType == "Counter"){
@@ -24,6 +26,24 @@ fun orderTypeTableNumber(textView: TextView, order: Order?) {
 
         if (order.orderType == "Table"){
             textView.text = order.tableNumber.toString()
+        }
+    }
+
+}
+
+@BindingAdapter("payTicketTableNumber")
+fun payTicketTableNumber(textView: TextView, payTicket: PayTicket?) {
+    if (payTicket != null){
+        if (payTicket.payment.orderType == "Takeout"){
+            textView.text = textView.context.getString(R.string.takeout)
+        }
+
+        if (payTicket.payment.orderType == "Counter"){
+            textView.text = ""
+        }
+
+        if (payTicket.payment.orderType == "Table"){
+            textView.text = payTicket.payment.tableNumber.toString()
         }
     }
 

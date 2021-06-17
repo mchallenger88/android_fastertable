@@ -3,6 +3,7 @@ package com.fastertable.fastertable.adapters
 import android.content.res.ColorStateList
 import android.view.View
 import android.widget.Button
+import android.widget.ImageButton
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.databinding.BindingAdapter
@@ -61,6 +62,33 @@ fun getTicketTax(textView: TextView, payment: Payment?){
     }
 }
 
+@BindingAdapter("ticketGratuity")
+fun ticketGratuity(textView: TextView, payment: Payment?){
+    payment?.tickets?.forEach { item ->
+        if (item.uiActive){
+            if (item.gratuity != 0.00){
+                textView.text = textView.context.getString(R.string.tax_price, "%.${2}f".format(item.gratuity))
+                textView.visibility = View.VISIBLE
+            }else{
+                textView.visibility = View.GONE
+            }
+        }
+    }
+}
+
+@BindingAdapter("ticketGratuityText")
+fun ticketGratuityText(textView: TextView, payment: Payment?){
+    payment?.tickets?.forEach { item ->
+        if (item.uiActive){
+            if (item.gratuity != 0.00){
+                textView.visibility = View.VISIBLE
+            }else{
+                textView.visibility = View.GONE
+            }
+        }
+    }
+}
+
 @BindingAdapter("ticketTotal")
 fun getTicketTotal(textView: TextView, payment: Payment?){
     payment?.tickets?.forEach { item ->
@@ -93,12 +121,15 @@ fun setPaidInFull(textView: TextView, payment: Payment){
 }
 
 @BindingAdapter("approvalPending")
-fun showApprovalPending(textView: TextView, payment: Payment){
-    if (payment.statusApproval == "Pending"){
-        textView.visibility = View.VISIBLE
-    }else{
-        textView.visibility = View.GONE
+fun showApprovalPending(textView: TextView, payment: Payment?){
+    if (payment != null){
+        if (payment.statusApproval == "Pending"){
+            textView.visibility = View.VISIBLE
+        }else{
+            textView.visibility = View.GONE
+        }
     }
+
 }
 
 @BindingAdapter("disablePayButton")
@@ -114,8 +145,13 @@ fun disablePayButton(button: Button, value: String?){
             val white = ContextCompat.getColor(button.context, R.color.white)
             button.setTextColor(ColorStateList.valueOf(white))
         }
-
     }
+}
 
+@BindingAdapter("hideItemMore")
+fun hideItemMore(imageButton: ImageButton, payment: Payment?){
+    if (payment != null && payment.closed){
+        imageButton.visibility = View.GONE
+    }
 }
 

@@ -78,13 +78,6 @@ class GetPaymentUseCase @Inject constructor(private val fastertableApi: Fasterta
                     }
                     else ->  return@withContext Result.Failure
                 }
-
-//                if (response.isSuccessful && response.body() != null){
-//                    return@withContext Result.Success(response.body()!!)
-//                }
-//                else{
-//                    return@withContext Result.Failure
-//                }
             }catch (t: Throwable){
                 if (t !is CancellationException){
                     return@withContext Result.Failure

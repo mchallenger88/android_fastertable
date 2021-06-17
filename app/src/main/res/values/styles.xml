@@ -268,12 +268,17 @@
     </style>
 
     <style name="error_style" parent="default_font">
-        <item name="android:textColor">@color/secondaryDarkColor</item>
+        <item name="android:textColor">@color/errorColor</item>
         <item name="android:textSize">@dimen/d34</item>
     </style>
 
     <style name="error_style_small" parent="error_style">
         <item name="android:textSize">@dimen/d26</item>
+    </style>
+
+    <style name="error_style_extra_small" parent="error_style">
+        <item name="android:textSize">@dimen/d21</item>
+        <item name="android:textStyle">italic</item>
     </style>
 
     <style name="bottom_sheet_title" parent="large_title_bold">

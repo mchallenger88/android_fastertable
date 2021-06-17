@@ -3,6 +3,7 @@ package com.fastertable.fastertable.common.base
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.fastertable.fastertable.utils.ResourceHelper
 
 abstract class BaseViewModel: ViewModel() {
     private val observableEvents = MutableLiveData<ViewModelEvent>()

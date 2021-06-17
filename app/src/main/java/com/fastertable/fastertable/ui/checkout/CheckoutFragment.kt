@@ -15,6 +15,7 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class CheckoutFragment : BaseFragment() {
     private val viewModel: CheckoutViewModel by activityViewModels()
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -23,14 +24,16 @@ class CheckoutFragment : BaseFragment() {
         val binding = CheckoutFragmentBinding.inflate(inflater)
         binding.lifecycleOwner = viewLifecycleOwner
         binding.viewModel = viewModel
+        viewModel.getCheckout()
         bindingObservables(binding)
         return binding.root
     }
 
     private fun bindingObservables(binding: CheckoutFragmentBinding){
         val orderAdapter = CheckoutOrdersAdapter(CheckoutOrderListListener {
-//                orderId ->  viewModel.onOrderClicked(orderId)
+                orderId ->  viewModel.setPaymentThenNav(orderId)
         })
+
         val headerAdapter = CheckoutOrderHeaderAdapter()
         val concatAdapter = ConcatAdapter(headerAdapter, orderAdapter)
         val paymentAdapter = CheckoutPaymentsAdapter(CheckoutPaymentListListener {
@@ -40,10 +43,11 @@ class CheckoutFragment : BaseFragment() {
         binding.checkoutOrderRecycler.adapter = concatAdapter
         binding.checkoutPaymentRecycler.adapter = paymentAdapter
 
+
         viewModel.checkout.observe(viewLifecycleOwner, {it ->
             if (it != null){
                 viewModel.separateTickets(it)
-                orderAdapter.submitList(it.orders)
+                orderAdapter.submitList(it.payTickets)
                 paymentAdapter.submitList(it.payments)
             }
         })

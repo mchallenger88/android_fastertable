@@ -2,6 +2,7 @@ package com.fastertable.fastertable.adapters
 
 import android.content.res.ColorStateList
 import android.view.View
+import android.widget.Button
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
@@ -9,6 +10,7 @@ import androidx.databinding.BindingAdapter
 import com.fastertable.fastertable.R
 import com.fastertable.fastertable.data.models.ConfirmEmployee
 import com.fastertable.fastertable.data.models.Order
+import com.fastertable.fastertable.data.models.Payment
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
@@ -67,14 +69,33 @@ fun orderClosed(textView: TextView, order: Order) {
     }
 }
 
+@BindingAdapter("tipCaptureDisabled")
+fun tipCaptureDisabled(button: Button, payment: Payment?) {
+    button.isEnabled = true
+    payment?.tickets?.forEach {
+        if (it.uiActive){
+            it.creditCardTransactions.forEach { cc ->
+                if (cc.captureTotal != null){
+                    button.isEnabled = false
+                }
+            }
+        }
+    }
+}
 
-
-//@BindingAdapter("totalTips")
-//fun totalTips(textView: TextView, ce: ConfirmEmployee?) {
-//    if (ce != null){
-//        textView.text = textView.context.getString(R.string.total_tips, "%.${2}f".format(ce.creditTips))
-//    }
-//}
+@BindingAdapter("tipCapturedError")
+fun tipCapturedError(textView: TextView, payment: Payment?) {
+    textView.visibility = View.GONE
+    payment?.tickets?.forEach {
+        if (it.uiActive){
+            it.creditCardTransactions.forEach { cc ->
+                if (cc.captureTotal != null){
+                    textView.visibility = View.VISIBLE
+                }
+            }
+        }
+    }
+}
 
 //@BindingAdapter("orderCount")
 //fun orderCount(textView: TextView, ce: ConfirmEmployee?) {

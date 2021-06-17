@@ -212,4 +212,14 @@
     <string name="checkout_orders">Checkout Orders</string>
     <string name="checkout_payments">Checkout Payments</string>
     <string name="checkout_total">Total</string>
+    <string name="add_tip">Add Tip</string>
+    <string name="add_a_tip_to_this_ticket">Enter the tip amount:</string>
+    <string name="tip">Tip</string>
+    <string name="return_to_checkout">Return to Checkout</string>
+    <string name="gratuity">Gratuity:</string>
+    <string name="close_shift">Close Shift</string>
+    <string name="checkout_complete">Checkout Complete</string>
+    <string name="your_checkout_is_complete">Your checkout is complete. You may now clock out.</string>
+    <string name="takeout">Takeout</string>
+    <string name="ticket_captured">This ticket has been captured. It can not be adjusted</string>
 </resources>

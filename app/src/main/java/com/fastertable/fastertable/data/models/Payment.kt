@@ -222,7 +222,7 @@ data class Ticket(
     val deliveryFee: Double,
     var paymentTotal: Double = 0.00,
     val stageResponse: ArrayList<StageResponse>,
-    val creditCardTransactions: ArrayList<CreditCardTransaction>,
+    var creditCardTransactions: ArrayList<CreditCardTransaction>,
     var partialPayment: Boolean,
     var uiActive: Boolean = false
 
@@ -240,19 +240,35 @@ data class Ticket(
             tax = subTotal.times(taxRate).round(2)
             total = subTotal.plus(tax)
         }
+
+        fun addTip(tip: Double, taxRate: Double){
+            this.gratuity = tip
+            recalculateAfterApproval(taxRate)
+            this.total = this.total.plus(tip)
+            this.paymentTotal = this.total;
+        }
     }
 
 @Parcelize
 data class CreditCardTransaction(
     val ticketId: Int,
     val creditTotal: Double?,
-    val captureTotal: Double?,
+    var captureTotal: String?,
     val refundTotal: Double?,
     val voidTotal: Double?,
     val creditTransaction: CayanTransaction,
-    val captureTransaction: TransactionResponse45?,
+    var captureTransaction: CaptureResponse?,
     val refundTransaction: TransactionResponse45?,
     val voidTransaction: TransactionResponse45?,
+): Parcelable
+
+@Parcelize
+data class CaptureResponse(
+    var ApprovalStatus: String,
+    var Token: String,
+    var AuthorizationCode: String,
+    var TransactionDate: String,
+    var Amount: String
 ): Parcelable
 
 @Parcelize
@@ -457,8 +473,8 @@ data class stripePayment(
 //)
 @Parcelize
 data class PayTicket(
-    val p: Payment,
-    val t: Ticket
+    var payment: Payment,
+    var ticket: Ticket
 ): Parcelable
 
 @Parcelize
@@ -478,4 +494,10 @@ data class OrderPayTicket(
 data class OrderPayTID(
     val op: OrderPayment,
     val ti: Int,
+): Parcelable
+
+@Parcelize
+data class TipAdjustRequest(
+    val credentials: MerchantCredentials,
+    val tipRequest: TipRequest
 ): Parcelable

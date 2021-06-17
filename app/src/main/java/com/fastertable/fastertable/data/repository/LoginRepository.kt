@@ -89,6 +89,7 @@ class LoginRepository @Inject constructor(private val app: Application) {
         val gson = Gson()
         val jsonString = gson.toJson(settings)
         val file= File(app.filesDir, "settings.json")
+        file.delete()
         file.writeText(jsonString)
     }
 

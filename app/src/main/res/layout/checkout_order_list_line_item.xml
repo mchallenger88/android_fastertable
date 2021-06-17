@@ -4,8 +4,8 @@
     xmlns:android="http://schemas.android.com/apk/res/android" >
     <data>
         <variable
-            name="order"
-            type="com.fastertable.fastertable.data.models.Order" />
+            name="payTicket"
+            type="com.fastertable.fastertable.data.models.PayTicket" />
 
         <variable
             name="clickListener"
@@ -15,7 +15,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@drawable/cell_grid"
-        android:onClick="@{() -> clickListener.onClick(order)}">
+        android:onClick="@{() -> clickListener.onClick(payTicket)}">
 
         <TextView
             android:id="@+id/txt_order_number"
@@ -24,7 +24,7 @@
             android:layout_height="wrap_content"
             android:width="80dp"
             android:text="@string/string_order_number"
-            app:intToString="@{order.orderNumber}"
+            app:intToString="@{payTicket.payment.orderNumber}"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -33,7 +33,7 @@
             style="@style/order_grid_small"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@{order.orderType}"
+            android:text="@{payTicket.payment.orderType}"
             app:layout_constraintStart_toEndOf="@+id/txt_order_number"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -45,7 +45,7 @@
             android:text="@string/string_table_number"
             app:layout_constraintStart_toEndOf="@+id/txt_order_type"
             app:layout_constraintTop_toTopOf="parent"
-            app:orderTypeTableNumber="@{order}" />
+            app:payTicketTableNumber="@{payTicket}" />
 
         <TextView
             android:id="@+id/txt_start_time"
@@ -55,10 +55,10 @@
             android:text="@string/string_start_time"
             app:layout_constraintStart_toEndOf="@+id/txt_table_number"
             app:layout_constraintTop_toTopOf="parent"
-            app:timeStamp="@{order.startTime}" />
+            app:timeStamp="@{payTicket.payment.orderStartTime}" />
 
         <TextView
-            android:id="@+id/txt_close_time"
+            android:id="@+id/txt_order_total"
             style="@style/order_grid_small"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -66,7 +66,7 @@
             android:paddingEnd="@dimen/s26"
             app:layout_constraintStart_toEndOf="@+id/txt_start_time"
             app:layout_constraintTop_toTopOf="parent"
-            app:priceDouble="@{order.getOrderTotal()}"
+            app:priceDouble="@{payTicket.ticket.paymentTotal}"
             tools:ignore="RtlSymmetry" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 

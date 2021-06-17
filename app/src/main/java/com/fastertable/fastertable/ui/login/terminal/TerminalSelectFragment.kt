@@ -35,7 +35,7 @@ class TerminalSelectFragment : BaseFragment()  {
         binding.viewModel = viewModel
 
         viewModel.settings.observe(viewLifecycleOwner, Observer { it ->
-            it.terminals.forEach { terminal ->
+            it?.terminals?.forEach { terminal ->
                 val restChip = Chip(activity)
                 restChip.id = ViewCompat.generateViewId();
                 restChip.text = terminal.terminalName

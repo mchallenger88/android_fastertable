@@ -37,27 +37,12 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="6dp"
-                    android:text="@string/checkout_orders"
+                    android:text="@string/close_shift"
                     android:textColor="@color/white"
                     android:textSize="@dimen/toolbar_button"
-                    android:onClick="@{() -> viewModel.showOrders()}"
+                    android:onClick="@{() -> viewModel.captureTickets()}"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:strokeColor="@color/white" />
-
-                <Button
-                    android:id="@+id/btn_show_payments"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="6dp"
-                    android:layout_marginStart="12dp"
-                    android:text="@string/checkout_payments"
-                    android:textColor="@color/white"
-                    android:textSize="@dimen/toolbar_button"
-                    android:onClick="@{() -> viewModel.showPayments()}"
-                    app:layout_constraintStart_toEndOf="@+id/btn_show_orders"
-                    app:layout_constraintTop_toTopOf="@+id/layout_checkout_buttons"
                     app:strokeColor="@color/white" />
 
 

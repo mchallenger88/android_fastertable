@@ -23,6 +23,8 @@ import com.fastertable.fastertable.data.repository.LoginRepository
 import com.fastertable.fastertable.data.repository.OrderRepository
 import com.fastertable.fastertable.data.repository.PaymentRepository
 import com.fastertable.fastertable.ui.approvals.ApprovalsViewModel
+import com.fastertable.fastertable.ui.checkout.AddTipFragmentDirections
+import com.fastertable.fastertable.ui.checkout.CheckoutFragmentDirections
 import com.fastertable.fastertable.ui.checkout.CheckoutViewModel
 import com.fastertable.fastertable.ui.dialogs.*
 import com.fastertable.fastertable.ui.home.HomeFragmentDirections
@@ -158,6 +160,32 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
         paymentViewModel.showTicketItemMore.observe(this, {it ->
             if (it){
                 TicketItemMoreBottomSheet().show(supportFragmentManager, TicketItemMoreBottomSheet.TAG)
+            }
+        })
+
+        checkoutViewModel.navToTip.observe(this, {
+            if (it == "Tip"){
+                navController.navigate(CheckoutFragmentDirections.actionCheckoutFragmentToAddTipFragment())
+                checkoutViewModel.navigationEnd()
+            }
+
+            if (it.startsWith("O_")){
+                orderViewModel.clearOrder()
+                paymentViewModel.clearPayment()
+                orderViewModel.setCurrentOrderId(it)
+                navController.navigate(CheckoutFragmentDirections.actionCheckoutFragmentToOrderFragment())
+                checkoutViewModel.navigationEnd()
+            }
+
+            if (it == "Checkout"){
+                navController.navigate(AddTipFragmentDirections.actionAddTipFragmentToCheckoutFragment())
+                checkoutViewModel.navigationEnd()
+            }
+        })
+
+        checkoutViewModel.checkoutComplete.observe(this, {
+            if (it != ""){
+                CheckoutDialogBottomSheet().show(supportFragmentManager, CheckoutDialogBottomSheet.TAG)
             }
         })
 

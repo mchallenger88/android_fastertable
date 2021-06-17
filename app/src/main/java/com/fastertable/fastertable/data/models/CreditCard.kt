@@ -333,28 +333,29 @@ data class Capture(
     val InvoiceNumber: String,
     val RegisterNumber: String,
     val MerchantTransactionId: String,
-    val CardAcceptorTerminalId: Int,
+    val CardAcceptorTerminalId: String?,
 ): Parcelable
 @Parcelize
 data class TransactionResponse45(
-    val ApprovalStatus: String,
-    val Token: String,
-    val AuthorizationCode: String,
-    val TransactionDate: String,
-    val Amount: Double,
-    val RemainingCardBalance: Double,
-    val CardNumber: String,
-    val Cardholder: String,
-    val CardType: String,
-    val FsaCard: String,
-    val ReaderEntryMode: String,
-    val AvsResponse: String,
-    val CvResponse: String,
-    val ErrorMessage: String,
-    val ExtraData: String,
-    val FraudScoring: String,
-    val Rfmiq: String,
+    var ApprovalStatus: String,
+    var Token: String,
+    var AuthorizationCode: String,
+    var TransactionDate: String,
+    var Amount: String,
+    var RemainingCardBalance: String,
+    var CardNumber: String,
+    var Cardholder: String,
+    var CardType: String,
+    var FsaCard: String,
+    var ReaderEntryMode: String,
+    var AvsResponse: String,
+    var CvResponse: String,
+    var ErrorMessage: String,
+    var ExtraData: String,
+    var FraudScoring: String?,
+    var Rfmiq: String?,
 ): Parcelable
+
 @Parcelize
 data class RefundRequest(
     val credentials: MerchantCredentials,
@@ -469,6 +470,15 @@ data class AdditionalResponseParameters(
 data class AdjustTip(
     val credentials: MerchantCredentials,
     val tipRequest: TipRequest,
+): Parcelable
+
+@Parcelize
+data class AdjustTipTest(
+    val MerchantName: String,
+    val MerchantSiteId: String,
+    val MerchantKey: String,
+    val Token: String,
+    val Amount: String,
 ): Parcelable
 
 @Parcelize

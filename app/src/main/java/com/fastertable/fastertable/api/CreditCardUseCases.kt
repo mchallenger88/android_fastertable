@@ -1,9 +1,6 @@
 package com.fastertable.fastertable.api
 
-import com.fastertable.fastertable.data.models.CayanCardTransaction
-import com.fastertable.fastertable.data.models.CayanTransaction
-import com.fastertable.fastertable.data.models.StageResponse
-import com.fastertable.fastertable.data.models.TerminalResponse
+import com.fastertable.fastertable.data.models.*
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -90,6 +87,58 @@ class InitiateCreditTransactionUseCase @Inject constructor(private val fastertab
         return withContext(Dispatchers.IO){
             try{
                 val response = fastertableApi.initiateTransaction(url)
+                if (response.isSuccessful && response.body() != null){
+                    return@withContext Result.Success(response.body()!!)
+                }else{
+                    return@withContext Result.Failure
+                }
+            }catch (t: Throwable){
+                if (t !is CancellationException){
+                    return@withContext  Result.Failure
+                }else{
+                    throw t
+                }
+            }
+        }
+    }
+}
+
+class AdjustTipUseCase @Inject constructor(private val fastertableApi: FastertableApi) {
+    sealed class Result {
+        data class Success(val response: Any) : Result()
+        object Failure: Result()
+    }
+
+    suspend fun tipAdjust(transaction: AdjustTipTest): Result {
+        return withContext(Dispatchers.IO){
+            try{
+                val response = fastertableApi.tipAdjustment(transaction)
+                if (response.isSuccessful && response.body() != null){
+                    return@withContext Result.Success(response.body()!!)
+                }else{
+                    return@withContext Result.Failure
+                }
+            }catch (t: Throwable){
+                if (t !is CancellationException){
+                    return@withContext  Result.Failure
+                }else{
+                    throw t
+                }
+            }
+        }
+    }
+}
+
+class CaptureRequestUseCase @Inject constructor(private val fastertableApi: FastertableApi) {
+    sealed class Result {
+        data class Success(val response: TransactionResponse45) : Result()
+        object Failure: Result()
+    }
+
+    suspend fun capture(transaction: CaptureRequest): Result {
+        return withContext(Dispatchers.IO){
+            try{
+                val response = fastertableApi.captureTicket(transaction)
                 if (response.isSuccessful && response.body() != null){
                     return@withContext Result.Success(response.body()!!)
                 }else{
