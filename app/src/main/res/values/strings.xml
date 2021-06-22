@@ -222,4 +222,7 @@
     <string name="your_checkout_is_complete">Your checkout is complete. You may now clock out.</string>
     <string name="takeout">Takeout</string>
     <string name="ticket_captured">This ticket has been captured. It can not be adjusted</string>
+    <string name="clockout">Clockout</string>
+    <string name="end_your_shift">Have you checked out? You must checkout before clocking out. Clocking out will end your shift:</string>
+    <string name="end_your_shift_non_server">Clocking out will end your shift:</string>
 </resources>

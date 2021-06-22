@@ -3,14 +3,8 @@ package com.fastertable.fastertable.data.repository
 import android.app.Application
 import android.content.Context
 import com.fastertable.fastertable.api.*
-import com.fastertable.fastertable.data.*
-import com.fastertable.fastertable.data.models.Company
-import com.fastertable.fastertable.data.models.OpsAuth
-import com.fastertable.fastertable.data.models.Settings
-import com.fastertable.fastertable.data.models.Terminal
+import com.fastertable.fastertable.data.models.*
 import com.google.gson.Gson
-import kotlinx.coroutines.Dispatchers.IO
-import kotlinx.coroutines.withContext
 import java.io.BufferedReader
 import java.io.File
 import javax.inject.Inject
@@ -56,6 +50,18 @@ class LoginUser @Inject constructor(private val loginUserUseCase: LoginUserUseCa
             user = result.user
             loginRepository.saveUserLogin(user)
             return user
+        }else{
+            throw RuntimeException("fetch failed")
+        }
+    }
+}
+
+class ClockoutUser @Inject constructor(private val clockoutUseCase: ClockoutUseCase, private val loginRepository: LoginRepository){
+    suspend fun clockout(clockoutRequest: ClockOutCredentials){
+        val result = clockoutUseCase.clockOut(clockoutRequest)
+
+        if (result is ClockoutUseCase.Result.Success){
+            loginRepository.clockoutUser()
         }else{
             throw RuntimeException("fetch failed")
         }
@@ -110,6 +116,14 @@ class LoginRepository @Inject constructor(private val app: Application) {
         val jsonString = gson.toJson(user)
         val file= File(app.filesDir, "user.json")
         file.writeText(jsonString)
+    }
+
+    fun clockoutUser(){
+        val gson = Gson()
+        val file = File(app.filesDir, "user.json")
+        if (file.exists()){
+            file.delete()
+        }
     }
 
     fun getOpsUser(): OpsAuth?{

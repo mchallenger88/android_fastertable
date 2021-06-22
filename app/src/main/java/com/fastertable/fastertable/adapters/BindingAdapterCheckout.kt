@@ -11,6 +11,7 @@ import com.fastertable.fastertable.R
 import com.fastertable.fastertable.data.models.ConfirmEmployee
 import com.fastertable.fastertable.data.models.Order
 import com.fastertable.fastertable.data.models.Payment
+import com.fastertable.fastertable.data.models.UserClock
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
@@ -124,6 +125,11 @@ fun txtClockOut(textView: TextView, ce: ConfirmEmployee?) {
             textView.text = textView.context.getString(R.string.still_on_shift)
         }
     }
+}
+
+@BindingAdapter("clockoutError")
+fun clockoutError(textView: TextView, userClock: UserClock){
+
 }
 
 //@BindingAdapter("totalVoids")

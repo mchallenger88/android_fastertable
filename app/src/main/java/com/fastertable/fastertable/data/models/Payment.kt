@@ -473,8 +473,9 @@ data class stripePayment(
 //)
 @Parcelize
 data class PayTicket(
-    var payment: Payment,
-    var ticket: Ticket
+    var order: Order,
+    var payment: Payment?,
+    var ticket: Ticket?
 ): Parcelable
 
 @Parcelize

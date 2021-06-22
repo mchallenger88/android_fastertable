@@ -24,7 +24,7 @@
             android:layout_height="wrap_content"
             android:width="80dp"
             android:text="@string/string_order_number"
-            app:intToString="@{payTicket.payment.orderNumber}"
+            app:intToString="@{payTicket.order.orderNumber}"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -33,7 +33,7 @@
             style="@style/order_grid_small"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@{payTicket.payment.orderType}"
+            android:text="@{payTicket.order.orderType}"
             app:layout_constraintStart_toEndOf="@+id/txt_order_number"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -55,7 +55,7 @@
             android:text="@string/string_start_time"
             app:layout_constraintStart_toEndOf="@+id/txt_table_number"
             app:layout_constraintTop_toTopOf="parent"
-            app:timeStamp="@{payTicket.payment.orderStartTime}" />
+            app:timeStamp="@{payTicket.order.startTime}" />
 
         <TextView
             android:id="@+id/txt_order_total"

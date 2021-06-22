@@ -36,7 +36,7 @@ class CheckoutOrdersAdapter(val clickListener: CheckoutOrderListListener): ListA
             val red = ContextCompat.getColor(parent.context, R.color.secondaryColor)
             val black = ContextCompat.getColor(parent.context, R.color.default_text_color)
 
-            if (payTicket.payment.orderCloseTime != null){
+            if (payTicket.order.closeTime != null){
                 binding.txtOrderTotal.setTextColor(ColorStateList.valueOf(black))
                 binding.txtOrderNumber.setTextColor(ColorStateList.valueOf(black))
                 binding.txtOrderType.setTextColor(ColorStateList.valueOf(black))
@@ -75,12 +75,11 @@ class CheckoutOrdersAdapter(val clickListener: CheckoutOrderListListener): ListA
         }
 
         override fun areContentsTheSame(oldItem: PayTicket, newItem: PayTicket): Boolean {
-            return oldItem.ticket.id == newItem.ticket.id
+            return oldItem.order.id == newItem.order.id
         }
     }
-
 }
 
 class CheckoutOrderListListener(val clickListener: (id: String) -> Unit) {
-    fun onClick(payTicket: PayTicket) = clickListener(payTicket.payment.orderId)
+    fun onClick(payTicket: PayTicket) = clickListener(payTicket.order.id)
 }

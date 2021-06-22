@@ -26,6 +26,7 @@ import com.fastertable.fastertable.ui.approvals.ApprovalsViewModel
 import com.fastertable.fastertable.ui.checkout.AddTipFragmentDirections
 import com.fastertable.fastertable.ui.checkout.CheckoutFragmentDirections
 import com.fastertable.fastertable.ui.checkout.CheckoutViewModel
+import com.fastertable.fastertable.ui.clockout.ClockoutViewModel
 import com.fastertable.fastertable.ui.dialogs.*
 import com.fastertable.fastertable.ui.home.HomeFragmentDirections
 import com.fastertable.fastertable.ui.home.HomeViewModel
@@ -52,6 +53,7 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
     private val paymentViewModel: PaymentViewModel by viewModels()
     private val approvalsViewModel: ApprovalsViewModel by viewModels()
     private val checkoutViewModel: CheckoutViewModel by viewModels()
+    private val clockoutViewModel: ClockoutViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -121,7 +123,13 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
         })
 
         paymentViewModel.amountOwed.observe(this, {
-            CashBackDialogFragment().show(supportFragmentManager, CashBackDialogFragment.TAG)
+            paymentViewModel.livePayment.value?.tickets?.forEach { t ->
+                if (t.uiActive){
+                    if (t.paymentType == "Cash"){
+                        CashBackDialogFragment().show(supportFragmentManager, CashBackDialogFragment.TAG)
+                    }
+                }
+            }
         })
 
         paymentViewModel.ticketPaid.observe(this, { it ->
@@ -186,6 +194,14 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
         checkoutViewModel.checkoutComplete.observe(this, {
             if (it != ""){
                 CheckoutDialogBottomSheet().show(supportFragmentManager, CheckoutDialogBottomSheet.TAG)
+            }
+        })
+
+        clockoutViewModel.clockedOut.observe(this, {
+            if (it == true){
+                println("XXXXXXXXXXXXXXXX")
+                println(it)
+                exitUser()
             }
         })
 

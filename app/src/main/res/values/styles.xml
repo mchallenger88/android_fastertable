@@ -274,6 +274,7 @@
 
     <style name="error_style_small" parent="error_style">
         <item name="android:textSize">@dimen/d26</item>
+        <item name="android:textStyle">italic</item>
     </style>
 
     <style name="error_style_extra_small" parent="error_style">

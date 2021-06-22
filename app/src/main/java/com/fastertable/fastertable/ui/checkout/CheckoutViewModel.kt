@@ -3,12 +3,10 @@ package com.fastertable.fastertable.ui.checkout
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.fastertable.fastertable.R
 import com.fastertable.fastertable.common.base.BaseViewModel
 import com.fastertable.fastertable.data.models.*
 import com.fastertable.fastertable.data.repository.*
 import com.fastertable.fastertable.utils.GlobalUtils
-import com.fastertable.fastertable.utils.ResourceHelper
 import com.fastertable.fastertable.utils.round
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -99,14 +97,30 @@ class CheckoutViewModel @Inject constructor (
             _checkoutNull.value = false
             val listPayTicket = arrayListOf<PayTicket>()
             val listTickets = arrayListOf<Ticket>()
-            ce.payments?.forEach{ it ->
-                it.tickets.forEach{t ->
-                    val pt = PayTicket(
-                        payment = it,
-                        ticket = t )
-                    listPayTicket.add(pt)
-                    listTickets.add(t)
-                }}
+            ce.orders.forEach { o ->
+                val pt = PayTicket(
+                    order = o,
+                    payment = null,
+                    ticket = null
+                )
+
+                val p = ce.payments?.find{ it.id == o.id.replace("O_", "P_")}
+                p?.tickets?.forEach {
+                    pt.payment = p
+                    pt.ticket = it
+                    listTickets.add(it)
+                }
+                listPayTicket.add(pt)
+            }
+//            ce.payments?.forEach{ it ->
+//                it.tickets.forEach{t ->
+//                    val pt = PayTicket(
+//                        order = ce.orders.find{ o -> o.id == it.id.replace("P_", "O_")}!!,
+//                        payment = it,
+//                        ticket = t )
+//                    listPayTicket.add(pt)
+//                    listTickets.add(t)
+//                }}
             ce.payTickets = listPayTicket
             ce.openOrders = ce.orders.any{ it.closeTime == null }
             ce.allTickets = listTickets
@@ -245,36 +259,42 @@ class CheckoutViewModel @Inject constructor (
 
     fun captureTickets(){
         viewModelScope.launch {
-            checkout.value?.payTickets?.forEach {
-                val ct = it.ticket.creditCardTransactions.find{ cc -> cc.creditTransaction.AmountApproved.toDouble() == it.ticket.paymentTotal.minus(it.ticket.gratuity)}
-                if (ct != null) {
-                    val capture = Capture(
-                        Token = ct.creditTransaction.Token,
-                        Amount =it.ticket.paymentTotal,
-                        InvoiceNumber = it.payment.orderNumber.toString(),
-                        RegisterNumber = "",
-                        MerchantTransactionId = it.payment.id + "_" + it.ticket.id,
-                        CardAcceptorTerminalId = null
-                      )
-                    val captureRequest = CaptureRequest(
-                        Credentials = settings.merchantCredentials,
-                        Capture = capture)
-                    if (ct.voidTotal == null && ct.refundTotal == null && ct.captureTotal == null){
-                        val res: TransactionResponse45 = captureTicket.capture(captureRequest)
-                        if (res.ApprovalStatus == "APPROVED"){
-                            println("Captured: ${res.Amount}")
-                            ct.captureTotal = res.Amount
-                            ct.captureTransaction = adjustResponse(res)
+            if (!checkout.value?.openOrders!!){
+                checkout.value?.payTickets?.forEach {
+                    val ct = it.ticket?.creditCardTransactions?.find{ cc -> cc.creditTransaction.AmountApproved.toDouble() == it.ticket!!.paymentTotal.minus(
+                        it.ticket!!.gratuity)}
+                    if (ct != null) {
+                        val capture = Capture(
+                            Token = ct.creditTransaction.Token,
+                            Amount = it.ticket?.paymentTotal!!,
+                            InvoiceNumber = it.payment?.orderNumber.toString(),
+                            RegisterNumber = "",
+                            MerchantTransactionId = it.payment!!.id + "_" + it.ticket!!.id,
+                            CardAcceptorTerminalId = null
+                        )
+                        val captureRequest = CaptureRequest(
+                            Credentials = settings.merchantCredentials,
+                            Capture = capture)
+                        if (ct.voidTotal == null && ct.refundTotal == null && ct.captureTotal == null){
+                            val res: TransactionResponse45 = captureTicket.capture(captureRequest)
+                            if (res.ApprovalStatus == "APPROVED"){
+                                println("Captured: ${res.Amount}")
+                                ct.captureTotal = res.Amount
+                                ct.captureTransaction = adjustResponse(res)
 
-                            val ticket = it.payment.tickets.find{ t -> t.id == it.ticket.id}
-                            var ctNew = ticket?.creditCardTransactions?.find{ it -> it.creditTotal == ct.creditTotal}
-                            ctNew = ct
-                            saveCapturedPaymentToCloud(it.payment)
+                                val ticket = it.payment!!.tickets.find{ t -> t.id == it.ticket!!.id}
+                                var ctNew = ticket?.creditCardTransactions?.find{ it -> it.creditTotal == ct.creditTotal}
+                                ctNew = ct
+                                saveCapturedPaymentToCloud(it.payment!!)
+                            }
                         }
                     }
                 }
+                _checkoutComplete.postValue("Your checkout is complete. You may now clock out.")
+            }else{
+                _checkoutComplete.postValue("You must close all open orders before checking out.")
             }
-            _checkoutComplete.postValue("Your checkout is complete. You may now clock out.")
+
         }
     }
 

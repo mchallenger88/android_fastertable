@@ -21,7 +21,11 @@ fun orderTypeTableNumber(textView: TextView, order: Order?) {
         }
 
         if (order.orderType == "Counter"){
-            textView.text = ""
+            if (order.tableNumber != null){
+                textView.text = order.tableNumber.toString()
+            }else{
+                textView.text = ""
+            }
         }
 
         if (order.orderType == "Table"){
@@ -34,16 +38,21 @@ fun orderTypeTableNumber(textView: TextView, order: Order?) {
 @BindingAdapter("payTicketTableNumber")
 fun payTicketTableNumber(textView: TextView, payTicket: PayTicket?) {
     if (payTicket != null){
-        if (payTicket.payment.orderType == "Takeout"){
+
+        if (payTicket.order.orderType == "Takeout"){
             textView.text = textView.context.getString(R.string.takeout)
         }
 
-        if (payTicket.payment.orderType == "Counter"){
-            textView.text = ""
+        if (payTicket.order.orderType == "Counter"){
+            if (payTicket.order.tableNumber != null){
+                textView.text = payTicket.order.tableNumber.toString()
+            }else{
+                textView.text = ""
+            }
         }
 
-        if (payTicket.payment.orderType == "Table"){
-            textView.text = payTicket.payment.tableNumber.toString()
+        if (payTicket.order.orderType == "Table"){
+            textView.text = payTicket.order.tableNumber.toString()
         }
     }
 

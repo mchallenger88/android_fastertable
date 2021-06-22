@@ -17,5 +17,10 @@
             android:id="@+id/approvalsFragment"
             android:icon="@drawable/ic_outline_fact_check_24"
             android:title="@string/manager_approvals" />
+
+        <item
+            android:id="@+id/clockoutFragment"
+            android:icon="@drawable/ic_outline_access_time_24"
+            android:title="@string/clockout" />
     </group>
 </menu>
