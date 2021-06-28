@@ -48,7 +48,7 @@ data class UserClock(
     val employeeId: String,
     val clockInTime: Long,
     val clockOutTime: Long?,
-    val checkout: Boolean,
+    var checkout: Boolean?,
     val checkoutApproved: Boolean,
 ): Parcelable
 
@@ -78,6 +78,14 @@ data class CheckoutCredentials(
     val companyId: String,
     val locationId: String,
     val checkout: Boolean,
+    val midnight: Long,
+): Parcelable
+
+@Parcelize
+data class ReopenCheckoutRequest(
+    val employeeId: String,
+    val companyId: String,
+    val locationId: String,
     val midnight: Long,
 ): Parcelable
 

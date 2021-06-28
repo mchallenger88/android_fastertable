@@ -91,6 +91,8 @@ data class ConfirmEmployee(
     var creditTips: Double,
     var totalOwed: Double,
     var totalNegative: Boolean,
+    val tipDiscount: Double?,
+    val tipSettlementPeriod: String
 ): Parcelable
 
 @Parcelize
@@ -159,4 +161,11 @@ data class EmployeeTips(
     val tickets: ArrayList<SortedTicket>,
     val tipSum: Double,
     val dateList: ArrayList<Long>
+): Parcelable
+
+@Parcelize
+data class  CompanyTimeBasedRequest(
+    val midnight: Long,
+    val locationId: String,
+    val companyId: String
 ): Parcelable

@@ -1,17 +1,23 @@
 <component name="ProjectDictionaryState">
   <dictionary name="markc">
     <words>
+      <w>clockin</w>
       <w>clockout</w>
+      <w>confirmcheckout</w>
       <w>fastertable</w>
       <w>fastertablelogo</w>
       <w>fastertoolbar</w>
       <w>getcheckout</w>
+      <w>getconfirmemployees</w>
       <w>gson</w>
       <w>locationid</w>
+      <w>reopencheckout</w>
       <w>semibold</w>
       <w>snackbar</w>
       <w>taxrate</w>
       <w>tipshare</w>
+      <w>totalsales</w>
+      <w>totaltips</w>
     </words>
   </dictionary>
 </component>

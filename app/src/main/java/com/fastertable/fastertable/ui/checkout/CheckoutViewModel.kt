@@ -3,6 +3,7 @@ package com.fastertable.fastertable.ui.checkout
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.fastertable.fastertable.api.CheckoutUseCase
 import com.fastertable.fastertable.common.base.BaseViewModel
 import com.fastertable.fastertable.data.models.*
 import com.fastertable.fastertable.data.repository.*
@@ -19,6 +20,8 @@ class CheckoutViewModel @Inject constructor (
     private val loginRepository: LoginRepository,
     private val getCheckout: GetCheckout,
     private val updatePayment: UpdatePayment,
+    private val checkoutUser: CheckoutUser,
+    private val reopenCheckout: ReopenCheckout,
     private val captureTicket: CaptureTicketTransaction,
     private val adjustTip: AdjustTipTransaction,
         ): BaseViewModel() {
@@ -54,9 +57,6 @@ class CheckoutViewModel @Inject constructor (
     val checkoutComplete: LiveData<String>
         get() = _checkoutComplete
 
-//    private val _showPayments = MutableLiveData<Boolean>()
-//    val showPayments: LiveData<Boolean>
-//        get() = _showPayments
 
     private val midnight: Long = GlobalUtils().getMidnight()
 
@@ -112,15 +112,7 @@ class CheckoutViewModel @Inject constructor (
                 }
                 listPayTicket.add(pt)
             }
-//            ce.payments?.forEach{ it ->
-//                it.tickets.forEach{t ->
-//                    val pt = PayTicket(
-//                        order = ce.orders.find{ o -> o.id == it.id.replace("P_", "O_")}!!,
-//                        payment = it,
-//                        ticket = t )
-//                    listPayTicket.add(pt)
-//                    listTickets.add(t)
-//                }}
+
             ce.payTickets = listPayTicket
             ce.openOrders = ce.orders.any{ it.closeTime == null }
             ce.allTickets = listTickets
@@ -133,14 +125,13 @@ class CheckoutViewModel @Inject constructor (
             ce.cashSalesTotal = ce.cashSales.sumByDouble { it.paymentTotal }
             ce.creditSalesTotal = ce.creditSales.sumByDouble { it.paymentTotal }
             ce.creditTips = ce.creditSales.sumByDouble { it.gratuity }
-            val tipDiscount = ce.creditTips.times(settings.creditCardTipDiscount.div(100)).round(2)
-            ce.creditTips = ce.creditTips.minus(tipDiscount).round(2)
+            ce.creditTips = ce.creditTips.minus(ce.tipDiscount?.div(100)!!).round(2)
 
-            if (settings.tipSettlementPeriod == "Daily"){
+            if (ce.tipSettlementPeriod == "Daily"){
                 ce.totalOwed = ce.cashSalesTotal.minus(ce.creditTips)
             }
 
-            if (settings.tipSettlementPeriod === "Weekly"){
+            if (ce.tipSettlementPeriod === "Weekly"){
                 ce.totalOwed = ce.cashSalesTotal
             }
 
@@ -290,11 +281,28 @@ class CheckoutViewModel @Inject constructor (
                         }
                     }
                 }
-                _checkoutComplete.postValue("Your checkout is complete. You may now clock out.")
+                updateUserClock()
+                _checkoutComplete.postValue("Your checkout is complete.")
             }else{
                 _checkoutComplete.postValue("You must close all open orders before checking out.")
             }
 
+        }
+    }
+
+    fun updateUserClock(){
+        viewModelScope.launch {
+            val user = loginRepository.getOpsUser()
+            if (user != null) {
+                val cc = CheckoutCredentials(
+                    employeeId = user.employeeId,
+                    companyId = settings.companyId,
+                    locationId = settings.locationId,
+                    checkout = true,
+                    midnight = GlobalUtils().getMidnight()
+                )
+                checkoutUser.checkout(cc)
+            }
         }
     }
 
@@ -319,6 +327,22 @@ class CheckoutViewModel @Inject constructor (
         viewModelScope.launch {
             updatePayment.savePayment(payment)
         }
+    }
+
+    fun reopenCheckout(){
+        viewModelScope.launch {
+            val user = loginRepository.getOpsUser()
+            if (user != null){
+                val request = ReopenCheckoutRequest(
+                    employeeId = user.employeeId,
+                    companyId = settings.companyId,
+                    locationId = settings.locationId,
+                    midnight = GlobalUtils().getMidnight()
+                )
+                reopenCheckout.open(request)
+            }
+        }
+
     }
 
     fun setCheckoutComplete(value: String){

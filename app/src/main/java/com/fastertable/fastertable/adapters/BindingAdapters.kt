@@ -12,7 +12,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.fastertable.fastertable.R
 import com.fastertable.fastertable.data.models.*
 import java.time.LocalDate
-import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
 
@@ -67,6 +66,15 @@ fun modSelectionText(textView: TextView, mod: Modifier){
 @BindingAdapter("priceDouble")
 fun bindDouble(textView: TextView, value: Double){
     textView.text = "$%.${2}f".format(value)
+}
+
+@BindingAdapter("booleanToYesNo")
+fun booleanToYesNo(textView: TextView, value: Boolean){
+    if (value){
+        textView.text = textView.context.getString(R.string.yes)
+    }else{
+        textView.text = textView.context.getString(R.string.no)
+    }
 }
 
 

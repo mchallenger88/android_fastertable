@@ -91,8 +91,20 @@ interface FastertableApi {
     @POST("employees/getcheckout")
     suspend fun getCheckout(@Body checkoutRequest: CheckoutRequest): Response<ConfirmEmployee>
 
+    @POST("login/checkout")
+    suspend fun checkout(@Body checkoutCredentials: CheckoutCredentials): Response<UserClock>
+
     @POST("login/clockout")
     suspend fun clockout(@Body clockoutRequest: ClockOutCredentials): Response<UserClock>
+
+    @POST("employees/getconfirmemployees")
+    suspend fun getConfirmList(@Body companyTimeBasedRequest: CompanyTimeBasedRequest): Response<List<ConfirmEmployee>>
+
+    @POST("login/confirmcheckout")
+    suspend fun confirmCheckout(@Body checkoutCredentials: CheckoutCredentials): Response<UserClock>
+
+    @POST("login/reopencheckout")
+    suspend fun reopenCheckout(@Body reopenCheckoutRequest: ReopenCheckoutRequest): Response<UserClock>
 
 }
 

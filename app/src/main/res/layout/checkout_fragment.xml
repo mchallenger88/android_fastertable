@@ -407,17 +407,29 @@
                     android:layout_marginTop="40dp"
                     android:fontFamily="@font/open_sans_semibold"
                     android:textAlignment="center"
-                    app:checkoutTitle="@{viewModel.showOrders}"
+                    android:text="@string/checkout_orders"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/text_checkout_info"
+                    style="@style/default_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:textAlignment="center"
+                    android:text="@string/tap_an_order"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/text_checkout_title"
+                    app:layout_constraintStart_toStartOf="parent" />
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/checkout_order_recycler"
                     android:layout_width="wrap_content"
                     android:layout_height="500dp"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/text_checkout_title"
+                    app:layout_constraintTop_toBottomOf="@+id/text_checkout_info"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"

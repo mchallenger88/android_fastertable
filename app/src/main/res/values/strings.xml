@@ -225,4 +225,19 @@
     <string name="clockout">Clockout</string>
     <string name="end_your_shift">Have you checked out? You must checkout before clocking out. Clocking out will end your shift:</string>
     <string name="end_your_shift_non_server">Clocking out will end your shift:</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="checkout_open">Checkout Open</string>
+    <string name="confirm">Confirm</string>
+    <string name="confirmed">Confirmed</string>
+    <string name="confirm_checkout">Confirm Checkout</string>
+    <string name="change_date">Change Date</string>
+    <string name="server">Server</string>
+    <string name="total_tickets">Total Tickets</string>
+    <string name="clockin">Clockin</string>
+    <string name="totalsales">Total Sales</string>
+    <string name="total_cash">Total Cash</string>
+    <string name="totaltips">Total Tips</string>
+    <string name="tap_an_order">Tap an order to add or change a tip</string>
+    <string name="continue_txt">Continue</string>
 </resources>

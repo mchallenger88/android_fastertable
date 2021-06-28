@@ -25,6 +25,9 @@
         <action
             android:id="@+id/action_nav_home_to_clockoutFragment"
             app:destination="@id/clockoutFragment" />
+        <action
+            android:id="@+id/action_nav_home_to_confirmFragment"
+            app:destination="@id/confirmFragment" />
     </fragment>
     <fragment
         android:id="@+id/orderFragment"
@@ -95,6 +98,10 @@
         android:id="@+id/clockoutFragment"
         android:name="com.fastertable.fastertable.ui.clockout.ClockoutFragment"
         android:label="ClockoutFragment" />
+    <fragment
+        android:id="@+id/confirmFragment"
+        android:name="com.fastertable.fastertable.ui.confirm.ConfirmFragment"
+        android:label="ConfirmFragment" />
 
 
 </navigation>

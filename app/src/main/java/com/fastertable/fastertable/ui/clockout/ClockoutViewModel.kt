@@ -41,24 +41,18 @@ class ClockoutViewModel @Inject constructor (
     }
 
     fun clockout(){
-        println("1")
         if (settings.requireCheckoutConfirm){
-            println("2")
             if (user.userClock.checkoutApproved){
-                println("3")
-                if (userClockout.value?.clockOutTime != null){
-                    println("4")
+                if (userClockout.value?.clockOutTime == null){
                     performClockout()
                     _errorMessage.value = "You have been clocked out."
                 }
             }else{
-                println("5")
-                _errorMessage.value = "Your checkout has not yet been approved. Once your checkout is approved, you can clock out."
+                _errorMessage.value = "Your checkout has not yet been approved. Once your checkout is approved, you may clock out."
             }
         }else{
-            if (user.userClock.checkout){
+            if (user.userClock.checkout == true){
                 if (userClockout.value?.clockOutTime == null){
-                    println("7")
                     performClockout()
                     _errorMessage.value = "You have been clocked out."
                 }
@@ -78,7 +72,7 @@ class ClockoutViewModel @Inject constructor (
                 time = GlobalUtils().getNowEpoch(),
                 midnight = GlobalUtils().getMidnight()
             )
-            println(clockoutCredentials)
+//            println(clockoutCredentials)
             clockoutUser.clockout(clockoutCredentials)
             _clockedOut.postValue(true)
         }

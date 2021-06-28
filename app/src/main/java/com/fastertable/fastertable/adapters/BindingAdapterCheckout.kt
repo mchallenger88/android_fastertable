@@ -1,6 +1,6 @@
 package com.fastertable.fastertable.adapters
 
-import android.content.res.ColorStateList
+import android.annotation.SuppressLint
 import android.view.View
 import android.widget.Button
 import android.widget.TextView
@@ -9,9 +9,7 @@ import androidx.core.content.ContextCompat
 import androidx.databinding.BindingAdapter
 import com.fastertable.fastertable.R
 import com.fastertable.fastertable.data.models.ConfirmEmployee
-import com.fastertable.fastertable.data.models.Order
 import com.fastertable.fastertable.data.models.Payment
-import com.fastertable.fastertable.data.models.UserClock
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
@@ -44,31 +42,20 @@ fun checkoutNotNull(constraintLayout: ConstraintLayout, ce: Boolean) {
     }
 }
 
-@BindingAdapter("checkoutTitle")
-fun checkoutTitle(textView: TextView, op: Boolean?) {
-    if (op != null){
-        if (op){
-            textView.text = textView.context.getString(R.string.checkout_orders)
-        }else{
-            textView.text = textView.context.getString(R.string.checkout_payments)
-        }
 
-    }
-}
-
-@BindingAdapter("orderClosed")
-fun orderClosed(textView: TextView, order: Order) {
-    val white = ContextCompat.getColor(textView.context, R.color.white)
-    val red = ContextCompat.getColor(textView.context, R.color.secondaryLightColor)
-    val black = ContextCompat.getColor(textView.context, R.color.default_text_color)
-    if (order.closeTime != null){
-        textView.setTextColor(ColorStateList.valueOf(black))
-        textView.setBackgroundColor(white)
-    }else{
-        textView.setTextColor(ColorStateList.valueOf(white))
-        textView.setBackgroundColor(red)
-    }
-}
+//@BindingAdapter("orderClosed")
+//fun orderClosed(textView: TextView, order: Order) {
+//    val white = ContextCompat.getColor(textView.context, R.color.white)
+//    val red = ContextCompat.getColor(textView.context, R.color.secondaryLightColor)
+//    val black = ContextCompat.getColor(textView.context, R.color.default_text_color)
+//    if (order.closeTime != null){
+//        textView.setTextColor(ColorStateList.valueOf(black))
+//        textView.setBackgroundColor(white)
+//    }else{
+//        textView.setTextColor(ColorStateList.valueOf(white))
+//        textView.setBackgroundColor(red)
+//    }
+//}
 
 @BindingAdapter("tipCaptureDisabled")
 fun tipCaptureDisabled(button: Button, payment: Payment?) {
@@ -98,12 +85,39 @@ fun tipCapturedError(textView: TextView, payment: Payment?) {
     }
 }
 
-//@BindingAdapter("orderCount")
-//fun orderCount(textView: TextView, ce: ConfirmEmployee?) {
-//    if (ce != null){
-//        textView.text = textView.context.getString(R.string.order_count, ce.orders.size.toString())
-//    }
-//}
+@BindingAdapter("confirmedNotConfirmed")
+fun confirmedNotConfirmed(textView: TextView, ce: ConfirmEmployee?) {
+    if (ce != null){
+        if (ce.shifts?.checkout == null){
+            textView.text = textView.context.getString(R.string.checkout_open)
+        }
+
+        if (!ce.shifts?.checkoutApproved!! && ce.shifts.checkout != null){
+            textView.visibility = View.GONE
+        }
+
+        if (ce.shifts.checkout != null && ce.shifts.checkoutApproved){
+            textView.text = textView.context.getString(R.string.confirmed)
+        }
+    }
+}
+
+@BindingAdapter("confirmedNotConfirmedButton")
+fun confirmedNotConfirmedButton(button: Button, ce: ConfirmEmployee?) {
+    if (ce != null){
+        if (ce.shifts?.checkout == null){
+            button.visibility = View.GONE
+        }
+
+        if (!ce.shifts?.checkoutApproved!! && ce.shifts.checkout != null){
+            button.text = button.context.getString(R.string.confirm)
+        }
+
+        if (ce.shifts.checkout != null && ce.shifts.checkoutApproved){
+            button.visibility = View.GONE
+        }
+    }
+}
 
 @BindingAdapter("timeToString")
 fun timeToString(textView: TextView, time: Long?) {
@@ -127,18 +141,22 @@ fun txtClockOut(textView: TextView, ce: ConfirmEmployee?) {
     }
 }
 
-@BindingAdapter("clockoutError")
-fun clockoutError(textView: TextView, userClock: UserClock){
+@SuppressLint("SetTextI18n")
+@BindingAdapter("confirmTotalOwed")
+fun confirmTotalOwed(textView: TextView, ce: ConfirmEmployee?) {
+    val red = ContextCompat.getColor(textView.context, R.color.errorColor)
+    val green = ContextCompat.getColor(textView.context, R.color.primary_payment_color)
 
+    if (ce != null){
+        textView.text = "$%.${2}f".format(ce.totalOwed)
+        if (ce.totalNegative){
+            textView.setTextColor(red)
+        }else{
+            textView.setTextColor(green)
+        }
+    }
 }
 
-//@BindingAdapter("totalVoids")
-//fun totalVoids(textView: TextView, ce: ConfirmEmployee?) {
-//    if (ce != null){
-//        textView.text = textView.context.getString(R.string.total_voids, "%.${2}f".format(ce.voidTotal))
-//    }
-//}
-//
 //@BindingAdapter("totalDiscounts")
 //fun totalDiscounts(textView: TextView, ce: ConfirmEmployee?) {
 //    if (ce != null){

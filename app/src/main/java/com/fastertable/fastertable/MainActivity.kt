@@ -17,16 +17,18 @@ import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.*
 import com.fastertable.fastertable.common.base.BaseActivity
+import com.fastertable.fastertable.common.base.BaseContinueDialog
 import com.fastertable.fastertable.common.base.DismissListener
 import com.fastertable.fastertable.data.models.OrderItem
+import com.fastertable.fastertable.data.models.ReopenCheckoutRequest
 import com.fastertable.fastertable.data.repository.LoginRepository
 import com.fastertable.fastertable.data.repository.OrderRepository
 import com.fastertable.fastertable.data.repository.PaymentRepository
-import com.fastertable.fastertable.ui.approvals.ApprovalsViewModel
 import com.fastertable.fastertable.ui.checkout.AddTipFragmentDirections
 import com.fastertable.fastertable.ui.checkout.CheckoutFragmentDirections
 import com.fastertable.fastertable.ui.checkout.CheckoutViewModel
 import com.fastertable.fastertable.ui.clockout.ClockoutViewModel
+import com.fastertable.fastertable.ui.confirm.ConfirmViewModel
 import com.fastertable.fastertable.ui.dialogs.*
 import com.fastertable.fastertable.ui.home.HomeFragmentDirections
 import com.fastertable.fastertable.ui.home.HomeViewModel
@@ -35,6 +37,7 @@ import com.fastertable.fastertable.ui.order.OrderViewModel
 import com.fastertable.fastertable.ui.payment.PaymentFragmentDirections
 import com.fastertable.fastertable.ui.payment.PaymentViewModel
 import com.fastertable.fastertable.ui.payment.ShowPayment
+import com.fastertable.fastertable.utils.GlobalUtils
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
@@ -43,7 +46,7 @@ import javax.inject.Inject
 
 
 @AndroidEntryPoint
-class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteListener {
+class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteListener, BaseContinueDialog.ContinueListener {
     @Inject lateinit var loginRepository: LoginRepository
     @Inject lateinit var orderRepository: OrderRepository
     @Inject lateinit var paymentRepository: PaymentRepository
@@ -51,9 +54,10 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
     private val homeViewModel: HomeViewModel by viewModels()
     private val orderViewModel: OrderViewModel by viewModels()
     private val paymentViewModel: PaymentViewModel by viewModels()
-    private val approvalsViewModel: ApprovalsViewModel by viewModels()
+    private val continueCancelViewModel: ContinueCancelViewModel by viewModels()
     private val checkoutViewModel: CheckoutViewModel by viewModels()
     private val clockoutViewModel: ClockoutViewModel by viewModels()
+    private val confirmViewModel: ConfirmViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -102,7 +106,13 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
         })
 
         orderViewModel.sendKitchen.observe(this, {
-            sendToKitchen()
+            if (!checkLoginCheckoutStatus()){
+                sendToKitchen()
+            }else{
+                continueCancelViewModel.setTitle("Checkout Error")
+                continueCancelViewModel.setMessage("You have checked out. Click 'Continue' to reopen your checkout.")
+                ContinueCancelFragment().show(supportFragmentManager, ContinueCancelFragment.TAG)
+            }
 
         })
 
@@ -199,9 +209,13 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
 
         clockoutViewModel.clockedOut.observe(this, {
             if (it == true){
-                println("XXXXXXXXXXXXXXXX")
-                println(it)
                 exitUser()
+            }
+        })
+
+        confirmViewModel.openCalendar.observe(this, {
+            if (it){
+
             }
         })
 
@@ -219,6 +233,11 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
         return item.onNavDestinationSelected(findNavController(R.id.nav_host_fragment))
     }
 
+    private fun checkLoginCheckoutStatus(): Boolean{
+        val user = loginRepository.getOpsUser()
+        return user?.userClock?.checkout == true || user?.userClock?.checkoutApproved == true
+
+    }
 
 
     private fun sendToKitchen(){
@@ -334,6 +353,16 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
             orderViewModel.saveOrderToCloud()
         }
 
+    }
+
+    override fun returnContinue(value: String){
+        when (value){
+            "Checkout Error" -> {
+                //Reopen Checkout then Send to Kitchen
+                checkoutViewModel.reopenCheckout()
+                sendToKitchen()
+            }
+        }
     }
 
     override fun returnValue(value: String) {
