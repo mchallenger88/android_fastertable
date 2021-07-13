@@ -8,6 +8,7 @@
     <dimen name="fab_margin">16dp</dimen>
 
     //Body Sizes
+    <dimen name="s60">60dp</dimen>
     <dimen name="s48">48dp</dimen>
     <dimen name="s34">34dp</dimen>
     <dimen name="s28">28dp</dimen>

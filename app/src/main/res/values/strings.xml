@@ -86,6 +86,7 @@
     <string name="table_order">Table Order</string>
     <string name="takeout_order">Takeout Order</string>
     <string name="delivery_order">Delivery Order</string>
+    <string name="continue_txt">Continue</string>
 
     //Order
     <string name="string_order_number">Order #</string>
@@ -151,6 +152,7 @@
     <string name="tax_price">$%1$s</string>
     <string name="total_price">$%1$s</string>
     <string name="amount_owed">Amount Owed: $%1$s</string>
+    <string name="amount_owed_empty">Amount Owed:</string>
     <string name="string_exact_amount">Exact</string>
     <string name="twenty_bucks">$20</string>
     <string name="forty_bucks">$40</string>
@@ -239,5 +241,23 @@
     <string name="total_cash">Total Cash</string>
     <string name="totaltips">Total Tips</string>
     <string name="tap_an_order">Tap an order to add or change a tip</string>
-    <string name="continue_txt">Continue</string>
+
+    //Gift Card
+    <string name="gift_card">Gift Card</string>
+    <string name="add_cash">Add Cash</string>
+    <string name="balance_inquiry">Balance Inquiry</string>
+    <string name="ticket_header">Gift Card Ticket</string>
+    <string name="add_any_dollar_amount">Add any dollar amount to a gift card.</string>
+    <string name="add_5">Add $5</string>
+    <string name="add_25">Add $25</string>
+    <string name="add_50">Add $50</string>
+    <string name="add_100">Add $100</string>
+    <string name="add_other_amount">Other $</string>
+    <string name="add_amount_entered">Other Amount</string>
+    <string name="swipe_the_gift_card">Tap button and then swipe the gift card</string>
+    <string name="swipe_gift_card_info">Activate or add amount to the card by clicking the button and then swiping the gift card.</string>
+    <string name="swipe_gift_card">Swipe Gift Card</string>
+
+    //Floorplan
+    <string name="restaurant_table">Table</string>
 </resources>

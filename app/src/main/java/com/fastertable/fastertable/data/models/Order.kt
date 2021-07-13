@@ -7,7 +7,6 @@ import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
 import kotlinx.parcelize.Parcelize
 import com.squareup.moshi.JsonClass
-import java.time.OffsetDateTime
 
 @JsonClass(generateAdapter = true)
 @Parcelize
@@ -242,6 +241,10 @@ data class Order(
         )
     }
 
+    fun changeGiftItemAmount(amount: Double){
+        this.guests?.get(0)?.orderItems?.get(0)?.menuItemPrice?.price = amount
+    }
+
     fun close(){
         this.closeTime = GlobalUtils().getNowEpoch()
         this.orderStatus = "Paid"
@@ -306,7 +309,7 @@ data class OrderItem(
     val salesCategory: String,
     val ingredientList: List<ItemIngredient>?,
     val ingredients: List<ItemIngredient>?,
-    val prepStation: PrepStation,
+    val prepStation: PrepStation?,
     val printer: Printer,
     val priceAdjusted: Boolean,
     val menuItemDiscount: Double?,

@@ -48,6 +48,10 @@ class HomeViewModel @Inject constructor (private val loginRepository: LoginRepos
     val navigateToOrder: LiveData<String>
         get() = _navigateToOrder
 
+    private val _navigateToFloorplan = MutableLiveData<Boolean>()
+    val navigateToFloorplan: LiveData<Boolean>
+        get() = _navigateToFloorplan
+
     private val _viewLoaded = MutableLiveData<Boolean>()
     val viewLoaded: LiveData<Boolean>
         get() = _viewLoaded
@@ -102,6 +106,10 @@ class HomeViewModel @Inject constructor (private val loginRepository: LoginRepos
             "Closed" -> _filteredOrders.value = orders.value?.filter { it -> it.closeTime != null }
             "All" -> _filteredOrders.value = orders.value
         }
+    }
+
+    fun setNavigateToFloorPlan(b: Boolean){
+        _navigateToFloorplan.value = b
     }
 
     fun onOrderClicked(id: String) {

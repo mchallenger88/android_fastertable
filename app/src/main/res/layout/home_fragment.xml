@@ -60,6 +60,7 @@
                     android:text="@string/table_order"
                     android:textColor="@color/white"
                     android:textSize="@dimen/toolbar_button"
+                    android:onClick="@{() -> viewModel.setNavigateToFloorPlan(true)}"
                     app:layout_constraintStart_toEndOf="@+id/btn_counterOrder"
                     app:layout_constraintTop_toTopOf="@+id/layout_home_buttons"
                     app:strokeColor="@color/white" />

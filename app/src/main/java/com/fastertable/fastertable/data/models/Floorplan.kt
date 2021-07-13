@@ -4,8 +4,8 @@ import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-data class ftFloorPlan(
-    val tables: ArrayList<TableClass>,
+data class RestaurantFloorPlan(
+    val tables: ArrayList<RestaurantTable>,
     val walls: ArrayList<WallClass>,
     val companyId: String,
     val name: String,
@@ -43,6 +43,36 @@ data class TableClass (
 ): Parcelable
 
 @Parcelize
+data class RestaurantTable (
+    val id: Int,
+    val type: TableType,
+    val rotate: Int,
+    val locked: Boolean,
+    val reserved: Boolean,
+    val active: Boolean,
+    val id_location: IdLocation,
+    val maxSeats: Int,
+    val minSeats: Int,
+    val left: Int,
+    val top: Int,
+
+): Parcelable
+
+enum class IdLocation{
+    TopLeft, TopCenter, TopRight,
+    MiddleLeft, MiddleCenter, MiddleRight,
+    BottomLeft, BottomCenter, BottomRight
+}
+
+enum class TableType{
+    Booth, Round_Booth, Rect_Four, Rect_Horz_Four,
+    Rect_Horz_Eight, Rect_Horz_Six, Rect_Horz_Ten,
+    Rect_Six, Rect_Two, Round_Stool, Round_Eight,
+    Round_Four, Round_Ten, Round_Two, Square_Stool,
+    Square_Four, Square_Two
+}
+
+@Parcelize
 data class WallClass (
     val id: Int?,
     val left: Int?,
@@ -54,7 +84,7 @@ data class WallClass (
 
 @Parcelize
 data class TablePosition(
-    val floorplan: ftFloorPlan,
+    val floorplan: RestaurantFloorPlan,
     val table: TableClass,
     val newX: Int,
     val newY: Int,
@@ -64,7 +94,7 @@ data class TablePosition(
 
 @Parcelize
 data class WallPosition(
-    val floorplan: ftFloorPlan,
+    val floorplan: RestaurantFloorPlan,
     val wall: WallClass,
     val newX: Int,
     val newY: Int,
@@ -85,12 +115,12 @@ data class WallDialogSave(
 
 @Parcelize
 data class TableDialogData(
-    val floorplan: ftFloorPlan,
+    val floorplan: RestaurantFloorPlan,
     val table: TableClass
 ): Parcelable
 
 @Parcelize
 data class WallDialogData(
-    val floorplan: ftFloorPlan,
+    val floorplan: RestaurantFloorPlan,
     val wall: WallClass
 ): Parcelable

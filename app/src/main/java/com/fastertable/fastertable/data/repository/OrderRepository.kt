@@ -22,12 +22,25 @@ class SaveOrder @Inject constructor(private val saveOrderUseCase: SaveOrderUseCa
         val o: Order
         val result = saveOrderUseCase.saveOrder(order)
         if (result is SaveOrderUseCase.Result.Success){
-            o = result.order
-            orderRepository.saveOrder(o)
-        }else{
+            orderRepository.saveOrder(result.order)
+            return result.order
+        }
+        else{
             throw RuntimeException("fetch failure")
         }
-        return o
+    }
+}
+
+class SaveGiftOrder @Inject constructor(private val saveOrderUseCase: SaveOrderUseCase,
+                                    private val orderRepository: OrderRepository){
+    suspend fun saveOrder(order: Order): Order?{
+        val result = saveOrderUseCase.saveOrder(order)
+        if (result is SaveOrderUseCase.Result.Success){
+            return result.order
+        }
+        else{
+            return null
+        }
     }
 }
 
@@ -39,10 +52,10 @@ class UpdateOrder @Inject constructor(private val updateOrderUseCase: UpdateOrde
         if (result is UpdateOrderUseCase.Result.Success){
             o = result.order
             orderRepository.saveOrder(o)
+            return o
         }else{
             throw RuntimeException("fetch failure")
         }
-        return o
     }
 }
 

@@ -35,7 +35,6 @@ enum class ShowPayment{
 
 @HiltViewModel
 class PaymentViewModel @Inject constructor (private val loginRepository: LoginRepository,
-                                            private val orderRepository: OrderRepository,
                                             private val approvalRepository: ApprovalRepository,
                                             private val savePayment: SavePayment,
                                             private val updatePayment: UpdatePayment,
@@ -50,8 +49,9 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
                                             private val updateApproval: UpdateApproval,
                                             private val paymentRepository: PaymentRepository): BaseViewModel() {
 
-    private lateinit var user: OpsAuth
-    var settings: Settings = loginRepository.getSettings()!!
+    val user: OpsAuth = loginRepository.getOpsUser()!!
+    val settings: Settings = loginRepository.getSettings()!!
+    val terminal: Terminal = loginRepository.getTerminal()!!
 
     private val _order = MutableLiveData<Order>()
     val liveOrder: LiveData<Order>
@@ -73,15 +73,15 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
     val ticketPaid: LiveData<Boolean>
         get() = _ticketPaid
 
-    private val _calculatingCash = MutableLiveData<String>("")
+    private val _calculatingCash = MutableLiveData("")
     private val calculatingCash: LiveData<String>
         get() = _calculatingCash
 
-    private val _paymentScreen = MutableLiveData<ShowPayment>(ShowPayment.NONE)
+    private val _paymentScreen = MutableLiveData(ShowPayment.NONE)
     val paymentScreen: LiveData<ShowPayment>
         get() = _paymentScreen
 
-    private val _managePayment = MutableLiveData<Boolean>(false)
+    private val _managePayment = MutableLiveData(false)
     val managePayment: LiveData<Boolean>
         get() = _managePayment
 
@@ -97,11 +97,11 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
     val errorMessage: LiveData<String>
         get() = _errorMessage
 
-    private val _showTicketMore = MutableLiveData<Boolean>(false)
+    private val _showTicketMore = MutableLiveData(false)
     val showTicketMore: LiveData<Boolean>
         get() = _showTicketMore
 
-    private val _showTicketItemMore = MutableLiveData<Boolean>(false)
+    private val _showTicketItemMore = MutableLiveData(false)
     val showTicketItemMore: LiveData<Boolean>
         get() = _showTicketItemMore
 
@@ -233,12 +233,10 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
 
     fun startCredit(order: Order){
         viewModelScope.launch {
-            val terminal = loginRepository.getTerminal()!!
             try{
                 val url = "http://" + terminal.ccEquipment.ipAddress + ":8080/pos?Action=StartOrder&Order=" + order.orderNumber.toString() + "&Format=JSON"
                 val response: TerminalResponse = startCredit.startCreditProcess(url)
                 if (response.Status == "Success"){
-                    val settings = loginRepository.getSettings()!!
                     creditStaging(order, settings, terminal)
                 }else{
                     setError("Error Notification", TERMINAL_ERROR)
@@ -278,7 +276,6 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
         viewModelScope.launch {
             val transportURL: String = "http://" + terminal.ccEquipment.ipAddress + ":8080/v2/pos?TransportKey=" + stageResponse.transportKey + "&Format=JSON"
             val cayanTransaction: Any = initiateCreditTransaction.initiateTransaction(transportURL)
-//            println(cayanTransaction)
             if (cayanTransaction is String){
                 cancelCredit()
                 _error.postValue(true)
@@ -303,8 +300,8 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
 
         ticket.paymentTotal = cayanTransaction.AmountApproved.toDouble()
 
-        val cc: CreditCardTransaction = creditCardRepository.createCreditCardTransaction(ticket, cayanTransaction);
-        ticket.creditCardTransactions.add(cc);
+        val cc: CreditCardTransaction = creditCardRepository.createCreditCardTransaction(ticket, cayanTransaction)
+        ticket.creditCardTransactions.add(cc)
 
         if (ticket.paymentTotal > ticket.total){
             ticket.gratuity = ticket.paymentTotal.minus(ticket.total).round(2)
@@ -344,30 +341,30 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
         if (status == "DECLINED"){
             if (error.contains("insufficient funds")){
                 setError("Credit Declined", DECLINED)
-            };
+            }
             if (error.contains("referral")){
                 setError("Credit Declined", DECLINED_MORE_INFO)
-            };
+            }
             if (error == ""){
                 setError("Credit Declined", DECLINED_MORE_INFO)
-            };
+            }
             if (error.contains("field format error")){
                 setError("Credit Declined", BAD_VALUE)
-            };
+            }
             if (error.contains("declined insufficient funds available")){
                 setError("Credit Declined", INSUFFICIENT_FUNDS)
             }
-        };
+        }
 
         if (status == "REFERRAL"){
             if (error.contains("referral")){
                 setError("Credit Declined", DECLINED_MORE_INFO)
-            };
+            }
         }
 
         if (status == "DECLINED_DUPLICATE"){
             setError("Credit Declined", DUPLICATE)
-        };
+        }
 
         if (status == "FAILED"){
             setError("Credit Declined", COMMUNICATION_ERROR)
@@ -384,11 +381,10 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
 
     fun cancelCredit(){
         viewModelScope.launch {
-            val terminal = loginRepository.getTerminal()
             try {
                 val url =
-                    "http://" + terminal?.ccEquipment?.ipAddress + ":8080/pos?Action=Cancel&Format=JSON"
-                val response = cancelCredit.cancelCreditProcess(url)
+                    "http://" + terminal.ccEquipment.ipAddress + ":8080/pos?Action=Cancel&Format=JSON"
+                cancelCredit.cancelCreditProcess(url)
             }catch(ex: Exception){
                 setError("Error Notification", "An error occurred. Please try again or contact your system administrator.")
             }
@@ -485,7 +481,7 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
 
     fun discountTicket(order: Order, discount: Discount){
         viewModelScope.launch {
-            var disTotal: Double = 0.00
+            var disTotal: Double
             if (discountType.value == "Discount Ticket"){
                 disTotal = _payment.value?.discountTicket(discount)!!
                 _payment.value = _payment.value
@@ -526,7 +522,6 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
 
     fun modifyPrice(order: Order, price: String){
         viewModelScope.launch {
-            var disTotal: Double = 0.00
             _payment.value?.modifyItemPrice(liveTicketItem.value!!, price.toDouble())!!
             _payment.value = _payment.value
             _paymentScreen.value = ShowPayment.NONE
@@ -551,11 +546,10 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
 
     private fun saveApprovalToCloud(approval: Approval){
         viewModelScope.launch {
-            var a: Approval
             if (approval._rid == ""){
-                a = saveApproval.saveApproval(approval)
+                saveApproval.saveApproval(approval)
             }else{
-                a = updateApproval.saveApproval(approval)
+                updateApproval.saveApproval(approval)
             }
         }
     }

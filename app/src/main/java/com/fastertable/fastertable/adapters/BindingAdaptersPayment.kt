@@ -46,77 +46,109 @@ fun getItemPrice(textView: TextView, item: TicketItem){
 
 @BindingAdapter("ticketSubTotal")
 fun getTicketSubtotal(textView: TextView, payment: Payment?){
-    payment?.tickets?.forEach { item ->
-        if (item.uiActive){
-            textView.text = textView.context.getString(R.string.subtotal_price, "%.${2}f".format(item.subTotal))
+    if (payment != null){
+        payment?.tickets?.forEach { item ->
+            if (item.uiActive){
+                textView.text = textView.context.getString(R.string.subtotal_price, "%.${2}f".format(item.subTotal))
+            }
         }
+    }else{
+        textView.text = ""
     }
+
 }
 
 @BindingAdapter("ticketTax")
 fun getTicketTax(textView: TextView, payment: Payment?){
-    payment?.tickets?.forEach { item ->
-        if (item.uiActive){
-            textView.text = textView.context.getString(R.string.tax_price, "%.${2}f".format(item.tax))
+    if (payment != null){
+        payment?.tickets?.forEach { item ->
+            if (item.uiActive){
+                textView.text = textView.context.getString(R.string.tax_price, "%.${2}f".format(item.tax))
+            }
         }
+    }else{
+        textView.text = ""
     }
 }
 
 @BindingAdapter("ticketGratuity")
 fun ticketGratuity(textView: TextView, payment: Payment?){
-    payment?.tickets?.forEach { item ->
-        if (item.uiActive){
-            if (item.gratuity != 0.00){
-                textView.text = textView.context.getString(R.string.tax_price, "%.${2}f".format(item.gratuity))
-                textView.visibility = View.VISIBLE
-            }else{
-                textView.visibility = View.GONE
+    if (payment != null){
+        payment.tickets.forEach { item ->
+            if (item.uiActive){
+                if (item.gratuity != 0.00){
+                    textView.text = textView.context.getString(R.string.tax_price, "%.${2}f".format(item.gratuity))
+                    textView.visibility = View.VISIBLE
+                }else{
+                    textView.visibility = View.GONE
+                }
             }
         }
+    }else{
+        textView.visibility = View.GONE
     }
+
 }
 
 @BindingAdapter("ticketGratuityText")
 fun ticketGratuityText(textView: TextView, payment: Payment?){
-    payment?.tickets?.forEach { item ->
-        if (item.uiActive){
-            if (item.gratuity != 0.00){
-                textView.visibility = View.VISIBLE
-            }else{
-                textView.visibility = View.GONE
+    if (payment != null){
+        payment?.tickets?.forEach { item ->
+            if (item.uiActive){
+                if (item.gratuity != 0.00){
+                    textView.visibility = View.VISIBLE
+                }else{
+                    textView.visibility = View.GONE
+                }
             }
         }
+    }else{
+        textView.visibility = View.GONE
     }
 }
 
 @BindingAdapter("ticketTotal")
 fun getTicketTotal(textView: TextView, payment: Payment?){
-    payment?.tickets?.forEach { item ->
-        if (item.uiActive){
-            textView.text = textView.context.getString(R.string.total_price, "%.${2}f".format(item.total))
+    if (payment != null){
+        payment.tickets.forEach { item ->
+            if (item.uiActive){
+                textView.text = textView.context.getString(R.string.total_price, "%.${2}f".format(item.total))
+            }
         }
+    }else{
+        textView.text = ""
     }
+
 }
 
 @BindingAdapter("amountOwed")
 fun getAmountOwed(textView: TextView, payment: Payment?){
-    payment?.tickets?.forEach { item ->
-        if (item.uiActive){
-            textView.text = textView.context.getString(R.string.amount_owed, "%.${2}f".format(item.total))
+    if (payment != null){
+        payment.tickets.forEach { item ->
+            if (item.uiActive){
+                textView.text = textView.context.getString(R.string.amount_owed, "%.${2}f".format(item.total))
+            }
         }
+    }else{
+        textView.text = textView.context.getString(R.string.amount_owed_empty)
     }
+
 }
 
 @BindingAdapter("paidInFull")
-fun setPaidInFull(textView: TextView, payment: Payment){
-    payment.tickets.forEach { item ->
-        if (item.uiActive){
-            if (item.paymentTotal!! >= item.total){
-                textView.visibility = View.VISIBLE
-            }else{
-                textView.visibility = View.GONE
+fun setPaidInFull(textView: TextView, payment: Payment?){
+    if (payment != null){
+        payment.tickets.forEach { item ->
+            if (item.uiActive){
+                if (item.paymentTotal >= item.total){
+                    textView.visibility = View.VISIBLE
+                }else{
+                    textView.visibility = View.GONE
+                }
             }
         }
+    }else{
+        textView.visibility = View.GONE
     }
 }
 

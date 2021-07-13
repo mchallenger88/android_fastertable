@@ -28,6 +28,12 @@
         <action
             android:id="@+id/action_nav_home_to_confirmFragment"
             app:destination="@id/confirmFragment" />
+        <action
+            android:id="@+id/action_nav_home_to_giftCardFragment"
+            app:destination="@id/giftCardFragment" />
+        <action
+            android:id="@+id/action_nav_home_to_floorplanFragment"
+            app:destination="@id/floorplanFragment" />
     </fragment>
     <fragment
         android:id="@+id/orderFragment"
@@ -102,6 +108,14 @@
         android:id="@+id/confirmFragment"
         android:name="com.fastertable.fastertable.ui.confirm.ConfirmFragment"
         android:label="ConfirmFragment" />
+    <fragment
+        android:id="@+id/giftCardFragment"
+        android:name="com.fastertable.fastertable.ui.gift.GiftCardFragment"
+        android:label="GiftCardFragment" />
+    <fragment
+        android:id="@+id/floorplanFragment"
+        android:name="com.fastertable.fastertable.ui.floorplan.FloorplanFragment"
+        android:label="FloorplanFragment" />
 
 
 </navigation>

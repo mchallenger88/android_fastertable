@@ -38,10 +38,10 @@ data class MenuItem(
 
 @Parcelize
 data class ItemPrice(
-        val size: String,
-        val price: Double,
-        val discountPrice: Double,
-        val tax: String
+    val size: String,
+    var price: Double,
+    val discountPrice: Double?,
+    val tax: String
 ): Parcelable
 
 @Parcelize

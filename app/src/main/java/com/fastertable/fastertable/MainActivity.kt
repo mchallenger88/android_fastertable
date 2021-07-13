@@ -21,15 +21,22 @@ import com.fastertable.fastertable.common.base.BaseContinueDialog
 import com.fastertable.fastertable.common.base.DismissListener
 import com.fastertable.fastertable.data.models.OrderItem
 import com.fastertable.fastertable.data.models.ReopenCheckoutRequest
+import com.fastertable.fastertable.data.models.RestaurantTable
 import com.fastertable.fastertable.data.repository.LoginRepository
 import com.fastertable.fastertable.data.repository.OrderRepository
 import com.fastertable.fastertable.data.repository.PaymentRepository
+import com.fastertable.fastertable.ui.approvals.ApprovalsViewModel
 import com.fastertable.fastertable.ui.checkout.AddTipFragmentDirections
 import com.fastertable.fastertable.ui.checkout.CheckoutFragmentDirections
 import com.fastertable.fastertable.ui.checkout.CheckoutViewModel
 import com.fastertable.fastertable.ui.clockout.ClockoutViewModel
 import com.fastertable.fastertable.ui.confirm.ConfirmViewModel
 import com.fastertable.fastertable.ui.dialogs.*
+import com.fastertable.fastertable.ui.error.ErrorViewModel
+import com.fastertable.fastertable.ui.floorplan.FloorplanTable
+import com.fastertable.fastertable.ui.floorplan.FloorplanTableListener
+import com.fastertable.fastertable.ui.floorplan.FloorplanViewModel
+import com.fastertable.fastertable.ui.gift.GiftCardViewModel
 import com.fastertable.fastertable.ui.home.HomeFragmentDirections
 import com.fastertable.fastertable.ui.home.HomeViewModel
 import com.fastertable.fastertable.ui.order.OrderFragmentDirections
@@ -46,7 +53,8 @@ import javax.inject.Inject
 
 
 @AndroidEntryPoint
-class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteListener, BaseContinueDialog.ContinueListener {
+class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteListener,
+    FloorplanTableListener, BaseContinueDialog.ContinueListener {
     @Inject lateinit var loginRepository: LoginRepository
     @Inject lateinit var orderRepository: OrderRepository
     @Inject lateinit var paymentRepository: PaymentRepository
@@ -58,6 +66,10 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
     private val checkoutViewModel: CheckoutViewModel by viewModels()
     private val clockoutViewModel: ClockoutViewModel by viewModels()
     private val confirmViewModel: ConfirmViewModel by viewModels()
+    private val approvalViewModel: ApprovalsViewModel by viewModels()
+    private val giftCardViewModel: GiftCardViewModel by viewModels()
+    private val errorViewModel: ErrorViewModel by viewModels()
+    private val floorplanViewModel: FloorplanViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -88,6 +100,16 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
 
+        homeObservables(navController)
+        orderObservables(navController)
+        paymentObservables(navController)
+        checkoutObservables(navController)
+        giftCardObservables()
+
+        hideSystemUI()
+    }
+
+    private fun homeObservables(navController: NavController){
         homeViewModel.navigateToOrder.observe(this, { it ->
             if (it == "Counter"){
                 orderViewModel.clearOrder()
@@ -105,6 +127,15 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
             }
         })
 
+        homeViewModel.navigateToFloorplan.observe(this, {
+            if (it){
+                navController.navigate(HomeFragmentDirections.actionNavHomeToFloorplanFragment())
+                homeViewModel.setNavigateToFloorPlan(false)
+            }
+        })
+    }
+
+    private fun orderObservables(navController: NavController){
         orderViewModel.sendKitchen.observe(this, {
             if (!checkLoginCheckoutStatus()){
                 sendToKitchen()
@@ -113,7 +144,6 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
                 continueCancelViewModel.setMessage("You have checked out. Click 'Continue' to reopen your checkout.")
                 ContinueCancelFragment().show(supportFragmentManager, ContinueCancelFragment.TAG)
             }
-
         })
 
         orderViewModel.orderItemClicked.observe(this, {
@@ -128,10 +158,12 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
 
         orderViewModel.paymentClicked.observe(this, {
             if (it){
-               goToPayment(navController)
+                goToPayment(navController)
             }
         })
+    }
 
+    private fun paymentObservables(navController: NavController){
         paymentViewModel.amountOwed.observe(this, {
             paymentViewModel.livePayment.value?.tickets?.forEach { t ->
                 if (t.uiActive){
@@ -180,7 +212,9 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
                 TicketItemMoreBottomSheet().show(supportFragmentManager, TicketItemMoreBottomSheet.TAG)
             }
         })
+    }
 
+    private fun checkoutObservables(navController: NavController){
         checkoutViewModel.navToTip.observe(this, {
             if (it == "Tip"){
                 navController.navigate(CheckoutFragmentDirections.actionCheckoutFragmentToAddTipFragment())
@@ -218,9 +252,53 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
 
             }
         })
+    }
 
+    private fun giftCardObservables(){
+        giftCardViewModel.balanceResponse.observe(this, {
+            if (it != ""){
+                val balance = it.toDouble()
+                errorViewModel.setTitle("Balance Inquiry")
+                errorViewModel.setMessage("The gift card has a balance of $${"%.2f".format(balance)}")
 
-        hideSystemUI()
+                ErrorAlertBottomSheet().show(supportFragmentManager, ErrorAlertBottomSheet.TAG)
+            }
+        })
+
+        giftCardViewModel.swipeResponse.observe(this, {
+            if (it != null){
+                errorViewModel.setTitle("Gift Card")
+                val add = it[0].toDouble()
+                val balance = it[1].toDouble()
+                errorViewModel.setMessage("$${"%.2f".format(add)} has been added to the gift card. The total balance on this card is $${"%.2f".format(balance)}")
+
+                ErrorAlertBottomSheet().show(supportFragmentManager, ErrorAlertBottomSheet.TAG)
+            }
+        })
+
+        giftCardViewModel.amountOwed.observe(this, {
+            giftCardViewModel.activePayment.value?.tickets?.forEach { t ->
+                if (t.uiActive){
+                    if (t.paymentType == "Cash"){
+                        CashBackDialogFragment().show(supportFragmentManager, CashBackDialogFragment.TAG)
+                    }
+                }
+            }
+        })
+
+        giftCardViewModel.ticketPaid.observe(this, { it ->
+            if (it){
+                giftCardViewModel.savePaymentToCloud()
+            }
+        })
+
+        giftCardViewModel.activePayment.observe(this, {it ->
+            if (it != null) {
+                if (it.closed){
+                    giftCardViewModel.closeOrder()
+                }
+            }
+        })
     }
 
 
@@ -408,6 +486,11 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
         intent.putExtra("fragmentToLoad", "User")
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
         startActivity(intent)
+    }
+
+    override fun onClick(table: FloorplanTable) {
+        println(table.restaurantTable.id)
+        floorplanViewModel.tableClicked(table.restaurantTable)
     }
 
 }

@@ -207,6 +207,12 @@ data class Payment(
         }
         return disTotal
     }
+
+    fun changeGiftItemAmount(amount: Double){
+        this.tickets.get(0).ticketItems.get(0).itemPrice = amount
+        this.tickets.get(0).ticketItems.get(0).ticketItemPrice = amount
+        this.tickets.get(0).recalculateAfterApproval(0.00)
+    }
 }
 
 @Parcelize
@@ -221,7 +227,7 @@ data class Ticket(
     var gratuity: Double,
     val deliveryFee: Double,
     var paymentTotal: Double = 0.00,
-    val stageResponse: ArrayList<StageResponse>,
+    var stageResponse: MutableList<StageResponse>,
     var creditCardTransactions: ArrayList<CreditCardTransaction>,
     var partialPayment: Boolean,
     var uiActive: Boolean = false
@@ -279,7 +285,7 @@ data class TicketItem(
     val quantity: Int,
     val itemName: String,
     val itemSize: String,
-    val itemPrice: Double,
+    var itemPrice: Double,
     var discountPrice: Double?,
     var priceModified: Boolean,
     val itemMods: ArrayList<ModifierItem>,

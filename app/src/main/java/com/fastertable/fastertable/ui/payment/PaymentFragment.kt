@@ -109,14 +109,14 @@ class PaymentFragment: BaseFragment() {
         flow.setVerticalStyle(Flow.CHAIN_SPREAD_INSIDE)
         flow.setHorizontalStyle(Flow.CHAIN_PACKED)
         for (discount in viewModel.settings.discounts) {
-            val btn = createDiscountButton(flow, binding, discount)
+            val btn = createDiscountButton(discount)
             binding.layoutDiscountButtons.addView(btn)
             flow.addView(btn)
         }
         binding.layoutDiscountButtons.addView(flow)
     }
 
-    private fun createDiscountButton(flow: Flow, binding: PaymentFragmentBinding, discount: Discount): Button {
+    private fun createDiscountButton(discount: Discount): Button {
         val btn = Button(context)
         btn.id = ViewCompat.generateViewId()
         val color = ContextCompat.getColor(requireContext(), R.color.primaryTextColor)

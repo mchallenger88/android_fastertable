@@ -24,6 +24,11 @@
             android:title="@string/manager_approvals" />
 
         <item
+            android:id="@+id/giftCardFragment"
+            android:icon="@drawable/ic_outline_card_giftcard_24"
+            android:title="@string/gift_card" />
+
+        <item
             android:id="@+id/clockoutFragment"
             android:icon="@drawable/ic_outline_access_time_24"
             android:title="@string/clockout" />
