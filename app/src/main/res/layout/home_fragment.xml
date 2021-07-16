@@ -76,6 +76,7 @@
                     android:text="@string/takeout_order"
                     android:textColor="@color/white"
                     android:textSize="@dimen/toolbar_button"
+                    android:onClick="@{() -> viewModel.setNavigateToTakeout(true)}"
                     app:layout_constraintStart_toEndOf="@+id/btn_tableOrder"
                     app:layout_constraintTop_toTopOf="@+id/layout_home_buttons"
                     app:strokeColor="@color/white" />

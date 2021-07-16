@@ -140,7 +140,7 @@ class OrderRepository @Inject constructor(private val app: Application) {
         return null
     }
 
-    fun createNewOrder(orderType: String, settings: Settings, user: OpsAuth, tableNumber: Int?): Order {
+    fun createNewOrder(orderType: String, settings: Settings, user: OpsAuth, tableNumber: Int?, takeOutCustomer: TakeOutCustomer?): Order {
         val newGuest = Guest(
             id = 0,
             startTime = GlobalUtils().getNowEpoch(),
@@ -174,7 +174,7 @@ class OrderRepository @Inject constructor(private val app: Application) {
             note = "",
 
             customer = null,
-            takeOutCustomer = null,
+            takeOutCustomer = takeOutCustomer,
             outsideDelivery = null,
 
             orderFees = null,

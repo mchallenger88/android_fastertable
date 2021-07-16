@@ -33,6 +33,7 @@ import com.fastertable.fastertable.ui.clockout.ClockoutViewModel
 import com.fastertable.fastertable.ui.confirm.ConfirmViewModel
 import com.fastertable.fastertable.ui.dialogs.*
 import com.fastertable.fastertable.ui.error.ErrorViewModel
+import com.fastertable.fastertable.ui.floorplan.FloorplanFragmentDirections
 import com.fastertable.fastertable.ui.floorplan.FloorplanTable
 import com.fastertable.fastertable.ui.floorplan.FloorplanTableListener
 import com.fastertable.fastertable.ui.floorplan.FloorplanViewModel
@@ -44,6 +45,8 @@ import com.fastertable.fastertable.ui.order.OrderViewModel
 import com.fastertable.fastertable.ui.payment.PaymentFragmentDirections
 import com.fastertable.fastertable.ui.payment.PaymentViewModel
 import com.fastertable.fastertable.ui.payment.ShowPayment
+import com.fastertable.fastertable.ui.takeout.TakeoutFragmentDirections
+import com.fastertable.fastertable.ui.takeout.TakeoutViewModel
 import com.fastertable.fastertable.utils.GlobalUtils
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
@@ -70,6 +73,7 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
     private val giftCardViewModel: GiftCardViewModel by viewModels()
     private val errorViewModel: ErrorViewModel by viewModels()
     private val floorplanViewModel: FloorplanViewModel by viewModels()
+    private val takeoutViewModel: TakeoutViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -104,6 +108,8 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
         orderObservables(navController)
         paymentObservables(navController)
         checkoutObservables(navController)
+        floorplanObservables(navController)
+        takeoutObservables(navController)
         giftCardObservables()
 
         hideSystemUI()
@@ -131,6 +137,43 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
             if (it){
                 navController.navigate(HomeFragmentDirections.actionNavHomeToFloorplanFragment())
                 homeViewModel.setNavigateToFloorPlan(false)
+            }
+        })
+
+        homeViewModel.navigateToTakeout.observe(this, {
+            if (it){
+                navController.navigate(HomeFragmentDirections.actionNavHomeToTakeoutFragment())
+                homeViewModel.setNavigateToTakeout(false)
+            }
+        })
+    }
+
+    private fun floorplanObservables(navController: NavController){
+        floorplanViewModel.navigateToOrder.observe(this, {
+            if (it == "Table"){
+                orderViewModel.clearOrder()
+                paymentViewModel.clearPayment()
+                navController.navigate(FloorplanFragmentDirections.actionFloorplanFragmentToOrderFragment())
+                homeViewModel.navigationEnd()
+            }
+
+            if (it.contains("O_")){
+                orderViewModel.clearOrder()
+                paymentViewModel.clearPayment()
+                orderViewModel.setCurrentOrderId(it)
+                navController.navigate(FloorplanFragmentDirections.actionFloorplanFragmentToOrderFragment())
+                homeViewModel.navigationEnd()
+            }
+        })
+    }
+
+    private fun takeoutObservables(navController: NavController){
+        takeoutViewModel.navigateToOrder.observe(this, {
+            if (it == "Takeout"){
+                orderViewModel.clearOrder()
+                paymentViewModel.clearPayment()
+                navController.navigate(TakeoutFragmentDirections.actionTakeoutFragmentToOrderFragment())
+                homeViewModel.navigationEnd()
             }
         })
     }

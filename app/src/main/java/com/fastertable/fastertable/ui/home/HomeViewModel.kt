@@ -12,6 +12,10 @@ import javax.inject.Inject
 class HomeViewModel @Inject constructor (private val loginRepository: LoginRepository,
                                          private val orderRepository: OrderRepository) : ViewModel() {
 
+    val user: OpsAuth = loginRepository.getOpsUser()!!
+    val settings: Settings = loginRepository.getSettings()!!
+    val terminal: Terminal = loginRepository.getTerminal()!!
+
     private val _showProgressBar = MutableLiveData<Boolean>()
     val showProgressBar: LiveData<Boolean>
         get() = _showProgressBar
@@ -19,18 +23,6 @@ class HomeViewModel @Inject constructor (private val loginRepository: LoginRepos
     private val _company = MutableLiveData<Company>()
     val company: LiveData<Company>
         get() = _company
-
-    private val _settings = MutableLiveData<Settings>()
-    val settings: LiveData<Settings>
-        get() = _settings
-
-    private val _terminal = MutableLiveData<Terminal>()
-    val terminal: LiveData<Terminal>
-        get() = _terminal
-
-    private val _user = MutableLiveData<OpsAuth>()
-    val user: LiveData<OpsAuth>
-        get() = _user
 
     private val _orders = MutableLiveData<List<Order>>()
     val orders: LiveData<List<Order>>
@@ -52,6 +44,10 @@ class HomeViewModel @Inject constructor (private val loginRepository: LoginRepos
     val navigateToFloorplan: LiveData<Boolean>
         get() = _navigateToFloorplan
 
+    private val _navigateToTakeout = MutableLiveData<Boolean>()
+    val navigateToTakeout: LiveData<Boolean>
+        get() = _navigateToTakeout
+
     private val _viewLoaded = MutableLiveData<Boolean>()
     val viewLoaded: LiveData<Boolean>
         get() = _viewLoaded
@@ -62,8 +58,6 @@ class HomeViewModel @Inject constructor (private val loginRepository: LoginRepos
 
         viewModelScope.launch {
             getOrders()
-            getSettings()
-            getUser()
         }
 
     }
@@ -82,24 +76,6 @@ class HomeViewModel @Inject constructor (private val loginRepository: LoginRepos
         }
     }
 
-    private fun getSettings(){
-        viewModelScope.launch{
-            _settings.postValue(loginRepository.getSettings())
-        }
-    }
-
-    private fun getUser(){
-        viewModelScope.launch{
-            _user.postValue(loginRepository.getOpsUser())
-        }
-    }
-
-    private fun getTerminal(){
-        viewModelScope.launch{
-            _terminal.postValue(loginRepository.getTerminal())
-        }
-    }
-
     fun filterOrders(filter: String){
         when (filter) {
             "Open" -> _filteredOrders.value = orders.value?.filter { it -> it.closeTime == null }
@@ -110,6 +86,10 @@ class HomeViewModel @Inject constructor (private val loginRepository: LoginRepos
 
     fun setNavigateToFloorPlan(b: Boolean){
         _navigateToFloorplan.value = b
+    }
+
+    fun setNavigateToTakeout(b: Boolean){
+        _navigateToTakeout.value = b
     }
 
     fun onOrderClicked(id: String) {
@@ -132,7 +112,7 @@ class HomeViewModel @Inject constructor (private val loginRepository: LoginRepos
     }
 
     fun startCounterOrder(){
-        orderRepository.createNewOrder("Counter", _settings.value!!, _user.value!!, null)
+        orderRepository.createNewOrder("Counter", settings, user, null,  null)
         _navigateToOrder.value = "Counter"
 
     }

@@ -260,4 +260,11 @@
 
     //Floorplan
     <string name="restaurant_table">Table</string>
+
+    //Takeout
+    <string name="start_takeout_order">Takeout Order</string>
+    <string name="takeout_name">Enter Customer Name</string>
+    <string name="takeout_phone">Enter Phone Number</string>
+    <string name="takeout_note">Enter Notes</string>
+    <string name="takeout_button">Start Order</string>
 </resources>

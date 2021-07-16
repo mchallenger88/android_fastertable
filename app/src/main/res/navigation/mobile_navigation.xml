@@ -34,6 +34,9 @@
         <action
             android:id="@+id/action_nav_home_to_floorplanFragment"
             app:destination="@id/floorplanFragment" />
+        <action
+            android:id="@+id/action_nav_home_to_takeoutFragment"
+            app:destination="@id/takeoutFragment" />
     </fragment>
     <fragment
         android:id="@+id/orderFragment"
@@ -115,7 +118,19 @@
     <fragment
         android:id="@+id/floorplanFragment"
         android:name="com.fastertable.fastertable.ui.floorplan.FloorplanFragment"
-        android:label="FloorplanFragment" />
+        android:label="FloorplanFragment" >
+        <action
+            android:id="@+id/action_floorplanFragment_to_orderFragment"
+            app:destination="@id/orderFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/takeoutFragment"
+        android:name="com.fastertable.fastertable.ui.takeout.TakeoutFragment"
+        android:label="TakeoutFragment" >
+        <action
+            android:id="@+id/action_takeoutFragment_to_orderFragment"
+            app:destination="@id/orderFragment" />
+    </fragment>
 
 
 </navigation>
