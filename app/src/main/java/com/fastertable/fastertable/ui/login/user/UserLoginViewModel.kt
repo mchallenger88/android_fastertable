@@ -47,6 +47,14 @@ class UserLoginViewModel @Inject constructor(private val loginRepository: LoginR
     val validUser: LiveData<Boolean?>
         get() = _validUser
 
+    private val _clockin = MutableLiveData<Boolean>()
+    val clockin: LiveData<Boolean>
+        get() = _clockin
+
+    private val _loginTime = MutableLiveData<Long>()
+    val loginTime: LiveData<Long>
+        get() = _loginTime
+
 
     init{
         _pin.value = ""
@@ -55,12 +63,11 @@ class UserLoginViewModel @Inject constructor(private val loginRepository: LoginR
         getTerminal()
     }
 
-    @Suppress("UNNECESSARY_NOT_NULL_ASSERTION")
     private fun getTerminal(){
         viewModelScope.launch {
             val term = loginRepository.getTerminal()
             if (term != null){
-                _terminal.postValue(term!!)
+                _terminal.postValue(term)
             }
         }
     }
@@ -89,16 +96,27 @@ class UserLoginViewModel @Inject constructor(private val loginRepository: LoginR
         viewModelScope.launch {
             val user: OpsAuth? = loginUser.loginUser(pin, cid, lid, now, midnight)
             if (user?.isAuthenticated!!){
+                _loginTime.postValue(now)
                 _validUser.postValue(true)
                 getOrders()
                 _showProgressBar.postValue(false)
-                _navigate.postValue(true)
+                if (isClockIn(user, now)){
+                    _clockin.postValue(true)
+                }else{
+                    _navigate.postValue(true)
+                }
+
+
             }else{
                 _validUser.postValue(false)
                 _pin.value = ""
                 _showProgressBar.postValue(false)
             }
         }
+    }
+
+    fun navigateToHome(){
+        _navigate.postValue(true)
     }
 
     private suspend fun getOrders(){
@@ -112,6 +130,10 @@ class UserLoginViewModel @Inject constructor(private val loginRepository: LoginR
 
     fun setUserValid(){
         _validUser.value = null
+    }
+
+    private fun isClockIn(user: OpsAuth, loginTime: Long): Boolean{
+        return user.userClock.clockInTime == loginTime
     }
 
 
