@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
-import com.fastertable.fastertable.databinding.DialogAssignTableBinding
 import com.fastertable.fastertable.databinding.DialogCashBackBinding
 import com.fastertable.fastertable.ui.payment.PaymentViewModel
 import dagger.hilt.android.AndroidEntryPoint

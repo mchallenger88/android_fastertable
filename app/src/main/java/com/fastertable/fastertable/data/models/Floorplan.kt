@@ -6,7 +6,7 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 data class RestaurantFloorPlan(
     val tables: ArrayList<RestaurantTable>,
-    val walls: ArrayList<WallClass>,
+    val floorplanWalls: ArrayList<FloorplanWall>?,
     val companyId: String,
     val name: String,
     val id: String,
@@ -73,13 +73,12 @@ enum class TableType{
 }
 
 @Parcelize
-data class WallClass (
+data class FloorplanWall (
     val id: Int?,
     val left: Int?,
     val top: Int?,
     val height: Int?,
     val width: Int?,
-    val css: String?,
 ): Parcelable
 
 @Parcelize
@@ -95,7 +94,7 @@ data class TablePosition(
 @Parcelize
 data class WallPosition(
     val floorplan: RestaurantFloorPlan,
-    val wall: WallClass,
+    val floorplanWall: FloorplanWall,
     val newX: Int,
     val newY: Int,
     val newWidth: Int,
@@ -106,7 +105,7 @@ data class WallPosition(
 
 @Parcelize
 data class WallDialogSave(
-    val wall: WallClass,
+    val floorplanWall: FloorplanWall,
     val action: String,
     val new: Boolean,
     val oldId: Int,
@@ -122,5 +121,5 @@ data class TableDialogData(
 @Parcelize
 data class WallDialogData(
     val floorplan: RestaurantFloorPlan,
-    val wall: WallClass
+    val floorplanWall: FloorplanWall
 ): Parcelable

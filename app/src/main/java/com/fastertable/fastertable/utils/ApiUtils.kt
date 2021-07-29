@@ -1,9 +1,11 @@
 package com.fastertable.fastertable.utils
 
+import android.widget.DatePicker
 import okhttp3.ResponseBody
 import retrofit2.Converter
 import retrofit2.Retrofit
 import java.lang.reflect.Type
+import java.util.*
 
 
 enum class ApiStatus {
@@ -41,4 +43,10 @@ class NullOnEmptyConverterFactory : Converter.Factory() {
             retrofit.nextResponseBodyConverter<Any>(this, type, annotations)
         return Converter { body -> if (body.contentLength() == 0L) null else delegate.convert(body) }
     }
+}
+
+fun DatePicker.getDate(): Date {
+    val calendar = Calendar.getInstance()
+    calendar.set(year, month, dayOfMonth)
+    return calendar.time
 }

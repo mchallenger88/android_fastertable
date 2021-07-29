@@ -241,6 +241,7 @@
     <string name="total_cash">Total Cash</string>
     <string name="totaltips">Total Tips</string>
     <string name="tap_an_order">Tap an order to add or change a tip</string>
+    <string name="confirm_date_label">Date:</string>
 
     //Gift Card
     <string name="gift_card">Gift Card</string>
@@ -267,4 +268,5 @@
     <string name="takeout_phone">Enter Phone Number</string>
     <string name="takeout_note">Enter Notes</string>
     <string name="takeout_button">Start Order</string>
+
 </resources>

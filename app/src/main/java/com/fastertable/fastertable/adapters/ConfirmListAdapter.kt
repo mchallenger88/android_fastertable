@@ -79,13 +79,15 @@ class ConfirmListAdapter(private val clickListener: ConfirmListListener, private
                 if (ce.creditTips > 0){
                     ce.creditTips = ce.creditTips.minus(ce.tipDiscount?.div(100)!!).round(2)
                 }
-                if (ce.tipSettlementPeriod == "Daily"){
-                    ce.totalOwed = ce.cashSalesTotal.minus(ce.creditTips)
-                }
 
-                if (ce.tipSettlementPeriod === "Weekly"){
-                    ce.totalOwed = ce.cashSalesTotal
-                }
+                ce.totalOwed = ce.cashSalesTotal.minus(ce.creditTips)
+//                if (ce.tipSettlementPeriod == "Daily"){
+//                    ce.totalOwed = ce.cashSalesTotal.minus(ce.creditTips)
+//                }
+//
+//                if (ce.tipSettlementPeriod === "Weekly"){
+//                    ce.totalOwed = ce.cashSalesTotal
+//                }
 
                 if (ce.totalOwed < 0){
                     ce.totalOwed = abs(ce.totalOwed)

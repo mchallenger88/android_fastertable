@@ -10,12 +10,14 @@ import com.fastertable.fastertable.adapters.ConfirmHeaderAdapter
 import com.fastertable.fastertable.adapters.ConfirmListAdapter
 import com.fastertable.fastertable.common.base.BaseFragment
 import com.fastertable.fastertable.databinding.ConfirmFragmentBinding
+import com.fastertable.fastertable.ui.dialogs.DatePickerViewModel
 import com.google.android.material.datepicker.MaterialDatePicker
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class ConfirmFragment  : BaseFragment(){
     private val viewModel: ConfirmViewModel by activityViewModels()
+    private val dateViewModel: DatePickerViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -28,14 +30,17 @@ class ConfirmFragment  : BaseFragment(){
         viewModel.getConfirmList()
         bindingObservables(binding)
 
-        val datePicker = MaterialDatePicker.Builder.datePicker()
-            .setTitleText("Select date")
-            .setSelection(MaterialDatePicker.todayInUtcMilliseconds())
-            .build()
-
         binding.btnConfirmDate.setOnClickListener {
-
+            dateViewModel.setSource("Confirm")
         }
+
+        viewModel.progressVisibility.observe( viewLifecycleOwner, {
+            if (it){
+                binding.confirmProgressBar.visibility = View.VISIBLE
+            }else{
+                binding.confirmProgressBar.visibility = View.INVISIBLE
+            }
+        })
         return binding.root
     }
 

@@ -16,7 +16,7 @@
         <item name="materialAlertDialogTheme">@style/MyThemeOverlay.MaterialDialogAlert</item>
         <item name="snackbarTextViewStyle">@style/MyThemeOverlay.SnackBarStyle.TextView</item>
         <item name="android:fontFamily">@style/DefaultFont</item>
-
+        <item name="materialCalendarTheme">@style/ThemeOverlay.App.DatePicker</item>
     </style>
 
     <style name="DefaultFont" parent="@style/Widget.MaterialComponents.TextView">
@@ -44,5 +44,9 @@
     <style name="Theme.Fastertable.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="Theme.Fastertable.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+    <style name="ThemeOverlay.App.DatePicker" parent="ThemeOverlay.MaterialComponents.MaterialCalendar">
+        <item name="android:textSize">@dimen/d24</item>
+    </style>
 
 </resources>

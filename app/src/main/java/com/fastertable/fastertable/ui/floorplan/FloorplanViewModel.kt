@@ -25,6 +25,10 @@ class FloorplanViewModel @Inject constructor
     val tables: LiveData<List<RestaurantTable>>
         get() = _tables
 
+    private val _floorplans = MutableLiveData<List<RestaurantFloorPlan>>()
+    val floorplans: LiveData<List<RestaurantFloorPlan>>
+        get() = _floorplans
+
     private val _orders = MutableLiveData<List<Order>>()
     val orders: LiveData<List<Order>>
         get() = _orders
@@ -49,7 +53,7 @@ class FloorplanViewModel @Inject constructor
 
     }
 
-    fun loadTables(){
+    private fun loadTables(){
         val table1 = RestaurantTable(
             id = 12,
             type = TableType.Round_Booth,
@@ -82,6 +86,27 @@ class FloorplanViewModel @Inject constructor
         list.add(table1)
         list.add(table2)
         _tables.value = list
+
+        val floorPlan = RestaurantFloorPlan(
+            tables = list as ArrayList<RestaurantTable>,
+            floorplanWalls = null,
+            companyId = "",
+            name = "",
+            id = "",
+            locationId = "",
+            archived = false,
+            type = "floorplan",
+            _rid = null,
+            _self = null,
+            _etag = null,
+            _attachments = null,
+            _ts = null
+        )
+
+        val listfp = mutableListOf<RestaurantFloorPlan>()
+        listfp.add(floorPlan)
+
+        _floorplans.postValue(listfp)
     }
 
 
@@ -90,13 +115,11 @@ class FloorplanViewModel @Inject constructor
         val openOrder = orders.value?.filter { it -> it.closeTime == null && it.tableNumber == table.id }
         if (openOrder != null) {
             if (openOrder.isNotEmpty()){
-
                 _navigateToOrder.value = openOrder[0].id
             }else{
                 startTableOrder(table)
             }
         }
-
     }
 
     fun startTableOrder(table: RestaurantTable){

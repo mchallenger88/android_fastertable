@@ -19,6 +19,7 @@ import androidx.navigation.ui.*
 import com.fastertable.fastertable.common.base.BaseActivity
 import com.fastertable.fastertable.common.base.BaseContinueDialog
 import com.fastertable.fastertable.common.base.DismissListener
+import com.fastertable.fastertable.data.models.DateDialog
 import com.fastertable.fastertable.data.models.OrderItem
 import com.fastertable.fastertable.data.models.ReopenCheckoutRequest
 import com.fastertable.fastertable.data.models.RestaurantTable
@@ -52,11 +53,12 @@ import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import java.util.*
 import javax.inject.Inject
 
 
 @AndroidEntryPoint
-class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteListener,
+class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteListener, DateListener,
     FloorplanTableListener, BaseContinueDialog.ContinueListener {
     @Inject lateinit var loginRepository: LoginRepository
     @Inject lateinit var orderRepository: OrderRepository
@@ -74,6 +76,7 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
     private val errorViewModel: ErrorViewModel by viewModels()
     private val floorplanViewModel: FloorplanViewModel by viewModels()
     private val takeoutViewModel: TakeoutViewModel by viewModels()
+    private val datePickerViewModel: DatePickerViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -111,6 +114,7 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
         floorplanObservables(navController)
         takeoutObservables(navController)
         giftCardObservables()
+        datePickerObservables()
 
         hideSystemUI()
     }
@@ -290,9 +294,12 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
             }
         })
 
-        confirmViewModel.openCalendar.observe(this, {
-            if (it){
+    }
 
+    private fun datePickerObservables(){
+        datePickerViewModel.source.observe( this, {
+            if (it.isNotEmpty()){
+                DatePickerDialogFragment().show(supportFragmentManager, DatePickerDialogFragment.TAG)
             }
         })
     }
@@ -531,9 +538,15 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
         startActivity(intent)
     }
 
-    override fun onClick(table: FloorplanTable) {
-        println(table.restaurantTable.id)
-        floorplanViewModel.tableClicked(table.restaurantTable)
+    override fun onClick(table: RestaurantTable) {
+        println(table.id)
+//        floorplanViewModel.tableClicked(table.restaurantTable)
+    }
+
+    override fun returnDate(value: DateDialog) {
+        when (value.source){
+            "Confirm" -> confirmViewModel.setDate(value.date)
+        }
     }
 
 }

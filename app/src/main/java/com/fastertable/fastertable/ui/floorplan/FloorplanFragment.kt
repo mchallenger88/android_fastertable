@@ -12,6 +12,8 @@ import androidx.core.view.ViewCompat
 import androidx.fragment.app.activityViewModels
 import com.fastertable.fastertable.common.base.BaseFragment
 import androidx.fragment.app.activityViewModels
+import com.fastertable.fastertable.adapters.FloorplanAdapter
+import com.fastertable.fastertable.adapters.ModifierAdapter
 import com.fastertable.fastertable.data.models.IdLocation
 import com.fastertable.fastertable.data.models.RestaurantTable
 import com.fastertable.fastertable.data.models.TableType
@@ -47,7 +49,7 @@ class FloorplanFragment: BaseFragment() {
                     btnTable.loadTable(table)
 
                     btnTable.setOnClickListener {
-                        tableListener.onClick(btnTable)
+                        tableListener.onClick(table)
                     }
 
                     val currentLayout = ConstraintLayout.LayoutParams(
@@ -61,6 +63,11 @@ class FloorplanFragment: BaseFragment() {
                 }
             }
         })
+
+    }
+
+    fun tableClick(table: RestaurantTable){
+        println(table)
     }
 
     override fun onAttach(context: Context) {

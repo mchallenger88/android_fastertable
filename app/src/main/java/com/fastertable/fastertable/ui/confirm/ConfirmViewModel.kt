@@ -11,7 +11,10 @@ import com.fastertable.fastertable.data.repository.LoginRepository
 import com.fastertable.fastertable.utils.GlobalUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import java.time.Instant
 import java.time.LocalDate
+import java.time.ZoneId
+import java.util.*
 import javax.inject.Inject
 
 @HiltViewModel
@@ -32,18 +35,19 @@ class ConfirmViewModel @Inject constructor (
     val activeDate: LiveData<LocalDate>
         get() = _activeDate
 
-    private val _openCalendar = MutableLiveData<Boolean>()
-    val openCalendar: LiveData<Boolean>
-        get() = _openCalendar
+    private val _progressVisibility = MutableLiveData<Boolean>()
+    val progressVisibility: LiveData<Boolean>
+        get() = _progressVisibility
+
 
     init {
         _activeDate.value = LocalDate.now()
-        _openCalendar.value = false
         getConfirmList()
     }
 
     fun getConfirmList(){
         viewModelScope.launch {
+            _progressVisibility.value = true
             val rollingMidnight = GlobalUtils().unixMidnight(_activeDate.value!!)
 
             val request: CompanyTimeBasedRequest = if (midnight == rollingMidnight){
@@ -62,11 +66,15 @@ class ConfirmViewModel @Inject constructor (
             var list = getConfirmList.getList(request)
             list = list.filter { it -> it.orders?.size!! > 0 }
             _confirmList.postValue(list)
+            _progressVisibility.value = false
         }
     }
 
-    fun setDatePicker(b: Boolean){
-        _openCalendar.value = b
+    fun setDate(date: Date){
+        _activeDate.value = Instant.ofEpochMilli(date.time)
+            .atZone(ZoneId.systemDefault())
+            .toLocalDate()
+        getConfirmList()
     }
 
     fun confirm(ce: ConfirmEmployee){

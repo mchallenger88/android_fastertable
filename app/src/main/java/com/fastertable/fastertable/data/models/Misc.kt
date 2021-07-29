@@ -2,11 +2,19 @@ package com.fastertable.fastertable.data.models
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
+import java.util.*
+import kotlin.collections.ArrayList
 
 @Parcelize
 data class ReportDateRange (
     val startDate: Long,
     val endDate: Long,
+): Parcelable
+
+@Parcelize
+data class DateDialog (
+    val date: Date,
+    val source: String,
 ): Parcelable
 
 @Parcelize

@@ -72,5 +72,5 @@ constructor(private val ctx: Context, private val attributeSet: AttributeSet? = 
 }
 
 interface FloorplanTableListener{
-    fun onClick(table: FloorplanTable)
+    fun onClick(table: RestaurantTable)
 }

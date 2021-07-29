@@ -8,6 +8,7 @@
             name="viewModel"
             type="com.fastertable.fastertable.ui.confirm.ConfirmViewModel" />
     </data>
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -31,10 +32,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="6dp"
+
                 android:text="@string/change_date"
                 android:textColor="@color/white"
                 android:textSize="@dimen/toolbar_button"
-                android:onClick="@{() -> viewModel.setDatePicker(true)}"
                 app:layout_constraintStart_toStartOf="@+id/confirm_fastertoolbar"
                 app:layout_constraintTop_toTopOf="@+id/confirm_fastertoolbar"
                 app:strokeColor="@color/white" />
@@ -52,6 +53,26 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/confirm_fastertoolbar" />
 
+        <ProgressBar
+            android:id="@+id/confirm_progress_bar"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:visibility="invisible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/confirm_fastertoolbar" />
+
+        <TextView
+            android:id="@+id/txt_confirm_date"
+            style="@style/view_subtitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            tools:dateToString="@{viewModel.activeDate}"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/txt_confirm_title" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/confirm_list_recycler"
@@ -66,8 +87,11 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/txt_confirm_title"
-            tools:listitem="@layout/confirm_list_line_item" />
+            app:layout_constraintTop_toBottomOf="@+id/txt_confirm_date"
+            tools:listitem="@layout/confirm_list_line_item">
+
+        </androidx.recyclerview.widget.RecyclerView>
+
 
 
 
