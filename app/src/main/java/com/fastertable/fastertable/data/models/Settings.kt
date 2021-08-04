@@ -40,7 +40,20 @@ data class Settings (
     val showCounterOrderDialog: Boolean,
     val hoursOfOperation: OperatingHours,
     val tipSettlementPeriod: String,
+    val additionalFees: ArrayList<AdditionalFees>?
 ): Parcelable
+
+@Parcelize
+data class AdditionalFees(
+    val id: Int,
+    val name: String,
+    val feeType: FeeType,
+    val amount: Double
+): Parcelable
+
+enum class FeeType{
+    FlatFee, Percentage
+}
 
 @Parcelize
 data class OperatingHours(

@@ -33,8 +33,8 @@ class CheckoutViewModel @Inject constructor (
     val activeDate: LiveData<LocalDate>
         get() = _activeDate
 
-    private val _checkout = MutableLiveData<ConfirmEmployee>()
-    val checkout: LiveData<ConfirmEmployee>
+    private val _checkout = MutableLiveData<ConfirmEmployee?>()
+    val checkout: LiveData<ConfirmEmployee?>
         get() = _checkout
 
     private val _checkoutNull = MutableLiveData<Boolean>()

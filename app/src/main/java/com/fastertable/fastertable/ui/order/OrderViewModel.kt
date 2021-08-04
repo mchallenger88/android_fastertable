@@ -29,11 +29,10 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
                                           private val saveOrder: SaveOrder,
                                           private val updateOrder: UpdateOrder) : BaseViewModel() {
 
-    private lateinit var user: OpsAuth
     private var itemNote = ""
-    //Settings
-    private lateinit var settings: Settings
-    //Live Data for Menus
+    val user: OpsAuth = loginRepository.getOpsUser()!!
+    val settings: Settings = loginRepository.getSettings()!!
+
     private val _menus = MutableLiveData<List<Menu>>()
     val menus: LiveData<List<Menu>>
         get() = _menus
@@ -109,12 +108,20 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
     val sendKitchen: LiveData<Boolean>
         get() = _sendKitchen
 
+    private val _orderMore = MutableLiveData<Boolean>()
+    val orderMore: LiveData<Boolean>
+        get() = _orderMore
+
+    private val _showTransfer = MutableLiveData<Boolean>()
+    val showTransfer: LiveData<Boolean>
+        get() = _showTransfer
+
 
     init{
         setPageLoaded(false)
         viewModelScope.launch {
-            getUser()
-            settings = loginRepository.getSettings()!!
+//            getUser()
+//            settings = loginRepository.getSettings()!!
             _menus.postValue(menusRepository.getMenus())
             _menusNavigation.value = MenusNavigation.CATEGORIES
         }
@@ -139,15 +146,15 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
         _pageLoaded.value = b
     }
 
-    private fun getUser(){
-        viewModelScope.launch {
-            if (loginRepository.getOpsUser() != null){
-                user = loginRepository.getOpsUser()!!
-            }else{
-                //TODO: Request User Info again
-            }
-        }
-    }
+//    private fun getUser(){
+//        viewModelScope.launch {
+//            if (loginRepository.getOpsUser() != null){
+//                user = loginRepository.getOpsUser()!!
+//            }else{
+//                //TODO: Request User Info again
+//            }
+//        }
+//    }
 
     private fun getOrder(){
         viewModelScope.launch {
@@ -483,6 +490,14 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
         _liveOrder.value?.close()
         _liveOrder.value = _liveOrder.value
         saveOrderToCloud()
+    }
+
+    fun setOpenMore(b: Boolean){
+        _orderMore.value = b
+    }
+
+    fun showTransferOrder(b: Boolean){
+        _showTransfer.value = b
     }
 
 

@@ -49,7 +49,14 @@ data class UserClock(
     val clockInTime: Long,
     val clockOutTime: Long?,
     var checkout: Boolean?,
+    var breaks: ArrayList<UserBreak>?,
     val checkoutApproved: Boolean,
+): Parcelable
+
+@Parcelize
+data class UserBreak(
+    val breakOut: Long,
+    val breakIn: Long?
 ): Parcelable
 
 @Parcelize
@@ -127,3 +134,15 @@ data class LoginCredentials
         val Time: Long,
         val Midnight: Long
 ): Parcelable
+
+enum class Permissions{
+    accessFronthouse, accessBackOffice, viewOrders,
+    makeOrder, approveOrderMods, openCashDrawer,
+    openClosedOrders, approveCheckouts, companyLogin,
+    viewSettings, changeSettings, viewEmployees,
+    changeEmployees, viewSalary, viewMenu,
+    viewPayroll, viewPayments, viewKitchen,
+    viewReports, accessMerchantCredentials, accessCompanyNew,
+    adminLogin
+
+}

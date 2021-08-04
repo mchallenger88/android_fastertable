@@ -52,6 +52,9 @@
         <action
             android:id="@+id/action_orderFragment_to_paymentFragment"
             app:destination="@id/paymentFragment" />
+        <action
+            android:id="@+id/action_orderFragment_to_transferOrderFragment"
+            app:destination="@id/transferOrderFragment" />
     </fragment>
     <fragment
         android:id="@+id/paymentFragment"
@@ -130,6 +133,17 @@
         <action
             android:id="@+id/action_takeoutFragment_to_orderFragment"
             app:destination="@id/orderFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/transferOrderFragment"
+        android:name="com.fastertable.fastertable.ui.order.TransferOrderFragment"
+        android:label="TransferOrderFragment" >
+        <action
+            android:id="@+id/action_transferOrderFragment_to_nav_home"
+            app:destination="@id/nav_home" />
+        <argument
+            android:name="order_id"
+            app:argType="string" />
     </fragment>
 
 

@@ -24,6 +24,7 @@
     <color name="title_background">#E0E0E0</color>
     <color name="view_background">#E8EAF6</color>
     <color name="primary_payment_color">#009688</color>
+    <color name="disabled_text">#BDBDBD</color>
 
 
     //Mod Buttons

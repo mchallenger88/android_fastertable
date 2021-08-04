@@ -50,6 +50,8 @@
     <string name="string_mods">mods</string>
     <string name="string_ingredients">Ingredients</string>
     <string name="save">Save</string>
+    <string name="string_orders">Orders</string>
+    <string name="string_my_orders">My Orders</string>
 
     //Button pad
     <string name="string_one">1</string>
@@ -104,7 +106,8 @@
     <string name="order_item_notes_dialog_title">Order Item Notes</string>
     <string name="order_item_notes_dialog_message">Enter specific notes for this item:</string>
     <string name="guest_with_number">Guest %1$s</string>
-
+    <string name="more">More</string>
+    <string name="transfer_order">Transfer Order</string>
 
     //Menu
     <string name="menu_categories">Categories</string>
@@ -268,5 +271,10 @@
     <string name="takeout_phone">Enter Phone Number</string>
     <string name="takeout_note">Enter Notes</string>
     <string name="takeout_button">Start Order</string>
+
+    //Transfer Orders
+    <string name="on_shift_employees">Transfer to On Shift Employee</string>
+    <string name="transfer_orders">Transfer Orders</string>
+
 
 </resources>

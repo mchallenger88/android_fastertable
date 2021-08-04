@@ -1,10 +1,7 @@
 package com.fastertable.fastertable.data.repository
 
 import android.app.Application
-import com.fastertable.fastertable.api.GetOrderUseCase
-import com.fastertable.fastertable.api.GetOrdersUseCase
-import com.fastertable.fastertable.api.SaveOrderUseCase
-import com.fastertable.fastertable.api.UpdateOrderUseCase
+import com.fastertable.fastertable.api.*
 import com.fastertable.fastertable.data.models.*
 import com.fastertable.fastertable.utils.GlobalUtils
 import com.google.gson.Gson
@@ -83,6 +80,17 @@ class GetOrders @Inject constructor(private val getOrdersUseCase: GetOrdersUseCa
         if (result is GetOrdersUseCase.Result.Success){
             orders = result.orders
             orderRepository.saveOrders(orders)
+        }else{
+            throw RuntimeException("fetch failed")
+        }
+    }
+}
+
+class GetOnShiftEmployees @Inject constructor(private val getOnShiftServersUseCase: GetOnShiftServersUseCase){
+    suspend fun getEmployees(companyTimeBasedRequest: CompanyTimeBasedRequest): List<Employee>{
+        val result = getOnShiftServersUseCase.getEmployees(companyTimeBasedRequest)
+        if (result is GetOnShiftServersUseCase.Result.Success){
+            return result.employees
         }else{
             throw RuntimeException("fetch failed")
         }
@@ -190,6 +198,7 @@ class OrderRepository @Inject constructor(private val app: Application) {
             accepted = null,
             estReadyTime = null,
             estDeliveryTime = null,
+            transfer = null,
 
             id = "O_" + UUID.randomUUID().toString(),
             locationId = settings.locationId,

@@ -509,6 +509,7 @@ class GiftCardViewModel @Inject constructor (
             accepted = null,
             estReadyTime = null,
             estDeliveryTime = null,
+            transfer = null,
             archived = false,
             type = "Order",
             _rid = "",

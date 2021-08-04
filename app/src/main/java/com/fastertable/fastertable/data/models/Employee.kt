@@ -21,7 +21,11 @@ data class Employee
     val _etag: String?,
     val _attachments: String?,
     val _ts: Long?
-): Parcelable
+): Parcelable{
+    fun fullName(): String{
+        return person.firstName + " " + person.lastName
+    }
+}
 
 @Parcelize
 data class EmployeeDetails

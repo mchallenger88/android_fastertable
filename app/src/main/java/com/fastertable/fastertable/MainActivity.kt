@@ -43,6 +43,8 @@ import com.fastertable.fastertable.ui.home.HomeFragmentDirections
 import com.fastertable.fastertable.ui.home.HomeViewModel
 import com.fastertable.fastertable.ui.order.OrderFragmentDirections
 import com.fastertable.fastertable.ui.order.OrderViewModel
+import com.fastertable.fastertable.ui.order.TransferOrderFragmentDirections
+import com.fastertable.fastertable.ui.order.TransferOrderViewModel
 import com.fastertable.fastertable.ui.payment.PaymentFragmentDirections
 import com.fastertable.fastertable.ui.payment.PaymentViewModel
 import com.fastertable.fastertable.ui.payment.ShowPayment
@@ -64,6 +66,7 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
     @Inject lateinit var orderRepository: OrderRepository
     @Inject lateinit var paymentRepository: PaymentRepository
     private lateinit var appBarConfiguration: AppBarConfiguration
+    private lateinit var navController: NavController
     private val homeViewModel: HomeViewModel by viewModels()
     private val orderViewModel: OrderViewModel by viewModels()
     private val paymentViewModel: PaymentViewModel by viewModels()
@@ -77,6 +80,7 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
     private val floorplanViewModel: FloorplanViewModel by viewModels()
     private val takeoutViewModel: TakeoutViewModel by viewModels()
     private val datePickerViewModel: DatePickerViewModel by viewModels()
+    private val transferOrderViewModel: TransferOrderViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -89,7 +93,7 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
         val navView: NavigationView = findViewById(R.id.nav_view)
         val navHostFragment =
             supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
-        val navController: NavController = navHostFragment.navController
+        val navController = navHostFragment.navController
 
         val exitButton: ImageButton = findViewById(R.id.exit_button)
         exitButton.setOnClickListener{
@@ -115,6 +119,7 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
         takeoutObservables(navController)
         giftCardObservables()
         datePickerObservables()
+        transferOrderObservables(navController)
 
         hideSystemUI()
     }
@@ -206,6 +211,20 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
         orderViewModel.paymentClicked.observe(this, {
             if (it){
                 goToPayment(navController)
+            }
+        })
+
+        orderViewModel.orderMore.observe(this, {
+            if (it){
+                OrderMoreDialog().show(supportFragmentManager, OrderMoreDialog.TAG)
+                orderViewModel.setOpenMore(false)
+            }
+        })
+
+        orderViewModel.showTransfer.observe(this, {
+            if (it){
+                val id = orderViewModel.liveOrder.value!!.id
+                navController.navigate(OrderFragmentDirections.actionOrderFragmentToTransferOrderFragment(id))
             }
         })
     }
@@ -351,6 +370,13 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
         })
     }
 
+    private fun transferOrderObservables(navController: NavController){
+        transferOrderViewModel.transferComplete.observe(this, {
+            if (it){
+                navController.navigate(TransferOrderFragmentDirections.actionTransferOrderFragmentToNavHome())
+            }
+        })
+    }
 
     override fun onSupportNavigateUp(): Boolean {
         val navController = findNavController(R.id.nav_host_fragment)
@@ -521,6 +547,9 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
             }
             "Toggle Takeout" -> {
                 return orderViewModel.actionOnItemClicked(value)
+            }
+            "Transfer Order" -> {
+                return orderViewModel.showTransferOrder(true)
             }
         }
 

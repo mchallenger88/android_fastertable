@@ -1,13 +1,11 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 buildscript {
-    ext.hilt_version = '2.32-alpha'
     ext.okhttpLoggingVersion = '4.7.2'
     ext.pagingVersion = '3.0.0-alpha02'
     ext.recyclerViewVersion = '1.2.0-alpha04'
     ext.retrofitVersion = '2.9.0'
     ext.roomVersion = '2.2.5'
     ext.glideVersion = '4.10.0'
-    ext.hiltVersion = '2.31.2-alpha'
     ext.viewPagerVersion = '1.0.0'
     ext.workVersion = '2.1.0'
     ext.materialVersion = '1.2.0'
@@ -20,11 +18,10 @@ buildscript {
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:4.2.2'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.4.32"
-        classpath "com.google.dagger:hilt-android-gradle-plugin:$hilt_version"
-//        classpath "android.arch.navigation:navigation-safe-args-gradle-plugin:1.0.0"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.5.21"
+        classpath "com.google.dagger:hilt-android-gradle-plugin:2.36"
         classpath "androidx.navigation:navigation-safe-args-gradle-plugin:2.3.5"
-        classpath 'com.google.gms:google-services:4.3.5'
+        classpath 'com.google.gms:google-services:4.3.8'
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }

@@ -72,6 +72,10 @@ enum class TableType{
     Square_Four, Square_Two
 }
 
+enum class WallDirection{
+    Vertical, Horizontal
+}
+
 @Parcelize
 data class FloorplanWall (
     val id: Int?,

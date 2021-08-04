@@ -14,8 +14,8 @@ data class Order(
     val orderType: String,
     val orderNumber: Int,
     var tableNumber: Int?,
-    val employeeId: String?,
-    val userName: String,
+    var employeeId: String?,
+    var userName: String,
     val startTime: Long,
     var closeTime: Long?,
     val midnight: Long,
@@ -44,6 +44,7 @@ data class Order(
     var accepted: Boolean?,
     var estReadyTime: Long?,
     var estDeliveryTime: Long?,
+    var transfer: Boolean?,
 
     var id: String,
     @SerializedName("locationid")

@@ -106,6 +106,9 @@ interface FastertableApi {
     @POST("login/reopencheckout")
     suspend fun reopenCheckout(@Body reopenCheckoutRequest: ReopenCheckoutRequest): Response<UserClock>
 
+    @POST("employees/getOnShiftEmployees")
+    suspend fun getOnShiftEmployees(@Body companyTimeBasedRequest: CompanyTimeBasedRequest): Response<List<Employee>>
+
 }
 
 

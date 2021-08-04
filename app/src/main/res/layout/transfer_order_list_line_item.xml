@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android" >
+    <data>
+        <variable
+            name="order"
+            type="com.fastertable.fastertable.data.models.Order" />
+
+        <variable
+            name="clickListener"
+            type="com.fastertable.fastertable.adapters.TransferOrderListListener" />
+
+    </data>
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <CheckBox
+            android:id="@+id/chk_transfer_order"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            app:disableTransfer="@{order}"
+            android:onClick="@{() -> clickListener.onClick(order)}"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/txt_order_number"
+            style="@style/order_grid"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:width="80dp"
+            android:text="@string/string_order_number"
+            app:intToString="@{order.orderNumber}"
+            app:disableTransferText="@{order}"
+            app:layout_constraintStart_toEndOf="@+id/chk_transfer_order"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/txt_order_type"
+            style="@style/order_grid"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@{order.orderType}"
+            app:disableTransferText="@{order}"
+            app:layout_constraintStart_toEndOf="@+id/txt_order_number"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/txt_table_number"
+            style="@style/order_grid"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/string_table_number"
+            app:disableTransferText="@{order}"
+            app:layout_constraintStart_toEndOf="@+id/txt_order_type"
+            app:layout_constraintTop_toTopOf="parent"
+            app:orderTypeTableNumber="@{order}" />
+
+        <TextView
+            android:id="@+id/txt_start_time"
+            style="@style/order_grid"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/string_start_time"
+            app:disableTransferText="@{order}"
+            app:layout_constraintStart_toEndOf="@+id/txt_table_number"
+            app:layout_constraintTop_toTopOf="parent"
+            app:timeStamp="@{order.startTime}" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

@@ -145,19 +145,42 @@
                 android:background="#ffffff"
                 android:elevation="4dp">
 
-
-                <TextView
-                    android:id="@+id/txt_Order"
-                    style="@style/header"
-                    android:layout_width="0dp"
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/layout_order_header"
+                    android:layout_width="match_parent"
                     android:layout_height="60dp"
                     android:background="@color/primaryLightColor"
-                    android:gravity="center_horizontal|center_vertical"
-                    android:text="@string/string_order"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:setFullOrderType="@{viewModel.liveOrder}" />
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <TextView
+                        android:id="@+id/txt_Order"
+                        style="@style/header"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/string_order"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:setFullOrderType="@{viewModel.liveOrder}" />
+
+                    <ImageButton
+                        android:id="@+id/btn_order_more"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="16dp"
+                        android:backgroundTint="@android:color/transparent"
+                        android:onClick="@{() -> viewModel.setOpenMore(true)}"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:srcCompat="@drawable/ic_baseline_more_vert_24_white"
+                        android:contentDescription="@string/more" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
 
                 <TextView
                     android:id="@+id/txt_guest_number"
@@ -172,7 +195,7 @@
                     app:layout_constraintBottom_toTopOf="@+id/viewLine1"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/txt_Order"
+                    app:layout_constraintTop_toBottomOf="@+id/layout_order_header"
                     app:layout_constraintVertical_bias="0.5"
                     app:setGuestNumberTitle="@{viewModel.liveOrder.guests}" />
 
