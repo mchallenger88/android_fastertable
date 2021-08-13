@@ -1,12 +1,17 @@
 package com.fastertable.fastertable.data.models
 
 import android.os.Parcelable
+import com.fastertable.fastertable.services.PrintTicketService
 import com.fastertable.fastertable.utils.GlobalUtils
 import com.fastertable.fastertable.utils.round
 import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
 import kotlinx.parcelize.Parcelize
 import com.squareup.moshi.JsonClass
+import technology.master.kotlinprint.printer.Document
+import technology.master.kotlinprint.printer.DocumentSettings
+import technology.master.kotlinprint.printer.Epson
+import technology.master.kotlinprint.printer.PrinterDriver
 
 @JsonClass(generateAdapter = true)
 @Parcelize
@@ -25,7 +30,7 @@ data class Order(
 
     var guests: MutableList<Guest>?,
     var splitChecks: MutableList<Check>?,
-    var note: String,
+    var note: String?,
 
     var customer: Customer?,
     var takeOutCustomer: TakeOutCustomer?,
@@ -147,7 +152,7 @@ data class Order(
                 list.add(it)
             }
         }
-        return list;
+        return list
     }
 
     fun getSubtotal(): Double{
@@ -160,18 +165,9 @@ data class Order(
         return price
     }
 
-    fun getSalesTax(): Double{
+    private fun getSalesTax(): Double{
         val subTotal: Double = this.getSubtotal()
         return subTotal * taxRate
-    }
-
-    fun printKitchenTicket(){
-        //Just Setting Status to Kitchen. TODO: Add Printing
-        this.guests?.forEach{ guest ->
-            guest.orderItems?.forEach { item ->
-                item.status = "Kitchen"
-            }
-        }
     }
 
     fun createSingleTicket(): Ticket{
@@ -259,6 +255,37 @@ data class Order(
         val order: String = Gson().toJson(this, Order::class.java)
         return Gson().fromJson(order, Order::class.java)
     }
+
+    fun getKitchenTickets(): List<Document>{
+        val printers = mutableListOf<Printer>()
+        val documents = mutableListOf<Document>()
+
+        for (guest in guests!!){
+            for (item in guest.orderItems!!){
+                if (item.status == "Started"){
+                    val p = printers.find{it.id == item.printer.id}
+                    if (p == null){
+                        printers.add(item.printer)
+                    }}
+                }
+            }
+
+        for (printer in printers){
+            Epson.use()
+
+            val doc = PrinterDriver.createDocument(
+                DocumentSettings(), printer.printerModel
+            )
+            if (printer.master){
+                PrintTicketService().masterTicket(doc, this)
+                documents.add(doc)
+            }else{
+                PrintTicketService().kitchenTicket(doc, this, printer)
+                documents.add(doc)
+            }
+        }
+        return documents
+    }
 }
 
 @JsonClass(generateAdapter = true)
@@ -281,7 +308,6 @@ data class Guest(
         }else{
             this.orderItems?.add(oi)
         }
-
     }
 
     fun orderItemRemove(oi: OrderItem){

@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.fastertable.fastertable.common.base.BaseViewModel
 import com.fastertable.fastertable.data.models.*
 import com.fastertable.fastertable.data.repository.*
+import com.fastertable.fastertable.services.KitchenPrintingService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -25,6 +26,7 @@ enum class AddSubtract{
 class OrderViewModel @Inject constructor (private val menusRepository: MenusRepository,
                                           private val loginRepository: LoginRepository,
                                           private val orderRepository: OrderRepository,
+                                          private val printerService: KitchenPrintingService,
                                           private val getPayment: GetPayment,
                                           private val saveOrder: SaveOrder,
                                           private val updateOrder: UpdateOrder) : BaseViewModel() {
@@ -116,12 +118,22 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
     val showTransfer: LiveData<Boolean>
         get() = _showTransfer
 
+    private val _ticketsPrinted = MutableLiveData<Order>()
+    val ticketsPrinted: LiveData<Order>
+        get() = _ticketsPrinted
+
+    private val _showTableDialog = MutableLiveData<Boolean>()
+    val showTableDialog: LiveData<Boolean>
+        get() = _showTableDialog
+
+    private val _noOrderItems = MutableLiveData<Boolean>()
+    val noOrderItems: LiveData<Boolean>
+        get() = _noOrderItems
+
 
     init{
         setPageLoaded(false)
         viewModelScope.launch {
-//            getUser()
-//            settings = loginRepository.getSettings()!!
             _menus.postValue(menusRepository.getMenus())
             _menusNavigation.value = MenusNavigation.CATEGORIES
         }
@@ -144,22 +156,6 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
 
     fun setPageLoaded(b: Boolean){
         _pageLoaded.value = b
-    }
-
-//    private fun getUser(){
-//        viewModelScope.launch {
-//            if (loginRepository.getOpsUser() != null){
-//                user = loginRepository.getOpsUser()!!
-//            }else{
-//                //TODO: Request User Info again
-//            }
-//        }
-//    }
-
-    private fun getOrder(){
-        viewModelScope.launch {
-            _liveOrder.postValue(orderRepository.getNewOrder())
-        }
     }
 
     fun setActiveGuest(g: Guest){
@@ -255,7 +251,6 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
         }
     }
 
-
     fun addItemToOrder(){
         val mods = arrayListOf<ModifierItem>()
         activeItem.value!!.modifiers.forEach { mod ->
@@ -299,9 +294,7 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
 
     private fun findPrepStation(): PrepStation?{
         val printerName = activeItem.value!!.printer.printerName
-        return settings.prepStations.find{ it ->
-            it.stationName == printerName
-        }
+        return settings.getPrepStation(printerName)
     }
 
     fun setActiveCategory(cat: MenuCategory){
@@ -418,13 +411,51 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
         _enableAddButton.value = requireMet
     }
 
-    fun sendToKitchen(){
-        _sendKitchen.value = true
+    suspend fun sendToKitchen(){
+        viewModelScope.launch {
+            var started = false
+            val order = liveOrder.value!!
+            val orderItems = order.getAllOrderItems()
+            if (orderItems.any { it.status == "Started" }){
+                started = true
+            }
+
+            if (started){
+                if (settings.restaurantType == "Counter Service"){
+                    if (order.orderNumber == 99 && order.tableNumber == null && order.orderType == "Counter"){
+                        _showTableDialog.postValue(true)
+
+                    }else{
+                        saveOrderToCloud()
+                    }
+                }
+                if (settings.restaurantType == "Full Service"){
+                    saveOrderToCloud()
+                    orderRepository.clearNewOrder()
+                    //TODO: Clear new payment
+                    //TODO: Go Back to Home;
+                }
+            }else{
+                _noOrderItems.postValue(true)
+            }
+        }
+
+
+    }
+
+    fun sendKitchenClick(){
+        viewModelScope.launch {
+            sendToKitchen()
+        }
     }
 
     fun setTableNumber(table: Int){
-        _liveOrder.value?.tableNumber = table
-        _liveOrder.value = _liveOrder.value
+        viewModelScope.launch {
+            if (table != -1){
+                _liveOrder.value?.tableNumber = table
+            }
+            saveOrderToCloud()
+        }
     }
 
     fun orderItemClicked(item:OrderItem){
@@ -451,24 +482,34 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
         _liveOrder.value = _liveOrder.value
     }
 
-    fun saveOrderToCloud(){
-        viewModelScope.launch {
-            var o: Order
-            if (liveOrder.value?.orderNumber!! == 99){
-                o = saveOrder.saveOrder(liveOrder.value!!)
-                //After tickets are printed the status of the order items is changed from "Started" to "Kitchen"
-                o.printKitchenTicket()
-                _liveOrder.postValue(o)
-                o = updateOrder.saveOrder(o)
-                _liveOrder.postValue(o)
-            }
+    suspend fun saveOrderToCloud(){
+        val job = viewModelScope.launch {
+            if (_liveOrder.value?.orderNumber!! == 99){
+                _liveOrder.value = saveOrder.saveOrder(_liveOrder.value!!)
+                val list = _liveOrder.value!!.getKitchenTickets()
+                printerService.printKitchenTickets(list, settings)
 
-            if (liveOrder.value?.orderNumber != 99){
-                liveOrder.value?.printKitchenTicket()
-                o = updateOrder.saveOrder(liveOrder.value!!)
-                _liveOrder.postValue(o)
+            }else{
+                val list = _liveOrder.value!!.getKitchenTickets()
+                printerService.printKitchenTickets(list, settings)
             }
         }
+
+        job.join()
+        updateOrderStatus(_liveOrder.value!!)
+    }
+
+    fun updateOrderStatus(order: Order){
+        viewModelScope.launch {
+            order.guests?.forEach{ guest ->
+                guest.orderItems?.forEach { item ->
+                    item.status = "Kitchen"
+                }
+            }
+            val o = updateOrder.saveOrder(order)
+            _liveOrder.postValue(o)
+        }
+
     }
 
     fun navToPayment(b: Boolean){
@@ -487,9 +528,11 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
     }
 
     fun closeOrder(){
-        _liveOrder.value?.close()
-        _liveOrder.value = _liveOrder.value
-        saveOrderToCloud()
+        viewModelScope.launch {
+            _liveOrder.value?.close()
+            saveOrderToCloud()
+        }
+
     }
 
     fun setOpenMore(b: Boolean){
@@ -498,6 +541,12 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
 
     fun showTransferOrder(b: Boolean){
         _showTransfer.value = b
+    }
+
+    fun reOpenCheckoutSendOrder(){
+        viewModelScope.launch {
+            sendToKitchen()
+        }
     }
 
 

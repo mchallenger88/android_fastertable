@@ -114,7 +114,7 @@
                 android:id="@+id/manage_payment_recycler"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:ticketsData="@{viewModel.livePayment}"
+                app:ticketsData="@{viewModel.activePayment}"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 tools:listitem="@layout/ticket_button"
                 />
@@ -155,7 +155,7 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:ticketNumber="@{viewModel.livePayment.tickets}" />
+                    app:ticketNumber="@{viewModel.activePayment.tickets}" />
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/manageTicketItemsRecycler"
@@ -170,7 +170,7 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/txt_manage_ticket"
-                    app:ticketListData="@{viewModel.livePayment}"
+                    app:ticketListData="@{viewModel.activePayment}"
                     tools:listitem="@layout/ticket_line_item" />
 
                 <androidx.constraintlayout.widget.ConstraintLayout
@@ -200,7 +200,7 @@
                         android:layout_marginEnd="24dp"
                         app:layout_constraintBottom_toTopOf="@+id/text_salesTax1"
                         app:layout_constraintEnd_toEndOf="parent"
-                        tools:ticketSubTotal="@{viewModel.livePayment}" />
+                        tools:ticketSubTotal="@{viewModel.activePayment}" />
 
                     <TextView
                         android:id="@+id/text_tax1"
@@ -220,7 +220,7 @@
                         android:layout_marginEnd="24dp"
                         app:layout_constraintBottom_toTopOf="@+id/text_total1"
                         app:layout_constraintEnd_toEndOf="parent"
-                        tools:ticketTax="@{viewModel.livePayment}" />
+                        tools:ticketTax="@{viewModel.activePayment}" />
 
                     <TextView
                         android:id="@+id/text_total1"
@@ -242,7 +242,7 @@
                         android:layout_marginBottom="16dp"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
-                        tools:ticketTotal="@{viewModel.livePayment}" />
+                        tools:ticketTotal="@{viewModel.activePayment}" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <View

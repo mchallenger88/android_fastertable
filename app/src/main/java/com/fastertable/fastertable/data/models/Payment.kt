@@ -1,10 +1,15 @@
 package com.fastertable.fastertable.data.models
 
 import android.os.Parcelable
+import com.fastertable.fastertable.services.PrintTicketService
 import com.fastertable.fastertable.utils.GlobalUtils
 import com.fastertable.fastertable.utils.round
 import com.google.gson.annotations.SerializedName
 import kotlinx.parcelize.Parcelize
+import technology.master.kotlinprint.printer.Document
+import technology.master.kotlinprint.printer.DocumentSettings
+import technology.master.kotlinprint.printer.Epson
+import technology.master.kotlinprint.printer.PrinterDriver
 
 @Parcelize
 data class Payment(
@@ -213,6 +218,33 @@ data class Payment(
         this.tickets.get(0).ticketItems.get(0).ticketItemPrice = amount
         this.tickets.get(0).recalculateAfterApproval(0.00)
     }
+
+    fun getTicketReceipt(order: Order,printer: Printer, location: Location): Document{
+        Epson.use()
+        val document = PrinterDriver.createDocument(
+            DocumentSettings(), printer.printerModel)
+        PrintTicketService().ticketReceipt(document, order, this, activeTicket()!!, location)
+
+        return document
+    }
+
+    fun getCashReceipt(printer: Printer, location: Location): Document{
+        Epson.use()
+        val document = PrinterDriver.createDocument(
+            DocumentSettings(), printer.printerModel)
+        PrintTicketService().paidCashReceipt(document, this, activeTicket()!!, location)
+
+        return document
+    }
+
+    fun getCreditReceipt(printer: Printer, location: Location): Document{
+        Epson.use()
+        val document = PrinterDriver.createDocument(
+            DocumentSettings(), printer.printerModel)
+        PrintTicketService().creditCardReceipt(document, this, activeTicket()!!, location)
+
+        return document
+    }
 }
 
 @Parcelize
@@ -253,6 +285,8 @@ data class Ticket(
             this.total = this.total.plus(tip)
             this.paymentTotal = this.total;
         }
+
+
     }
 
 @Parcelize

@@ -41,7 +41,13 @@ data class Settings (
     val hoursOfOperation: OperatingHours,
     val tipSettlementPeriod: String,
     val additionalFees: ArrayList<AdditionalFees>?
-): Parcelable
+): Parcelable {
+    fun getPrepStation(printerName: String): PrepStation{
+        return prepStations.find{
+            it.stationName == printerName
+        }!!
+    }
+}
 
 @Parcelize
 data class AdditionalFees(

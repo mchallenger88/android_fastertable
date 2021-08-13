@@ -8,7 +8,6 @@ import androidx.fragment.app.activityViewModels
 import com.fastertable.fastertable.adapters.TicketItemAdapter
 import com.fastertable.fastertable.adapters.TicketSideBarAdapter
 import com.fastertable.fastertable.common.base.BaseFragment
-import com.fastertable.fastertable.databinding.PaymentFragmentBinding
 import com.fastertable.fastertable.databinding.PaymentSplitFragmentBinding
 import com.fastertable.fastertable.ui.order.OrderViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -43,7 +42,7 @@ class SplitPaymentFragment: BaseFragment() {
 
         binding.manageTicketItemsRecycler.adapter = ticketsAdapter
 
-        viewModel.livePayment.observe(viewLifecycleOwner, { item ->
+        viewModel.activePayment.observe(viewLifecycleOwner, { item ->
             item?.tickets?.forEach { ticket ->
                 if (ticket.uiActive){
 //                    ticketsAdapter.submitList(ticket.ticketItems)

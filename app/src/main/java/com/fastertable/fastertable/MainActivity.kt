@@ -19,10 +19,7 @@ import androidx.navigation.ui.*
 import com.fastertable.fastertable.common.base.BaseActivity
 import com.fastertable.fastertable.common.base.BaseContinueDialog
 import com.fastertable.fastertable.common.base.DismissListener
-import com.fastertable.fastertable.data.models.DateDialog
-import com.fastertable.fastertable.data.models.OrderItem
-import com.fastertable.fastertable.data.models.ReopenCheckoutRequest
-import com.fastertable.fastertable.data.models.RestaurantTable
+import com.fastertable.fastertable.data.models.*
 import com.fastertable.fastertable.data.repository.LoginRepository
 import com.fastertable.fastertable.data.repository.OrderRepository
 import com.fastertable.fastertable.data.repository.PaymentRepository
@@ -35,7 +32,6 @@ import com.fastertable.fastertable.ui.confirm.ConfirmViewModel
 import com.fastertable.fastertable.ui.dialogs.*
 import com.fastertable.fastertable.ui.error.ErrorViewModel
 import com.fastertable.fastertable.ui.floorplan.FloorplanFragmentDirections
-import com.fastertable.fastertable.ui.floorplan.FloorplanTable
 import com.fastertable.fastertable.ui.floorplan.FloorplanTableListener
 import com.fastertable.fastertable.ui.floorplan.FloorplanViewModel
 import com.fastertable.fastertable.ui.gift.GiftCardViewModel
@@ -50,12 +46,10 @@ import com.fastertable.fastertable.ui.payment.PaymentViewModel
 import com.fastertable.fastertable.ui.payment.ShowPayment
 import com.fastertable.fastertable.ui.takeout.TakeoutFragmentDirections
 import com.fastertable.fastertable.ui.takeout.TakeoutViewModel
-import com.fastertable.fastertable.utils.GlobalUtils
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.launch
-import java.util.*
+import kotlinx.coroutines.*
 import javax.inject.Inject
 
 
@@ -66,7 +60,7 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
     @Inject lateinit var orderRepository: OrderRepository
     @Inject lateinit var paymentRepository: PaymentRepository
     private lateinit var appBarConfiguration: AppBarConfiguration
-    private lateinit var navController: NavController
+    private lateinit var settings: Settings
     private val homeViewModel: HomeViewModel by viewModels()
     private val orderViewModel: OrderViewModel by viewModels()
     private val paymentViewModel: PaymentViewModel by viewModels()
@@ -86,7 +80,7 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         val toolbar: Toolbar = findViewById(R.id.toolbar)
-
+        settings = loginRepository.getSettings()!!
         setSupportActionBar(toolbar)
 
         val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
@@ -188,9 +182,26 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
     }
 
     private fun orderObservables(navController: NavController){
+        orderViewModel.showTableDialog.observe(this, {
+            if (it){
+                if (!checkLoginCheckoutStatus()){
+                    AssignTableDialog().show(supportFragmentManager, AssignTableDialog.TAG)
+                }else{
+                    continueCancelViewModel.setTitle("Checkout Error")
+                    continueCancelViewModel.setMessage("You have checked out. Click 'Continue' to reopen your checkout.")
+                    ContinueCancelFragment().show(supportFragmentManager, ContinueCancelFragment.TAG)
+                }
+            }
+        })
+
+        orderViewModel.noOrderItems.observe(this, {
+            val view = findViewById<View>(R.id.nav_host_fragment)
+            Snackbar.make(view, R.string.kitchen_warning_message, Snackbar.LENGTH_LONG).show()
+        })
+
         orderViewModel.sendKitchen.observe(this, {
             if (!checkLoginCheckoutStatus()){
-                sendToKitchen()
+//                sendToKitchen()
             }else{
                 continueCancelViewModel.setTitle("Checkout Error")
                 continueCancelViewModel.setMessage("You have checked out. Click 'Continue' to reopen your checkout.")
@@ -227,11 +238,13 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
                 navController.navigate(OrderFragmentDirections.actionOrderFragmentToTransferOrderFragment(id))
             }
         })
+
     }
+
 
     private fun paymentObservables(navController: NavController){
         paymentViewModel.amountOwed.observe(this, {
-            paymentViewModel.livePayment.value?.tickets?.forEach { t ->
+            paymentViewModel.activePayment.value?.tickets?.forEach { t ->
                 if (t.uiActive){
                     if (t.paymentType == "Cash"){
                         CashBackDialogFragment().show(supportFragmentManager, CashBackDialogFragment.TAG)
@@ -246,7 +259,7 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
             }
         })
 
-        paymentViewModel.livePayment.observe(this, {it ->
+        paymentViewModel.activePayment.observe(this, { it ->
             if (it != null) {
                 if (it.closed){
                     orderViewModel.closeOrder()
@@ -390,14 +403,13 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
     private fun checkLoginCheckoutStatus(): Boolean{
         val user = loginRepository.getOpsUser()
         return user?.userClock?.checkout == true || user?.userClock?.checkoutApproved == true
-
     }
 
 
-    private fun sendToKitchen(){
+    private suspend fun sendToKitchen(){
         var send = false
         val settings = loginRepository.getSettings()!!
-        var order = orderViewModel.liveOrder.value!!
+        val order = orderViewModel.liveOrder.value!!
         order.guests?.forEach { guest ->
             guest.orderItems?.forEach {
                 if (it.status == "Started"){
@@ -407,16 +419,12 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
             if (settings.restaurantType == "Counter Service"){
                 if (order.orderNumber == 99 && order.tableNumber == null && order.orderType == "Counter"){
                     AssignTableDialog().show(supportFragmentManager, AssignTableDialog.TAG)
-                    //TODO Create a Payment and then Send to Payment Activity
                 }else{
                     orderViewModel.saveOrderToCloud()
-                    //TODO Create a Payment and then Send to Payment Activity
                 }
             }
             if (settings.restaurantType == "Full Service"){
                 orderViewModel.saveOrderToCloud()
-                //Send to Kitchen printing
-                order.printKitchenTicket()
                 orderRepository.clearNewOrder()
                 //TODO: Clear new payment
                 //TODO: Go Back to Home;
@@ -445,7 +453,7 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
                 }
             }
 
-            if (paymentViewModel.livePayment.value == null){
+            if (paymentViewModel.activePayment.value == null){
                 val flatten = order.getAllOrderItems()
                 if (flatten.size > 0){
                     order.guests?.forEach { guest ->
@@ -455,6 +463,7 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
 
                     if (okToPay){
                         val payment = paymentRepository.createNewPayment(order, terminal)
+                        paymentViewModel.setActiveOrder(orderViewModel.liveOrder.value!!)
                         paymentViewModel.setLivePayment(payment)
                         navController.navigate(OrderFragmentDirections.actionOrderFragmentToPaymentFragment())
                         orderViewModel.navToPayment(false)
@@ -502,9 +511,8 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
     override fun getReturnValue(value: String) {
         if (value != ""){
             orderViewModel.setTableNumber(value.toInt())
-            orderViewModel.saveOrderToCloud()
         }else{
-            orderViewModel.saveOrderToCloud()
+            orderViewModel.setTableNumber(-1)
         }
 
     }
@@ -514,7 +522,7 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
             "Checkout Error" -> {
                 //Reopen Checkout then Send to Kitchen
                 checkoutViewModel.reopenCheckout()
-                sendToKitchen()
+                orderViewModel.reOpenCheckoutSendOrder()
             }
         }
     }

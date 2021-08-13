@@ -121,7 +121,7 @@ data class MessageList(
 @Parcelize
 data class CayanTransaction(
     val AccountNumber: String,
-    val AdditionalParameters: AdditionalParameters,
+    val AdditionalParameters: AdditionalParameters?,
     val AmountApproved: String,
     val AuthorizationCode: String,
     val Cardholder: String,

@@ -63,6 +63,13 @@ class OrderFragment : BaseFragment() {
                 viewModel.setPageLoaded(false)
             }
         })
+
+        viewModel.ticketsPrinted.observe(viewLifecycleOwner, {
+            if (it != null){
+                println("XXXXXXXXXXXXXXXXXXXXXX: Save Order Step 3")
+                viewModel.updateOrderStatus(viewModel.liveOrder.value!!)
+            }
+        })
     }
 
     private fun createMenuButtons(menus: List<Menu>, binding: OrderFragmentBinding){

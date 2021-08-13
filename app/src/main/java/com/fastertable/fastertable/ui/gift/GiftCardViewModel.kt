@@ -363,7 +363,7 @@ class GiftCardViewModel @Inject constructor (
                     val transportURL: String = "http://" + terminal.ccEquipment.ipAddress + ":8080/v2/pos?TransportKey=" + stageResponse.transportKey + "&Format=JSON"
                     val response: CayanTransaction = initiateCreditTransaction.initiateTransaction(transportURL)
                     if (response.Status.toUpperCase(Locale.ROOT) == "APPROVED"){
-                        _balanceResponse.value = response.AdditionalParameters.Loyalty?.Balances?.AmountBalance.toString()
+                        _balanceResponse.value = response.AdditionalParameters?.Loyalty?.Balances?.AmountBalance.toString()
                     }
                 }
 
@@ -383,7 +383,7 @@ class GiftCardViewModel @Inject constructor (
                     _giftScreen.postValue(ShowGift.ADD_CASH)
                     val list = mutableListOf<String>()
                     list.add(response.AmountApproved)
-                    list.add(response.AdditionalParameters.Loyalty?.Balances?.AmountBalance.toString())
+                    list.add(response.AdditionalParameters?.Loyalty?.Balances?.AmountBalance.toString())
                     _swipeResponse.value = list
 
                 }

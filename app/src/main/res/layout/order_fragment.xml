@@ -70,7 +70,7 @@
                     android:text="@string/send_kitchen"
                     android:textColor="@color/white"
                     android:textSize="@dimen/toolbar_button"
-                    android:onClick="@{() -> viewModel.sendToKitchen()}"
+                    android:onClick="@{() -> viewModel.sendKitchenClick()}"
                     app:layout_constraintEnd_toEndOf="@+id/layout_order_buttons"
                     app:layout_constraintTop_toTopOf="parent"
                     app:strokeColor="@color/white" />

@@ -59,7 +59,7 @@
                 android:textColor="@color/white"
                 android:textSize="@dimen/toolbar_button"
                 android:onClick="@{() -> viewModel.showCashView()}"
-                app:disablePayButton="@{viewModel.livePayment.statusApproval}"
+                app:disablePayButton="@{viewModel.activePayment.statusApproval}"
                 app:layout_constraintStart_toEndOf="@+id/btn_manage_payment"
                 app:layout_constraintTop_toTopOf="@+id/layout_payment_buttons"
                 app:strokeColor="@color/white" />
@@ -75,8 +75,23 @@
                 android:textColor="@color/white"
                 android:textSize="@dimen/toolbar_button"
                 android:onClick="@{() -> viewModel.startCredit(orderViewModel.liveOrder)}"
-                app:disablePayButton="@{viewModel.livePayment.statusApproval}"
+                app:disablePayButton="@{viewModel.activePayment.statusApproval}"
                 app:layout_constraintStart_toEndOf="@+id/btn_pay_cash"
+                app:layout_constraintTop_toTopOf="@+id/layout_payment_buttons"
+                app:strokeColor="@color/white" />
+
+            <Button
+                android:id="@+id/btn_print_receipt"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:layout_marginStart="12dp"
+                android:text="@string/print_receipt"
+                android:textColor="@color/white"
+                android:textSize="@dimen/toolbar_button"
+                android:onClick="@{() -> viewModel.printReceipt()}"
+                app:layout_constraintStart_toEndOf="@+id/btn_pay_credit"
                 app:layout_constraintTop_toTopOf="@+id/layout_payment_buttons"
                 app:strokeColor="@color/white" />
 
@@ -116,7 +131,7 @@
                 android:id="@+id/ticket_recycler"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:ticketsData="@{viewModel.livePayment}"
+                app:ticketsData="@{viewModel.activePayment}"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 tools:listitem="@layout/ticket_button"
                 />
@@ -166,7 +181,7 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:ticketNumber="@{viewModel.livePayment.tickets}" />
+                    app:ticketNumber="@{viewModel.activePayment.tickets}" />
 
                 <ImageButton
                     android:id="@+id/btn_ticket_more"
@@ -189,7 +204,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:text="@string/approval_pending"
-                app:approvalPending="@{viewModel.livePayment}"
+                app:approvalPending="@{viewModel.activePayment}"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/layout_payment_header" />
@@ -207,7 +222,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/txt_approval_pending"
-                app:ticketListData="@{viewModel.livePayment}"
+                app:ticketListData="@{viewModel.activePayment}"
                 tools:listitem="@layout/ticket_line_item" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -222,7 +237,7 @@
                     style="@style/error_style"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    app:paidInFull="@{viewModel.livePayment}"
+                    app:paidInFull="@{viewModel.activePayment}"
                     android:text="@string/paid_in_full"
                     app:layout_constraintTop_toTopOf="@+id/constraint_totals"
                     app:layout_constraintBottom_toTopOf="@+id/text_subtotal"
@@ -249,7 +264,7 @@
                     android:layout_marginEnd="24dp"
                     app:layout_constraintBottom_toTopOf="@+id/text_salesTax"
                     app:layout_constraintEnd_toEndOf="parent"
-                    tools:ticketSubTotal="@{viewModel.livePayment}" />
+                    tools:ticketSubTotal="@{viewModel.activePayment}" />
 
                 <TextView
                     android:id="@+id/text_tax"
@@ -269,7 +284,7 @@
                     android:layout_marginEnd="24dp"
                     app:layout_constraintBottom_toTopOf="@+id/text_total"
                     app:layout_constraintEnd_toEndOf="parent"
-                    tools:ticketTax="@{viewModel.livePayment}" />
+                    tools:ticketTax="@{viewModel.activePayment}" />
 
                 <TextView
                     android:id="@+id/text_total"
@@ -291,7 +306,7 @@
                     android:layout_marginBottom="16dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    tools:ticketTotal="@{viewModel.livePayment}" />
+                    tools:ticketTotal="@{viewModel.activePayment}" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <View
@@ -350,7 +365,7 @@
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="9dp"
                 android:text="@string/amount_owed"
-                app:amountOwed="@{viewModel.livePayment}"
+                app:amountOwed="@{viewModel.activePayment}"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/text_cash_title" />

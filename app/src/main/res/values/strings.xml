@@ -275,6 +275,7 @@
     //Transfer Orders
     <string name="on_shift_employees">Transfer to On Shift Employee</string>
     <string name="transfer_orders">Transfer Orders</string>
+    <string name="print_receipt">Print Receipt</string>
 
 
 </resources>

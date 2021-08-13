@@ -104,7 +104,7 @@ class CreditCardRepository @Inject constructor(private val app: Application){
 
     fun createCreditCardTransaction(ticket: Ticket, cayanTransaction: CayanTransaction): CreditCardTransaction{
 
-        if (cayanTransaction.AdditionalParameters.EMV != null){
+        if (cayanTransaction.AdditionalParameters?.EMV != null){
             val e = EMV(
                     ApplicationInformation = null,
                     cardInformation = null,
