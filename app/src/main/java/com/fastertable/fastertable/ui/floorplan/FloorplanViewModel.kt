@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.fastertable.fastertable.common.base.BaseViewModel
 import com.fastertable.fastertable.data.models.*
+import com.fastertable.fastertable.data.repository.FloorplanQueries
 import com.fastertable.fastertable.data.repository.LoginRepository
 import com.fastertable.fastertable.data.repository.OrderRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -14,7 +15,8 @@ import javax.inject.Inject
 @HiltViewModel
 class FloorplanViewModel @Inject constructor
     (private val loginRepository: LoginRepository,
-     private val orderRepository: OrderRepository
+     private val orderRepository: OrderRepository,
+     private val floorplanQueries: FloorplanQueries
     ) : BaseViewModel() {
 
     val user: OpsAuth = loginRepository.getOpsUser()!!
@@ -25,13 +27,20 @@ class FloorplanViewModel @Inject constructor
     val tables: LiveData<List<RestaurantTable>>
         get() = _tables
 
-    private val _floorplans = MutableLiveData<List<RestaurantFloorPlan>>()
-    val floorplans: LiveData<List<RestaurantFloorPlan>>
+    private val _walls = MutableLiveData<List<FloorplanWall>>()
+    val walls: LiveData<List<FloorplanWall>>
+        get() = _walls
+
+    private val _floorplans = MutableLiveData<List<RestaurantFloorplan>?>()
+    val floorplans: LiveData<List<RestaurantFloorplan>?>
         get() = _floorplans
 
-    private val _orders = MutableLiveData<List<Order>>()
-    val orders: LiveData<List<Order>>
+    private val _orders = MutableLiveData<List<Order>?>()
+    val orders: LiveData<List<Order>?>
         get() = _orders
+
+    var prelimOrders: List<Order>? = null
+    var prelimFloorplan: List<RestaurantFloorplan>? = null
 
     private val _navigateToOrder = MutableLiveData<String>()
     val navigateToOrder: LiveData<String>
@@ -39,77 +48,57 @@ class FloorplanViewModel @Inject constructor
 
 
     init {
+
+    }
+
+    fun getFloorplans(){
         viewModelScope.launch {
-            loadTables()
-            getOrders()
+            reallyGetFloorplans()
         }
-
     }
 
-    private fun getOrders(){
+    suspend fun reallyGetFloorplans(){
+        val job = viewModelScope.launch {
+            prelimFloorplan = floorplanQueries.getFloorplans(settings.locationId, settings.companyId)
+            if (prelimFloorplan!!.isNotEmpty()){
+                _floorplans.postValue(prelimFloorplan)
+            }
+        }
+        job.join()
+        getOrders()
+    }
+
+    private suspend fun getOrders(){
+        val job = viewModelScope.launch {
+            prelimOrders = orderRepository.getOrdersFromFile()
+        }
+        job.join()
+        _orders.value = prelimOrders
+        findTableOrders()
+    }
+
+    private fun findTableOrders(){
         viewModelScope.launch {
-            _orders.postValue(orderRepository.getOrdersFromFile())
+            val orderTables = prelimOrders?.filter { it.tableNumber != null && it.closeTime == null }
+            if (orderTables != null && prelimFloorplan != null ){
+                for (floorplan in prelimFloorplan!!){
+                    for (table in floorplan.tables){
+                        for (order in orderTables){
+                            if (table.id == order.tableNumber){
+                                table.locked = true
+                                val manager = user.claims.find { it.permission.name == "viewOrders" }
+                                if (order.employeeId == user.employeeId || manager?.permission?.value!!){
+                                    table.locked = false
+                                    table.active = true
+                                }
+                            }
+                        }
+                    }
+                }
+                _floorplans.value = prelimFloorplan
+            }
         }
-
     }
-
-    private fun loadTables(){
-        val table1 = RestaurantTable(
-            id = 12,
-            type = TableType.Round_Booth,
-            rotate = 0,
-            locked = false,
-            reserved = false,
-            active = false,
-            id_location = IdLocation.TopCenter,
-            maxSeats = 4,
-            minSeats = 2,
-            left = 500,
-            top = 500
-        )
-
-        val table2 = RestaurantTable(
-            id = 13,
-            type = TableType.Booth,
-            rotate = 0,
-            locked = false,
-            reserved = false,
-            active = false,
-            id_location = IdLocation.TopCenter,
-            maxSeats = 4,
-            minSeats = 2,
-            left = 100,
-            top = 100
-        )
-
-        val list = mutableListOf<RestaurantTable>()
-        list.add(table1)
-        list.add(table2)
-        _tables.value = list
-
-        val floorPlan = RestaurantFloorPlan(
-            tables = list as ArrayList<RestaurantTable>,
-            floorplanWalls = null,
-            companyId = "",
-            name = "",
-            id = "",
-            locationId = "",
-            archived = false,
-            type = "floorplan",
-            _rid = null,
-            _self = null,
-            _etag = null,
-            _attachments = null,
-            _ts = null
-        )
-
-        val listfp = mutableListOf<RestaurantFloorPlan>()
-        listfp.add(floorPlan)
-
-        _floorplans.postValue(listfp)
-    }
-
-
 
     fun tableClicked(table: RestaurantTable){
         val openOrder = orders.value?.filter { it -> it.closeTime == null && it.tableNumber == table.id }
@@ -122,7 +111,7 @@ class FloorplanViewModel @Inject constructor
         }
     }
 
-    fun startTableOrder(table: RestaurantTable){
+    private fun startTableOrder(table: RestaurantTable){
         orderRepository.createNewOrder("Table", settings, user, table.id, null)
         _navigateToOrder.value = "Table"
     }

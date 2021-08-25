@@ -114,7 +114,6 @@ class HomeViewModel @Inject constructor (private val loginRepository: LoginRepos
     fun startCounterOrder(){
         orderRepository.createNewOrder("Counter", settings, user, null,  null)
         _navigateToOrder.value = "Counter"
-
     }
 
     fun navigationEnd(){

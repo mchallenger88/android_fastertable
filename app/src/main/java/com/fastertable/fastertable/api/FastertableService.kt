@@ -109,6 +109,16 @@ interface FastertableApi {
     @POST("employees/getOnShiftEmployees")
     suspend fun getOnShiftEmployees(@Body companyTimeBasedRequest: CompanyTimeBasedRequest): Response<List<Employee>>
 
+    //Floorplans
+    @GET("restaurantfloorplans/getfloorplans/{lid}/{cid}")
+    suspend fun getFloorplans(@Path("lid") lid: String?, @Path("cid") cid: String?): Response<List<RestaurantFloorplan>>
+
+    @POST("restaurantfloorplans/createfloorplan")
+    suspend fun saveFloorplan(@Body restaurantFloorplan: RestaurantFloorplan): Response<RestaurantFloorplan>
+
+    @POST("restaurantfloorplans/updatefloorplan")
+    suspend fun updateFloorplan(@Body restaurantFloorplan: RestaurantFloorplan): Response<RestaurantFloorplan>
+
 }
 
 

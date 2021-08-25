@@ -3,6 +3,7 @@ package com.fastertable.fastertable
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import android.view.WindowInsets
@@ -55,7 +56,8 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteListener, DateListener,
-    FloorplanTableListener, BaseContinueDialog.ContinueListener {
+    FloorplanTableListener,
+    BaseContinueDialog.ContinueListener {
     @Inject lateinit var loginRepository: LoginRepository
     @Inject lateinit var orderRepository: OrderRepository
     @Inject lateinit var paymentRepository: PaymentRepository
@@ -138,6 +140,7 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
 
         homeViewModel.navigateToFloorplan.observe(this, {
             if (it){
+                floorplanViewModel.getFloorplans()
                 navController.navigate(HomeFragmentDirections.actionNavHomeToFloorplanFragment())
                 homeViewModel.setNavigateToFloorPlan(false)
             }
@@ -575,14 +578,19 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
         startActivity(intent)
     }
 
-    override fun onClick(table: RestaurantTable) {
-        println(table.id)
-//        floorplanViewModel.tableClicked(table.restaurantTable)
-    }
 
     override fun returnDate(value: DateDialog) {
         when (value.source){
             "Confirm" -> confirmViewModel.setDate(value.date)
+        }
+    }
+
+    override fun onClick(table: RestaurantTable) {
+        //TODO; Will need to add permissions
+        if (!table.locked) {
+            floorplanViewModel.tableClicked(table)
+        } else {
+            Log.d("Table", "Table Locked!");
         }
     }
 

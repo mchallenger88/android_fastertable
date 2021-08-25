@@ -4,6 +4,7 @@
       <w>clockin</w>
       <w>clockout</w>
       <w>confirmcheckout</w>
+      <w>createfloorplan</w>
       <w>fastertable</w>
       <w>fastertablelogo</w>
       <w>fastertoolbar</w>
@@ -11,16 +12,19 @@
       <w>floorplans</w>
       <w>getcheckout</w>
       <w>getconfirmemployees</w>
+      <w>getfloorplans</w>
       <w>giftcard</w>
       <w>gson</w>
       <w>locationid</w>
       <w>reopencheckout</w>
+      <w>restaurantfloorplans</w>
       <w>semibold</w>
       <w>snackbar</w>
       <w>taxrate</w>
       <w>tipshare</w>
       <w>totalsales</w>
       <w>totaltips</w>
+      <w>updatefloorplan</w>
     </words>
   </dictionary>
 </component>

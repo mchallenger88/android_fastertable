@@ -3,7 +3,6 @@ package com.fastertable.fastertable.ui.checkout
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.fastertable.fastertable.api.CheckoutUseCase
 import com.fastertable.fastertable.common.base.BaseViewModel
 import com.fastertable.fastertable.data.models.*
 import com.fastertable.fastertable.data.repository.*
@@ -62,11 +61,11 @@ class CheckoutViewModel @Inject constructor (
 
     init{
         _activeDate.value = LocalDate.now()
-        getCheckout()
+        getEmployeeCheckout()
         _showOrders.value = true
     }
 
-    fun getCheckout(){
+    fun getEmployeeCheckout(){
         viewModelScope.launch {
             val user = loginRepository.getOpsUser()
             val rollingMidnight = GlobalUtils().unixMidnight(_activeDate.value!!)
@@ -181,13 +180,13 @@ class CheckoutViewModel @Inject constructor (
     fun dateForward(){
         if (_activeDate.value?.plusDays(1)?.atStartOfDay()!! <= LocalDate.now().atStartOfDay()){
             _activeDate.value = _activeDate.value?.plusDays(1)
-            getCheckout()
+            getEmployeeCheckout()
         }
     }
 
     fun dateBack(){
         _activeDate.value = _activeDate.value?.minusDays(1)
-        getCheckout()
+        getEmployeeCheckout()
     }
 
     fun showOrders(){

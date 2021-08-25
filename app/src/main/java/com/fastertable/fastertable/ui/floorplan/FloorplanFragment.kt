@@ -2,10 +2,12 @@ package com.fastertable.fastertable.ui.floorplan
 
 import android.app.ActionBar
 import android.content.Context
+import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.RelativeLayout
 import androidx.constraintlayout.helper.widget.Flow
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.ViewCompat
@@ -41,29 +43,43 @@ class FloorplanFragment: BaseFragment() {
 
     private fun loadTables(binding: FloorplanFragmentBinding){
         binding.layoutFloorplan.removeAllViews()
-        viewModel.tables.observe(viewLifecycleOwner, {
-            if (it.isNotEmpty()){
-                it.forEach { table ->
+        viewModel.floorplans.observe(viewLifecycleOwner, {
+            if (it?.isNotEmpty() == true){
+                it[0].tables.forEach { table ->
                     val btnTable = FloorplanTable(activity?.applicationContext!!)
                     btnTable.id = ViewCompat.generateViewId()
                     btnTable.loadTable(table)
-
                     btnTable.setOnClickListener {
                         tableListener.onClick(table)
                     }
 
-                    val currentLayout = ConstraintLayout.LayoutParams(
-                        ConstraintLayout.LayoutParams.MATCH_PARENT,
-                        ConstraintLayout.LayoutParams.MATCH_PARENT
+                    val currentLayout = RelativeLayout.LayoutParams(
+                        RelativeLayout.LayoutParams.WRAP_CONTENT,
+                        RelativeLayout.LayoutParams.WRAP_CONTENT
                     )
+
                     currentLayout.marginStart = table.left
                     currentLayout.topMargin = table.top
                     btnTable.layoutParams = currentLayout
                     binding.layoutFloorplan.addView(btnTable)
                 }
-            }
-        })
 
+                it[0].walls.forEach { wall ->
+                    val floorWall = FloorWall(activity?.applicationContext!!)
+                    floorWall.loadWall(wall)
+
+                    floorWall.id = ViewCompat.generateViewId()
+                    val currentLayout = ConstraintLayout.LayoutParams(
+                        ConstraintLayout.LayoutParams.MATCH_PARENT,
+                        ConstraintLayout.LayoutParams.MATCH_PARENT
+                    )
+
+                    currentLayout.marginStart = wall.left ?: 0
+                    currentLayout.topMargin = wall.top ?: 0
+                    floorWall.layoutParams = currentLayout
+                    binding.layoutFloorplan.addView(floorWall)
+                }
+        }})
     }
 
     fun tableClick(table: RestaurantTable){

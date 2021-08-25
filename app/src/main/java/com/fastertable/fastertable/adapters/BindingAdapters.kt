@@ -138,16 +138,21 @@ fun setGuestNumberTitle(textView: TextView, guests: List<Guest>?){
         }
     }
 }
-//
-//@SuppressLint("SetTextI18n")
-//@BindingAdapter("bind:addItem", "bind:addQuantity")
-//fun addItemToOrder(textView: TextView, addItem: MenuItem?, addQuantity: Int){
-//    if (addItem?.prices?.size == 1){
-//        val price = addItem.prices[0].price * addQuantity
-//        textView.text = "$%.${2}f".format(price)
-//    }
-//
-//}
+
+@SuppressLint("SetTextI18n")
+@BindingAdapter("setTableNumber")
+fun setTableNumber(textView: TextView, order: Order?){
+    if (order != null){
+        if (order.tableNumber != null){
+            textView.text = "Table ${order.tableNumber}"
+        }else{
+            textView.visibility = View.GONE
+        }
+    }else{
+        textView.visibility = View.GONE
+    }
+
+}
 
 @SuppressLint("SetTextI18n")
 @BindingAdapter("addRemoveIngredient")

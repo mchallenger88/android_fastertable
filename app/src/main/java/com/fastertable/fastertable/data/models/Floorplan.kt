@@ -4,9 +4,9 @@ import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-data class RestaurantFloorPlan(
+data class RestaurantFloorplan(
     val tables: ArrayList<RestaurantTable>,
-    val floorplanWalls: ArrayList<FloorplanWall>?,
+    val walls: ArrayList<FloorplanWall>,
     val companyId: String,
     val name: String,
     val id: String,
@@ -45,17 +45,18 @@ data class TableClass (
 @Parcelize
 data class RestaurantTable (
     val id: Int,
-    val type: TableType,
+    val type: String,
     val rotate: Int,
-    val locked: Boolean,
+    var locked: Boolean,
     val reserved: Boolean,
-    val active: Boolean,
-    val id_location: IdLocation,
+    var active: Boolean,
+    val id_location: String,
     val maxSeats: Int,
     val minSeats: Int,
     val left: Int,
     val top: Int,
-
+    var isCombination: Boolean,
+    var combinationTables: ArrayList<RestaurantTable>?
 ): Parcelable
 
 enum class IdLocation{
@@ -76,18 +77,21 @@ enum class WallDirection{
     Vertical, Horizontal
 }
 
+
 @Parcelize
 data class FloorplanWall (
     val id: Int?,
-    val left: Int?,
-    val top: Int?,
+    var left: Int,
+    var top: Int,
     val height: Int?,
-    val width: Int?,
+    var width: Int?,
+    var direction:String?,
+    var thickness: Int?
 ): Parcelable
 
 @Parcelize
 data class TablePosition(
-    val floorplan: RestaurantFloorPlan,
+    val floorplan: RestaurantFloorplan,
     val table: TableClass,
     val newX: Int,
     val newY: Int,
@@ -97,7 +101,7 @@ data class TablePosition(
 
 @Parcelize
 data class WallPosition(
-    val floorplan: RestaurantFloorPlan,
+    val floorplan: RestaurantFloorplan,
     val floorplanWall: FloorplanWall,
     val newX: Int,
     val newY: Int,
@@ -118,12 +122,12 @@ data class WallDialogSave(
 
 @Parcelize
 data class TableDialogData(
-    val floorplan: RestaurantFloorPlan,
+    val floorplan: RestaurantFloorplan,
     val table: TableClass
 ): Parcelable
 
 @Parcelize
 data class WallDialogData(
-    val floorplan: RestaurantFloorPlan,
+    val floorplan: RestaurantFloorplan,
     val floorplanWall: FloorplanWall
 ): Parcelable

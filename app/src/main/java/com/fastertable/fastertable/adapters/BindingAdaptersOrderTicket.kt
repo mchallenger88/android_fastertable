@@ -94,7 +94,12 @@ fun getItemPrice(textView: TextView, item: OrderItem?){
 @BindingAdapter("setFullOrderType")
 fun fullOrderType(textView: TextView, order: Order?){
     if (order != null) {
-        textView.text = "${order.orderType} Order"
+        if (order.tableNumber == null){
+            textView.text = "${order.orderType} Order"
+        }else{
+            textView.text = "Order for Table ${order.tableNumber}"
+        }
+
     }
 
 

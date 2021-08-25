@@ -8,10 +8,16 @@
             type="com.fastertable.fastertable.ui.floorplan.FloorplanViewModel" />
     </data>
 
-<androidx.constraintlayout.widget.ConstraintLayout
-    android:id="@+id/layout_floorplan"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <RelativeLayout
+            android:id="@+id/layout_floorplan"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/white">
+
+        </RelativeLayout>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -7,27 +7,40 @@
             name="table"
             type="com.fastertable.fastertable.data.models.RestaurantTable" />
     </data>
-    <merge
-        android:layout_width="match_parent"
+    <RelativeLayout
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content">
 
-        <ImageView
-            android:id="@+id/img_table"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:contentDescription="@string/restaurant_table"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_booth" />
+        <LinearLayout
+            android:id="@+id/tableImages"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="30dp"
+            android:paddingTop="20dp"
+            android:paddingRight="30dp"
+            android:paddingBottom="20dp"
+            >
+            <ImageView
+                android:id="@+id/img_table"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:contentDescription="@string/restaurant_table"
+                app:srcCompat="@drawable/ic_booth" />
+
+        </LinearLayout>
 
         <TextView
             android:id="@+id/txt_table_id"
             style="@style/view_subtitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="17dp"
+            android:layout_width="30dp"
+            android:layout_height="20dp"
+            android:layout_marginLeft="45dp"
+            android:layout_marginTop="80dp"
+            android:layout_marginBottom="0dp"
+            android:gravity="center|right"
             android:text="10"
-            app:layout_constraintStart_toStartOf="@id/img_table"
-            app:layout_constraintTop_toBottomOf="@+id/img_table" />
-    </merge>
+            android:textAlignment="center"
+            android:textSize="18dp"
+            tools:ignore="MissingConstraints" />
+    </RelativeLayout>
 </layout>

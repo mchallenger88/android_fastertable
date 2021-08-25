@@ -1,6 +1,5 @@
 package com.fastertable.fastertable.api
 
-import com.fastertable.fastertable.data.models.Company
 import com.fastertable.fastertable.data.models.CompanyTimeBasedRequest
 import com.fastertable.fastertable.data.models.Employee
 import com.fastertable.fastertable.data.models.Order

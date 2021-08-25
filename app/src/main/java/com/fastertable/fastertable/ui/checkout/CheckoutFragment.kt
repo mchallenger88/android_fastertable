@@ -24,7 +24,7 @@ class CheckoutFragment : BaseFragment() {
         val binding = CheckoutFragmentBinding.inflate(inflater)
         binding.lifecycleOwner = viewLifecycleOwner
         binding.viewModel = viewModel
-        viewModel.getCheckout()
+        viewModel.getEmployeeCheckout()
         bindingObservables(binding)
         return binding.root
     }
