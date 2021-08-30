@@ -107,7 +107,7 @@ class PaymentRepository @Inject constructor(private val app: Application) {
         file.delete()
     }
 
-    fun createNewPayment(order: Order, terminal: Terminal): Payment{
+    fun createNewPayment(order: Order, terminal: Terminal, fees: List<AdditionalFees>?): Payment{
 
         val payment = Payment(
             id = order.id.replace("O", "P"),
@@ -124,7 +124,7 @@ class PaymentRepository @Inject constructor(private val app: Application) {
             employeeId = order.employeeId!!,
             userName = order.userName,
             terminalId =  terminal.terminalId.toString(),
-            tickets = arrayListOf(order.createSingleTicket()),
+            tickets = arrayListOf(order.createSingleTicket(fees)),
             taxRate = order.taxRate,
             statusApproval = null,
             newApproval = null,

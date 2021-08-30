@@ -8,6 +8,7 @@ import com.fastertable.fastertable.common.Constants
 import com.fastertable.fastertable.common.base.BaseViewModel
 import com.fastertable.fastertable.data.models.*
 import com.fastertable.fastertable.data.repository.*
+import com.fastertable.fastertable.services.ReceiptPrintingService
 import com.fastertable.fastertable.utils.GlobalUtils
 import com.fastertable.fastertable.utils.round
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -35,11 +36,13 @@ class GiftCardViewModel @Inject constructor (
     private val updatePayment: UpdatePayment,
     private val saveGiftOrder: SaveGiftOrder,
     private val creditCardRepository: CreditCardRepository,
+    private val receiptPrintingService: ReceiptPrintingService,
     private val initiateCreditTransaction: InitiateCreditTransaction,) : BaseViewModel() {
 
     val user: OpsAuth = loginRepository.getOpsUser()!!
     val settings: Settings = loginRepository.getSettings()!!
     val terminal: Terminal = loginRepository.getTerminal()!!
+    val company: Company = loginRepository.getCompany()!!
 
     private val _giftScreen = MutableLiveData(ShowGift.ADD_CASH)
     val giftScreen: LiveData<ShowGift>
@@ -254,7 +257,7 @@ class GiftCardViewModel @Inject constructor (
         }
     }
 
-    fun processApproval(ticket: Ticket, cayanTransaction: CayanTransaction){
+    private fun processApproval(ticket: Ticket, cayanTransaction: CayanTransaction){
         ticket.paymentType = "Credit"
         ticket.paymentTotal = cayanTransaction.AmountApproved.toDouble()
 
@@ -272,14 +275,14 @@ class GiftCardViewModel @Inject constructor (
         if (ticket.paymentTotal == ticket.total){
             _amountOwed.value = 0.00
             ticket.paymentTotal = ticket.total
-            setError("Credit Card Process","The credit was approved. Print Receipt?")
+            setError("Credit Card Process","The credit was approved.")
         }
 
         if (ticket.paymentTotal < ticket.total){
             _amountOwed.value = ticket.total.minus(ticket.paymentTotal).round(2)
             ticket.paymentTotal = amountOwed.value!!
             ticket.partialPayment = true
-            setError("Credit Card Process","The credit was approved. Print Receipt?")
+            setError("Credit Card Process","The credit was approved.")
         }
 
         if (activePayment.value!!.allTicketsPaid()){
@@ -519,7 +522,7 @@ class GiftCardViewModel @Inject constructor (
             _ts = null
         )
         _activeOrder.value = order
-        _activePayment.value = paymentRepository.createNewPayment(order, terminal)
+        _activePayment.value = paymentRepository.createNewPayment(order, terminal, settings.additionalFees)
 
     }
 
@@ -529,11 +532,35 @@ class GiftCardViewModel @Inject constructor (
             if (activePayment.value?._rid == ""){
                 p = savePayment.savePayment(activePayment.value!!)
                 _activePayment.postValue(p)
+                printPaymentReceipt()
             }else{
                 p = updatePayment.savePayment(activePayment.value!!)
                 _activePayment.postValue(p)
+                printPaymentReceipt()
             }
             _ticketPaid.value = false
+        }
+    }
+
+    private fun printPaymentReceipt(){
+        viewModelScope.launch {
+            val ticket = _activePayment.value?.activeTicket()
+            val printer = settings.printers.find { it.printerName == terminal.defaultPrinter.printerName }
+            val location = company.getLocation(settings.locationId)
+            if (ticket?.paymentType == "Cash"){
+                if (printer != null){
+                    val ticketDocument = _activePayment.value?.getCashReceipt(printer, location!!)
+                    receiptPrintingService.printTicketReceipt(ticketDocument!!, printer, settings)
+                }
+            }
+
+            if (ticket?.paymentType == "Credit"){
+                if (printer != null){
+                    val ticketDocument = _activePayment.value?.getCreditReceipt(printer, location!!)
+                    receiptPrintingService.printTicketReceipt(ticketDocument!!, printer, settings)
+                }
+            }
+
         }
     }
 

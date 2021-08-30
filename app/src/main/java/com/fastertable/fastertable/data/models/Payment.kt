@@ -71,7 +71,7 @@ data class Payment(
         return tickets.find{it -> it.uiActive}
     }
 
-    fun createSingleTicket(order: Order){
+    fun createSingleTicket(order: Order, fees: List<AdditionalFees>?){
         if (!anyTicketsPaid()){
             val tickets = arrayListOf<Ticket>()
             val ticketItems = arrayListOf<TicketItem>()
@@ -81,14 +81,14 @@ data class Payment(
                     ticketItems.add(ticketItem)
                 }
             }
-            val ticket = order.createTicket(0, ticketItems)
+            val ticket = order.createTicket(0, ticketItems, fees)
             tickets.add(ticket)
             this.tickets = tickets
         }
 
     }
 
-    fun splitByGuest(order: Order) {
+    fun splitByGuest(order: Order, fees: List<AdditionalFees>?) {
         if (!anyTicketsPaid()) {
             val tickets = arrayListOf<Ticket>()
             order.guests?.forEach {guest ->
@@ -98,7 +98,7 @@ data class Payment(
                     ticketItems.add(ti)
                 }
 
-                val ticket = order.createTicket(guest.id, ticketItems)
+                val ticket = order.createTicket(guest.id, ticketItems, fees)
                 ticket.uiActive = ticket.id == 0
                 tickets.add(ticket)
             }
@@ -106,7 +106,7 @@ data class Payment(
         }
     }
 
-    fun splitEvenly(order: Order){
+    fun splitEvenly(order: Order, fees: List<AdditionalFees>?){
         if (!anyTicketsPaid()) {
             val tickets = arrayListOf<Ticket>()
             val orderItems = order.getAllOrderItems()
@@ -116,7 +116,7 @@ data class Payment(
                 ticketItems.add(ti)
             }
             order.guests?.forEach { guest ->
-                val ticket = order.createTicket(guest.id, ticketItems)
+                val ticket = order.createTicket(guest.id, ticketItems, fees)
                 ticket.uiActive = ticket.id == 0
                 tickets.add(ticket)
             }
@@ -258,6 +258,7 @@ data class Ticket(
     var paymentType: String,
     var gratuity: Double,
     val deliveryFee: Double,
+    val extraFees: List<AdditionalFees>?,
     var paymentTotal: Double = 0.00,
     var stageResponse: MutableList<StageResponse>,
     var creditCardTransactions: ArrayList<CreditCardTransaction>,

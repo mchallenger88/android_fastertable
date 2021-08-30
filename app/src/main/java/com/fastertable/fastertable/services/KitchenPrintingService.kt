@@ -11,7 +11,6 @@ import java.util.*
 import javax.inject.Inject
 
 class PrintTicketService {
-
     fun masterTicket(document: Document, order: Order){
         val date: String = DateTimeFormatter.ofPattern("MM-dd-yyyy").withZone(ZoneId.systemDefault())
             .format(java.time.Instant.ofEpochSecond(order.startTime))
@@ -133,7 +132,7 @@ class PrintTicketService {
             .cutPaper(PrinterDriver.CUTPAPER.PARTIALCUTWITHFEED)
     }
 
-    fun addMenuItemLine(document: Document, item: OrderItem, orderType: String) {
+    private fun addMenuItemLine(document: Document, item: OrderItem, orderType: String) {
         var line = ""
         if (item.quantity > 1){
             line += "Qty " + item.quantity + "x "
@@ -159,6 +158,18 @@ class PrintTicketService {
         document.color(PrinterDriver.COLOR.BLACK)
         document.text(line, TextSettings(size = 24f, bold = true))
             .newLine()
+    }
+
+    private fun addAdditionalFees(document: Document, ticket: Ticket){
+        if (ticket.extraFees !=  null){
+            for (fee in ticket.extraFees){
+                document
+                    .alignment("right")
+                    .text(formatDouble("${fee.name}:", fee.checkAmount!!))
+                    .newLine()
+            }
+        }
+
     }
 
     fun kitchenTicket(document: Document, order: Order, printer: Printer): Document {
@@ -423,7 +434,7 @@ class PrintTicketService {
             .cutPaper(PrinterDriver.CUTPAPER.PARTIALCUTWITHFEED)
     }
 
-    fun formatPhone(telephone: String): String{
+    private fun formatPhone(telephone: String): String{
         return telephone.substring(0, 3) + "-" + telephone.substring(3, 6) + "-" + telephone.substring(6, 10)
     }
 
@@ -605,13 +616,14 @@ class PrintTicketService {
     }
 
     fun creditCardReceipt(document: Document, payment: Payment, ticket: Ticket, location: Location): List<Document>{
+        document.fontText( "firacoderegular.ttf")
         val list = mutableListOf<Document>()
         val phone: String = formatPhone(location.phones[0].telephoneNumber)
         val date: String = DateTimeFormatter.ofPattern("MM-dd-yyyy").withZone(ZoneId.systemDefault())
             .format(java.time.Instant.ofEpochSecond(payment.timeStamp))
         val time: String =  DateTimeFormatter.ofPattern("h:mm a").withZone(ZoneId.systemDefault())
             .format(java.time.Instant.ofEpochSecond(payment.timeStamp))
-        val ccId: Int = (ticket.creditCardTransactions.toString().length - 1)
+        val ccId: Int = (ticket.creditCardTransactions.size - 1)
         val ccT: CreditCardTransaction = ticket.creditCardTransactions[ccId]
         val addParams = ccT.creditTransaction.AdditionalParameters
         var appInfo: ApplicationInformation? = null
@@ -638,7 +650,9 @@ class PrintTicketService {
                 .newLine()
                 .text(phone)
                 .newLine()
+                .newLine()
                 .text("*** Credit Card Receipt ***", TextSettings(bold = true))
+                .newLine()
                 .newLine()
                 .alignment("left")
                 .text("$date $time")
@@ -671,22 +685,25 @@ class PrintTicketService {
                     .newLine()
             }
 
-
-            val t18: String = (ccT.creditTotal?.times(.18))?.round(2).toString()
-            val t20: String = (ccT.creditTotal?.times(.20))?.round(2).toString()
-            val t22: String = (ccT.creditTotal?.times(.22))?.round(2).toString()
+            val t18 = String.format("%.2f", ccT.creditTotal?.times(.18))
+            val t20 = String.format("%.2f", ccT.creditTotal?.times(.20))
+            val t22 = String.format("%.2f", ccT.creditTotal?.times(.22))
 
             document
                 .newLine()
                 .alignment("center")
                 .text("Details", TextSettings(underline = true))
                 .newLine()
+                .newLine()
                 .alignment("right")
                 .text("Amount:  $" + ccT.creditTransaction.AmountApproved)
                 .newLine()
+                .newLine()
                 .text("Tip: ____________")
                 .newLine()
+                .newLine()
                 .text("Total: _____________")
+                .newLine()
                 .newLine()
                 .alignment("center")
                 .text("I agree to pay the above total")
@@ -696,16 +713,20 @@ class PrintTicketService {
                 .text("issuer agreement")
                 .newLine()
                 .newLine()
+                .newLine()
                 .text("X:_______________________________________")
+                .newLine()
                 .alignment("center")
                 .text("Signature")
                 .newLine()
+                .newLine()
                 .text("Tip Calculator:")
                 .newLine()
-                .text("(18%) = $t18 (20%) = $t20 (22%) = $t22")
+                .text("(18%) = $$t18 (20%) = $$t20 (22%) = $$t22")
+                .newLine()
                 .newLine()
 
-            if (i == 0){
+            if (i == 1){
                 document.text("**Merchant Copy**")
             }else{
                 document.text("**Guest Copy**")
@@ -721,6 +742,7 @@ class PrintTicketService {
     }
     
     fun ticketReceipt(document: Document, order: Order, payment: Payment, ticket: Ticket, location: Location){
+        document.fontText( "firacoderegular.ttf")
         val padStr = " "
 
         val date: String = DateTimeFormatter.ofPattern("MM-dd-yyyy").withZone(ZoneId.systemDefault())
@@ -815,18 +837,21 @@ class PrintTicketService {
             }
         }
 
-        val ttl: Int = ticket.total.toString().length
-        val sub: Int = ttl - ticket.subTotal.toString().length
-        val tx: Int = ttl - ticket.tax.toString().length
-
         document
             .newLine()
-            .text("Subtotal: " + padStr.repeat(sub + 1) + ticket.subTotal)
+            .alignment("right")
+            .text(formatDouble("Subtotal:", ticket.subTotal))
             .newLine()
-            .text("Tax: " + padStr.repeat(tx + 6) + ticket.tax)
+            .text(formatDouble("Tax:", ticket.tax))
             .newLine()
-            .text("Total: " + padStr.repeat(2) + "$ " + ticket.total, TextSettings(bold = true))
+
+        addAdditionalFees(document, ticket)
+
+        document
+            .text(formatDoublePrice("Total:", ticket.total), TextSettings(bold = true))
             .newLine()
+
+        addAdditionalFeesText(document, ticket)
 
         document
             .newLine()
@@ -835,7 +860,20 @@ class PrintTicketService {
 
     }
 
+    private fun addAdditionalFeesText(document: Document, ticket: Ticket){
+        if (ticket.extraFees !=  null){
+            for (fee in ticket.extraFees){
+                document
+                    .newLine()
+                    .newLine()
+                    .alignment("center")
+                    .text("      ${fee.checkMessage}      ", TextSettings(size = 26f))
+            }
+        }
+    }
+
     fun paidCashReceipt(document: Document, payment: Payment, ticket: Ticket, location: Location){
+        document.fontText( "firacoderegular.ttf")
         val padStr: String = " "
 
         val date: String = DateTimeFormatter.ofPattern("MM-dd-yyyy").withZone(ZoneId.systemDefault())
@@ -845,8 +883,6 @@ class PrintTicketService {
 
         var itemPrice: Double
         var subtotal: Double = 0.00
-        var tax: Double
-        val total: Double
         var itemName: String
         document
             .triggerPeripheral(PrinterDriver.PERIPHERAL.DEVICE1)
@@ -856,6 +892,7 @@ class PrintTicketService {
             .text(location.locationName)
             .newLine()
             .text("*** Receipt ***", TextSettings(bold = true))
+            .newLine()
             .newLine()
             .alignment("left")
             .text("$date $time")
@@ -888,7 +925,6 @@ class PrintTicketService {
                     .newLine()
 
                 subtotal += itemPrice
-                tax = item.tax
                 val price = itemPrice
 
                 if (item.itemName.length > 25){
@@ -920,30 +956,74 @@ class PrintTicketService {
             change = (ticket.paymentTotal - ticket.total)
         }
 
-        val paid: Int = ticket.paymentTotal.toString().length
-
-        val ttl: Int = ticket.total.toString().length
-        val sub: Int = ttl - ticket.subTotal.toString().length
-        val tx: Int = ttl - ticket.tax.toString().length
-        val changepad: Int = paid - change.toString().length
-
         document
             .newLine()
-            .text("Subtotal: " + padStr.repeat(sub + 1) + ticket.subTotal)
+            .alignment("right")
+            .text(formatDouble("Subtotal:", ticket.subTotal))
             .newLine()
-            .text("Tax: " + padStr.repeat(tx + 6) + ticket.tax)
+            .text(formatDouble("Tax:", ticket.tax))
             .newLine()
-            .text("Total: " + padStr.repeat(2) + "$ " + ticket.total, TextSettings(bold = true))
+
+        addAdditionalFees(document, ticket)
+        document
+            .text(formatDoublePrice("Total:", ticket.total), TextSettings(bold = true))
             .newLine()
-            .text("Paid: " + padStr.repeat(3) + "$ " + ticket.paymentTotal)
+            .text(formatDoublePrice("Paid:", ticket.paymentTotal))
             .newLine()
-            .text("Change: " + padStr.repeat(changepad + 1) + "$ " + change)
+            .newLine()
+            .text(formatDoublePrice("Change:", change))
 
 
         document
             .newLine()
             .newLine()
             .cutPaper(PrinterDriver.CUTPAPER.PARTIALCUTWITHFEED)
+    }
+
+    private fun formatDouble(text: String, price: Double): String{
+        return when {
+            price < 1.00 -> {
+                text + "     " + String.format("%.2f", price)
+            }
+            price >= 1.00 && price < 10.00 -> {
+                text + "     " + String.format("%.2f", price)
+            }
+            price >= 10.00 && price < 100.00 -> {
+                text + "    " + String.format("%.2f", price)
+            }
+            price >= 100.00 && price < 1000.00 -> {
+                text + "   " + String.format("%.2f", price)
+            }
+            price >= 1000.00 && price < 10000.00 -> {
+                text + "  " + String.format("%.2f", price)
+            }
+            else -> {
+                text + "    " + String.format("%.2f", price)
+            }
+        }
+    }
+
+    private fun formatDoublePrice(text: String, price: Double): String{
+        return when {
+            price < 1.00 -> {
+                text + "    $" + String.format("%.2f", price)
+            }
+            price >= 1.00 && price < 10.00 -> {
+                text + "    $" + String.format("%.2f", price)
+            }
+            price >= 10.00 && price < 100.00 -> {
+                text + "   $" + String.format("%.2f", price)
+            }
+            price >= 100.00 && price < 1000.00 -> {
+                text + "  $" + String.format("%.2f", price)
+            }
+            price >= 1000.00 && price < 10000.00 -> {
+                text + " $" + String.format("%.2f", price)
+            }
+            else -> {
+                text + "   $" + String.format("%.2f", price)
+            }
+        }
     }
 
 }

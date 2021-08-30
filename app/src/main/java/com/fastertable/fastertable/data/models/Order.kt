@@ -170,7 +170,7 @@ data class Order(
         return subTotal * taxRate
     }
 
-    fun createSingleTicket(): Ticket{
+    fun createSingleTicket(fees: List<AdditionalFees>?): Ticket{
         val ticketItems = arrayListOf<TicketItem>()
         this.guests?.forEach { guest ->
             guest.orderItems?.forEachIndexed { index, orderItem ->
@@ -178,11 +178,13 @@ data class Order(
                 ticketItems.add(ticketItem)
             }
         }
-        return createTicket(0, ticketItems)
+        return createTicket(0, ticketItems, fees)
     }
 
 
     fun createTicketItem(index: Int, orderItem: OrderItem): TicketItem{
+        println("BBBBBBBBBBBBBBBBBBBBB")
+        println(orderItem.getSalesTax(orderItem.tax, this.taxRate).round(2))
         return TicketItem(
             id = index,
             orderGuestNo = index,
@@ -196,7 +198,7 @@ data class Order(
             itemMods = ArrayList(orderItem.orderMods),
             salesCategory = orderItem.salesCategory,
             ticketItemPrice = orderItem.getTicketExtendedPrice(this.taxRate).round(2),
-            tax = orderItem.getSalesTax(this.taxRate).round(2)
+            tax = orderItem.getSalesTax(orderItem.tax, this.taxRate).round(2)
         )
     }
 
@@ -215,27 +217,71 @@ data class Order(
             itemMods = ArrayList(orderItem.orderMods),
             salesCategory = orderItem.salesCategory,
             ticketItemPrice = orderItem.getTicketExtendedPrice(this.taxRate).div(split).round(2),
-            tax = orderItem.getSalesTax(this.taxRate).div(split).round(2)
+            tax = orderItem.getSalesTax(orderItem.tax, this.taxRate).div(split).round(2)
         )
     }
 
-    fun createTicket(ticketId: Int, items: ArrayList<TicketItem>): Ticket{
-        return Ticket(
-            orderId = this.id,
-            id = ticketId,
-            ticketItems = items,
-            subTotal = items.sumByDouble { it -> it.ticketItemPrice }.round(2),
-            tax = items.sumByDouble { it -> it.tax }.round(2),
-            total = items.sumByDouble { it -> it.ticketItemPrice }.plus(items.sumByDouble { it -> it.tax }).round(2),
-            paymentType = "",
-            gratuity = 0.00,
-            deliveryFee = 0.00,
-            paymentTotal = 0.00,
-            stageResponse = arrayListOf<StageResponse>(),
-            creditCardTransactions = arrayListOf<CreditCardTransaction>(),
-            partialPayment = false,
-            uiActive = true
-        )
+    fun createTicket(ticketId: Int, items: ArrayList<TicketItem>, fees: List<AdditionalFees>?): Ticket{
+        val gift = items.filter{ it -> it.itemName == "Gift Card"}
+
+        if (gift.isEmpty()){
+            val xfees = calcExtraFees(items.sumOf { it -> it.ticketItemPrice }.round(2), fees)
+            val xfeesSum: Double
+            if (xfees != null){
+                xfeesSum = xfees.sumOf{it -> it.checkAmount!!}.round(2)
+            }else{
+                xfeesSum = 0.00
+            }
+
+            return Ticket(
+                orderId = this.id,
+                id = ticketId,
+                ticketItems = items,
+                subTotal = items.sumOf { it -> it.ticketItemPrice }.round(2),
+                tax = items.sumOf { it -> it.tax }.round(2),
+                total = items.sumOf { it -> it.ticketItemPrice }.plus(items.sumOf { it -> it.tax }).plus(xfeesSum).round(2),
+                paymentType = "",
+                gratuity = 0.00,
+                deliveryFee = 0.00,
+                extraFees = xfees,
+                paymentTotal = 0.00,
+                stageResponse = arrayListOf<StageResponse>(),
+                creditCardTransactions = arrayListOf<CreditCardTransaction>(),
+                partialPayment = false,
+                uiActive = true
+            )
+        }else{
+            return Ticket(
+                orderId = this.id,
+                id = ticketId,
+                ticketItems = items,
+                subTotal = items.sumOf { it -> it.ticketItemPrice }.round(2),
+                tax = items.sumOf { it -> it.tax }.round(2),
+                total = items.sumOf { it -> it.ticketItemPrice }.plus(items.sumOf { it -> it.tax }).round(2),
+                paymentType = "",
+                gratuity = 0.00,
+                deliveryFee = 0.00,
+                extraFees = null,
+                paymentTotal = 0.00,
+                stageResponse = arrayListOf<StageResponse>(),
+                creditCardTransactions = arrayListOf<CreditCardTransaction>(),
+                partialPayment = false,
+                uiActive = true
+            )
+        }
+    }
+
+    private fun calcExtraFees(subTotal: Double, fees: List<AdditionalFees>?): List<AdditionalFees>?{
+        if (fees != null){
+            for (fee in fees){
+                if (fee.feeType.name == "Flat Amount"){
+                    fee.checkAmount = fee.amount.round(2)
+                }else{
+                    fee.checkAmount = subTotal.times(fee.amount.div(100)).round(2)
+                }
+            }
+        }
+        return fees
     }
 
     fun changeGiftItemAmount(amount: Double){
@@ -366,18 +412,19 @@ data class OrderItem(
     fun getTicketExtendedPrice(taxRate: Double): Double{
         var price = this.getExtendedPrice()
         if (this.tax === "Tax Included"){
-            price = price.minus(this.getSalesTax(taxRate))
+            price = price.minus(this.getSalesTax(this.tax, taxRate))
         }
         return price
     }
 
-    fun getSalesTax(taxRate: Double): Double{
-        return when (this.tax){
+    fun getSalesTax(taxType: String, taxRate: Double): Double{
+        val tax = when (taxType){
             "Taxable" -> getExtendedPrice().times(taxRate)
             "Tax Exempt" -> 0.00
             "Tax Included" -> getExtendedPrice().times(taxRate)
             else -> getExtendedPrice().times(taxRate)
         }
+        return tax
     }
 }
 

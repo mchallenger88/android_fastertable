@@ -465,7 +465,7 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
                                 okToPay = false }}}
 
                     if (okToPay){
-                        val payment = paymentRepository.createNewPayment(order, terminal)
+                        val payment = paymentRepository.createNewPayment(order, terminal, settings.additionalFees)
                         paymentViewModel.setActiveOrder(orderViewModel.liveOrder.value!!)
                         paymentViewModel.setLivePayment(payment)
                         navController.navigate(OrderFragmentDirections.actionOrderFragmentToPaymentFragment())

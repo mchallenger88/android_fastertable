@@ -128,11 +128,11 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
                 val amountOwed = (t.total.minus(cashAmount.value!!)).round(2)
                 if (amountOwed < 0){
                     _amountOwed.value = amountOwed.absoluteValue
-                    t.paymentTotal = t.total
+                    t.paymentTotal = cashAmount.value!!.round(2)
                 }
 
                 if (amountOwed == 0.00){
-                    t.paymentTotal = t.total
+                    t.paymentTotal = cashAmount.value!!.round(2)
                 }
 
                 if (amountOwed > 0){
@@ -224,7 +224,7 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
         }
     }
 
-    fun printPaymentReceipt(){
+    private fun printPaymentReceipt(){
         viewModelScope.launch {
             val ticket = _activePayment.value?.activeTicket()
             val printer = settings.printers.find { it.printerName == terminal.defaultPrinter.printerName }
@@ -257,7 +257,6 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
     }
 
 
-
     fun startCredit(order: Order){
         viewModelScope.launch {
             try{
@@ -276,7 +275,7 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
     }
 
 
-    suspend fun creditStaging(order: Order, settings: Settings, terminal: Terminal){
+    private suspend fun creditStaging(order: Order, settings: Settings, terminal: Terminal){
         viewModelScope.launch {
         //TODO: Handle partial payments
             try{
@@ -341,14 +340,14 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
         if (ticket.paymentTotal == ticket.total){
             _amountOwed.value = 0.00
             ticket.paymentTotal = ticket.total
-            setError("Credit Card Process","The credit was approved. Print Receipt?")
+            setError("Credit Card Process","The credit was approved.")
         }
 
         if (ticket.paymentTotal < ticket.total){
             _amountOwed.value = ticket.total.minus(ticket.paymentTotal).round(2)
             ticket.paymentTotal = amountOwed.value!!
             ticket.partialPayment = true
-            setError("Credit Card Process","The credit was approved. Print Receipt?")
+            setError("Credit Card Process","The credit was approved.")
         }
 
         if (activePayment.value!!.allTicketsPaid()){
@@ -436,17 +435,17 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
 
 
     fun splitByGuest(order: Order){
-        _activePayment.value?.splitByGuest(order)
+        _activePayment.value?.splitByGuest(order, settings.additionalFees)
         _activePayment.value = _activePayment.value
     }
 
     fun noSplit(order: Order){
-        _activePayment.value?.createSingleTicket(order)
+        _activePayment.value?.createSingleTicket(order, settings.additionalFees)
         _activePayment.value = _activePayment.value
     }
 
     fun evenSplit(order: Order){
-        _activePayment.value?.splitEvenly(order)
+        _activePayment.value?.splitEvenly(order, settings.additionalFees)
         _activePayment.value = _activePayment.value
     }
 

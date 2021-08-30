@@ -54,7 +54,9 @@ data class AdditionalFees(
     val id: Int,
     val name: String,
     val feeType: FeeType,
-    val amount: Double
+    val amount: Double,
+    var checkAmount: Double?,
+    val checkMessage: String
 ): Parcelable
 
 enum class FeeType{
@@ -142,6 +144,7 @@ data class DeliveryService(
 
 @Parcelize
 data class CreditCardEquipment(
+    val id: Int,
     val equipment: String,
     val ipAddress: String,
 ): Parcelable
