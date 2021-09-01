@@ -137,6 +137,9 @@
     <string name="item_more">item more</string>
     <string name="rush">Rush</string>
     <string name="item_rush">item rush</string>
+    <string name="cancel">Cancel</string>
+    <string name="ok">OK</string>
+    <string name="reorder_drinks_title">Reorder Drinks</string>
 
     //Payment
     <string name="single_ticket">Single Ticket</string>

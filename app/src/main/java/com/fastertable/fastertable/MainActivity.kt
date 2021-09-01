@@ -237,11 +237,16 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
 
         orderViewModel.showTransfer.observe(this, {
             if (it){
-                val id = orderViewModel.liveOrder.value!!.id
+                val id = orderViewModel.activeOrder.value!!.id
                 navController.navigate(OrderFragmentDirections.actionOrderFragmentToTransferOrderFragment(id))
             }
         })
 
+        orderViewModel.drinkList.observe(this, {
+            if (it.isNotEmpty()){
+                ReorderDrinksDialogFragment().show(supportFragmentManager, ReorderDrinksDialogFragment.TAG)
+            }
+        })
     }
 
 
@@ -412,7 +417,7 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
     private suspend fun sendToKitchen(){
         var send = false
         val settings = loginRepository.getSettings()!!
-        val order = orderViewModel.liveOrder.value!!
+        val order = orderViewModel.activeOrder.value!!
         order.guests?.forEach { guest ->
             guest.orderItems?.forEach {
                 if (it.status == "Started"){
@@ -443,7 +448,7 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
     private fun goToPayment(navController: NavController){
         var okToPay = true
         val terminal = loginRepository.getTerminal()!!
-        val order = orderViewModel.liveOrder.value!!
+        val order = orderViewModel.activeOrder.value!!
 
         lifecycleScope.launch{
             val p = paymentRepository.getPayment()
@@ -466,7 +471,7 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
 
                     if (okToPay){
                         val payment = paymentRepository.createNewPayment(order, terminal, settings.additionalFees)
-                        paymentViewModel.setActiveOrder(orderViewModel.liveOrder.value!!)
+                        paymentViewModel.setActiveOrder(orderViewModel.activeOrder.value!!)
                         paymentViewModel.setLivePayment(payment)
                         navController.navigate(OrderFragmentDirections.actionOrderFragmentToPaymentFragment())
                         orderViewModel.navToPayment(false)
@@ -533,13 +538,13 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
     override fun returnValue(value: String) {
         when (value){
             "Void Ticket" -> {
-                return paymentViewModel.voidTicket(orderViewModel.liveOrder.value!!)
+                return paymentViewModel.voidTicket(orderViewModel.activeOrder.value!!)
             }
             "Discount" -> {
                 return paymentViewModel.setPaymentScreen(ShowPayment.DISCOUNT, "Discount Ticket")
             }
             "Void Item" -> {
-                return paymentViewModel.voidTicketItem(orderViewModel.liveOrder.value!!)
+                return paymentViewModel.voidTicketItem(orderViewModel.activeOrder.value!!)
             }
             "Discount Item" -> {
                 return paymentViewModel.setPaymentScreen(ShowPayment.DISCOUNT, "Discount Item")

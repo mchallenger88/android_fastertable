@@ -143,11 +143,11 @@ class PaymentFragment: BaseFragment() {
 
     private fun applyDiscount(discount: Discount){
         //Is it discount ticket or discount item
-        viewModel.discountTicket(orderViewModel.liveOrder.value!!, discount)
+        viewModel.discountTicket(orderViewModel.activeOrder.value!!, discount)
     }
 
     private fun modifyPrice(binding: PaymentFragmentBinding){
-        viewModel.modifyPrice(orderViewModel.liveOrder.value!!, binding.editModifyPrice.editText?.text.toString())
+        viewModel.modifyPrice(orderViewModel.activeOrder.value!!, binding.editModifyPrice.editText?.text.toString())
     }
 
 }

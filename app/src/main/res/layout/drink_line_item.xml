@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android" >
+    <data>
+        <variable
+            name="drink"
+            type="com.fastertable.fastertable.data.models.ReorderDrink" />
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="750dp"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/txt_guest_id"
+            style="@style/order_grid"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/string_order_number"
+            app:drinkGuest="@{drink}"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/txt_drink"
+            style="@style/order_grid"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@{drink.drink.menuItemName}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/txt_guest_id"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

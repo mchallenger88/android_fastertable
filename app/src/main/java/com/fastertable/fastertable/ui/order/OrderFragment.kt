@@ -5,13 +5,11 @@ import android.os.Bundle
 import android.view.*
 import android.widget.Button
 import android.widget.LinearLayout
-import androidx.activity.addCallback
 import androidx.constraintlayout.helper.widget.Flow
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.fragment.app.activityViewModels
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ConcatAdapter
 import com.fastertable.fastertable.R
 import com.fastertable.fastertable.adapters.GuestSideBarAdapter
@@ -67,7 +65,7 @@ class OrderFragment : BaseFragment() {
         viewModel.ticketsPrinted.observe(viewLifecycleOwner, {
             if (it != null){
                 println("XXXXXXXXXXXXXXXXXXXXXX: Save Order Step 3")
-                viewModel.updateOrderStatus(viewModel.liveOrder.value!!)
+                viewModel.updateOrderStatus(viewModel.activeOrder.value!!)
             }
         })
     }
@@ -226,7 +224,7 @@ class OrderFragment : BaseFragment() {
             ingAdapter.notifyDataSetChanged()
         })
 
-        viewModel.liveOrder.observe(viewLifecycleOwner, { item ->
+        viewModel.activeOrder.observe(viewLifecycleOwner, { item ->
 //            guestAdapter.submitList(item?.guests)
             guestAdapter.notifyDataSetChanged()
 

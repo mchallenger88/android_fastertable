@@ -320,7 +320,7 @@ data class Order(
             Epson.use()
 
             val doc = PrinterDriver.createDocument(
-                DocumentSettings(), printer.printerModel
+                DocumentSettings(), "TM_U220"
             )
             if (printer.master){
                 PrintTicketService().masterTicket(doc, this)
@@ -373,7 +373,7 @@ data class Guest(
 @JsonClass(generateAdapter = true)
 @Parcelize
 data class OrderItem(
-    val id: Int,
+    var id: Int,
     val quantity: Int,
     val menuItemId: String,
     val menuItemName: String,
@@ -426,6 +426,9 @@ data class OrderItem(
         }
         return tax
     }
+        fun deepCopy() : OrderItem {
+            return Gson().fromJson(Gson().toJson(this), this.javaClass)
+        }
 }
 
 enum class TaxTypes{
@@ -456,6 +459,17 @@ data class OrderMod(
     var item: ModifierItem,
     var mod: Modifier
 ): Parcelable
+
+@Parcelize
+data class ReorderDrink(
+    val guestId: Int,
+    val drink: OrderItem
+): Parcelable
+
+//export interface ReorderDrink{
+//    guest: number;
+//    item: OrderItem
+//}
 
 
 //export interface OrderItemSelected{
@@ -527,10 +541,7 @@ data class OrderMod(
 //    order: Order;
 //}
 //
-//export interface ReorderDrink{
-//    guest: number;
-//    item: OrderItem
-//}
+
 //
 //export interface OrderPayment{
 //    o: Order;

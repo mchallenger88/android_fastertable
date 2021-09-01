@@ -43,7 +43,7 @@
                     android:text="@string/single_ticket"
                     android:textColor="@color/white"
                     android:textSize="@dimen/toolbar_button"
-                    android:onClick="@{() -> viewModel.noSplit(orderViewModel.liveOrder)}"
+                    android:onClick="@{() -> viewModel.noSplit(orderViewModel.activeOrder)}"
                     app:layout_constraintStart_toStartOf="@+id/layout_payment_split_buttons"
                     app:layout_constraintTop_toTopOf="@+id/layout_payment_split_buttons"
                     app:strokeColor="@color/white" />
@@ -58,7 +58,7 @@
                     android:text="@string/split_by_guest"
                     android:textColor="@color/white"
                     android:textSize="@dimen/toolbar_button"
-                    android:onClick="@{() -> viewModel.splitByGuest(orderViewModel.liveOrder)}"
+                    android:onClick="@{() -> viewModel.splitByGuest(orderViewModel.activeOrder)}"
                     app:layout_constraintStart_toEndOf="@+id/btn_single_ticket"
                     app:layout_constraintTop_toTopOf="@+id/layout_payment_split_buttons"
                     app:strokeColor="@color/white" />
@@ -73,7 +73,7 @@
                     android:text="@string/split_evenly"
                     android:textColor="@color/white"
                     android:textSize="@dimen/toolbar_button"
-                    android:onClick="@{() -> viewModel.evenSplit(orderViewModel.liveOrder)}"
+                    android:onClick="@{() -> viewModel.evenSplit(orderViewModel.activeOrder)}"
                     app:layout_constraintStart_toEndOf="@+id/btn_split_by_guest"
                     app:layout_constraintTop_toTopOf="@+id/layout_payment_split_buttons"
                     app:strokeColor="@color/white" />

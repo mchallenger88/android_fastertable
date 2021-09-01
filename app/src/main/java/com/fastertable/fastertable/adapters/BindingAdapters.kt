@@ -115,15 +115,25 @@ fun bindGuestRecyclerView(recyclerView: RecyclerView?, data: List<Guest>?) {
         adapter.submitList(data)
         adapter.notifyDataSetChanged()
     }
-
 }
 
+@BindingAdapter("drinkListData")
+fun drinkListData(recyclerView: RecyclerView?, data: List<ReorderDrink>?){
+    if (data != null){
+        val adapter = recyclerView?.adapter as DrinkListAdapter
+        adapter.submitList(data)
+        adapter.notifyDataSetChanged()
+    }
+}
 
 @BindingAdapter("itemModifiers")
 fun bindModifierRecycler(recyclerView: RecyclerView?, data: List<Modifier>?){
-    val adapter = recyclerView?.adapter as ModifierAdapter
-    adapter.submitList(data)
-    adapter.notifyDataSetChanged()
+    if (data != null){
+        val adapter = recyclerView?.adapter as ModifierAdapter
+        adapter.submitList(data)
+        adapter.notifyDataSetChanged()
+    }
+
 }
 
 
@@ -216,6 +226,13 @@ fun showProgress(progressBar: ProgressBar, b: Boolean){
 @BindingAdapter("disableTransfer")
 fun disableTransfer(checkBox: CheckBox, order: Order){
     checkBox.isEnabled = order.closeTime == null
+}
+
+@BindingAdapter("drinkGuest")
+fun drinkGuest(textView: TextView, drink: ReorderDrink?){
+    if (drink != null){
+        textView.text = "Guest ${drink.guestId.plus(1)}: "
+    }
 }
 
 @BindingAdapter("disableTransferText")

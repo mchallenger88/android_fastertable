@@ -1,22 +1,17 @@
 package com.fastertable.fastertable.adapters
 
-import android.content.Context
+
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.content.res.ResourcesCompat
-import androidx.fragment.app.FragmentActivity
-import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.fastertable.fastertable.R
-import com.fastertable.fastertable.data.models.IngredientChange
-import com.fastertable.fastertable.data.models.Order
 import com.fastertable.fastertable.data.models.OrderItem
 import com.fastertable.fastertable.databinding.OrderLineItemBinding
 import com.fastertable.fastertable.ui.dialogs.DialogListener
-import com.fastertable.fastertable.ui.dialogs.ItemMoreBottomSheetDialog
-import dagger.hilt.android.internal.managers.ViewComponentManager
+
 
 class OrderItemAdapter(private val clickListener: OrderItemListener) : ListAdapter<OrderItem, OrderItemAdapter.MenuItemViewHolder>(DiffCallback), DialogListener {
 

@@ -70,7 +70,8 @@ class PrintTicketService {
 
         var g: String
         order.guests?.forEachIndexed{index, guest ->
-
+            println("XXXXXXXXXXXXXXXXXXXXXXXXX")
+            println(index)
             g = (index + 1).toString()
             document
                 .alignment("center")
