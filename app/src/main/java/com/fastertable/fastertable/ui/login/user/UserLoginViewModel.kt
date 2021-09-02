@@ -1,18 +1,15 @@
 package com.fastertable.fastertable.ui.login.user
 
-import android.os.Handler
-import android.os.Looper
 import androidx.lifecycle.*
-import com.fastertable.fastertable.LoginActivity
-import com.fastertable.fastertable.api.GetOrdersUseCase
-import com.fastertable.fastertable.api.LoginUserUseCase
 import com.fastertable.fastertable.common.base.BaseViewModel
+import com.fastertable.fastertable.data.models.Employee
+import com.fastertable.fastertable.data.models.GetEmployee
 import com.fastertable.fastertable.data.models.OpsAuth
 import com.fastertable.fastertable.data.models.Terminal
+import com.fastertable.fastertable.data.repository.GetEmployeeById
 import com.fastertable.fastertable.data.repository.GetOrders
 import com.fastertable.fastertable.data.repository.LoginRepository
 import com.fastertable.fastertable.data.repository.LoginUser
-import com.fastertable.fastertable.data.repository.OrderRepository
 import com.fastertable.fastertable.utils.GlobalUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers.IO
@@ -23,6 +20,7 @@ import javax.inject.Inject
 @HiltViewModel
 class UserLoginViewModel @Inject constructor(private val loginRepository: LoginRepository,
                                              private val loginUser: LoginUser,
+                                             private val getEmployeeById: GetEmployeeById,
                                              private val getOrders: GetOrders) : BaseViewModel() {
 
     private var cid: String = ""
@@ -39,6 +37,10 @@ class UserLoginViewModel @Inject constructor(private val loginRepository: LoginR
     val navigate: LiveData<Boolean>
         get() = _navigate
 
+    private val _kitchen = MutableLiveData<Boolean>()
+    val kitchen: LiveData<Boolean>
+        get() = _kitchen
+
     private val _showProgressBar = MutableLiveData<Boolean>()
     val showProgressBar: LiveData<Boolean>
         get() = _showProgressBar
@@ -54,6 +56,12 @@ class UserLoginViewModel @Inject constructor(private val loginRepository: LoginR
     private val _loginTime = MutableLiveData<Long>()
     val loginTime: LiveData<Long>
         get() = _loginTime
+
+    private val _employee = MutableLiveData<Employee>()
+    val employee: LiveData<Employee>
+        get() = _employee
+
+    private var user: OpsAuth? = null
 
 
     init{
@@ -94,16 +102,20 @@ class UserLoginViewModel @Inject constructor(private val loginRepository: LoginR
 
     private suspend fun getUserLogin(pin: String, cid: String, lid: String, now: Long, midnight: Long){
         viewModelScope.launch {
-            val user: OpsAuth? = loginUser.loginUser(pin, cid, lid, now, midnight)
-            if (user?.isAuthenticated!!){
+            val opsAuth: OpsAuth = loginUser.loginUser(pin, cid, lid, now, midnight)
+            user = opsAuth
+            if (opsAuth.isAuthenticated){
                 _loginTime.postValue(now)
                 _validUser.postValue(true)
                 getOrders()
+                val eids = GetEmployee(cid = cid, eid =opsAuth.employeeId)
+                _employee.postValue(getEmployeeById.getEmployee(eids))
                 _showProgressBar.postValue(false)
-                if (isClockIn(user, now)){
+                _pin.value = ""
+                if (isClockIn(opsAuth, now)){
                     _clockin.postValue(true)
                 }else{
-                    _navigate.postValue(true)
+                    departmentNavigation()
                 }
 
 
@@ -115,8 +127,25 @@ class UserLoginViewModel @Inject constructor(private val loginRepository: LoginR
         }
     }
 
+    private fun departmentNavigation(){
+        val employee = employee.value
+        when(employee?.employeeDetails?.department){
+            "Waitstaff" -> _navigate.postValue(true)
+            "Support" -> _kitchen.postValue(true)
+            "Kitchen" -> _kitchen.postValue(true)
+            "Host" -> _navigate.postValue(true)
+            "Barstaff" -> _navigate.postValue(true)
+            "Back Office" -> _kitchen.postValue(true)
+            "Manager" -> _navigate.postValue(true)
+        }
+    }
+
     fun navigateToHome(){
         _navigate.postValue(true)
+    }
+
+    fun navigateToKitchen(){
+        _kitchen.postValue(true)
     }
 
     private suspend fun getOrders(){

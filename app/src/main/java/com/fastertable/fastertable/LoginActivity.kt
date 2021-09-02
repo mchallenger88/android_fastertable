@@ -11,6 +11,9 @@ import com.fastertable.fastertable.ui.dialogs.DialogListener
 import com.fastertable.fastertable.ui.dialogs.ErrorAlertBottomSheet
 import com.fastertable.fastertable.ui.error.ErrorViewModel
 import com.fastertable.fastertable.ui.login.company.CompanyLoginFragmentDirections
+import com.fastertable.fastertable.ui.login.user.KitchenClockoutFragmentDirections
+import com.fastertable.fastertable.ui.login.user.KitchenClockoutViewModel
+import com.fastertable.fastertable.ui.login.user.UserLoginFragmentDirections
 import com.fastertable.fastertable.ui.login.user.UserLoginViewModel
 import com.google.android.material.navigation.NavigationView
 import dagger.hilt.android.AndroidEntryPoint
@@ -21,6 +24,7 @@ import java.time.format.DateTimeFormatter
 class LoginActivity : BaseActivity(), DialogListener {
     private val userViewModel: UserLoginViewModel by viewModels()
     private val errorViewModel: ErrorViewModel by viewModels()
+    private val kitchenClockoutViewModel: KitchenClockoutViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?){
         super.onCreate(savedInstanceState)
@@ -44,6 +48,13 @@ class LoginActivity : BaseActivity(), DialogListener {
                 errorViewModel.setTitle("User Clockin")
                 errorViewModel.setMessage("You are now clocked in. You were clocked in at $clockin")
                 ClockinDialog().show(supportFragmentManager, ClockinDialog.TAG)
+
+                kitchenClockoutViewModel.clockedOut.observe(this, { kit ->
+                    if (kit){
+                        Thread.sleep(1000)
+                        navController.navigate(KitchenClockoutFragmentDirections.actionKitchenClockoutFragmentToUserLoginFragment())
+                    }
+                })
             }
         })
 
@@ -55,10 +66,25 @@ class LoginActivity : BaseActivity(), DialogListener {
                 userViewModel.setUserValid()
             }
         })
+
+        userViewModel.kitchen.observe(this, {
+            navController.navigate(UserLoginFragmentDirections.actionUserLoginFragmentToKitchenClockoutFragment())
+        })
+
+
     }
 
     override fun returnValue(value: String) {
-        userViewModel.navigateToHome()
+        val employee = userViewModel.employee.value
+        if (employee !=  null){
+            when (employee.employeeDetails.department){
+                "Manager" -> userViewModel.navigateToHome()
+                "Waitstaff" -> userViewModel.navigateToHome()
+                else -> null
+            }
+        }
+
+
     }
 
 

@@ -12,7 +12,7 @@ import javax.inject.Inject
 
 class PrintTicketService {
     fun masterTicket(document: Document, order: Order){
-        val date: String = DateTimeFormatter.ofPattern("MM-dd-yyyy").withZone(ZoneId.systemDefault())
+        val date: String = DateTimeFormatter.ofPattern("MM/dd/yyyy").withZone(ZoneId.systemDefault())
             .format(java.time.Instant.ofEpochSecond(order.startTime))
         val time: String =  DateTimeFormatter.ofPattern("h:mm a").withZone(ZoneId.systemDefault())
             .format(java.time.Instant.ofEpochSecond(order.startTime))
@@ -70,8 +70,6 @@ class PrintTicketService {
 
         var g: String
         order.guests?.forEachIndexed{index, guest ->
-            println("XXXXXXXXXXXXXXXXXXXXXXXXX")
-            println(index)
             g = (index + 1).toString()
             document
                 .alignment("center")
@@ -174,7 +172,7 @@ class PrintTicketService {
     }
 
     fun kitchenTicket(document: Document, order: Order, printer: Printer): Document {
-        val date: String = DateTimeFormatter.ofPattern("MM-dd-yyyy").withZone(ZoneId.systemDefault())
+        val date: String = DateTimeFormatter.ofPattern("MM/dd/yyyy").withZone(ZoneId.systemDefault())
             .format(java.time.Instant.ofEpochSecond(order.startTime))
         val time: String =  DateTimeFormatter.ofPattern("h:mm a").withZone(ZoneId.systemDefault())
             .format(java.time.Instant.ofEpochSecond(order.startTime))
@@ -299,7 +297,7 @@ class PrintTicketService {
     }
 
     fun kitchenDone(printer: Printer, order: Order){
-        val date: String = DateTimeFormatter.ofPattern("MM-dd-yyyy").withZone(ZoneId.systemDefault())
+        val date: String = DateTimeFormatter.ofPattern("MM/dd/yyyy").withZone(ZoneId.systemDefault())
             .format(java.time.Instant.ofEpochSecond(order.startTime))
         val time: String =  DateTimeFormatter.ofPattern("h:mm a").withZone(ZoneId.systemDefault())
             .format(java.time.Instant.ofEpochSecond(order.startTime))
@@ -441,7 +439,7 @@ class PrintTicketService {
 
     fun orderReceipt(document: Document, order: Order, location: Location){
         val padStr = " "
-        val date: String = DateTimeFormatter.ofPattern("MM-dd-yyyy").withZone(ZoneId.systemDefault())
+        val date: String = DateTimeFormatter.ofPattern("MM/dd/yyyy").withZone(ZoneId.systemDefault())
             .format(java.time.Instant.ofEpochSecond(order.startTime))
         val time: String =  DateTimeFormatter.ofPattern("h:mm a").withZone(ZoneId.systemDefault())
             .format(java.time.Instant.ofEpochSecond(order.startTime))
@@ -539,7 +537,7 @@ class PrintTicketService {
 
     fun giftCardReceipt(document: Document, payment: Payment, ticket: Ticket, location: Location){
         val phone: String = formatPhone(location.phones[0].telephoneNumber)
-        val date: String = DateTimeFormatter.ofPattern("MM-dd-yyyy").withZone(ZoneId.systemDefault())
+        val date: String = DateTimeFormatter.ofPattern("MM/dd/yyyy").withZone(ZoneId.systemDefault())
             .format(java.time.Instant.ofEpochSecond(payment.timeStamp))
         val time: String =  DateTimeFormatter.ofPattern("h:mm a").withZone(ZoneId.systemDefault())
             .format(java.time.Instant.ofEpochSecond(payment.timeStamp))
@@ -620,7 +618,7 @@ class PrintTicketService {
         document.fontText( "firacoderegular.ttf")
         val list = mutableListOf<Document>()
         val phone: String = formatPhone(location.phones[0].telephoneNumber)
-        val date: String = DateTimeFormatter.ofPattern("MM-dd-yyyy").withZone(ZoneId.systemDefault())
+        val date: String = DateTimeFormatter.ofPattern("MM/dd/yyyy").withZone(ZoneId.systemDefault())
             .format(java.time.Instant.ofEpochSecond(payment.timeStamp))
         val time: String =  DateTimeFormatter.ofPattern("h:mm a").withZone(ZoneId.systemDefault())
             .format(java.time.Instant.ofEpochSecond(payment.timeStamp))
@@ -746,7 +744,7 @@ class PrintTicketService {
         document.fontText( "firacoderegular.ttf")
         val padStr = " "
 
-        val date: String = DateTimeFormatter.ofPattern("MM-dd-yyyy").withZone(ZoneId.systemDefault())
+        val date: String = DateTimeFormatter.ofPattern("MM/dd/yyyy").withZone(ZoneId.systemDefault())
             .format(java.time.Instant.ofEpochSecond(payment.timeStamp))
         val time: String =  DateTimeFormatter.ofPattern("h:mm a").withZone(ZoneId.systemDefault())
             .format(java.time.Instant.ofEpochSecond(payment.timeStamp))
@@ -877,7 +875,7 @@ class PrintTicketService {
         document.fontText( "firacoderegular.ttf")
         val padStr: String = " "
 
-        val date: String = DateTimeFormatter.ofPattern("MM-dd-yyyy").withZone(ZoneId.systemDefault())
+        val date: String = DateTimeFormatter.ofPattern("MM/dd/yyyy").withZone(ZoneId.systemDefault())
             .format(java.time.Instant.ofEpochSecond(payment.timeStamp))
         val time: String =  DateTimeFormatter.ofPattern("h:mm a").withZone(ZoneId.systemDefault())
             .format(java.time.Instant.ofEpochSecond(payment.timeStamp))
@@ -969,7 +967,7 @@ class PrintTicketService {
         document
             .text(formatDoublePrice("Total:", ticket.total), TextSettings(bold = true))
             .newLine()
-            .text(formatDoublePrice("Paid:", ticket.paymentTotal))
+            .text(formatDoublePrice("Cash Tendered:", ticket.paymentTotal))
             .newLine()
             .newLine()
             .text(formatDoublePrice("Change:", change))

@@ -173,3 +173,9 @@ data class  CompanyTimeBasedRequest(
     val locationId: String,
     val companyId: String
 ): Parcelable
+
+@Parcelize
+data class GetEmployee(
+    val cid: String,
+    val eid: String
+): Parcelable

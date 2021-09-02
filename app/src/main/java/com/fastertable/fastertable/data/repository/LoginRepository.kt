@@ -56,6 +56,17 @@ class LoginUser @Inject constructor(private val loginUserUseCase: LoginUserUseCa
     }
 }
 
+class GetEmployeeById @Inject constructor(private val employeeUseCase: EmployeeUseCase){
+    suspend fun getEmployee(employeeIds: GetEmployee): Employee{
+        val result = employeeUseCase.getEmployee(employeeIds)
+        if (result is EmployeeUseCase.Result.Success){
+            return result.employee
+        }else{
+            throw java.lang.RuntimeException("fetch failed")
+        }
+    }
+}
+
 class ClockoutUser @Inject constructor(private val clockoutUseCase: ClockoutUseCase, private val loginRepository: LoginRepository){
     suspend fun clockout(clockoutRequest: ClockOutCredentials){
         val result = clockoutUseCase.clockOut(clockoutRequest)

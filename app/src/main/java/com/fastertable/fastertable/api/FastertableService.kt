@@ -119,6 +119,9 @@ interface FastertableApi {
     @POST("restaurantfloorplans/updatefloorplan")
     suspend fun updateFloorplan(@Body restaurantFloorplan: RestaurantFloorplan): Response<RestaurantFloorplan>
 
+    @POST("employees/getemployeebyid")
+    suspend fun getEmployee(@Body getEmployee: GetEmployee): Response<Employee>
+
 }
 
 

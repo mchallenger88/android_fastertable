@@ -114,9 +114,4 @@ class HomeFragment : BaseFragment() {
         binding.chipOpenOrders.setOnClickListener{ viewModel.onOpenClicked()}
     }
 
-    private fun startOrderActivity(){
-        val intent = Intent(this.context, OrderActivity::class.java)
-        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-        startActivity(intent)
-    }
 }
