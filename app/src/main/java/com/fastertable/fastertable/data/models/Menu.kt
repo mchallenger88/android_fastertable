@@ -23,7 +23,11 @@ data class Menu(
     val _etag: String?,
     val _attachments: String?,
     val _ts: Long?
-): Parcelable
+): Parcelable{
+    fun getMenuItems(): List<MenuItem> {
+        return categories.flatMap { it.menuItems.toList() }
+    }
+}
 
 @Parcelize
 data class ShortMenu(
@@ -42,14 +46,6 @@ data class CategoryTreeNode (
 data class CategoryMenuItems(
     val id: String,
     val name: String,
-): Parcelable
-
-
-
-@Parcelize
-data class doubleCategory(
-    val Cat1: MenuCategory,
-    val Cat2: MenuCategory,
 ): Parcelable
 
 @Parcelize

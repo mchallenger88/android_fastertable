@@ -9,11 +9,16 @@
             type="com.fastertable.fastertable.data.models.OrderItem" />
 
         <variable
+            name="viewModel"
+            type="com.fastertable.fastertable.ui.order.OrderViewModel" />
+
+        <variable
             name="clickListener"
             type="com.fastertable.fastertable.adapters.OrderItemAdapter.OrderItemListener" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layout_item"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 

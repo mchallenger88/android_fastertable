@@ -3,12 +3,22 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/androidprojects/fastertable/app/src/main/res/drawable/ic_baseline_change_circle_24.xml" value="0.1" />
+        <entry key="..\:/androidprojects/fastertable/app/src/main/res/drawable/ic_rush.xml" value="0.1" />
+        <entry key="..\:/androidprojects/fastertable/app/src/main/res/layout/bottom_sheet_order_line_item.xml" value="0.303125" />
+        <entry key="..\:/androidprojects/fastertable/app/src/main/res/layout/bottom_sheet_order_more.xml" value="0.303125" />
+        <entry key="..\:/androidprojects/fastertable/app/src/main/res/layout/bottom_sheet_ticket_item_more.xml" value="0.303125" />
+        <entry key="..\:/androidprojects/fastertable/app/src/main/res/layout/bottom_sheet_ticket_more.xml" value="0.303125" />
         <entry key="..\:/androidprojects/fastertable/app/src/main/res/layout/clockout_fragment.xml" value="0.303125" />
         <entry key="..\:/androidprojects/fastertable/app/src/main/res/layout/dialog_continue_cancel.xml" value="0.303125" />
+        <entry key="..\:/androidprojects/fastertable/app/src/main/res/layout/dialog_edit_item.xml" value="0.303125" />
         <entry key="..\:/androidprojects/fastertable/app/src/main/res/layout/dialog_error.xml" value="0.303125" />
         <entry key="..\:/androidprojects/fastertable/app/src/main/res/layout/dialog_reorder_drinks.xml" value="0.303125" />
         <entry key="..\:/androidprojects/fastertable/app/src/main/res/layout/drink_line_item.xml" value="0.303125" />
+        <entry key="..\:/androidprojects/fastertable/app/src/main/res/layout/edit_modifier_line_item.xml" value="0.303125" />
+        <entry key="..\:/androidprojects/fastertable/app/src/main/res/layout/edit_order_item.xml" value="0.303125" />
         <entry key="..\:/androidprojects/fastertable/app/src/main/res/layout/kitchen_clockout_fragment.xml" value="0.303125" />
+        <entry key="..\:/androidprojects/fastertable/app/src/main/res/layout/modifier_line_item.xml" value="0.1734375" />
         <entry key="..\:/androidprojects/fastertable/app/src/main/res/layout/order_fragment.xml" value="0.303125" />
         <entry key="..\:/androidprojects/fastertable/app/src/main/res/layout/order_list_line_item.xml" value="0.303125" />
       </map>

@@ -85,7 +85,7 @@ class PrintTicketService {
 
                     var ing: String
                     if (o.orderMods != null){
-                        o.orderMods.forEach{m ->
+                        o.orderMods!!.forEach{ m ->
                             document
                                 .color(PrinterDriver.COLOR.RED)
                                 .text("  " + m.itemName.uppercase(Locale.getDefault()), TextSettings(bold = true))
@@ -94,7 +94,7 @@ class PrintTicketService {
                         }
                     }
                     if (o.ingredients != null){
-                        o.ingredients.forEach{i ->
+                        o.ingredients!!.forEach{ i ->
                             ing =
                             when (i.orderValue){
                                 0 -> "NO " + i.name.uppercase(Locale.getDefault())
@@ -248,7 +248,7 @@ class PrintTicketService {
 
                                 var ing: String
                                 if (o.orderMods != null){
-                                    o.orderMods.forEach{m ->
+                                    o.orderMods!!.forEach{ m ->
                                         document
                                             .color(PrinterDriver.COLOR.RED)
                                             .text("  " + m.itemName, TextSettings(bold = true))
@@ -257,7 +257,7 @@ class PrintTicketService {
                                     }
                                 }
                                 if (o.ingredients != null){
-                                    o.ingredients.forEach{i ->
+                                    o.ingredients!!.forEach{ i ->
                                         ing =
                                             when (i.orderValue){
                                                 0 -> "NO " + i.name.uppercase(Locale.getDefault())
@@ -397,13 +397,14 @@ class PrintTicketService {
 
                     var ing: String
                     if (o.orderMods != null) {
-                        o.orderMods.forEach { m ->
+                        o.orderMods!!.forEach { m ->
                             document
                                 .text("  " + m.itemName)
                         }
                     }
                     if (o.ingredients != null) {
-                        o.ingredients.forEach { i ->
+
+                        o.ingredients!!.forEach { i ->
 
                             ing = if (i.orderValue == 0) {
                                 "No " + i.name

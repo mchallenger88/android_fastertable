@@ -247,6 +247,12 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
                 ReorderDrinksDialogFragment().show(supportFragmentManager, ReorderDrinksDialogFragment.TAG)
             }
         })
+
+        orderViewModel.editItem.observe(this, {
+            if (it != null){
+                EditItemDialogFragment().show(supportFragmentManager, EditItemDialogFragment.TAG)
+            }
+        })
     }
 
 

@@ -48,40 +48,6 @@ class ModifierAdapter(private val clickListener: ModifierListener) : ListAdapter
 
         }
 
-        private fun createRadioButtons(modifier: Modifier, clickListener: ModifierListener){
-            modifier.modifierItems.forEach{ item ->
-                val rb = RadioButton(parent.context)
-                rb.id = ViewCompat.generateViewId()
-                rb.textSize = 24f
-//                    rb.typeface = Typeface.defaultFromStyle(Typeface.BOLD)
-                if (item.surcharge == 0.0){
-                    rb.text = item.itemName
-                }else{
-                    rb.text = item.itemName + ": (+" + "$%.${2}f".format(item.surcharge) + ")"
-                }
-                val ordMod = OrderMod(item = item, mod = modifier)
-                rb.setOnClickListener { clickListener.onClick(ordMod) }
-                binding.modifierRadioGroup.addView(rb)
-            }
-            binding.modifierRadioGroup.visibility = View.VISIBLE
-        }
-
-        private fun createCheckBoxes(modifier: Modifier, clickListener: ModifierListener){
-            modifier.modifierItems.forEach { item ->
-                val cb = CheckBox(parent.context)
-                cb.id = ViewCompat.generateViewId()
-                cb.textSize = 24f
-                if (item.surcharge == 0.0){
-                    cb.text = item.itemName
-                }else{
-                    cb.text = item.itemName + ": (+" + "$%.${2}f".format(item.surcharge) + ")"
-                }
-                val ordMod = OrderMod(item = item, mod = modifier)
-                cb.setOnClickListener { clickListener.onClick(ordMod) }
-                binding.listCheckbox.addView(cb)
-            }
-            binding.listCheckbox.visibility = View.VISIBLE
-        }
 
         @SuppressLint("SetTextI18n")
         private fun createButtons(modifier: Modifier, clickListener: ModifierListener){

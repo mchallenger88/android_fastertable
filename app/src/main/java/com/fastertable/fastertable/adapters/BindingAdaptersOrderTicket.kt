@@ -111,7 +111,7 @@ fun addOrderLineMods(textView: TextView, item: OrderItem?){
     if (item != null) {
         if (item.orderMods?.size!! > 0){
             var mods: String = String()
-            item.orderMods.forEach { mod ->
+            item.orderMods!!.forEach { mod ->
                 mods += mod.itemName + ", "
             }
             mods = "- $mods"

@@ -4,12 +4,10 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.fastertable.fastertable.common.base.BaseViewModel
-import com.fastertable.fastertable.data.models.ClockOutCredentials
-import com.fastertable.fastertable.data.models.OpsAuth
-import com.fastertable.fastertable.data.models.Settings
-import com.fastertable.fastertable.data.models.UserClock
+import com.fastertable.fastertable.data.models.*
 import com.fastertable.fastertable.data.repository.ClockoutUser
 import com.fastertable.fastertable.data.repository.LoginRepository
+import com.fastertable.fastertable.data.repository.OrderRepository
 import com.fastertable.fastertable.utils.GlobalUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -18,6 +16,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ClockoutViewModel @Inject constructor (
     private val loginRepository: LoginRepository,
+    private val orderRepository: OrderRepository,
     private val clockoutUser: ClockoutUser) : BaseViewModel(){
 
     val settings: Settings = loginRepository.getSettings()!!
@@ -35,8 +34,19 @@ class ClockoutViewModel @Inject constructor (
     val clockedOut: LiveData<Boolean>
         get() = _clockedOut
 
+    private var orders: List<Order>? = null
+
     init{
         _clockedOut.value = false
+        viewModelScope.launch {
+            getOrders()
+        }
+    }
+
+    private fun getOrders(){
+        viewModelScope.launch {
+            orders = orderRepository.getOrdersFromFile()
+        }
 
     }
 
@@ -48,7 +58,17 @@ class ClockoutViewModel @Inject constructor (
                     _errorMessage.value = "You have been clocked out."
                 }
             }else{
-                _errorMessage.value = "Your checkout has not yet been approved. Once your checkout is approved, you may clock out."
+                val empOrders = orders?.filter { it.employeeId == user.employeeId }
+                if (empOrders != null) {
+                    if (empOrders.isEmpty()){
+                        performClockout()
+                        _errorMessage.value = "You have been clocked out."
+                    }else{
+                        _errorMessage.value = "Your checkout has not yet been approved. Once your checkout is approved, you may clock out."
+                    }
+                }else{
+                    _errorMessage.value = "Your checkout has not yet been approved. Once your checkout is approved, you may clock out."
+                }
             }
         }else{
             if (user.userClock.checkout == true){

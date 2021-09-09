@@ -374,14 +374,14 @@ data class Guest(
 @Parcelize
 data class OrderItem(
     var id: Int,
-    val quantity: Int,
+    var quantity: Int,
     val menuItemId: String,
     val menuItemName: String,
     val menuItemPrice: ItemPrice,
-    val orderMods: List<ModifierItem>?,
+    var orderMods: List<ModifierItem>?,
     val salesCategory: String,
     val ingredientList: List<ItemIngredient>?,
-    val ingredients: List<ItemIngredient>?,
+    var ingredients: List<ItemIngredient>?,
     val prepStation: PrepStation?,
     val printer: Printer,
     val priceAdjusted: Boolean,
@@ -437,6 +437,12 @@ enum class TaxTypes{
     TAX_EXEMPT
 }
 
+@Parcelize
+data class OrderItemTapped(
+    val item: OrderItem,
+    val button: Boolean
+): Parcelable
+
 
 @JsonClass(generateAdapter = true)
 @Parcelize
@@ -464,6 +470,12 @@ data class OrderMod(
 data class ReorderDrink(
     val guestId: Int,
     val drink: OrderItem
+): Parcelable
+
+@Parcelize
+data class ModifierOrderItem(
+    val modifier: Modifier,
+    val orderMods: List<ModifierItem>?,
 ): Parcelable
 
 //export interface ReorderDrink{

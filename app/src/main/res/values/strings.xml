@@ -279,6 +279,8 @@
     <string name="on_shift_employees">Transfer to On Shift Employee</string>
     <string name="transfer_orders">Transfer Orders</string>
     <string name="print_receipt">Print Receipt</string>
+    <string name="order_item_options">Order Item Options</string>
+    <string name="modify_order_item">Modify Order Item</string>
 
 
 </resources>

@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.fastertable.fastertable.R
 import com.fastertable.fastertable.data.models.OrderItem
+import com.fastertable.fastertable.data.models.OrderItemTapped
 import com.fastertable.fastertable.databinding.OrderLineItemBinding
 import com.fastertable.fastertable.ui.dialogs.DialogListener
 
@@ -38,6 +39,15 @@ class OrderItemAdapter(private val clickListener: OrderItemListener) : ListAdapt
                 binding.txtIngredients.typeface = typeface
                 binding.txtMods.typeface = typeface
                 binding.txtOrderItemNote.typeface = typeface
+
+                val item = OrderItemTapped(
+                    item = orderItem,
+                    button = false
+                )
+
+                binding.layoutItem.setOnClickListener {
+                    clickListener.onClick(item)
+                }
             }else{
                 val typeface = ResourcesCompat.getFont(parent.context, R.font.open_sans)
                 binding.txtItem.typeface = typeface
@@ -48,14 +58,18 @@ class OrderItemAdapter(private val clickListener: OrderItemListener) : ListAdapt
             }
 
             binding.btnItemMore.setOnClickListener{
-                clickListener.onClick(orderItem)
+                val item = OrderItemTapped(
+                    item = orderItem,
+                    button = true
+                )
+                clickListener.onClick(item)
             }
 
         }
     }
 
-    class OrderItemListener(val clickListener: (item: OrderItem) -> Unit) {
-        fun onClick(item: OrderItem) = clickListener(item)
+    class OrderItemListener(val clickListener: (item: OrderItemTapped) -> Unit) {
+        fun onClick(item: OrderItemTapped) = clickListener(item)
     }
 
     companion object DiffCallback : DiffUtil.ItemCallback<OrderItem>() {

@@ -61,6 +61,8 @@ class UserLoginViewModel @Inject constructor(private val loginRepository: LoginR
     val employee: LiveData<Employee>
         get() = _employee
 
+    private var emp: Employee? = null
+
     private var user: OpsAuth? = null
 
 
@@ -109,7 +111,8 @@ class UserLoginViewModel @Inject constructor(private val loginRepository: LoginR
                 _validUser.postValue(true)
                 getOrders()
                 val eids = GetEmployee(cid = cid, eid =opsAuth.employeeId)
-                _employee.postValue(getEmployeeById.getEmployee(eids))
+                emp = getEmployeeById.getEmployee(eids)
+                _employee.postValue(emp!!)
                 _showProgressBar.postValue(false)
                 _pin.value = ""
                 if (isClockIn(opsAuth, now)){
@@ -128,8 +131,8 @@ class UserLoginViewModel @Inject constructor(private val loginRepository: LoginR
     }
 
     private fun departmentNavigation(){
-        val employee = employee.value
-        when(employee?.employeeDetails?.department){
+        when(emp!!.employeeDetails?.department){
+            "Admin" -> _navigate.postValue(true)
             "Waitstaff" -> _navigate.postValue(true)
             "Support" -> _kitchen.postValue(true)
             "Kitchen" -> _kitchen.postValue(true)

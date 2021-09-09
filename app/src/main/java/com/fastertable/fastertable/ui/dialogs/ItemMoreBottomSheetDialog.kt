@@ -10,7 +10,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class ItemMoreBottomSheetDialog: BottomSheetDialogFragment() {
+class ItemMoreBottomSheetDialog: BaseDialog() {
     private lateinit var dialogListener: DialogListener
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val binding = BottomSheetOrderLineItemBinding.inflate(inflater)
@@ -49,7 +49,7 @@ class ItemMoreBottomSheetDialog: BottomSheetDialogFragment() {
 
     override fun onStart() {
         super.onStart()
-        val width = 500
+        val width = 700
         dialog!!.window?.setLayout(width, ViewGroup.LayoutParams.WRAP_CONTENT)
     }
 

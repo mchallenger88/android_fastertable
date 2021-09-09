@@ -73,6 +73,15 @@ fun setMenuItemVisibility(layout: ConstraintLayout?, nav: MenusNavigation){
     }
 }
 
+@BindingAdapter("editMenuItemVisibility")
+fun editMenuItemVisibility(layout: ConstraintLayout?, nav: MenusNavigation){
+    if (nav == MenusNavigation.EDIT_MENU_ITEM){
+        layout?.visibility = View.VISIBLE
+    }else{
+        layout?.visibility = View.GONE
+    }
+}
+
 @BindingAdapter("menuItemTvVisibility")
 fun setMenuItemTvVisibility(textView: TextView?, nav: MenusNavigation){
     if (nav == MenusNavigation.MENU_ITEM){
