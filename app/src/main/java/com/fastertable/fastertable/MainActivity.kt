@@ -573,6 +573,9 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
             "Transfer Order" -> {
                 return orderViewModel.showTransferOrder(true)
             }
+            "Modify Order Item" -> {
+                return orderViewModel.actionOnItemClicked(value)
+            }
         }
 
     }

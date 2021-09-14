@@ -34,6 +34,10 @@ class ItemMoreBottomSheetDialog: BaseDialog() {
             dialogListener.returnValue("Toggle Takeout")
             dismiss()
         }
+        binding.btnModifyItem.setOnClickListener {
+            dialogListener.returnValue("Modify Order Item")
+            dismiss()
+        }
         return binding.root
     }
 

@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.setupWithNavController
 import com.fastertable.fastertable.common.base.BaseActivity
 import com.fastertable.fastertable.ui.dialogs.ClockinDialog
@@ -11,6 +12,8 @@ import com.fastertable.fastertable.ui.dialogs.DialogListener
 import com.fastertable.fastertable.ui.dialogs.ErrorAlertBottomSheet
 import com.fastertable.fastertable.ui.error.ErrorViewModel
 import com.fastertable.fastertable.ui.login.company.CompanyLoginFragmentDirections
+import com.fastertable.fastertable.ui.login.terminal.TerminalSelectFragmentDirections
+import com.fastertable.fastertable.ui.login.terminal.TerminalSelectViewModel
 import com.fastertable.fastertable.ui.login.user.KitchenClockoutFragmentDirections
 import com.fastertable.fastertable.ui.login.user.KitchenClockoutViewModel
 import com.fastertable.fastertable.ui.login.user.UserLoginFragmentDirections
@@ -24,6 +27,7 @@ import java.time.format.DateTimeFormatter
 class LoginActivity : BaseActivity(), DialogListener {
     private val userViewModel: UserLoginViewModel by viewModels()
     private val errorViewModel: ErrorViewModel by viewModels()
+    private val terminalSelectViewModel: TerminalSelectViewModel by viewModels()
     private val kitchenClockoutViewModel: KitchenClockoutViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?){
@@ -69,6 +73,19 @@ class LoginActivity : BaseActivity(), DialogListener {
 
         userViewModel.kitchen.observe(this, {
             navController.navigate(UserLoginFragmentDirections.actionUserLoginFragmentToKitchenClockoutFragment())
+        })
+
+        userViewModel.navigateTerminal.observe(this, {
+            if (it){
+                navController.navigate(UserLoginFragmentDirections.actionUserLoginFragmentToTerminalSelectFragment())
+            }
+        })
+
+        terminalSelectViewModel.terminal.observe(this, { terminal ->
+            if (terminalSelectViewModel.onPage.value == true && terminal != null){
+                userViewModel.setTerminal(terminal)
+                navController.navigate(TerminalSelectFragmentDirections.actionTerminalSelectFragmentToUserLoginFragment())
+            }
         })
 
 

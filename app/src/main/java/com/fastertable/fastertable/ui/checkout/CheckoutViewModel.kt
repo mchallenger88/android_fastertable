@@ -27,6 +27,7 @@ class CheckoutViewModel @Inject constructor (
 
 
     val settings: Settings = loginRepository.getSettings()!!
+    val user: OpsAuth = loginRepository.getOpsUser()!!
 
     private val _activeDate = MutableLiveData<LocalDate>()
     val activeDate: LiveData<LocalDate>
@@ -63,6 +64,12 @@ class CheckoutViewModel @Inject constructor (
         _activeDate.value = LocalDate.now()
         getEmployeeCheckout()
         _showOrders.value = true
+    }
+
+    fun activated(){
+        if (user.userClock.checkout == true){
+            _checkoutComplete.postValue("You have completed your checkout.")
+        }
     }
 
     fun getEmployeeCheckout(){

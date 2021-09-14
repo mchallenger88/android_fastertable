@@ -42,7 +42,7 @@
         <item name="android:letterSpacing">0.03</item>
     </style>
     <style name="F_Body" parent="default_font">
-        <item name="android:textSize">@dimen/d16</item>
+        <item name="android:textSize">@dimen/d18</item>
         <item name="android:letterSpacing">0.03</item>
     </style>
 

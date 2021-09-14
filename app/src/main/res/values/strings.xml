@@ -73,7 +73,7 @@
 
     //Terminals
     <string name="string_terminal">Terminals</string>
-    <string name="terminal_instructions">Selecting a terminal determines where credit cards are processed and where receipts are printed.</string>
+    <string name="terminal_instructions">Terminals determine where credit cards are processed and where receipts are printed.</string>
     <string name="select">Select</string>
     <string name="company_error">There was an error logging you into the system. Please check your login and password and try again.</string>
     <string name="pin_invalid">The PIN you have entered is not recognized.</string>
@@ -281,6 +281,7 @@
     <string name="print_receipt">Print Receipt</string>
     <string name="order_item_options">Order Item Options</string>
     <string name="modify_order_item">Modify Order Item</string>
+    <string name="terminal">Terminal</string>
 
 
 </resources>

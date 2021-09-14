@@ -64,7 +64,6 @@ class OrderFragment : BaseFragment() {
 
         viewModel.ticketsPrinted.observe(viewLifecycleOwner, {
             if (it != null){
-                println("XXXXXXXXXXXXXXXXXXXXXX: Save Order Step 3")
                 viewModel.updateOrderStatus(viewModel.activeOrder.value!!)
             }
         })
@@ -226,7 +225,6 @@ class OrderFragment : BaseFragment() {
 
         viewModel.activeOrder.observe(viewLifecycleOwner, { item ->
             guestAdapter.notifyDataSetChanged()
-
         })
     }
 

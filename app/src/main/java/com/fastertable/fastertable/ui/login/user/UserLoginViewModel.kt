@@ -37,6 +37,10 @@ class UserLoginViewModel @Inject constructor(private val loginRepository: LoginR
     val navigate: LiveData<Boolean>
         get() = _navigate
 
+    private val _navigateTerminal = MutableLiveData<Boolean>()
+    val navigateTerminal: LiveData<Boolean>
+        get() = _navigateTerminal
+
     private val _kitchen = MutableLiveData<Boolean>()
     val kitchen: LiveData<Boolean>
         get() = _kitchen
@@ -69,6 +73,7 @@ class UserLoginViewModel @Inject constructor(private val loginRepository: LoginR
     init{
         _pin.value = ""
         _navigate.value = false
+        _navigateTerminal.value = false
         _showProgressBar.value = false
         getTerminal()
     }
@@ -80,6 +85,10 @@ class UserLoginViewModel @Inject constructor(private val loginRepository: LoginR
                 _terminal.postValue(term)
             }
         }
+    }
+
+    fun setTerminal(terminal: Terminal){
+        _terminal.value = terminal
     }
 
     fun concatPin(num: Int){
@@ -145,6 +154,10 @@ class UserLoginViewModel @Inject constructor(private val loginRepository: LoginR
 
     fun navigateToHome(){
         _navigate.postValue(true)
+    }
+
+    fun navigateToTerminal(b: Boolean){
+        _navigateTerminal.postValue(b)
     }
 
     fun navigateToKitchen(){

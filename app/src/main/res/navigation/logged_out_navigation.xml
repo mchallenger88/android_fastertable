@@ -50,6 +50,9 @@
         <action
             android:id="@+id/action_userLoginFragment_to_kitchenClockoutFragment"
             app:destination="@id/kitchenClockoutFragment" />
+        <action
+            android:id="@+id/action_userLoginFragment_to_terminalSelectFragment"
+            app:destination="@id/terminalSelectFragment" />
     </fragment>
     <fragment
         android:id="@+id/homeFragment"

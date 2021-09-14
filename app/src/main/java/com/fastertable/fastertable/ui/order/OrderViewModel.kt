@@ -608,6 +608,11 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
             "Toggle No Make"-> {
                 _activeOrder.value?.toggleItemNoMake(orderItemClicked.value!!)
             }
+            "Modify Order Item" -> {
+                viewModelScope.launch {
+                    modifyOrderItem(orderItemClicked.value!!)
+                }
+            }
             else -> {
             }
         }

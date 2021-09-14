@@ -18,7 +18,12 @@ class TerminalSelectViewModel @Inject constructor(private val loginRepository: L
     val terminal: LiveData<Terminal?>
         get() = _terminal
 
+    private val _onPage = MutableLiveData<Boolean>()
+    val onPage: LiveData<Boolean>
+        get() = _onPage
+
     init{
+        setOnPage(false)
         getSettings()
         checkTerminal()
     }
@@ -41,8 +46,13 @@ class TerminalSelectViewModel @Inject constructor(private val loginRepository: L
         }
     }
 
+    fun setOnPage(b: Boolean){
+        _onPage.value = b
+    }
+
     fun setTerminal(terminal: Terminal){
         viewModelScope.launch {
+            setOnPage(true)
             _terminal.postValue(terminal)
             loginRepository.saveTerminal(terminal)
         }

@@ -26,6 +26,7 @@ class CheckoutFragment : BaseFragment() {
         binding.viewModel = viewModel
         viewModel.getEmployeeCheckout()
         bindingObservables(binding)
+        viewModel.activated()
         return binding.root
     }
 

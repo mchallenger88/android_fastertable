@@ -10,7 +10,7 @@ import com.fastertable.fastertable.databinding.BottomSheetErrorDialogBinding
 import com.fastertable.fastertable.ui.checkout.CheckoutViewModel
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
-class CheckoutDialogBottomSheet(): BottomSheetDialogFragment() {
+class CheckoutDialogBottomSheet(): BaseDialog() {
     private val viewModel: CheckoutViewModel by activityViewModels()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
