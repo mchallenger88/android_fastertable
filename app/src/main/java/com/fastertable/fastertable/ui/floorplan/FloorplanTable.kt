@@ -27,7 +27,7 @@ constructor(private val ctx: Context, private val attributeSet: AttributeSet? = 
     private var tableImage: ImageView
     private var tableImages: LinearLayout
     private lateinit var tableImageList: ArrayList<ImageView>
-
+    private val idWidthUnit = 15.0f
 
     init {
         val inflater = ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
@@ -49,25 +49,32 @@ constructor(private val ctx: Context, private val attributeSet: AttributeSet? = 
     fun loadTable(table: RestaurantTable){
         restaurantTable = table
         tableId.text = table.id.toString()
+        val idLength = tableId.text.length
+
         val scale = resources.displayMetrics.density
         val param: RelativeLayout.LayoutParams = RelativeLayout.LayoutParams((100.0f * scale + 0.5f).toInt() ,(20.0f * scale + 0.5f).toInt());
-        val idWidth = (30.0f * scale + 0.5f).toInt()
+        val idWidth = (idWidthUnit * idLength * scale + 0.5f).toInt()
         val idHeight = (20.0f * scale + 0.5f).toInt()
-        var tableCnt = 1;
+        var tableCnt = 1
         if (table.combinationTables != null){
             if (table.combinationTables?.size!! > 0) {
                 tableCnt = table.combinationTables!!.size
             }
         }
 
-        val imageWidth = ((60.0f + 60.0f * tableCnt) * scale + 0.5f).toInt()
+        val imageWidth = ((idWidthUnit * 2 * idLength + 60.0f * tableCnt) * scale + 0.5f).toInt()
         val imageHeight = ((100.0f) * scale + 0.5f).toInt()
 
-        param.width = (30.0f * scale + 0.5f).toInt()
-        param.height =  (20.0f * scale + 0.5f).toInt()
-        val paddingY = (20.0f * scale + 0.5f).toInt()
-        val paddingX = (30.0f * scale + 0.5f).toInt()
-        tableId.layoutParams = param;
+        param.width = idWidth
+        param.height = idHeight
+        val paddingY = idHeight
+        val paddingX = idWidth
+        val tableImageLayoutParam = RelativeLayout.LayoutParams(((60.0f + idLength * idWidthUnit * 2) * scale + 0.5f).toInt() ,(100.0f * scale + 0.5f).toInt())
+        tableImages.setPadding(paddingX, paddingY, paddingX, paddingY)
+
+        tableImages.layoutParams = tableImageLayoutParam
+
+        tableId.layoutParams = param
         when (table.id_location) {
             "BottomLeft" -> {
                 param.setMargins(0, (imageHeight - paddingY),imageWidth - paddingX, 0)

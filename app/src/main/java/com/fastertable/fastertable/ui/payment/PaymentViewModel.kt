@@ -52,6 +52,7 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
                                             private val receiptPrintingService: ReceiptPrintingService,
                                             private val paymentRepository: PaymentRepository): BaseViewModel() {
 
+    //region Model Variables
     val user: OpsAuth = loginRepository.getOpsUser()!!
     val settings: Settings = loginRepository.getSettings()!!
     val terminal: Terminal = loginRepository.getTerminal()!!
@@ -121,6 +122,12 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
     val modifyPriceType: LiveData<String>
         get() = _modifyPriceType
 
+    private val _navigateToPayment = MutableLiveData<Boolean>()
+    val navigateToPayment: LiveData<Boolean>
+        get() = _navigateToPayment
+
+    //endregion
+
     fun payNow(){
         _activePayment.value?.tickets?.forEach{ t ->
             if (t.uiActive && cashAmount.value != null){
@@ -161,9 +168,7 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
             if (payment != null){
                 _activePayment.postValue(payment)
             }
-
         }
-
     }
 
     fun setActiveTicket(ticket: Ticket){
@@ -445,7 +450,8 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
     }
 
     fun evenSplit(order: Order){
-        _activePayment.value?.splitEvenly(order, settings.additionalFees)
+        _activePayment.value?.splitEvenly(order,
+            settings.additionalFees)
         _activePayment.value = _activePayment.value
     }
 
@@ -464,6 +470,10 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
             "Discount Item" -> _discountType.value = "Discount Item"
         }
         _paymentScreen.value = showPayment
+    }
+
+    fun goToPayment(){
+        _navigateToPayment.value = true
     }
 
 

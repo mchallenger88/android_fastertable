@@ -22,11 +22,11 @@ data class Payment(
     var orderCloseTime: Long?,
     val orderType: String,
     val guestCount: Int,
-    val splitType: String,
-    val splitTicket: Int?,
+    var splitType: String,
+    var splitTicket: Int?,
     val employeeId: String,
     val userName: String,
-    var tickets: ArrayList<Ticket>,
+    var tickets: ArrayList<Ticket>?,
     val terminalId: String,
     var statusApproval: String?,
     val newApproval: Approval?,
@@ -49,7 +49,8 @@ data class Payment(
 
     fun allTicketsPaid(): Boolean{
         var paid: Boolean = true
-        this.tickets.forEach { ticket ->
+        this.tickets!!.forEach { ticket ->
+
             if (ticket.paymentTotal < ticket.total){
                 paid = false
             }
@@ -59,20 +60,57 @@ data class Payment(
 
     private fun anyTicketsPaid(): Boolean{
         var paid: Boolean = false
-        this.tickets.forEach { ticket ->
-            if (ticket.paymentTotal >= ticket.total){
+        this.tickets!!.forEach { ticket ->
+            if (ticket.paymentTotal >= ticket.total && ticket.paymentType != ""){
                 paid = true
             }
         }
         return paid
     }
 
+    private fun anyTicketsModified(): Boolean{
+        var modified: Boolean = false
+        if (tickets != null){
+            for (ticket in tickets!!){
+                for (item in ticket.ticketItems){
+                    if (item.priceModified){
+                        modified = true
+                    }
+                }
+            }
+        }
+
+        return modified
+    }
+
     fun activeTicket(): Ticket?{
-        return tickets.find{it -> it.uiActive}
+        return tickets!!.find{it -> it.uiActive}
+    }
+
+    private fun allTicketItems(): ArrayList<TicketItem>{
+        val ticketItems = arrayListOf<TicketItem>()
+        if (tickets != null){
+            for (ticket in tickets!!){
+            for (item in ticket.ticketItems){
+                ticketItems.add(item)
+            }
+        }}
+        return ticketItems
+    }
+
+    private fun recalculateTotals(){
+        if (tickets != null){
+            for (ticket in tickets!!){
+                ticket.subTotal = ticket.ticketItems.sumOf { it -> it.ticketItemPrice }.round(2)
+                ticket.tax = ticket.ticketItems.sumOf { it -> it.tax }.round(2)
+                ticket.total = ticket.ticketItems.sumOf { it -> it.ticketItemPrice }.plus(ticket.tax)
+            }
+        }
+
     }
 
     fun createSingleTicket(order: Order, fees: List<AdditionalFees>?){
-        if (!anyTicketsPaid()){
+        if (tickets == null){
             val tickets = arrayListOf<Ticket>()
             val ticketItems = arrayListOf<TicketItem>()
             order.guests?.forEach { guest ->
@@ -84,45 +122,79 @@ data class Payment(
             val ticket = order.createTicket(0, ticketItems, fees)
             tickets.add(ticket)
             this.tickets = tickets
+        }else{
+            if (!anyTicketsPaid()){
+                var ticketItems = arrayListOf<TicketItem>()
+                if (splitType == "Evenly"){
+                    ticketItems = tickets!![0].ticketItems
+                }else{
+                    ticketItems = allTicketItems()
+                    println(ticketItems.size)
+                }
+
+                for (item in ticketItems){
+                    if (item.discountPrice != null){
+                        println("discount")
+                        item.ticketItemPrice = item.discountPrice!!
+                    }else{
+                        println("not discount")
+                        item.ticketItemPrice = item.itemPrice.times(item.quantity)
+                    }
+                }
+                val ts = arrayListOf<Ticket>()
+                tickets!![0].ticketItems = ticketItems
+                tickets!![0].uiActive = true
+                recalculateTotals()
+
+                ts.add(tickets!![0])
+                splitTicket = null
+                splitType = "None"
+                this.tickets = ts
+            }else{
+                println("ticktes paid")
+            }
         }
 
     }
 
     fun splitByGuest(order: Order, fees: List<AdditionalFees>?) {
-        if (!anyTicketsPaid()) {
-            val tickets = arrayListOf<Ticket>()
-            order.guests?.forEach {guest ->
-                val ticketItems = arrayListOf<TicketItem>()
-                guest.orderItems?.forEachIndexed { index, orderItem ->
-                    val ti = order.createTicketItem(index, orderItem)
-                    ticketItems.add(ti)
+            if (!anyTicketsPaid()) {
+                val ticketItems = allTicketItems()
+                val ts = arrayListOf<Ticket>()
+                for (guest in order.guests!!){
+                    val tis = ticketItems.filter{it.orderGuestNo == guest.id}
+                    val ticket = order.createTicket(guest.id, tis.toCollection(ArrayList()), fees)
+                    ticket.uiActive = ticket.id == 0
+                    ts.add(ticket)
                 }
-
-                val ticket = order.createTicket(guest.id, ticketItems, fees)
-                ticket.uiActive = ticket.id == 0
-                tickets.add(ticket)
+                recalculateTotals()
+                splitTicket = order.guests!!.size
+                splitType = "Guest"
+                this.tickets = ts
             }
-            this.tickets = tickets
-        }
+
     }
 
     fun splitEvenly(order: Order, fees: List<AdditionalFees>?){
         if (!anyTicketsPaid()) {
-            val tickets = arrayListOf<Ticket>()
-            val orderItems = order.getAllOrderItems()
-            val ticketItems = arrayListOf<TicketItem>()
-            orderItems.forEachIndexed { index, orderItem ->
-                val ti = order.createTicketItemSplit(index, orderItem, order.guests?.size!!)
-                ticketItems.add(ti)
+            val ticketItems = allTicketItems()
+            val ts = arrayListOf<Ticket>()
+            val guestCount = order.guests?.size
+            for (item in ticketItems){
+                item.ticketItemPrice = item.ticketItemPrice.div(guestCount!!).round(2)
             }
-            order.guests?.forEach { guest ->
-                val ticket = order.createTicket(guest.id, ticketItems, fees)
-                ticket.uiActive = ticket.id == 0
-                tickets.add(ticket)
-            }
-           this.tickets = tickets
 
+            for (guest in order.guests!!){
+                val ticket = order.createTicket(guest.id, ticketItems.toCollection(ArrayList()), fees)
+                ticket.uiActive = ticket.id == 0
+                ts.add(ticket)
+            }
+            recalculateTotals()
+            splitTicket = order.guests!!.size
+            splitType = "Evenly"
+            this.tickets = ts
         }
+
     }
 
     fun voidTicket(){
@@ -214,9 +286,9 @@ data class Payment(
     }
 
     fun changeGiftItemAmount(amount: Double){
-        this.tickets.get(0).ticketItems.get(0).itemPrice = amount
-        this.tickets.get(0).ticketItems.get(0).ticketItemPrice = amount
-        this.tickets.get(0).recalculateAfterApproval(0.00)
+        this.tickets!!.get(0).ticketItems.get(0).itemPrice = amount
+        this.tickets!!.get(0).ticketItems.get(0).ticketItemPrice = amount
+        this.tickets!!.get(0).recalculateAfterApproval(0.00)
     }
 
     fun getTicketReceipt(order: Order,printer: Printer, location: Location): Document{
@@ -251,7 +323,7 @@ data class Payment(
 data class Ticket(
     val orderId: String,
     val id: Int,
-    val ticketItems: ArrayList<TicketItem>,
+    var ticketItems: ArrayList<TicketItem>,
     var subTotal: Double,
     var tax: Double,
     var total: Double,
@@ -275,7 +347,7 @@ data class Ticket(
         }
 
         fun recalculateAfterApproval(taxRate: Double){
-            subTotal = ticketItems.sumByDouble { it -> it.ticketItemPrice }.round(2)
+            subTotal = ticketItems.sumOf { it -> it.ticketItemPrice }.round(2)
             tax = subTotal.times(taxRate).round(2)
             total = subTotal.plus(tax)
         }
@@ -329,11 +401,7 @@ data class TicketItem(
     var tax: Double,
 ): Parcelable{
     fun approve(){
-        println("Discount")
-        println(discountPrice)
         ticketItemPrice = discountPrice!!
-        println("Final:")
-        println(ticketItemPrice)
     }
 
     fun reject(){

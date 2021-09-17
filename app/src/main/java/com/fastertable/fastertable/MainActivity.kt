@@ -11,6 +11,8 @@ import android.view.WindowInsetsController
 import android.widget.ImageButton
 import androidx.activity.viewModels
 import androidx.appcompat.widget.Toolbar
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
@@ -45,6 +47,7 @@ import com.fastertable.fastertable.ui.order.TransferOrderViewModel
 import com.fastertable.fastertable.ui.payment.PaymentFragmentDirections
 import com.fastertable.fastertable.ui.payment.PaymentViewModel
 import com.fastertable.fastertable.ui.payment.ShowPayment
+import com.fastertable.fastertable.ui.payment.SplitPaymentFragmentDirections
 import com.fastertable.fastertable.ui.takeout.TakeoutFragmentDirections
 import com.fastertable.fastertable.ui.takeout.TakeoutViewModel
 import com.google.android.material.navigation.NavigationView
@@ -255,7 +258,6 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
         })
     }
 
-
     private fun paymentObservables(navController: NavController){
         paymentViewModel.amountOwed.observe(this, {
             paymentViewModel.activePayment.value?.tickets?.forEach { t ->
@@ -303,6 +305,12 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
         paymentViewModel.showTicketItemMore.observe(this, {it ->
             if (it){
                 TicketItemMoreBottomSheet().show(supportFragmentManager, TicketItemMoreBottomSheet.TAG)
+            }
+        })
+
+        paymentViewModel.navigateToPayment.observe(this, {
+            if (it){
+                navController.navigate(SplitPaymentFragmentDirections.actionPaymentSplitFragmentToPaymentFragment())
             }
         })
     }
@@ -407,6 +415,7 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
 
     override fun onSupportNavigateUp(): Boolean {
         val navController = findNavController(R.id.nav_host_fragment)
+        hideKeyboard()
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
     }
 
@@ -417,6 +426,10 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
     private fun checkLoginCheckoutStatus(): Boolean{
         val user = loginRepository.getOpsUser()
         return user?.userClock?.checkout == true || user?.userClock?.checkoutApproved == true
+    }
+
+    fun hideKeyboard() {
+        WindowInsetsControllerCompat(window, window.decorView).hide(WindowInsetsCompat.Type.ime())
     }
 
 
@@ -476,9 +489,12 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
                                 okToPay = false }}}
 
                     if (okToPay){
-                        val payment = paymentRepository.createNewPayment(order, terminal, settings.additionalFees)
-                        paymentViewModel.setActiveOrder(orderViewModel.activeOrder.value!!)
-                        paymentViewModel.setLivePayment(payment)
+                        paymentViewModel.getCloudPayment(order.id.replace("O_", "P_"), settings.locationId)
+                        if (paymentViewModel.activePayment.value == null){
+                            val payment = paymentRepository.createNewPayment(order, terminal, settings.additionalFees)
+                            paymentViewModel.setActiveOrder(orderViewModel.activeOrder.value!!)
+                            paymentViewModel.setLivePayment(payment)
+                        }
                         navController.navigate(OrderFragmentDirections.actionOrderFragmentToPaymentFragment())
                         orderViewModel.navToPayment(false)
                     }else{

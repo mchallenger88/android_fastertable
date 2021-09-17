@@ -55,7 +55,34 @@ fun getTicketSubtotal(textView: TextView, payment: Payment?){
     }else{
         textView.text = ""
     }
+}
 
+@BindingAdapter("splitGuestEnabled")
+fun splitGuestEnabled(btn: Button, payment: Payment?){
+    if (payment != null){
+        btn.isEnabled = payment.splitType != "Evenly"
+        if (!btn.isEnabled){
+            val offWhite = ContextCompat.getColor(btn.context, R.color.offWhite)
+            btn.setTextColor(ColorStateList.valueOf(offWhite))
+        }else{
+            val white = ContextCompat.getColor(btn.context, R.color.white)
+            btn.setTextColor(ColorStateList.valueOf(white))
+        }
+    }
+}
+
+@BindingAdapter("splitEvenEnabled")
+fun splitEvenEnabled(btn: Button, payment: Payment?){
+    if (payment != null){
+        btn.isEnabled = payment.splitType != "Guest"
+        if (!btn.isEnabled){
+            val offWhite = ContextCompat.getColor(btn.context, R.color.offWhite)
+            btn.setTextColor(ColorStateList.valueOf(offWhite))
+        }else{
+            val white = ContextCompat.getColor(btn.context, R.color.white)
+            btn.setTextColor(ColorStateList.valueOf(white))
+        }
+    }
 }
 
 @BindingAdapter("ticketTax")
@@ -74,7 +101,7 @@ fun getTicketTax(textView: TextView, payment: Payment?){
 @BindingAdapter("ticketGratuity")
 fun ticketGratuity(textView: TextView, payment: Payment?){
     if (payment != null){
-        payment.tickets.forEach { item ->
+        payment.tickets!!.forEach { item ->
             if (item.uiActive){
                 if (item.gratuity != 0.00){
                     textView.text = textView.context.getString(R.string.tax_price, "%.${2}f".format(item.gratuity))
@@ -110,7 +137,7 @@ fun ticketGratuityText(textView: TextView, payment: Payment?){
 @BindingAdapter("ticketTotal")
 fun getTicketTotal(textView: TextView, payment: Payment?){
     if (payment != null){
-        payment.tickets.forEach { item ->
+        payment.tickets!!.forEach { item ->
             if (item.uiActive){
                 textView.text = textView.context.getString(R.string.total_price, "%.${2}f".format(item.total))
             }
@@ -124,7 +151,7 @@ fun getTicketTotal(textView: TextView, payment: Payment?){
 @BindingAdapter("amountOwed")
 fun getAmountOwed(textView: TextView, payment: Payment?){
     if (payment != null){
-        payment.tickets.forEach { item ->
+        payment.tickets!!.forEach { item ->
             if (item.uiActive){
                 textView.text = textView.context.getString(R.string.amount_owed, "%.${2}f".format(item.total))
             }
@@ -138,7 +165,7 @@ fun getAmountOwed(textView: TextView, payment: Payment?){
 @BindingAdapter("paidInFull")
 fun setPaidInFull(textView: TextView, payment: Payment?){
     if (payment != null){
-        payment.tickets.forEach { item ->
+        payment.tickets!!.forEach { item ->
             if (item.uiActive){
                 if (item.paymentTotal >= item.total){
                     textView.visibility = View.VISIBLE

@@ -279,7 +279,7 @@ class CheckoutViewModel @Inject constructor (
                                 ct.captureTotal = res.Amount
                                 ct.captureTransaction = adjustResponse(res)
 
-                                val ticket = it.payment!!.tickets.find{ t -> t.id == it.ticket!!.id}
+                                val ticket = it.payment!!.tickets!!.find{ t -> t.id == it.ticket!!.id}
                                 var ctNew = ticket?.creditCardTransactions?.find{ it -> it.creditTotal == ct.creditTotal}
                                 ctNew = ct
                                 saveCapturedPaymentToCloud(it.payment!!)

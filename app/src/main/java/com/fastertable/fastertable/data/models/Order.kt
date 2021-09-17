@@ -183,8 +183,6 @@ data class Order(
 
 
     fun createTicketItem(index: Int, orderItem: OrderItem): TicketItem{
-        println("BBBBBBBBBBBBBBBBBBBBB")
-        println(orderItem.getSalesTax(orderItem.tax, this.taxRate).round(2))
         return TicketItem(
             id = index,
             orderGuestNo = index,

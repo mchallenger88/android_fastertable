@@ -149,7 +149,7 @@ class ApprovalsViewModel @Inject constructor(
 
     private fun approveTicketItem(payment: Payment, order: Order){
         viewModelScope.launch {
-            val ticket = payment.tickets.find{it -> it.id == _liveApprovalItem.value?.ticket?.id}
+            val ticket = payment.tickets!!.find{it -> it.id == _liveApprovalItem.value?.ticket?.id}
             val ticketItem = _liveApprovalItem.value?.ticketItem
             ticket?.ticketItems?.find{ it -> it.id == ticketItem?.id}?.approve()
             ticket?.recalculateAfterApproval(order.taxRate)
@@ -161,7 +161,7 @@ class ApprovalsViewModel @Inject constructor(
 
     private fun approveTicket(payment: Payment, order: Order){
         viewModelScope.launch {
-            val ticket = payment.tickets.find{it -> it.id == _liveApprovalItem.value?.ticket?.id}
+            val ticket = payment.tickets!!.find{it -> it.id == _liveApprovalItem.value?.ticket?.id}
             ticket?.ticketItems?.forEach { it ->
                 it.approve()
             }
@@ -175,7 +175,7 @@ class ApprovalsViewModel @Inject constructor(
 
     private fun rejectTicketItem(payment: Payment, order: Order){
         viewModelScope.launch {
-            val ticket = payment.tickets.find{it -> it.id == _liveApprovalItem.value?.ticket?.id}
+            val ticket = payment.tickets!!.find{it -> it.id == _liveApprovalItem.value?.ticket?.id}
             val ticketItem = _liveApprovalItem.value?.ticketItem
             ticketItem?.reject()
             payment.statusApproval = "Rejected"
@@ -186,7 +186,7 @@ class ApprovalsViewModel @Inject constructor(
 
     private fun rejectTicket(payment: Payment, order: Order){
         viewModelScope.launch {
-            val ticket = payment.tickets.find{it -> it.id == _liveApprovalItem.value?.ticket?.id}
+            val ticket = payment.tickets!!.find{it -> it.id == _liveApprovalItem.value?.ticket?.id}
             ticket?.ticketItems?.forEach { it ->
                 it.reject()
             }

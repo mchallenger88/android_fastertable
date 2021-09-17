@@ -51,7 +51,7 @@
             android:textAlignment="viewEnd"
             app:layout_constraintBottom_toBottomOf="@+id/txt_quantity"
             app:layout_constraintEnd_toStartOf="@+id/btn_ticket_item_more"
-            tools:ticketItemPrice="@{ticketItem}" />
+            app:ticketItemPrice="@{ticketItem}" />
 
         <ImageButton
             android:id="@+id/btn_ticket_item_more"
