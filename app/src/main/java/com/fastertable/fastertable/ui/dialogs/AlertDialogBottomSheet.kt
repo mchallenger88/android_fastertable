@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import com.fastertable.fastertable.R
 import com.fastertable.fastertable.databinding.DialogErrorBinding
+import com.fastertable.fastertable.ui.order.OrderViewModel
 import com.fastertable.fastertable.ui.payment.PaymentViewModel
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder

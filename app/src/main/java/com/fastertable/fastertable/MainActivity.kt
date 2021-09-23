@@ -256,13 +256,24 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
                 EditItemDialogFragment().show(supportFragmentManager, EditItemDialogFragment.TAG)
             }
         })
+
+        orderViewModel.error.observe(this, {it ->
+            if (it){
+                errorViewModel.setMessage(orderViewModel.errorMessage.value!!)
+                errorViewModel.setTitle(orderViewModel.errorTitle.value!!)
+
+                ErrorAlertBottomSheet().show(supportFragmentManager, ErrorAlertBottomSheet.TAG)
+                orderViewModel.clearError()
+            }
+        })
     }
 
     private fun paymentObservables(navController: NavController){
         paymentViewModel.amountOwed.observe(this, {
             paymentViewModel.activePayment.value?.tickets?.forEach { t ->
                 if (t.uiActive){
-                    if (t.paymentType == "Cash"){
+                    val pt = t.paymentList!!.last()
+                    if (pt.paymentType == "Cash"){
                         CashBackDialogFragment().show(supportFragmentManager, CashBackDialogFragment.TAG)
                     }
                 }
@@ -383,7 +394,8 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
         giftCardViewModel.amountOwed.observe(this, {
             giftCardViewModel.activePayment.value?.tickets?.forEach { t ->
                 if (t.uiActive){
-                    if (t.paymentType == "Cash"){
+                    val pt = t.paymentList!!.last()
+                    if (pt.paymentType == "Cash"){
                         CashBackDialogFragment().show(supportFragmentManager, CashBackDialogFragment.TAG)
                     }
                 }

@@ -190,6 +190,12 @@
         <item name="android:layout_marginTop">@dimen/textView_margin</item>
     </style>
 
+    <style name="amount_owed" parent="payment_totals">
+        <item name="android:fontFamily">@font/open_sans_bold</item>
+        <item name="android:layout_marginTop">@dimen/textView_margin</item>
+        <item name="android:textColor">@color/errorColor</item>
+    </style>
+
     <style name="modifier_title" parent="subtitle">
         <item name="android:paddingTop">@dimen/default_padding</item>
         <item name="android:paddingBottom">@dimen/default_padding</item>

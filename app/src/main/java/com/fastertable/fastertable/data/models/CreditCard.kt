@@ -136,6 +136,25 @@ data class CayanTransaction(
     val TransactionType: String,
     val ValidationKey: String,
 ): Parcelable
+
+@Parcelize
+data class NewCayanTransaction(
+    val AccountNumber: String,
+    val AmountApproved: String,
+    val AuthorizationCode: String,
+    val Cardholder: String,
+    val EntryMode: String,
+    val ErrorMessage: String,
+    val PaymentType: String,
+    val ResponseType: String,
+    val Status: String,
+    val TipDetails: TipDetails,
+    val Token: String,
+    val TransactionDate: String?,
+    val TransactionType: String,
+    val ValidationKey: String,
+): Parcelable
+
 @Parcelize
 data class EMV(
     val ApplicationInformation: ApplicationInformation?,

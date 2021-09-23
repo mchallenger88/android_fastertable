@@ -26,5 +26,6 @@ object Constants {
     const val GIFT_CARD_ADD2 = "The Total Balance on the card is now: $"
     const val GIFT_CARD_BALANCE = "The balance on this card is: $"
     const val GIFT_CARD_ERROR = "There was an error processing your gift card transaction. Please contact tech support."
+    const val ORDER_CLOSED = "This order is closed. No food items can be added."
 
 }

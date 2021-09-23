@@ -5,6 +5,7 @@ import android.view.View
 import android.widget.Button
 import android.widget.ImageButton
 import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -103,8 +104,8 @@ fun ticketGratuity(textView: TextView, payment: Payment?){
     if (payment != null){
         payment.tickets!!.forEach { item ->
             if (item.uiActive){
-                if (item.gratuity != 0.00){
-                    textView.text = textView.context.getString(R.string.tax_price, "%.${2}f".format(item.gratuity))
+                if (item.allGratuities() != null){
+                    textView.text = textView.context.getString(R.string.tax_price, "%.${2}f".format(item.allGratuities()))
                     textView.visibility = View.VISIBLE
                 }else{
                     textView.visibility = View.GONE
@@ -122,7 +123,7 @@ fun ticketGratuityText(textView: TextView, payment: Payment?){
     if (payment != null){
         payment?.tickets?.forEach { item ->
             if (item.uiActive){
-                if (item.gratuity != 0.00){
+                if (item.allGratuities() != null){
                     textView.visibility = View.VISIBLE
                 }else{
                     textView.visibility = View.GONE
@@ -139,13 +140,39 @@ fun getTicketTotal(textView: TextView, payment: Payment?){
     if (payment != null){
         payment.tickets!!.forEach { item ->
             if (item.uiActive){
-                textView.text = textView.context.getString(R.string.total_price, "%.${2}f".format(item.total))
+                textView.text = textView.context.getString(R.string.total_price, "%.${2}f".format(item.ticketTotal()))
             }
         }
     }else{
         textView.text = ""
     }
+}
 
+@BindingAdapter("partialPaymentText")
+fun partialPaymentText(textView: TextView, payment: Payment?){
+    if (payment != null){
+        payment.tickets!!.forEach { item ->
+            if (item.uiActive && item.partialPayment){
+                textView.visibility = View.VISIBLE
+            }else{
+                textView.visibility = View.GONE
+            }
+        }
+    }
+}
+
+@BindingAdapter("partialPaymentAmount")
+fun partialPaymentAmount(textView: TextView, payment: Payment?){
+    if (payment != null){
+        payment.tickets!!.forEach { item ->
+            if (item.uiActive && item.partialPayment){
+                textView.text = textView.context.getString(R.string.total_price, "%.${2}f".format(item.paymentTotal))
+                textView.visibility = View.VISIBLE
+            }else{
+                textView.visibility = View.GONE
+            }
+        }
+    }
 }
 
 @BindingAdapter("amountOwed")
@@ -153,7 +180,8 @@ fun getAmountOwed(textView: TextView, payment: Payment?){
     if (payment != null){
         payment.tickets!!.forEach { item ->
             if (item.uiActive){
-                textView.text = textView.context.getString(R.string.amount_owed, "%.${2}f".format(item.total))
+                val owed = item.total.minus(item.paymentTotal)
+                textView.text = textView.context.getString(R.string.amount_owed, "%.${2}f".format(owed))
             }
         }
     }else{
@@ -214,3 +242,20 @@ fun hideItemMore(imageButton: ImageButton, payment: Payment?){
     }
 }
 
+@BindingAdapter("hideFullCreditPayment")
+fun hideFullCreditPayment(button: Button, b: Boolean){
+    if (b){
+        button.visibility = View.GONE
+    }else{
+        button.visibility = View.VISIBLE
+    }
+}
+
+@BindingAdapter("showPartialCreditPayment")
+fun showPartialCreditPayment(layout: ConstraintLayout, b: Boolean){
+    if (b){
+        layout.visibility = View.VISIBLE
+    }else{
+        layout.visibility = View.GONE
+    }
+}

@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.fastertable.fastertable.data.models.ConfirmEmployee
 import com.fastertable.fastertable.data.models.PayTicket
 import com.fastertable.fastertable.data.models.Ticket
+import com.fastertable.fastertable.data.models.TicketPayment
 import com.fastertable.fastertable.databinding.ConfirmListLineItemBinding
 import com.fastertable.fastertable.utils.round
 import kotlin.math.abs
@@ -68,14 +69,15 @@ class ConfirmListAdapter(private val clickListener: ConfirmListListener, private
                 ce.openOrders = ce.orders.any{ it.closeTime == null }
                 ce.allTickets = listTickets
                 ce.paidTickets = ce.allTickets.filter{ it.paymentTotal != 0.00}
-                ce.cashSales = ce.allTickets.filter{ it.paymentType == "Cash"}
-                ce.creditSales = ce.allTickets.filter{ it.paymentType == "Credit" || it.paymentType == "Manual Credit"}
-
-                ce.orderTotal =  ce.allTickets.sumByDouble { it.paymentTotal }
-                ce.paymentTotal = ce.paidTickets.sumByDouble { it.paymentTotal }
-                ce.cashSalesTotal = ce.cashSales.sumByDouble { it.paymentTotal }
-                ce.creditSalesTotal = ce.creditSales.sumByDouble { it.paymentTotal }
-                ce.creditTips = ce.creditSales.sumByDouble { it.gratuity }
+//                ce.cashSales = ce.allTickets.filter{ it.paymentType == "Cash"}
+//                ce.creditSales = ce.allTickets.filter{ it.paymentType == "Credit" || it.paymentType == "Manual Credit"}
+//                ce.cashSalesTotal = ce.cashSales.sumOf { it.paymentTotal }
+//                ce.creditSalesTotal = ce.creditSales.sumOf { it.paymentTotal }
+                ce.orderTotal =  ce.allTickets.sumOf { it.paymentTotal }
+                ce.paymentTotal = ce.paidTickets.sumOf { it.paymentTotal }
+                ce.cashSalesTotal = getCashSales(ce.allTickets)
+                ce.creditSalesTotal = getCreditSales(ce.allTickets)
+                ce.creditTips = getCreditGratuity(ce.allTickets)
                 if (ce.creditTips > 0){
                     ce.creditTips = ce.creditTips.minus(ce.tipDiscount?.div(100)!!).round(2)
                 }
@@ -97,7 +99,45 @@ class ConfirmListAdapter(private val clickListener: ConfirmListListener, private
                 }
             }
         }
+
+        private fun getCashSales(list: List<Ticket>): Double{
+            val paymentsList = mutableListOf<TicketPayment>()
+            for (ticket in list){
+                for (p in ticket.paymentList!!){
+                    if (p.paymentType == "Cash"){
+                        paymentsList.add(p)
+                    }
+                }
+            }
+            return paymentsList.sumOf{it.ticketPaymentAmount}
         }
+
+        private fun getCreditSales(list: List<Ticket>): Double{
+            val paymentsList = mutableListOf<TicketPayment>()
+            for (ticket in list){
+                for (p in ticket.paymentList!!){
+                    if (p.paymentType == "Credit" || p.paymentType == "Manual Credit"){
+                        paymentsList.add(p)
+                    }
+                }
+            }
+            return paymentsList.sumOf{it.ticketPaymentAmount}
+        }
+
+        private fun getCreditGratuity(list: List<Ticket>): Double{
+            val paymentsList = mutableListOf<TicketPayment>()
+            for (ticket in list){
+                for (p in ticket.paymentList!!){
+                    if (p.paymentType == "Credit" || p.paymentType == "Manual Credit"){
+                        paymentsList.add(p)
+                    }
+                }
+            }
+            return paymentsList.sumOf{it.gratuity}
+        }
+
+    }
+
 
     companion object DiffCallback : DiffUtil.ItemCallback<ConfirmEmployee>() {
         override fun areItemsTheSame(oldItem: ConfirmEmployee, newItem: ConfirmEmployee): Boolean {

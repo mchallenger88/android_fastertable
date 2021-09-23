@@ -123,14 +123,14 @@ class CheckoutViewModel @Inject constructor (
             ce.openOrders = ce.orders.any{ it.closeTime == null }
             ce.allTickets = listTickets
             ce.paidTickets = ce.allTickets.filter{ it.paymentTotal != 0.00}
-            ce.cashSales = ce.allTickets.filter{ it.paymentType == "Cash"}
-            ce.creditSales = ce.allTickets.filter{ it.paymentType == "Credit" || it.paymentType == "Manual Credit"}
+//            ce.cashSales = ce.allTickets.filter{ it.paymentType == "Cash"}
+//            ce.creditSales = ce.allTickets.filter{ it.paymentType == "Credit" || it.paymentType == "Manual Credit"}
 
-            ce.orderTotal =  ce.allTickets.sumByDouble { it.paymentTotal }
-            ce.paymentTotal = ce.paidTickets.sumByDouble { it.paymentTotal }
-            ce.cashSalesTotal = ce.cashSales.sumByDouble { it.paymentTotal }
-            ce.creditSalesTotal = ce.creditSales.sumByDouble { it.paymentTotal }
-            ce.creditTips = ce.creditSales.sumByDouble { it.gratuity }
+            ce.orderTotal =  ce.allTickets.sumOf { it.paymentTotal }
+            ce.paymentTotal = ce.paidTickets.sumOf { it.paymentTotal }
+            ce.cashSalesTotal = getCashSales(ce.allTickets)
+            ce.creditSalesTotal = getCreditSales(ce.allTickets)
+            ce.creditTips = getCreditGratuity(ce.allTickets)
             ce.creditTips = ce.creditTips.minus(ce.tipDiscount?.div(100)!!).round(2)
 
             if (ce.tipSettlementPeriod == "Daily"){
@@ -155,10 +155,10 @@ class CheckoutViewModel @Inject constructor (
             val discountTickets = listApprovalItems.filter{ it.approvalType == "Discount Ticket" && it.approved == true}
             val discountItems = listApprovalItems.filter{ it.approvalType == "Discount Item" && it.approved == true}
 
-            val voidTicketTotal = voidTickets.sumByDouble { it.amount }
-            val voidItemTotal = voidItems.sumByDouble { it.amount }
-            val discountItemTotal = discountItems.sumByDouble { it.amount }
-            val discountTicketTotal = discountTickets.sumByDouble { it.amount }
+            val voidTicketTotal = voidTickets.sumOf { it.amount }
+            val voidItemTotal = voidItems.sumOf { it.amount }
+            val discountItemTotal = discountItems.sumOf { it.amount }
+            val discountTicketTotal = discountTickets.sumOf { it.amount }
 
             ce.voidTotal = voidTicketTotal.plus(voidItemTotal)
             ce.discountTotal = discountItemTotal.plus(discountTicketTotal)
@@ -167,7 +167,7 @@ class CheckoutViewModel @Inject constructor (
             val orderItems = listGuests.flatMap { it.orderItems!! }
             //TODO: Not precise because an item might be discounted in the Payment
             val barItems = orderItems.filter{it.salesCategory == "Bar"}
-            val barSales = barItems.sumByDouble { it.menuItemPrice.price }
+            val barSales = barItems.sumOf { it.menuItemPrice.price }
 
             ce.busShare = ce.orderTotal.times(settings.tipShare.busboy.div(100));
             ce.barShare = barSales.times(settings.tipShare.bartender.div(100))
@@ -175,6 +175,42 @@ class CheckoutViewModel @Inject constructor (
             _checkoutNull.value = true
         }
 
+    }
+
+    private fun getCashSales(list: List<Ticket>): Double{
+        val paymentsList = mutableListOf<TicketPayment>()
+        for (ticket in list){
+            for (p in ticket.paymentList!!){
+                if (p.paymentType == "Cash"){
+                    paymentsList.add(p)
+                }
+            }
+        }
+        return paymentsList.sumOf{it.ticketPaymentAmount}
+    }
+
+    private fun getCreditSales(list: List<Ticket>): Double{
+        val paymentsList = mutableListOf<TicketPayment>()
+        for (ticket in list){
+            for (p in ticket.paymentList!!){
+                if (p.paymentType == "Credit" || p.paymentType == "Manual Credit"){
+                    paymentsList.add(p)
+                }
+            }
+        }
+        return paymentsList.sumOf{it.ticketPaymentAmount}
+    }
+
+    private fun getCreditGratuity(list: List<Ticket>): Double{
+        val paymentsList = mutableListOf<TicketPayment>()
+        for (ticket in list){
+            for (p in ticket.paymentList!!){
+                if (p.paymentType == "Credit" || p.paymentType == "Manual Credit"){
+                    paymentsList.add(p)
+                }
+            }
+        }
+        return paymentsList.sumOf{it.gratuity}
     }
 
     fun setActiveTicket(ticket: Ticket){
@@ -222,17 +258,19 @@ class CheckoutViewModel @Inject constructor (
     fun addTip(tip: String){
         viewModelScope.launch {
             //find active ticket
-            _activePayment.value?.tickets?.forEach {
-                if (it.uiActive){
-                    if (it.paymentType == "Cash"){
-                        it.addTip(tip.toDouble(), activePayment.value?.taxRate!!)
-                        _activePayment.value = _activePayment.value
-                        savePaymentToCloud()
-                    }
+            for (ticket in _activePayment.value?.tickets!!) {
+                if (ticket.uiActive){
+                    for (payment in ticket.paymentList!!){
+                        if (payment.uiActive && payment.paymentType == "Cash"){
+                            ticket.addTip(tip.toDouble(), activePayment.value?.taxRate!!)
+                            _activePayment.value = _activePayment.value
+                            savePaymentToCloud()
+                        }
 
-                    if (it.paymentType == "Credit"){
-                        val ct = it.creditCardTransactions.find{cc -> cc.creditTransaction.AmountApproved.toDouble() == it.paymentTotal.minus(it.gratuity)}
-                        if (ct != null){
+                        if (payment.uiActive && payment.paymentType == "Credit" || payment.paymentType == "Manual Credit"){
+//                            val ct = payment.creditCardTransactions!!.find{cc -> cc.creditTransaction.AmountApproved.toDouble() == payment.ticketPaymentAmount.minus(payment.gratuity)}
+                            val ct = payment.creditCardTransactions!!.first()
+
                             val request = AdjustTipTest(
                                 MerchantName = settings.merchantCredentials.MerchantName,
                                 MerchantSiteId = settings.merchantCredentials.MerchantSiteId,
@@ -240,13 +278,17 @@ class CheckoutViewModel @Inject constructor (
                                 Token = ct.creditTransaction.Token,
                                 Amount = tip)
                             val transaction: TransactionResponse45 = adjustTip.adjustTip(request) as TransactionResponse45
-                            println(transaction)
+                            ct.tipTransaction = transaction
+
                             if (transaction.ApprovalStatus == "APPROVED"){
-                                it.addTip(tip.toDouble(), activePayment.value?.taxRate!!)
+                                ticket.addTip(tip.toDouble(), activePayment.value?.taxRate!!)
                                 _activePayment.value = _activePayment.value
                                 savePaymentToCloud()
                             }
-                        }}}}
+                            }
+                    }
+                }
+            }
         }
     }
 
@@ -257,35 +299,40 @@ class CheckoutViewModel @Inject constructor (
     fun captureTickets(){
         viewModelScope.launch {
             if (!checkout.value?.openOrders!!){
-                checkout.value?.payTickets?.forEach {
-                    val ct = it.ticket?.creditCardTransactions?.find{ cc -> cc.creditTransaction.AmountApproved.toDouble() == it.ticket!!.paymentTotal.minus(
-                        it.ticket!!.gratuity)}
-                    if (ct != null) {
-                        val capture = Capture(
-                            Token = ct.creditTransaction.Token,
-                            Amount = it.ticket?.paymentTotal!!,
-                            InvoiceNumber = it.payment?.orderNumber.toString(),
-                            RegisterNumber = "",
-                            MerchantTransactionId = it.payment!!.id + "_" + it.ticket!!.id,
-                            CardAcceptorTerminalId = null
-                        )
-                        val captureRequest = CaptureRequest(
-                            Credentials = settings.merchantCredentials,
-                            Capture = capture)
-                        if (ct.voidTotal == null && ct.refundTotal == null && ct.captureTotal == null){
-                            val res: TransactionResponse45 = captureTicket.capture(captureRequest)
-                            if (res.ApprovalStatus == "APPROVED"){
-                                println("Captured: ${res.Amount}")
-                                ct.captureTotal = res.Amount
-                                ct.captureTransaction = adjustResponse(res)
+                for (item in checkout.value?.payTickets!!) {
+                    for (payment in item.ticket!!.paymentList!!){
+                        val creditTransaction = payment.creditCardTransactions?.find{ cc -> cc.creditTransaction.AmountApproved.toDouble() == payment.ticketPaymentAmount.minus(
+                            payment.gratuity)}
 
-                                val ticket = it.payment!!.tickets!!.find{ t -> t.id == it.ticket!!.id}
-                                var ctNew = ticket?.creditCardTransactions?.find{ it -> it.creditTotal == ct.creditTotal}
-                                ctNew = ct
-                                saveCapturedPaymentToCloud(it.payment!!)
+                        if (creditTransaction != null) {
+                            val capture = Capture(
+                                Token = creditTransaction.creditTransaction.Token,
+                                Amount = payment.ticketPaymentAmount,
+                                InvoiceNumber = "",
+                                RegisterNumber = "",
+                                MerchantTransactionId = item.payment!!.id + "_" + item.ticket!!.id,
+                                CardAcceptorTerminalId = null
+                            )
+                            val captureRequest = CaptureRequest(
+                                Credentials = settings.merchantCredentials,
+                                Capture = capture)
+                            if (creditTransaction.voidTotal == null && creditTransaction.refundTotal == null && creditTransaction.captureTotal == null){
+                                val res: TransactionResponse45 = captureTicket.capture(captureRequest)
+                                if (res.ApprovalStatus == "APPROVED"){
+                                    println("Captured: ${res.Amount}")
+                                    creditTransaction.captureTotal = res.Amount
+                                    creditTransaction.captureTransaction = adjustResponse(res)
+
+                                    val ticket = item.payment!!.tickets!!.find{ t -> t.id == item.ticket!!.id}
+                                    var ctNew = payment.creditCardTransactions?.find{ it -> it.creditTotal == creditTransaction.creditTotal}
+                                    ctNew = creditTransaction
+                                    saveCapturedPaymentToCloud(item.payment!!)
+                                }
                             }
                         }
                     }
+
+
                 }
                 updateUserClock()
                 _checkoutComplete.postValue("Your checkout is complete.")

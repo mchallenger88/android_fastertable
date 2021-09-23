@@ -22,7 +22,7 @@ import com.fastertable.fastertable.services.ReceiptPrintingService
 import com.fastertable.fastertable.utils.round
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import technology.master.kotlinprint.printer.Document
+import java.util.*
 import javax.inject.Inject
 import kotlin.math.absoluteValue
 
@@ -70,6 +70,10 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
     val cashAmount: LiveData<Double>
         get() = _cashAmount
 
+    private val _creditAmount = MutableLiveData<Double>()
+    val creditAmount: LiveData<Double>
+        get() = _creditAmount
+
     private val _amountOwed = MutableLiveData<Double>()
     val amountOwed: LiveData<Double>
         get() = _amountOwed
@@ -81,6 +85,10 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
     private val _calculatingCash = MutableLiveData("")
     private val calculatingCash: LiveData<String>
         get() = _calculatingCash
+
+    private val _calculatingCredit = MutableLiveData("")
+    private val calculatingCredit: LiveData<String>
+        get() = _calculatingCredit
 
     private val _paymentScreen = MutableLiveData(ShowPayment.NONE)
     val paymentScreen: LiveData<ShowPayment>
@@ -126,27 +134,39 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
     val navigateToPayment: LiveData<Boolean>
         get() = _navigateToPayment
 
+    private val _showPartialCreditPad = MutableLiveData(false)
+    val showPartialCreditPad: LiveData<Boolean>
+        get() = _showPartialCreditPad
+
     //endregion
 
-    fun payNow(){
+    //region Pay Cash
+    fun payCashNow(){
         _activePayment.value?.tickets?.forEach{ t ->
             if (t.uiActive && cashAmount.value != null){
-                t.paymentType = "Cash"
-                val amountOwed = (t.total.minus(cashAmount.value!!)).round(2)
+                val amountBeingPaid = cashAmount.value!!.round(2)
+                val amountOwed = t.total.minus(t.paymentTotal).minus(amountBeingPaid).round(2)
+
+                if (amountOwed < 0){
+                    createCashTicketPayment(t, t.total.minus(t.paymentTotal))
+                }else{
+                    createCashTicketPayment(t, amountBeingPaid)
+                }
+
                 if (amountOwed < 0){
                     _amountOwed.value = amountOwed.absoluteValue
-                    t.paymentTotal = cashAmount.value!!.round(2)
+                    t.calculatePaymentTotal(false)
                 }
 
                 if (amountOwed == 0.00){
-                    t.paymentTotal = cashAmount.value!!.round(2)
+                    t.calculatePaymentTotal(false)
                 }
 
                 if (amountOwed > 0){
-                    t.paymentTotal = amountOwed.absoluteValue
-                    t.partialPayment = true
+                    t.calculatePaymentTotal(true)
                 }
                 _activePayment.value = _activePayment.value
+                _cashAmount.value = 0.00
 
                 if (activePayment.value!!.allTicketsPaid()){
                     _activePayment.value!!.close()
@@ -157,26 +177,35 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
         }
     }
 
-    fun setLivePayment(payment: Payment){
-        _activePayment.value = payment
-    }
+    private fun createCashTicketPayment(ticket: Ticket, amount: Double){
+        val list = mutableListOf<TicketPayment>()
+        var id = 0
+        if (!ticket.paymentList.isNullOrEmpty()){
+            id = ticket.paymentList!!.size
+        }
+        val ticketPayment = TicketPayment (
+            id = id,
+            paymentType = "Cash",
+            ticketPaymentAmount = amount,
+            gratuity = 0.00,
+            creditCardTransactions = null,
+            uiActive = true
+        )
 
-    suspend fun getCloudPayment(id: String, lid: String){
-        viewModelScope.launch {
-            getPayment.getPayment(id, lid)
-            val payment = paymentRepository.getPayment()
-            if (payment != null){
-                _activePayment.postValue(payment)
+        if (ticket.paymentList.isNullOrEmpty()){
+            list.add(ticketPayment)
+            ticket.paymentList = list
+        }else{
+            for (payment in ticket.paymentList!!){
+                payment.uiActive = false
             }
+            ticket.paymentList!!.add(ticketPayment)
         }
     }
 
-    fun setActiveTicket(ticket: Ticket){
-        _activePayment.value?.tickets?.forEach { t ->
-            t.uiActive = t.id == ticket.id
-        }
-        _activePayment.value = _activePayment.value
-    }
+    //endregion
+
+    //region Cash Keypad
 
     fun setCashAmount(number: Int){
         _calculatingCash.value = _calculatingCash.value + number.toString()
@@ -193,7 +222,7 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
     fun exactPayment(){
         _activePayment.value?.tickets?.forEach{ t ->
             if (t.uiActive){
-                _cashAmount.value = t.total
+                _cashAmount.value = t.total.minus(t.paymentTotal)
             }
         }
     }
@@ -203,8 +232,34 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
     }
 
     fun clearCashAmount(){
+        _calculatingCash.value = ""
         _cashAmount.value = 0.00
     }
+
+    //endregion
+
+    //region Credit Keypad
+
+    fun setCreditAmount(number: Int){
+        _calculatingCredit.value = _calculatingCredit.value + number.toString()
+        _creditAmount.value = _calculatingCredit.value!!.toDouble()
+    }
+
+    fun addCreditDecimal(){
+        if (!_calculatingCredit.value!!.contains(".")){
+            _calculatingCredit.value = _calculatingCredit.value + "."
+            _creditAmount.value = _calculatingCredit.value!!.toDouble()
+        }
+    }
+
+    fun clearCreditAmount(){
+        _calculatingCredit.value = ""
+        _creditAmount.value = 0.00
+    }
+
+    //endregion
+
+    //region Payment Model Functions
 
     fun clearPayment(){
         paymentRepository.clearPayment()
@@ -229,19 +284,67 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
         }
     }
 
+    fun setLivePayment(payment: Payment){
+        _activePayment.value = payment
+    }
+
+    suspend fun getCloudPayment(id: String, lid: String){
+        viewModelScope.launch {
+            getPayment.getPayment(id, lid)
+            val payment = paymentRepository.getPayment()
+            if (payment != null){
+                _activePayment.postValue(payment)
+            }
+        }
+    }
+
+    fun setActiveTicket(ticket: Ticket){
+        _activePayment.value?.tickets?.forEach { t ->
+            t.uiActive = t.id == ticket.id
+        }
+        _activePayment.value = _activePayment.value
+    }
+
+    //endregion
+
+    //region Fragment Functions
+        fun showCashView(){
+        showPartialCredit(false)
+            when (paymentScreen.value){
+                ShowPayment.NONE -> _paymentScreen.value = ShowPayment.CASH
+                ShowPayment.CASH -> _paymentScreen.value = ShowPayment.NONE
+                ShowPayment.CREDIT -> _paymentScreen.value = ShowPayment.CASH
+                ShowPayment.DISCOUNT -> _paymentScreen.value = ShowPayment.DISCOUNT
+                ShowPayment.MODIFY_PRICE -> _paymentScreen.value = ShowPayment.MODIFY_PRICE
+            }
+        }
+
+        fun showCreditView(){
+            showPartialCredit(false)
+            _creditAmount.value = _activePayment.value?.amountOwed()
+            _paymentScreen.value = ShowPayment.CREDIT
+        }
+
+        fun showPartialCredit(b: Boolean){
+            _showPartialCreditPad.value = b
+        }
+    //endregion
+
+    //region Misc Functions
+
     private fun printPaymentReceipt(){
         viewModelScope.launch {
             val ticket = _activePayment.value?.activeTicket()
             val printer = settings.printers.find { it.printerName == terminal.defaultPrinter.printerName }
             val location = company.getLocation(settings.locationId)
-            if (ticket?.paymentType == "Cash"){
+            if (ticket?.activePayment()!!.paymentType == "Cash"){
                 if (printer != null){
                     val ticketDocument = _activePayment.value?.getCashReceipt(printer, location!!)
                     receiptPrintingService.printTicketReceipt(ticketDocument!!, printer, settings)
                 }
             }
 
-            if (ticket?.paymentType == "Credit"){
+            if (ticket.activePayment()!!.paymentType == "Credit"){
                 if (printer != null){
                     val ticketDocument = _activePayment.value?.getCreditReceipt(printer, location!!)
                     receiptPrintingService.printTicketReceipt(ticketDocument!!, printer, settings)
@@ -251,31 +354,28 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
         }
     }
 
-    fun showCashView(){
-        when (paymentScreen.value){
-            ShowPayment.NONE -> _paymentScreen.value = ShowPayment.CASH
-            ShowPayment.CASH -> _paymentScreen.value = ShowPayment.NONE
-            ShowPayment.CREDIT -> _paymentScreen.value = ShowPayment.CASH
-            ShowPayment.DISCOUNT -> _paymentScreen.value = ShowPayment.DISCOUNT
-            ShowPayment.MODIFY_PRICE -> _paymentScreen.value = ShowPayment.MODIFY_PRICE
-        }
-    }
+    //endregion
 
-
+    //region Pay Credit Functions
     fun startCredit(order: Order){
         viewModelScope.launch {
-            try{
-                val url = "http://" + terminal.ccEquipment.ipAddress + ":8080/pos?Action=StartOrder&Order=" + order.orderNumber.toString() + "&Format=JSON"
-                val response: TerminalResponse = startCredit.startCreditProcess(url)
-                if (response.Status == "Success"){
-                    creditStaging(order, settings, terminal)
-                }else{
-                    setError("Error Notification", TERMINAL_ERROR)
+            if (_creditAmount.value!! <= _activePayment.value!!.amountOwed()){
+                try{
+                    val url = "http://" + terminal.ccEquipment.ipAddress + ":8080/pos?Action=StartOrder&Order=" + order.orderNumber.toString() + "&Format=JSON"
+                    val response: TerminalResponse = startCredit.startCreditProcess(url)
+                    if (response.Status == "Success"){
+                        creditStaging(order, settings, terminal)
+                    }else{
+                        setError("Error Notification", TERMINAL_ERROR)
+                    }
+                }catch(ex: Exception){
+                    setError("Error Notification", TIMEOUT_ERROR)
                 }
-            }catch(ex: Exception){
-                setError("Error Notification", TIMEOUT_ERROR)
+            }else{
+                clearCreditAmount()
+                _creditAmount.value = _activePayment.value?.amountOwed()
+                setError("Over Payment","Credit payments cannot be more than what is owed on the ticket")
             }
-
         }
     }
 
@@ -284,7 +384,7 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
         viewModelScope.launch {
         //TODO: Handle partial payments
             try{
-                val transaction: CayanCardTransaction = creditCardRepository.createCayanTransaction(order, activePayment.value?.activeTicket()!!, settings, terminal)
+                val transaction: CayanCardTransaction = creditCardRepository.createCayanTransaction(order, activePayment.value?.activeTicket()!!, settings, terminal, creditAmount.value!!)
                 val stageResponse: Any = stageTransaction.stageTransaction(transaction)
 
                 if (stageResponse is String){
@@ -293,7 +393,6 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
                 }
 
                 if (stageResponse is StageResponse){
-                    _activePayment.value?.activeTicket()?.stageResponse?.add(stageResponse)
                     initiateTransaction(stageResponse, terminal)
                 }
             }catch(ex: Exception){
@@ -313,7 +412,7 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
             }
 
             if (cayanTransaction is CayanTransaction){
-                if (cayanTransaction.Status.toUpperCase() == "APPROVED"){
+                if (cayanTransaction.Status.uppercase(Locale.getDefault()) == "APPROVED"){
                     processApproval(activePayment.value!!.activeTicket()!!, cayanTransaction)
                 }else{
                     processDecline(cayanTransaction)
@@ -322,38 +421,59 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
         }
     }
 
+    //endregion
+
+    //region Process Approval and Decline
+
     private fun processApproval(ticket: Ticket, cayanTransaction: CayanTransaction){
-        if (cayanTransaction.PaymentType == "GIFT"){
-            ticket.paymentType = "Gift"
-        }else{
-            ticket.paymentType = "Credit"
-        }
-
-        ticket.paymentTotal = cayanTransaction.AmountApproved.toDouble()
-
+        val amountApproved = cayanTransaction.AmountApproved.toDouble()
         val cc: CreditCardTransaction = creditCardRepository.createCreditCardTransaction(ticket, cayanTransaction)
-        ticket.creditCardTransactions.add(cc)
 
-        if (ticket.paymentTotal > ticket.total){
-            ticket.gratuity = ticket.paymentTotal.minus(ticket.total).round(2)
-            _amountOwed.value = 0.00
-            ticket.paymentTotal = ticket.total
+        if (cayanTransaction.PaymentType == "GIFT"){
+            createCreditTicketPayment(ticket, "Gift", amountApproved, cc)
+        }else{
+            createCreditTicketPayment(ticket, "Credit", amountApproved, cc)
+        }
+
+        //Check for Partial Payment
+        val amountBeingPaid = creditAmount.value!!.round(2)
+        val amountOwed = _activePayment.value!!.amountOwed().minus(amountBeingPaid).round(2)
+
+        if (amountOwed < 0){
+            ticket.calculatePaymentTotal(false)
             setError("Credit Card Process", "A tip was added to the payment. The Tip Amount is: $${ticket.gratuity}")
-            //TODO: Need to make sure tip is added to the cc receipt
         }
 
-        if (ticket.paymentTotal == ticket.total){
-            _amountOwed.value = 0.00
-            ticket.paymentTotal = ticket.total
+        if (amountOwed == 0.00){
+            ticket.calculatePaymentTotal(false)
             setError("Credit Card Process","The credit was approved.")
         }
 
-        if (ticket.paymentTotal < ticket.total){
-            _amountOwed.value = ticket.total.minus(ticket.paymentTotal).round(2)
-            ticket.paymentTotal = amountOwed.value!!
-            ticket.partialPayment = true
+        if (amountOwed > 0){
+            ticket.calculatePaymentTotal(true)
             setError("Credit Card Process","The credit was approved.")
         }
+
+//        if (ticket.paymentTotal > ticket.total){
+//            ticket.gratuity = ticket.paymentTotal.minus(ticket.total).round(2)
+//            _amountOwed.value = 0.00
+//            ticket.paymentTotal = ticket.total
+//            setError("Credit Card Process", "A tip was added to the payment. The Tip Amount is: $${ticket.gratuity}")
+//            //TODO: Need to make sure tip is added to the cc receipt
+//        }
+//
+//        if (ticket.paymentTotal == ticket.total){
+//            _amountOwed.value = 0.00
+//            ticket.paymentTotal = ticket.total
+//            setError("Credit Card Process","The credit was approved.")
+//        }
+//
+//        if (ticket.paymentTotal < ticket.total){
+//            _amountOwed.value = ticket.total.minus(ticket.paymentTotal).round(2)
+//            ticket.paymentTotal = amountOwed.value!!
+//            ticket.partialPayment = true
+//            setError("Credit Card Process","The credit was approved.")
+//        }
 
         if (activePayment.value!!.allTicketsPaid()){
             _activePayment.value!!.close()
@@ -410,6 +530,47 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
         }
     }
 
+    private fun createCreditTicketPayment(ticket: Ticket, paymentType: String,
+                                          amount: Double, creditCardTransaction: CreditCardTransaction){
+        val list = mutableListOf<TicketPayment>()
+        var id = 0
+        if (!ticket.paymentList.isNullOrEmpty()){
+            id = ticket.paymentList!!.size
+        }
+
+        val ccList = arrayListOf<CreditCardTransaction>()
+        ccList.add(creditCardTransaction)
+
+        var gratuity: Double = 0.00
+        var payment: Double = 0.00
+        if (amount > creditAmount.value!!){
+            gratuity = amount.minus(creditAmount.value!!).round(2)
+            payment = creditAmount.value!!.round(2)
+        }else{
+            payment = creditAmount.value!!.round(2)
+        }
+
+        val ticketPayment = TicketPayment (
+            id = id,
+            paymentType = paymentType,
+            ticketPaymentAmount = payment,
+            gratuity = gratuity,
+            creditCardTransactions = ccList,
+            uiActive = true
+        )
+
+        if (ticket.paymentList.isNullOrEmpty()){
+            list.add(ticketPayment)
+            ticket.paymentList = list
+        }else{
+            for (payment in ticket.paymentList!!){
+                payment.uiActive = false
+            }
+            ticket.paymentList!!.add(ticketPayment)
+        }
+
+    }
+
     fun cancelCredit(){
         viewModelScope.launch {
             try {
@@ -423,6 +584,8 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
 
     }
 
+    //endregion
+
     fun clearError(){
         _error.value = false
     }
@@ -435,7 +598,9 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
     }
 
     fun setManagePayment(){
-        _managePayment.value = !managePayment.value!!
+        if (!activePayment.value!!.anyTicketsPaid()){
+            _managePayment.value = !managePayment.value!!
+        }
     }
 
 

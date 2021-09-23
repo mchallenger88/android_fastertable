@@ -62,7 +62,7 @@ fun tipCaptureDisabled(button: Button, payment: Payment?) {
     button.isEnabled = true
     payment?.tickets?.forEach {
         if (it.uiActive){
-            it.creditCardTransactions.forEach { cc ->
+            it.activePayment()?.creditCardTransactions?.forEach { cc ->
                 if (cc.captureTotal != null){
                     button.isEnabled = false
                 }
@@ -76,7 +76,7 @@ fun tipCapturedError(textView: TextView, payment: Payment?) {
     textView.visibility = View.GONE
     payment?.tickets?.forEach {
         if (it.uiActive){
-            it.creditCardTransactions.forEach { cc ->
+            it.activePayment()?.creditCardTransactions?.forEach { cc ->
                 if (cc.captureTotal != null){
                     textView.visibility = View.VISIBLE
                 }

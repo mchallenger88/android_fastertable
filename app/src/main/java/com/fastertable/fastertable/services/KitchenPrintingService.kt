@@ -1,5 +1,6 @@
 package com.fastertable.fastertable.services
 
+import com.beust.klaxon.internal.firstNotNullResult
 import com.fastertable.fastertable.api.KitchenPrintUseCase
 import com.fastertable.fastertable.api.ReceiptPrintUseCase
 import com.fastertable.fastertable.data.models.*
@@ -543,8 +544,8 @@ class PrintTicketService {
         val time: String =  DateTimeFormatter.ofPattern("h:mm a").withZone(ZoneId.systemDefault())
             .format(java.time.Instant.ofEpochSecond(payment.timeStamp))
 
-        val ccId: Int = (ticket.creditCardTransactions.toString().length - 1)
-        val ccT: CreditCardTransaction = ticket.creditCardTransactions[ccId]
+        val creditPayment = ticket.paymentList!!.findLast{it.paymentType != "Cash"}
+        val cct: CreditCardTransaction? = creditPayment?.creditCardTransactions?.first()
 
         document
             .alignment("center")
@@ -571,31 +572,34 @@ class PrintTicketService {
             document.text("Table: " +  payment.tableNumber.toString())
                 .newLine()
         }
-        document
-            .newLine()
-            .text(ccT.creditTransaction.PaymentType)
-            .newLine()
-            .text("Card: " + ccT.creditTransaction.AccountNumber)
-            .newLine()
-            .text("Cardholder: " + ccT.creditTransaction.Cardholder)
-            .newLine()
-            .text("Approval: " + ccT.creditTransaction.AuthorizationCode)
-            .newLine()
-        if (ccT.creditTransaction.AdditionalParameters != null){
-            if (ccT.creditTransaction.AdditionalParameters.EMV != null){
-                if (ccT.creditTransaction.AdditionalParameters.EMV != null){
-                    if (ccT.creditTransaction.AdditionalParameters.EMV!!.ApplicationInformation != null){
-                        document
-                            .text("AID: " + ccT.creditTransaction.AdditionalParameters.EMV!!.ApplicationInformation?.Aid)
-                            .newLine()
-                            .text("App Lbl: " + ccT.creditTransaction.AdditionalParameters.EMV!!.ApplicationInformation?.ApplicationLabel)
-                            .newLine()
-                            .text("PIN Stmt: " + ccT.creditTransaction.AdditionalParameters.EMV!!.PINStatement)
-                            .newLine()
+        if (cct != null){
+            document
+                .newLine()
+                .text(cct.creditTransaction.PaymentType)
+                .newLine()
+                .text("Card: " + cct.creditTransaction.AccountNumber)
+                .newLine()
+                .text("Cardholder: " + cct.creditTransaction.Cardholder)
+                .newLine()
+                .text("Approval: " + cct.creditTransaction.AuthorizationCode)
+                .newLine()
+            if (cct.creditTransaction.AdditionalParameters != null){
+                if (cct.creditTransaction.AdditionalParameters.EMV != null){
+                    if (cct.creditTransaction.AdditionalParameters.EMV != null){
+                        if (cct.creditTransaction.AdditionalParameters.EMV!!.ApplicationInformation != null){
+                            document
+                                .text("AID: " + cct.creditTransaction.AdditionalParameters.EMV!!.ApplicationInformation?.Aid)
+                                .newLine()
+                                .text("App Lbl: " + cct.creditTransaction.AdditionalParameters.EMV!!.ApplicationInformation?.ApplicationLabel)
+                                .newLine()
+                                .text("PIN Stmt: " + cct.creditTransaction.AdditionalParameters.EMV!!.PINStatement)
+                                .newLine()
+                        }
                     }
                 }
             }
         }
+
 
         document
             .newLine()
@@ -603,9 +607,9 @@ class PrintTicketService {
             .text("Details", TextSettings(underline = true))
             .newLine()
             .alignment("right")
-            .text("Total:  $" + ccT.creditTotal.toString())
+            .text("Total:  $" + cct!!.creditTotal.toString())
             .newLine()
-            .text("Gift Card:  $" + ticket.creditCardTransactions[0].creditTransaction.AmountApproved)
+            .text("Gift Card:  $" + cct!!.creditTransaction.AmountApproved)
             .newLine()
             .newLine()
 
@@ -623,15 +627,15 @@ class PrintTicketService {
             .format(java.time.Instant.ofEpochSecond(payment.timeStamp))
         val time: String =  DateTimeFormatter.ofPattern("h:mm a").withZone(ZoneId.systemDefault())
             .format(java.time.Instant.ofEpochSecond(payment.timeStamp))
-        val ccId: Int = (ticket.creditCardTransactions.size - 1)
-        val ccT: CreditCardTransaction = ticket.creditCardTransactions[ccId]
-        val addParams = ccT.creditTransaction.AdditionalParameters
+
+        val creditTransaction = ticket.activePayment()!!.creditCardTransactions!!.last()
+        val addParams = creditTransaction.creditTransaction.AdditionalParameters
         var appInfo: ApplicationInformation? = null
 
         if (addParams != null){
             if (addParams.EMV != null && addParams.EMV != null){
                 if (addParams.EMV!!.ApplicationInformation != null && addParams.EMV!!.ApplicationInformation != null){
-                    appInfo = ccT.creditTransaction.AdditionalParameters.EMV?.ApplicationInformation!!
+                    appInfo = creditTransaction.creditTransaction.AdditionalParameters.EMV?.ApplicationInformation!!
                 }
             }
         }
@@ -667,27 +671,27 @@ class PrintTicketService {
             }
             document
                 .newLine()
-                .text(ccT.creditTransaction.PaymentType)
+                .text(creditTransaction.creditTransaction.PaymentType)
                 .newLine()
-                .text("Card: " + ccT.creditTransaction.AccountNumber)
+                .text("Card: " + creditTransaction.creditTransaction.AccountNumber)
                 .newLine()
-                .text("Cardholder: " + ccT.creditTransaction.Cardholder)
+                .text("Cardholder: " + creditTransaction.creditTransaction.Cardholder)
                 .newLine()
-                .text("Approval: " + ccT.creditTransaction.AuthorizationCode)
+                .text("Approval: " + creditTransaction.creditTransaction.AuthorizationCode)
                 .newLine()
             if (appInfo != null){
                 document
-                    .text("AID: " + ccT.creditTransaction.AdditionalParameters?.EMV?.ApplicationInformation?.Aid)
+                    .text("AID: " + creditTransaction.creditTransaction.AdditionalParameters?.EMV?.ApplicationInformation?.Aid)
                     .newLine()
-                    .text("App Lbl: " + ccT.creditTransaction.AdditionalParameters?.EMV?.ApplicationInformation?.ApplicationLabel)
+                    .text("App Lbl: " + creditTransaction.creditTransaction.AdditionalParameters?.EMV?.ApplicationInformation?.ApplicationLabel)
                     .newLine()
-                    .text("PIN Stmt: " + ccT.creditTransaction.AdditionalParameters?.EMV?.PINStatement)
+                    .text("PIN Stmt: " + creditTransaction.creditTransaction.AdditionalParameters?.EMV?.PINStatement)
                     .newLine()
             }
 
-            val t18 = String.format("%.2f", ccT.creditTotal?.times(.18))
-            val t20 = String.format("%.2f", ccT.creditTotal?.times(.20))
-            val t22 = String.format("%.2f", ccT.creditTotal?.times(.22))
+            val t18 = String.format("%.2f", creditTransaction.creditTotal?.times(.18))
+            val t20 = String.format("%.2f", creditTransaction.creditTotal?.times(.20))
+            val t22 = String.format("%.2f", creditTransaction.creditTotal?.times(.22))
 
             document
                 .newLine()
@@ -696,7 +700,7 @@ class PrintTicketService {
                 .newLine()
                 .newLine()
                 .alignment("right")
-                .text("Amount:  $" + ccT.creditTransaction.AmountApproved)
+                .text("Amount:  $" + creditTransaction.creditTransaction.AmountApproved)
                 .newLine()
                 .newLine()
                 .text("Tip: ____________")

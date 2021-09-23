@@ -49,9 +49,17 @@ class PaymentFragment: BaseFragment() {
                     binding.cashLayout.visibility = View.GONE
                     binding.discountLayout.visibility = View.GONE
                     binding.priceLayout.visibility = View.GONE
+                    binding.creditLayout.visibility = View.GONE
                 }
                 ShowPayment.CASH -> {
                     binding.cashLayout.visibility = View.VISIBLE
+                    binding.discountLayout.visibility = View.GONE
+                    binding.priceLayout.visibility = View.GONE
+                    binding.creditLayout.visibility = View.GONE
+                }
+                ShowPayment.CREDIT -> {
+                    binding.creditLayout.visibility = View.VISIBLE
+                    binding.cashLayout.visibility = View.GONE
                     binding.discountLayout.visibility = View.GONE
                     binding.priceLayout.visibility = View.GONE
                 }
@@ -59,12 +67,14 @@ class PaymentFragment: BaseFragment() {
                     binding.discountLayout.visibility = View.VISIBLE
                     binding.cashLayout.visibility = View.GONE
                     binding.priceLayout.visibility = View.GONE
+                    binding.creditLayout.visibility = View.GONE
                     discountButtons(binding)
                 }
                 ShowPayment.MODIFY_PRICE -> {
                     binding.priceLayout.visibility = View.VISIBLE
                     binding.cashLayout.visibility = View.GONE
                     binding.discountLayout.visibility = View.GONE
+                    binding.creditLayout.visibility = View.GONE
                 }
             }
         })

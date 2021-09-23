@@ -3,6 +3,7 @@ package com.fastertable.fastertable.ui.order
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.fastertable.fastertable.common.Constants
 import com.fastertable.fastertable.common.base.BaseViewModel
 import com.fastertable.fastertable.data.models.*
 import com.fastertable.fastertable.data.repository.*
@@ -140,6 +141,18 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
     private val _drinkList = MutableLiveData<List<ReorderDrink>>()
     val drinkList: LiveData<List<ReorderDrink>>
         get() = _drinkList
+
+    private val _error = MutableLiveData<Boolean>()
+    val error: LiveData<Boolean>
+        get() = _error
+
+    private val _errorTitle = MutableLiveData<String>()
+    val errorTitle: LiveData<String>
+        get() = _errorTitle
+
+    private val _errorMessage = MutableLiveData<String>()
+    val errorMessage: LiveData<String>
+        get() = _errorMessage
 
     //endregion
 
@@ -334,44 +347,48 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
     //region MenuItem Functions
 
     fun addItemToOrder(){
-        val mods = arrayListOf<ModifierItem>()
-        activeItem.value!!.modifiers.forEach { mod ->
-            mod.modifierItems.forEach { mi ->
-                if (mi.quantity > 0){
-                    mods.add(mi)
+        if (activeOrder.value!!.closeTime == null) {
+            val mods = arrayListOf<ModifierItem>()
+            activeItem.value!!.modifiers.forEach { mod ->
+                mod.modifierItems.forEach { mi ->
+                    if (mi.quantity > 0) {
+                        mods.add(mi)
+                    }
                 }
             }
+
+            val item = OrderItem(
+                id = 1,
+                quantity = itemQuantity.value!!,
+                menuItemId = activeItem.value!!.id,
+                menuItemName = activeItem.value!!.itemName,
+                menuItemPrice = activeItem.value!!.prices[0],
+                orderMods = mods,
+                salesCategory = activeItem.value!!.salesCategory,
+                ingredientList = null,
+                ingredients = changedIngredients.value,
+                prepStation = findPrepStation()!!,
+                printer = activeItem.value!!.printer,
+                priceAdjusted = false,
+                menuItemDiscount = null,
+                takeOutFlag = false,
+                dontMake = false,
+                rush = false,
+                tax = activeItem.value!!.prices[0].tax,
+                note = itemNote,
+                employeeId = user.employeeId,
+                status = "Started",
+            )
+
+            val g = _activeOrder.value!!.guests!!.find { it -> it.uiActive }
+            g?.orderItemAdd(item)
+
+            _activeOrder.value = _activeOrder.value
+            _menusNavigation.value = MenusNavigation.CATEGORIES
+            clearItemSettings()
+        }else{
+            setError("Order Closed", Constants.ORDER_CLOSED)
         }
-
-        val item = OrderItem(
-            id = 1,
-            quantity = itemQuantity.value!!,
-            menuItemId = activeItem.value!!.id,
-            menuItemName = activeItem.value!!.itemName,
-            menuItemPrice = activeItem.value!!.prices[0],
-            orderMods = mods,
-            salesCategory = activeItem.value!!.salesCategory,
-            ingredientList = null,
-            ingredients = changedIngredients.value,
-            prepStation = findPrepStation()!!,
-            printer = activeItem.value!!.printer,
-            priceAdjusted = false,
-            menuItemDiscount = null,
-            takeOutFlag = false,
-            dontMake = false,
-            rush = false,
-            tax = activeItem.value!!.prices[0].tax,
-            note = itemNote,
-            employeeId = user.employeeId,
-            status = "Started",
-        )
-
-        val g = _activeOrder.value!!.guests!!.find{ it -> it.uiActive }
-        g?.orderItemAdd(item)
-
-        _activeOrder.value = _activeOrder.value
-        _menusNavigation.value = MenusNavigation.CATEGORIES
-        clearItemSettings()
     }
 
     fun saveModifiedItem(){
@@ -620,31 +637,37 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
     }
 
     fun reorderDrinks(){
-        viewModelScope.launch {
-            reorderList = mutableListOf<ReorderDrink>()
-            for (guest in activeOrder.value?.guests!!){
-                val oi = guest.orderItems?.findLast { it.salesCategory == "Bar" }
-                if (oi != null){
-                    val drink = ReorderDrink(
-                        guestId = guest.id,
-                        drink = oi
-                    )
-                    reorderList.add(drink)
+        if (activeOrder.value!!.closeTime == null) {
+            viewModelScope.launch {
+                reorderList = mutableListOf<ReorderDrink>()
+                for (guest in activeOrder.value?.guests!!) {
+                    val oi = guest.orderItems?.findLast { it.salesCategory == "Bar" }
+                    if (oi != null) {
+                        val drink = ReorderDrink(
+                            guestId = guest.id,
+                            drink = oi
+                        )
+                        reorderList.add(drink)
+                    }
                 }
+                _drinkList.value = emptyList()
+                _drinkList.postValue(reorderList)
             }
-            _drinkList.value = emptyList()
-            _drinkList.postValue(reorderList)
+        }else{
+            setError("Order Closed", Constants.ORDER_CLOSED)
         }
     }
 
     fun addDrinksToOrder(){
-        for (drink in reorderList){
-            val newOrderItem = drink.drink.deepCopy()
-            newOrderItem.id = _activeOrder.value?.guests?.get(drink.guestId)?.orderItems?.last()?.id!!.plus(1)
-            newOrderItem.status = "Started"
-            _activeOrder.value?.guests?.get(drink.guestId)?.orderItems!!.add(newOrderItem)
+        if (activeOrder.value!!.closeTime != null){
+            for (drink in reorderList){
+                val newOrderItem = drink.drink.deepCopy()
+                newOrderItem.id = _activeOrder.value?.guests?.get(drink.guestId)?.orderItems?.last()?.id!!.plus(1)
+                newOrderItem.status = "Started"
+                _activeOrder.value?.guests?.get(drink.guestId)?.orderItems!!.add(newOrderItem)
+            }
+            _activeOrder.value = _activeOrder.value
         }
-        _activeOrder.value = _activeOrder.value
     }
 
     suspend fun saveOrderToCloud(){
@@ -720,6 +743,15 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
         }
     }
 
+    private fun setError(title: String, message: String){
+        _errorTitle.value = title
+        _errorMessage.value = message
+        _error.value = true
 
+    }
+
+    fun clearError(){
+        _error.value = false
+    }
 }
 

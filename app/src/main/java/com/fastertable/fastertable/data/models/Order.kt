@@ -238,13 +238,11 @@ data class Order(
                 subTotal = items.sumOf { it -> it.ticketItemPrice }.round(2),
                 tax = items.sumOf { it -> it.tax }.round(2),
                 total = items.sumOf { it -> it.ticketItemPrice }.plus(items.sumOf { it -> it.tax }).plus(xfeesSum).round(2),
-                paymentType = "",
                 gratuity = 0.00,
                 deliveryFee = 0.00,
                 extraFees = xfees,
                 paymentTotal = 0.00,
-                stageResponse = arrayListOf<StageResponse>(),
-                creditCardTransactions = arrayListOf<CreditCardTransaction>(),
+                paymentList = null,
                 partialPayment = false,
                 uiActive = true
             )
@@ -256,13 +254,11 @@ data class Order(
                 subTotal = items.sumOf { it -> it.ticketItemPrice }.round(2),
                 tax = items.sumOf { it -> it.tax }.round(2),
                 total = items.sumOf { it -> it.ticketItemPrice }.plus(items.sumOf { it -> it.tax }).round(2),
-                paymentType = "",
                 gratuity = 0.00,
                 deliveryFee = 0.00,
                 extraFees = null,
                 paymentTotal = 0.00,
-                stageResponse = arrayListOf<StageResponse>(),
-                creditCardTransactions = arrayListOf<CreditCardTransaction>(),
+                paymentList = null,
                 partialPayment = false,
                 uiActive = true
             )

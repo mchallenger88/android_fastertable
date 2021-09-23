@@ -255,6 +255,7 @@
     <string name="balance_inquiry">Balance Inquiry</string>
     <string name="ticket_header">Gift Card Ticket</string>
     <string name="add_any_dollar_amount">Add any dollar amount to a gift card.</string>
+
     <string name="add_5">Add $5</string>
     <string name="add_25">Add $25</string>
     <string name="add_50">Add $50</string>
@@ -282,6 +283,9 @@
     <string name="order_item_options">Order Item Options</string>
     <string name="modify_order_item">Modify Order Item</string>
     <string name="terminal">Terminal</string>
+    <string name="partial_payment">Partial Payment</string>
+    <string name="string_payment_type">Pay Type</string>
+    <string name="make_partial_payment">Make Partial Payment</string>
 
 
 </resources>

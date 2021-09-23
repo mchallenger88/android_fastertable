@@ -39,25 +39,25 @@ class CheckoutOrdersAdapter(val clickListener: CheckoutOrderListListener): ListA
             if (payTicket.order.closeTime != null){
                 binding.txtOrderTotal.setTextColor(ColorStateList.valueOf(black))
                 binding.txtOrderNumber.setTextColor(ColorStateList.valueOf(black))
-                binding.txtOrderType.setTextColor(ColorStateList.valueOf(black))
+                binding.txtPaymentType.setTextColor(ColorStateList.valueOf(black))
                 binding.txtStartTime.setTextColor(ColorStateList.valueOf(black))
                 binding.txtTableNumber.setTextColor(ColorStateList.valueOf(black))
 
                 binding.txtOrderTotal.setBackgroundColor(white)
                 binding.txtOrderNumber.setBackgroundColor(white)
-                binding.txtOrderType.setBackgroundColor(white)
+                binding.txtPaymentType.setBackgroundColor(white)
                 binding.txtStartTime.setBackgroundColor(white)
                 binding.txtTableNumber.setBackgroundColor(white)
             }else{
                 binding.txtOrderTotal.setTextColor(ColorStateList.valueOf(white))
                 binding.txtOrderNumber.setTextColor(ColorStateList.valueOf(white))
-                binding.txtOrderType.setTextColor(ColorStateList.valueOf(white))
+                binding.txtPaymentType.setTextColor(ColorStateList.valueOf(white))
                 binding.txtStartTime.setTextColor(ColorStateList.valueOf(white))
                 binding.txtTableNumber.setTextColor(ColorStateList.valueOf(white))
 
                 binding.txtOrderTotal.setBackgroundColor(red)
                 binding.txtOrderNumber.setBackgroundColor(red)
-                binding.txtOrderType.setBackgroundColor(red)
+                binding.txtPaymentType.setBackgroundColor(red)
                 binding.txtStartTime.setBackgroundColor(red)
                 binding.txtTableNumber.setBackgroundColor(red)
             }

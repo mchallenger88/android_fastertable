@@ -15,7 +15,8 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/view_background">
+    android:background="@color/view_background"
+    tools:ignore="ExtraText">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/payment_fastertoolbar"
@@ -74,7 +75,7 @@
                 android:text="@string/pay_credit"
                 android:textColor="@color/white"
                 android:textSize="@dimen/toolbar_button"
-                android:onClick="@{() -> viewModel.startCredit(orderViewModel.activeOrder)}"
+                android:onClick="@{() -> viewModel.showCreditView()}"
                 app:disablePayButton="@{viewModel.activePayment.statusApproval}"
                 app:layout_constraintStart_toEndOf="@+id/btn_pay_cash"
                 app:layout_constraintTop_toTopOf="@+id/layout_payment_buttons"
@@ -137,7 +138,7 @@
                 />
         </LinearLayout>
 
-
+    //Ticket Card View
     <androidx.cardview.widget.CardView
         android:id="@+id/ticket_card_view"
         android:layout_width="wrap_content"
@@ -231,6 +232,7 @@
                 android:layout_height="wrap_content"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="parent"
+                android:layout_marginBottom="16dp"
                 tools:layout_editor_absoluteX="0dp">
                 <TextView
                     android:id="@+id/txt_paid_in_full"
@@ -273,7 +275,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="115dp"
                     android:text="@string/tax"
-                    app:layout_constraintBottom_toTopOf="@+id/text_total"
+                    app:layout_constraintBottom_toTopOf="@+id/text_gratuity"
                     app:layout_constraintEnd_toEndOf="parent" />
 
                 <TextView
@@ -282,9 +284,30 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="24dp"
-                    app:layout_constraintBottom_toTopOf="@+id/text_total"
+                    app:layout_constraintBottom_toTopOf="@+id/text_gratuity"
                     app:layout_constraintEnd_toEndOf="parent"
                     tools:ticketTax="@{viewModel.activePayment}" />
+
+                <TextView
+                    android:id="@+id/text_gratuity"
+                    style="@style/payment_totals"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="115dp"
+                    android:text="@string/gratuity"
+                    app:layout_constraintBottom_toTopOf="@+id/text_total"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:ticketGratuityText="@{viewModel.activePayment}" />
+
+                <TextView
+                    android:id="@+id/text_gratuity_amount"
+                    style="@style/payment_totals"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="24dp"
+                    app:layout_constraintBottom_toTopOf="@+id/text_total"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:ticketGratuity="@{viewModel.activePayment}" />
 
                 <TextView
                     android:id="@+id/text_total"
@@ -292,9 +315,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="115dp"
-                    android:layout_marginBottom="16dp"
                     android:text="@string/total"
-                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintBottom_toTopOf="@+id/text_partial"
                     app:layout_constraintEnd_toEndOf="parent" />
 
                 <TextView
@@ -303,10 +325,32 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="24dp"
-                    android:layout_marginBottom="16dp"
+                    app:layout_constraintBottom_toTopOf="@+id/text_partial"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:ticketTotal="@{viewModel.activePayment}" />
+
+                <TextView
+                    android:id="@+id/text_partial"
+                    style="@style/amount_owed"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="115dp"
+                    android:text="@string/partial_payment"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    tools:ticketTotal="@{viewModel.activePayment}" />
+                    app:partialPaymentText="@{viewModel.activePayment}"/>
+
+                <TextView
+                    android:id="@+id/text_partial_amount"
+                    style="@style/amount_owed"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="24dp"
+                    android:text="@string/partial_payment"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:partialPaymentAmount="@{viewModel.activePayment}"/>
+
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <View
@@ -327,6 +371,7 @@
 
     </androidx.cardview.widget.CardView>
 
+    //Card View
     <androidx.cardview.widget.CardView
         android:id="@+id/payment_card_view"
         android:layout_width="600dp"
@@ -337,6 +382,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/payment_fastertoolbar">
 
+        //Cash Layout
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/cash_layout"
             android:layout_width="match_parent"
@@ -584,7 +630,7 @@
                     android:layout_marginStart="1dp"
                     android:layout_marginTop="1dp"
                     android:background="@drawable/keypad_button"
-                    android:onClick="@{() -> viewModel.clearPayment()}"
+                    android:onClick="@{() -> viewModel.clearCashAmount()}"
                     android:text="@string/string_clear"
                     android:textSize="@dimen/d20"
                     app:layout_constraintStart_toEndOf="@+id/btn_cash_zero"
@@ -611,7 +657,7 @@
                     android:layout_height="80dp"
                     android:layout_marginTop="1dp"
                     android:background="@drawable/keypad_button"
-                    android:onClick="@{() -> viewModel.payNow()}"
+                    android:onClick="@{() -> viewModel.payCashNow()}"
                     android:text="@string/submit_payment"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -622,6 +668,282 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
+        //Credit Layout
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/credit_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/white"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/text_credit_title"
+                style="@style/view_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:fontFamily="@font/open_sans_semibold"
+                android:text="@string/pay_credit"
+                android:textAlignment="center"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/txt_amount_owed2"
+                style="@style/view_subtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="9dp"
+                android:text="@string/amount_owed"
+                app:amountOwed="@{viewModel.activePayment}"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/text_credit_title" />
+
+            <TextView
+                android:id="@+id/txt_paid_amount2"
+                style="@style/mimic_text_box"
+                android:layout_width="250dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:textAlignment="center"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/txt_amount_owed2"
+                app:priceDouble="@{viewModel.creditAmount}" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/layout_credit_submit"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginStart="75dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="75dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/txt_paid_amount2">
+
+                <Button
+                    android:id="@+id/btn_pay_credit_no_changes"
+                    style="@style/Widget.MaterialComponents.Button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="180dp"
+                    android:textSize="@dimen/d24"
+                    android:onClick="@{() -> viewModel.startCredit(orderViewModel.activeOrder)}"
+                    android:text="@string/submit_payment"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:hideFullCreditPayment="@{viewModel.showPartialCreditPad}"/>
+
+                <Button
+                    android:id="@+id/btn_show_partial_credit_key_pad"
+                    style="@style/Widget.MaterialComponents.Button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="15dp"
+                    android:textSize="@dimen/d21"
+                    android:backgroundTint="@color/primaryLightColor"
+                    android:onClick="@{() -> viewModel.showPartialCredit(true)}"
+                    android:text="@string/make_partial_payment"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:hideFullCreditPayment="@{viewModel.showPartialCreditPad}"/>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/credit_keypad"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="75dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="75dp"
+                android:layout_marginBottom="65dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/txt_paid_amount2"
+                app:showPartialCreditPayment="@{viewModel.showPartialCreditPad}">
+
+                <Button
+                    android:id="@+id/btn_credit_one"
+                    android:layout_width="@dimen/keypad_button"
+                    android:layout_height="@dimen/keypad_button"
+                    android:background="@drawable/keypad_button"
+                    android:onClick="@{() -> viewModel.setCreditAmount(1)}"
+                    android:text="@string/string_one"
+                    android:textSize="@dimen/d24"
+                    app:layout_constraintBottom_toTopOf="@+id/btn_credit_four"
+                    app:layout_constraintEnd_toStartOf="@+id/btn_credit_two"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <Button
+                    android:id="@+id/btn_credit_two"
+                    android:layout_width="@dimen/keypad_button"
+                    android:layout_height="@dimen/keypad_button"
+                    android:layout_marginStart="2dp"
+                    android:background="@drawable/keypad_button"
+                    android:onClick="@{() -> viewModel.setCreditAmount(2)}"
+                    android:text="@string/string_two"
+                    android:textSize="@dimen/d24"
+                    app:layout_constraintStart_toEndOf="@+id/btn_credit_one"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <Button
+                    android:id="@+id/btn_credit_three"
+                    android:layout_width="@dimen/keypad_button"
+                    android:layout_height="@dimen/keypad_button"
+                    android:layout_marginStart="2dp"
+                    android:background="@drawable/keypad_button"
+                    android:onClick="@{() -> viewModel.setCreditAmount(3)}"
+                    android:text="@string/string_three"
+                    android:textSize="@dimen/d24"
+                    app:layout_constraintStart_toEndOf="@+id/btn_credit_two"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+
+                <Button
+                    android:id="@+id/btn_credit_four"
+                    android:layout_width="@dimen/keypad_button"
+                    android:layout_height="@dimen/keypad_button"
+                    android:layout_marginTop="2dp"
+                    android:background="@drawable/keypad_button"
+                    android:onClick="@{() -> viewModel.setCreditAmount(4)}"
+                    android:text="@string/string_four"
+                    android:textSize="@dimen/d24"
+                    app:layout_constraintBottom_toTopOf="@+id/btn_credit_seven"
+                    app:layout_constraintEnd_toStartOf="@+id/btn_credit_five"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/btn_credit_one" />
+
+                <Button
+                    android:id="@+id/btn_credit_five"
+                    android:layout_width="@dimen/keypad_button"
+                    android:layout_height="@dimen/keypad_button"
+                    android:layout_marginStart="2dp"
+                    android:layout_marginTop="2dp"
+                    android:background="@drawable/keypad_button"
+                    android:onClick="@{() -> viewModel.setCreditAmount(5)}"
+                    android:text="@string/string_five"
+                    android:textSize="@dimen/d24"
+                    app:layout_constraintStart_toEndOf="@+id/btn_credit_four"
+                    app:layout_constraintTop_toBottomOf="@+id/btn_credit_two" />
+
+                <Button
+                    android:id="@+id/btn_credit_six"
+                    android:layout_width="@dimen/keypad_button"
+                    android:layout_height="@dimen/keypad_button"
+                    android:layout_marginStart="2dp"
+                    android:layout_marginTop="2dp"
+                    android:background="@drawable/keypad_button"
+                    android:onClick="@{() -> viewModel.setCreditAmount(6)}"
+                    android:text="@string/string_six"
+                    android:textSize="@dimen/d24"
+                    app:layout_constraintStart_toEndOf="@+id/btn_credit_five"
+                    app:layout_constraintTop_toBottomOf="@+id/btn_credit_three" />
+
+                <Button
+                    android:id="@+id/btn_credit_seven"
+                    android:layout_width="@dimen/keypad_button"
+                    android:layout_height="@dimen/keypad_button"
+                    android:layout_marginTop="2dp"
+                    android:background="@drawable/keypad_button"
+                    android:onClick="@{() -> viewModel.setCreditAmount(7)}"
+                    android:text="@string/string_seven"
+                    android:textSize="@dimen/d24"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/btn_credit_four" />
+
+                <Button
+                    android:id="@+id/btn_credit_eight"
+                    android:layout_width="@dimen/keypad_button"
+                    android:layout_height="@dimen/keypad_button"
+                    android:layout_marginStart="2dp"
+                    android:layout_marginTop="2dp"
+                    android:background="@drawable/keypad_button"
+                    android:onClick="@{() -> viewModel.setCreditAmount(8)}"
+                    android:text="@string/string_eight"
+                    android:textSize="@dimen/d24"
+                    app:layout_constraintStart_toEndOf="@+id/btn_credit_seven"
+                    app:layout_constraintTop_toBottomOf="@+id/btn_credit_five" />
+
+                <Button
+                    android:id="@+id/btn_credit_nine"
+                    android:layout_width="@dimen/keypad_button"
+                    android:layout_height="@dimen/keypad_button"
+                    android:layout_marginStart="2dp"
+                    android:layout_marginTop="2dp"
+                    android:background="@drawable/keypad_button"
+                    android:onClick="@{() -> viewModel.setCreditAmount(9)}"
+                    android:text="@string/string_nine"
+                    android:textSize="@dimen/d24"
+                    app:layout_constraintStart_toEndOf="@+id/btn_credit_eight"
+                    app:layout_constraintTop_toBottomOf="@+id/btn_credit_six" />
+
+                <Button
+                    android:id="@+id/btn_credit_decimal"
+                    android:layout_width="@dimen/keypad_button"
+                    android:layout_height="@dimen/keypad_button"
+                    android:layout_marginTop="2dp"
+                    android:background="@drawable/keypad_button"
+                    android:onClick="@{() -> viewModel.addCreditDecimal()}"
+                    android:text="@string/string_decimal"
+                    android:textSize="@dimen/d24"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/btn_credit_seven" />
+
+                <Button
+                    android:id="@+id/btn_credit_zero"
+                    android:layout_width="@dimen/keypad_button"
+                    android:layout_height="@dimen/keypad_button"
+                    android:layout_marginStart="2dp"
+                    android:layout_marginTop="2dp"
+                    android:background="@drawable/keypad_button"
+                    android:onClick="@{() -> viewModel.setCreditAmount(0)}"
+                    android:text="@string/string_zero"
+                    android:textSize="@dimen/d24"
+                    app:layout_constraintStart_toEndOf="@+id/btn_credit_decimal"
+                    app:layout_constraintTop_toBottomOf="@+id/btn_credit_eight" />
+
+                <Button
+                    android:id="@+id/btn_credit_clear"
+                    android:layout_width="@dimen/keypad_button"
+                    android:layout_height="@dimen/keypad_button"
+                    android:layout_marginStart="2dp"
+                    android:layout_marginTop="2dp"
+                    android:background="@drawable/keypad_button"
+                    android:onClick="@{() -> viewModel.clearCreditAmount()}"
+                    android:text="@string/string_clear"
+                    android:textSize="@dimen/d20"
+                    app:layout_constraintStart_toEndOf="@+id/btn_credit_zero"
+                    app:layout_constraintTop_toBottomOf="@+id/btn_credit_nine" />
+
+                <Button
+                    android:id="@+id/btn_pay_credit_now"
+                    style="@style/primary_button_large"
+                    android:layout_width="0dp"
+                    android:layout_height="80dp"
+                    android:layout_marginTop="2dp"
+                    android:background="@drawable/keypad_button"
+                    android:onClick="@{() -> viewModel.startCredit(orderViewModel.activeOrder)}"
+                    android:text="@string/submit_payment"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/btn_credit_zero" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        /Discount Layout
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/discount_layout"
             android:layout_width="match_parent"
@@ -666,6 +988,7 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
+        /Modify Price Layout
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/price_layout"
             android:layout_width="match_parent"
@@ -742,6 +1065,9 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
+
+    //Credit Payment
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

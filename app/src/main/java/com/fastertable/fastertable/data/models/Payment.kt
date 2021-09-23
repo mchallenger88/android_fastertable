@@ -58,10 +58,10 @@ data class Payment(
         return paid
     }
 
-    private fun anyTicketsPaid(): Boolean{
+    fun anyTicketsPaid(): Boolean{
         var paid: Boolean = false
         this.tickets!!.forEach { ticket ->
-            if (ticket.paymentTotal >= ticket.total && ticket.paymentType != ""){
+            if (ticket.paymentTotal >= ticket.total && ticket.paymentList != null){
                 paid = true
             }
         }
@@ -85,6 +85,13 @@ data class Payment(
 
     fun activeTicket(): Ticket?{
         return tickets!!.find{it -> it.uiActive}
+    }
+
+    fun amountOwed(): Double{
+        return if (activeTicket() != null){
+            activeTicket()!!.total.minus(activeTicket()!!.paymentTotal).round(2)
+        }else
+            0.00
     }
 
     private fun allTicketItems(): ArrayList<TicketItem>{
@@ -327,13 +334,11 @@ data class Ticket(
     var subTotal: Double,
     var tax: Double,
     var total: Double,
-    var paymentType: String,
     var gratuity: Double,
     val deliveryFee: Double,
     val extraFees: List<AdditionalFees>?,
     var paymentTotal: Double = 0.00,
-    var stageResponse: MutableList<StageResponse>,
-    var creditCardTransactions: ArrayList<CreditCardTransaction>,
+    var paymentList: MutableList<TicketPayment>?,
     var partialPayment: Boolean,
     var uiActive: Boolean = false
 
@@ -346,19 +351,69 @@ data class Ticket(
             return price
         }
 
+        fun calculatePaymentTotal(partial: Boolean){
+            paymentTotal = paymentList!!.sumOf {it.ticketPaymentAmount}.round(2)
+            partialPayment = partial
+        }
+
         fun recalculateAfterApproval(taxRate: Double){
-            subTotal = ticketItems.sumOf { it -> it.ticketItemPrice }.round(2)
+            subTotal = ticketItems.sumOf { it.ticketItemPrice }.round(2)
             tax = subTotal.times(taxRate).round(2)
             total = subTotal.plus(tax)
         }
 
         fun addTip(tip: Double, taxRate: Double){
-            this.gratuity = tip
+            activePayment()!!.gratuity = tip
+//            this.gratuity = tip
             recalculateAfterApproval(taxRate)
-            this.total = this.total.plus(tip)
+            this.total = this.total.plus(tip).round(2)
             this.paymentTotal = this.total;
         }
 
+        fun activePayment(): TicketPayment?{
+            if (paymentList != null){
+                return paymentList!!.find { it.uiActive }
+            }
+            return null
+        }
+
+        fun ticketTotal(): Double{
+            return if (allGratuities() != null){
+                total.plus(allGratuities()!!).round(2)
+            }else{
+                total
+            }
+        }
+
+        fun allGratuities(): Double?{
+            if (paymentList != null){
+                val grats = paymentList!!.sumOf{ it.gratuity }.round(2)
+                return if (grats != 0.00){
+                    grats
+                }else{
+                    null
+                }
+            }else{
+                return null
+            }
+
+        }
+
+    }
+
+//    var paymentType: String,
+//    var stageResponse: MutableList<StageResponse>,
+//    var creditCardTransactions: ArrayList<CreditCardTransaction>,
+
+@Parcelize
+data class TicketPayment(
+    val id: Int,
+    var paymentType: String,
+    val ticketPaymentAmount: Double = 0.00,
+    var gratuity: Double = 0.00,
+    var creditCardTransactions: ArrayList<CreditCardTransaction>?,
+    var uiActive: Boolean
+    ): Parcelable {
 
     }
 
@@ -373,6 +428,7 @@ data class CreditCardTransaction(
     var captureTransaction: CaptureResponse?,
     val refundTransaction: TransactionResponse45?,
     val voidTransaction: TransactionResponse45?,
+    var tipTransaction: TransactionResponse45?
 ): Parcelable
 
 @Parcelize

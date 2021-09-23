@@ -4,6 +4,7 @@ package com.fastertable.fastertable.data.repository
 import android.app.Application
 import com.fastertable.fastertable.api.*
 import com.fastertable.fastertable.data.models.*
+import com.fastertable.fastertable.utils.round
 import javax.inject.Inject
 
 class StartCredit @Inject constructor(private val startCreditUseCase: StartCreditUseCase){
@@ -76,7 +77,7 @@ class CaptureTicketTransaction @Inject constructor(private val captureRequestUse
 
 class CreditCardRepository @Inject constructor(private val app: Application){
 
-    fun createCayanTransaction(order: Order, ticket: Ticket, settings: Settings, terminal: Terminal): CayanCardTransaction {
+    fun createCayanTransaction(order: Order, ticket: Ticket, settings: Settings, terminal: Terminal, amountBeingPaid: Double): CayanCardTransaction {
             val salesType: String = "PREAUTH"
         // transactionType = "SALE",
 
@@ -86,7 +87,7 @@ class CreditCardRepository @Inject constructor(private val app: Application){
                 merchantKey = settings.merchantCredentials.MerchantKey,
                 request = CayanRequest(
                 transactionType = salesType,
-                amount = ticket.total,
+                amount = amountBeingPaid.round(2),
                 clerkId = order.employeeId!!,
                 orderNumber = order.orderNumber.toString(),
                 dba = "fastertable",
@@ -138,7 +139,8 @@ class CreditCardRepository @Inject constructor(private val app: Application){
                 captureTransaction = null,
                 creditTransaction = cayanTransaction,
                 refundTransaction = null,
-                voidTransaction = null
+                voidTransaction = null,
+                tipTransaction = null
         )
 
     }
