@@ -36,6 +36,11 @@
     <dimen name="d12">12sp</dimen>
     <dimen name="d10">10sp</dimen>
 
+    <dimen name="general_layout_padding">20dp</dimen>
+    <dimen name="inner_vertical_input_margin">8dp</dimen>
+    <dimen name="width_percentage">.9999</dimen>
+    <dimen name="button_vertical_padding">14dp</dimen>
+
 
     <dimen name="default_text_small">16sp</dimen>
     <dimen name="hint_size">14sp</dimen>

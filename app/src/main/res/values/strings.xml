@@ -286,6 +286,13 @@
     <string name="partial_payment">Partial Payment</string>
     <string name="string_payment_type">Pay Type</string>
     <string name="make_partial_payment">Make Partial Payment</string>
+    <string name="manual_credit">Manual Credit</string>
+    <string name="cardholder_name">Cardholder Name</string>
+    <string name="month">Month</string>
+    <string name="card_number">Card Number</string>
+    <string name="expiration_date">MM/YY</string>
+    <string name="cvv">CVV</string>
+    <string name="zipcode">Zipcode</string>
 
 
 </resources>

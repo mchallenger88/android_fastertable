@@ -130,7 +130,7 @@ data class CayanTransaction(
     val PaymentType: String,
     val ResponseType: String,
     val Status: String,
-    val TipDetails: TipDetails,
+    val TipDetails: TipDetails?,
     val Token: String,
     val TransactionDate: String?,
     val TransactionType: String,

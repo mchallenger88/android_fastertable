@@ -324,4 +324,22 @@
         <item name="backgroundColor">@android:color/transparent</item>
         <item name="android:textColor">@color/default_text_color</item>
     </style>
+
+    <style name="CreditCardInputLayoutBoxes"
+        parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="errorEnabled">true</item>
+    </style>
+
+    <style name="InputEditTexts">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="FirstOrLastNameInput" parent="InputEditTexts">
+        <item name="android:digits">abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ</item>
+        <item name="android:inputType">textCapWords</item>
+    </style>
+
 </resources>

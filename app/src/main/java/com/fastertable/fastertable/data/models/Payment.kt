@@ -587,55 +587,6 @@ data class stripePayment(
     val token: String,
 ): Parcelable
 
-
-//data class paymentIntent(
-//val id: String,
-//val object: any,
-//val amount: number,
-//val amount_capturable: number,
-//val amount_received: number,
-//val application: any,
-//val application_fee_amount: any,
-//val canceled_at: any,
-//val cancellation_reason: String,
-//val capture_method: any,
-//val charges: (
-//val object: any,
-//val data: [],
-//val has_more: Boolean,
-//val url: String,
-//),
-//val client_secret: String,
-//val confirmation_method: any,
-//val created: any,
-//val currency: String,
-//val customer: any,
-//val description: String,
-//val invoice: any,
-//val last_payment_error: any,
-//val livemode: Boolean,
-//val metadata: (),
-//val next_action: any,
-//val on_behalf_of: any,
-//val payment_method: any,
-//val payment_method_options: (
-//val card: (
-//val val installments: any,
-//val val network: any,
-//val val request_three_d_secure: any
-//val )
-//),
-//val payment_method_types: [],
-//val receipt_email: String,
-//val review: any,
-//val setup_future_usage: any,
-//val shipping: any,
-//val statement_descriptor: any,
-//val statement_descriptor_suffix: any,
-//val status: any,
-//val transfer_data: any,
-//val transfer_group: any
-//)
 @Parcelize
 data class PayTicket(
     var order: Order,
@@ -666,4 +617,13 @@ data class OrderPayTID(
 data class TipAdjustRequest(
     val credentials: MerchantCredentials,
     val tipRequest: TipRequest
+): Parcelable
+
+@Parcelize
+data class ManualCredit(
+    val cardHolder: String,
+    val cardNumber: String,
+    val expirationDate: String,
+    val cvv: String,
+    val postalCode: String
 ): Parcelable

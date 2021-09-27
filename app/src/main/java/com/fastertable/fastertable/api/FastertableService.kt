@@ -78,6 +78,9 @@ interface FastertableApi {
     @POST("payments/getkey")
     suspend fun stageTransaction(@Body transaction: CayanCardTransaction): Response<StageResponse>
 
+    @POST("payments/authorization")
+    suspend fun manualAuthorization(@Body authorizationRequest: AuthorizationRequest): Response<TransactionResponse45>
+
     @POST("payments/tipadjust")
     suspend fun tipAdjustment(@Body transaction: AdjustTipTest): Response<TransactionResponse45>
 

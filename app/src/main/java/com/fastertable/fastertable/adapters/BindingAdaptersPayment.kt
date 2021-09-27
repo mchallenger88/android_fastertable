@@ -13,6 +13,7 @@ import com.fastertable.fastertable.R
 import com.fastertable.fastertable.data.models.Payment
 import com.fastertable.fastertable.data.models.Ticket
 import com.fastertable.fastertable.data.models.TicketItem
+import com.fastertable.fastertable.ui.payment.ShowCreditPayment
 
 @BindingAdapter("ticketsData")
 fun bindTicketsRecyclerView(recyclerView: RecyclerView?, payment: Payment?) {
@@ -242,18 +243,27 @@ fun hideItemMore(imageButton: ImageButton, payment: Payment?){
     }
 }
 
-@BindingAdapter("hideFullCreditPayment")
-fun hideFullCreditPayment(button: Button, b: Boolean){
-    if (b){
-        button.visibility = View.GONE
-    }else{
+@BindingAdapter("showCreditPayment")
+fun showCreditPayment(button: Button, scp: ShowCreditPayment){
+    if (scp == ShowCreditPayment.DEFAULT){
         button.visibility = View.VISIBLE
+    }else{
+        button.visibility = View.GONE
     }
 }
 
 @BindingAdapter("showPartialCreditPayment")
-fun showPartialCreditPayment(layout: ConstraintLayout, b: Boolean){
-    if (b){
+fun showPartialCreditPayment(layout: ConstraintLayout, scp: ShowCreditPayment){
+    if (scp == ShowCreditPayment.PARTIAL){
+        layout.visibility = View.VISIBLE
+    }else{
+        layout.visibility = View.GONE
+    }
+}
+
+@BindingAdapter("showManualCredit")
+fun showManualCredit(layout: ConstraintLayout, scp: ShowCreditPayment){
+    if (scp == ShowCreditPayment.MANUAL){
         layout.visibility = View.VISIBLE
     }else{
         layout.visibility = View.GONE

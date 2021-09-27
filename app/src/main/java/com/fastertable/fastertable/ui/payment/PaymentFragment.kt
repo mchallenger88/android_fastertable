@@ -20,26 +20,62 @@ import com.fastertable.fastertable.data.models.Discount
 import com.fastertable.fastertable.databinding.PaymentFragmentBinding
 import com.fastertable.fastertable.ui.order.OrderViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import android.text.Editable
+
+import android.text.TextWatcher
+import android.telephony.PhoneNumberFormattingTextWatcher
+import com.fastertable.fastertable.data.models.ManualCredit
+
 
 @AndroidEntryPoint
 class PaymentFragment: BaseFragment() {
     private val viewModel: PaymentViewModel by activityViewModels()
     private val orderViewModel: OrderViewModel by activityViewModels()
+    private lateinit var binding: PaymentFragmentBinding
     override fun onCreateView(
             inflater: LayoutInflater,
             container: ViewGroup?,
             savedInstanceState: Bundle?
     ): View {
-        val binding = PaymentFragmentBinding.inflate(inflater)
+        binding = PaymentFragmentBinding.inflate(inflater)
         binding.lifecycleOwner = viewLifecycleOwner
         binding.viewModel = viewModel
         binding.orderViewModel = orderViewModel
         binding.btnModifyPrice.setOnClickListener {
             modifyPrice(binding)
         }
+        binding.manualExpirationDate.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
+
+            }
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+            }
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                var txt = s.toString()
+                if (s?.length == 4){
+                    txt = txt.substring(0,2) + "/" + txt.substring(2, 4)
+                    binding.manualExpirationDate.setText(txt)
+                }
+            }
+        })
+        binding.btnPayManualCredit.setOnClickListener {
+            getManualCreditData()
+        }
         createAdapters(binding)
         createObservers(binding)
         return binding.root
+    }
+
+    private fun getManualCreditData(){
+        val manualCredit = ManualCredit (
+            cardHolder = binding.manualCardholder.text.toString(),
+            cardNumber = binding.manualCreditCardNumber.text.toString(),
+            expirationDate = binding.manualExpirationDate.text.toString(),
+            cvv = binding.etCvv.text.toString(),
+            postalCode = binding.etZipcode.toString()
+                )
+
+        viewModel.startManualCredit(manualCredit, viewModel.activeOrder.value!!)
     }
 
     private fun createObservers(binding: PaymentFragmentBinding){
@@ -159,5 +195,32 @@ class PaymentFragment: BaseFragment() {
     private fun modifyPrice(binding: PaymentFragmentBinding){
         viewModel.modifyPrice(orderViewModel.activeOrder.value!!, binding.editModifyPrice.editText?.text.toString())
     }
+
+    private val expirationWatcher = object : TextWatcher {
+
+        override fun afterTextChanged(s: Editable?) {
+
+        }
+        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+        }
+        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+
+
+            var txt = s.toString()
+
+            println(txt)
+            println(s!!.length)
+            if (s.length == 4){
+                txt = txt.substring(0,2) + "/" + txt.substring(2, 4)
+
+                println(txt)
+            }
+
+
+
+        }
+    }
+
+
 
 }

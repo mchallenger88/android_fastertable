@@ -737,24 +737,182 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:hideFullCreditPayment="@{viewModel.showPartialCreditPad}"/>
+                    app:showCreditPayment="@{viewModel.whichCreditPayment}"/>
+
+                <Button
+                    android:id="@+id/btn_show_manual_credit"
+                    style="@style/Widget.MaterialComponents.Button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:textSize="@dimen/d24"
+                    android:backgroundTint="@color/primaryLightColor"
+                    android:onClick="@{() -> viewModel.showManualCredit()}"
+                    android:text="@string/manual_credit"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintBottom_toTopOf="@+id/btn_show_partial_credit_key_pad"
+                    app:showCreditPayment="@{viewModel.whichCreditPayment}"/>
 
                 <Button
                     android:id="@+id/btn_show_partial_credit_key_pad"
                     style="@style/Widget.MaterialComponents.Button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="15dp"
-                    android:textSize="@dimen/d21"
+                    android:layout_marginBottom="20dp"
+                    android:textSize="@dimen/d24"
                     android:backgroundTint="@color/primaryLightColor"
-                    android:onClick="@{() -> viewModel.showPartialCredit(true)}"
+                    android:onClick="@{() -> viewModel.showPartialCredit()}"
                     android:text="@string/make_partial_payment"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:hideFullCreditPayment="@{viewModel.showPartialCreditPad}"/>
+                    app:showCreditPayment="@{viewModel.whichCreditPayment}"/>
 
             </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/layout_manual_credit"
+            android:layout_width="400dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="75dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="75dp"
+            android:layout_marginBottom="65dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/txt_paid_amount2"
+            app:showManualCredit="@{viewModel.whichCreditPayment}">
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/manual_cardholder_layout"
+                style="@style/CreditCardInputLayoutBoxes"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:hint="@string/cardholder_name"
+                app:errorEnabled="true"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/manual_cardholder"
+                    style="@style/InputEditTexts"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textCapWords"
+                    android:textSize="@dimen/d21" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/manual_credit_card_number_layout"
+                style="@style/CreditCardInputLayoutBoxes"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="20dp"
+                android:hint="@string/card_number"
+                app:errorEnabled="true"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/manual_cardholder_layout">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/manual_credit_card_number"
+                    style="@style/InputEditTexts"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="number"
+                    android:textSize="@dimen/d21"
+                    android:nextFocusForward="@+id/manual_credit_month_layout" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/manual_expiration_layout"
+                style="@style/CreditCardInputLayoutBoxes"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="@dimen/inner_vertical_input_margin"
+                android:hint="@string/expiration_date"
+                app:errorEnabled="true"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/manual_credit_card_number_layout">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    style="@style/InputEditTexts"
+                    android:id="@+id/manual_expiration_date"
+                    android:maxLength="@integer/expiration_date_length_including_slash"
+                    android:digits="01234567890/"
+                    android:textSize="@dimen/d21"
+                    android:inputType="number"
+                    android:imeOptions="actionNext"
+                    android:nextFocusForward="@+id/et_cvv" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/til_cvv"
+                style="@style/CreditCardInputLayoutBoxes"
+                android:layout_width="100dp"
+                android:layout_marginTop="10dp"
+                app:layout_constraintStart_toEndOf="@id/manual_expiration_layout"
+                app:layout_constraintTop_toBottomOf="@id/manual_credit_card_number_layout"
+                android:layout_marginStart="@dimen/inner_vertical_input_margin"
+                android:hint="@string/cvv">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    style="@style/InputEditTexts"
+                    android:id="@+id/et_cvv"
+                    android:maxLength="@integer/maximum_cvv_length"
+                    android:textSize="@dimen/d21"
+                    android:inputType="number"
+                    android:imeOptions="actionNext"
+                    android:nextFocusForward="@+id/til_zipcode" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/til_zipcode"
+                style="@style/CreditCardInputLayoutBoxes"
+                android:layout_width="100dp"
+                android:layout_marginTop="10dp"
+                app:layout_constraintStart_toEndOf="@id/til_cvv"
+                app:layout_constraintTop_toBottomOf="@id/manual_credit_card_number_layout"
+                android:layout_marginStart="@dimen/inner_vertical_input_margin"
+                android:hint="@string/zipcode">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    style="@style/InputEditTexts"
+                    android:id="@+id/et_zipcode"
+                    android:maxLength="6"
+                    android:textSize="@dimen/d21"
+                    android:inputType="number"/>
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <Button
+                android:id="@+id/btn_pay_manual_credit"
+                style="@style/Widget.MaterialComponents.Button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:textSize="@dimen/d24"
+                android:text="@string/submit_payment"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/til_zipcode"
+                />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
 
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -769,7 +927,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/txt_paid_amount2"
-                app:showPartialCreditPayment="@{viewModel.showPartialCreditPad}">
+                app:showPartialCreditPayment="@{viewModel.whichCreditPayment}">
 
                 <Button
                     android:id="@+id/btn_credit_one"

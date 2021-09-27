@@ -35,6 +35,12 @@ enum class ShowPayment{
     MODIFY_PRICE
 }
 
+enum class ShowCreditPayment{
+    DEFAULT,
+    MANUAL,
+    PARTIAL
+}
+
 @HiltViewModel
 class PaymentViewModel @Inject constructor (private val loginRepository: LoginRepository,
                                             private val approvalRepository: ApprovalRepository,
@@ -43,6 +49,7 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
                                             private val getPayment: GetPayment,
                                             private val startCredit: StartCredit,
                                             private val cancelCredit: CancelCredit,
+                                            private val manualCreditAuthorization: ManualCreditAuthorization,
                                             private val stageTransaction: StageTransaction,
                                             private val creditCardRepository: CreditCardRepository,
                                             private val initiateCreditTransaction: InitiateCreditTransaction,
@@ -134,9 +141,9 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
     val navigateToPayment: LiveData<Boolean>
         get() = _navigateToPayment
 
-    private val _showPartialCreditPad = MutableLiveData(false)
-    val showPartialCreditPad: LiveData<Boolean>
-        get() = _showPartialCreditPad
+    private val _whichCreditPayment = MutableLiveData(ShowCreditPayment.DEFAULT)
+    val whichCreditPayment: LiveData<ShowCreditPayment>
+        get() = _whichCreditPayment
 
     //endregion
 
@@ -309,7 +316,7 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
 
     //region Fragment Functions
         fun showCashView(){
-        showPartialCredit(false)
+        _whichCreditPayment.value = ShowCreditPayment.DEFAULT
             when (paymentScreen.value){
                 ShowPayment.NONE -> _paymentScreen.value = ShowPayment.CASH
                 ShowPayment.CASH -> _paymentScreen.value = ShowPayment.NONE
@@ -320,13 +327,17 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
         }
 
         fun showCreditView(){
-            showPartialCredit(false)
+            _whichCreditPayment.value = ShowCreditPayment.DEFAULT
             _creditAmount.value = _activePayment.value?.amountOwed()
             _paymentScreen.value = ShowPayment.CREDIT
         }
 
-        fun showPartialCredit(b: Boolean){
-            _showPartialCreditPad.value = b
+        fun showPartialCredit(){
+            _whichCreditPayment.value = ShowCreditPayment.PARTIAL
+        }
+
+        fun showManualCredit(){
+            _whichCreditPayment.value = ShowCreditPayment.MANUAL
         }
     //endregion
 
@@ -379,6 +390,47 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
         }
     }
 
+    fun startManualCredit(manualCredit: ManualCredit, order: Order){
+        val credentials = MerchantCredentials (
+            MerchantKey = settings.merchantCredentials.MerchantKey,
+            MerchantName = settings.merchantCredentials.MerchantName,
+            MerchantSiteId = settings.merchantCredentials.MerchantSiteId,
+            webAPIKey = settings.merchantCredentials.webAPIKey,
+            stripePrivateKey = settings.merchantCredentials.stripePrivateKey,
+            stripePublickey = settings.merchantCredentials.stripePublickey
+        )
+
+        val paymentData = AuthPaymentData (
+            source = "Manual",
+            cardNumber = manualCredit.cardNumber,
+            expirationDate = manualCredit.expirationDate.replace("/", ""),
+            cardHolder = manualCredit.cardHolder,
+            avsStreetAddress = "",
+            avsZipCode = manualCredit.postalCode,
+            cardVerificationValue = manualCredit.cvv
+        )
+
+        val request = AuthRequestData(
+            amount = creditAmount.value!!,
+            invoiceNumber = order.orderNumber.toString(),
+            registerNumber = terminal.terminalId.toString(),
+            merchantTransactionId = "",
+            cardAcceptorTerminalId = terminal.terminalId.toString()
+        )
+        val a = AuthorizationRequest(
+            Credentials = credentials,
+            PaymentData = paymentData,
+            Request = request
+        )
+        viewModelScope.launch {
+            val response45 = manualCreditAuthorization.authorize(a)
+            if (response45.ApprovalStatus == "APPROVED"){
+                val cayanTransaction = creditCardRepository.createManualCreditTransaction(response45, activePayment.value!!.activeTicket()!!)
+                processApproval(activePayment.value!!.activeTicket()!!, cayanTransaction)
+            }
+        }
+
+    }
 
     private suspend fun creditStaging(order: Order, settings: Settings, terminal: Terminal){
         viewModelScope.launch {
@@ -486,8 +538,8 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
 
     @SuppressLint("DefaultLocale")
     fun processDecline(cayanTransaction: CayanTransaction){
-        val status = cayanTransaction.Status.toUpperCase()
-        val error = cayanTransaction.ErrorMessage.toLowerCase()
+        val status = cayanTransaction.Status.uppercase(Locale.getDefault())
+        val error = cayanTransaction.ErrorMessage.lowercase(Locale.getDefault())
 
         if (status == "DECLINED"){
             if (error.contains("insufficient funds")){
@@ -541,8 +593,8 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
         val ccList = arrayListOf<CreditCardTransaction>()
         ccList.add(creditCardTransaction)
 
-        var gratuity: Double = 0.00
-        var payment: Double = 0.00
+        var gratuity = 0.00
+        var payment = 0.00
         if (amount > creditAmount.value!!){
             gratuity = amount.minus(creditAmount.value!!).round(2)
             payment = creditAmount.value!!.round(2)
@@ -563,8 +615,8 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
             list.add(ticketPayment)
             ticket.paymentList = list
         }else{
-            for (payment in ticket.paymentList!!){
-                payment.uiActive = false
+            for (p in ticket.paymentList!!){
+                p.uiActive = false
             }
             ticket.paymentList!!.add(ticketPayment)
         }
@@ -600,6 +652,8 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
     fun setManagePayment(){
         if (!activePayment.value!!.anyTicketsPaid()){
             _managePayment.value = !managePayment.value!!
+        }else{
+            setError("Manage Payment", "Once a ticket has been paid, splitting tickets is no longer possible.")
         }
     }
 

@@ -29,6 +29,17 @@ class CancelCredit @Inject constructor(private val startCreditUseCase: StartCred
     }
 }
 
+class ManualCreditAuthorization @Inject constructor(private val manualCreditAuthorizationUseCase: ManualCreditAuthorizationUseCase){
+    suspend fun authorize(authorizationRequest: AuthorizationRequest): TransactionResponse45 {
+        val result = manualCreditAuthorizationUseCase.authorize(authorizationRequest)
+        if (result is ManualCreditAuthorizationUseCase.Result.Success){
+            return result.response
+        }else{
+            throw java.lang.RuntimeException("fetch failed")
+        }
+    }
+}
+
 class StageTransaction @Inject constructor(private val stageResponseUseCase: StageResponseUseCase){
     suspend fun stageTransaction(transaction: CayanCardTransaction): Any{
         val result = stageResponseUseCase.stageTransaction(transaction)
@@ -142,6 +153,39 @@ class CreditCardRepository @Inject constructor(private val app: Application){
                 voidTransaction = null,
                 tipTransaction = null
         )
+    }
 
+    fun createManualCreditTransaction(response: TransactionResponse45, t: Ticket): CayanTransaction{
+        val ct = CayanTransaction (
+            AccountNumber = response.CardNumber,
+            AdditionalParameters = null,
+            AmountApproved = response.Amount,
+            AuthorizationCode = response.AuthorizationCode,
+            Cardholder = response.Cardholder,
+            EntryMode = "Keyed",
+            ErrorMessage = response.ErrorMessage,
+            PaymentType = response.CardType,
+            ResponseType = "",
+            Status = response.ApprovalStatus,
+            TipDetails = null,
+            Token = response.Token,
+            TransactionDate = response.TransactionDate,
+            TransactionType = "AUTHORIZATION",
+            ValidationKey = ""
+        )
+
+        val cc = CreditCardTransaction(
+            ticketId = t.id,
+            creditTotal = response.Amount.toDouble(),
+            captureTotal = null,
+            refundTotal = null,
+            voidTotal = null,
+            creditTransaction = ct,
+            captureTransaction = null,
+            refundTransaction = null,
+            voidTransaction = null,
+            tipTransaction = null)
+
+        return ct
     }
 }
