@@ -427,6 +427,9 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
             if (response45.ApprovalStatus == "APPROVED"){
                 val cayanTransaction = creditCardRepository.createManualCreditTransaction(response45, activePayment.value!!.activeTicket()!!)
                 processApproval(activePayment.value!!.activeTicket()!!, cayanTransaction)
+            }else{
+                val cayanTransaction = creditCardRepository.createManualCreditTransaction(response45, activePayment.value!!.activeTicket()!!)
+                processDecline(cayanTransaction)
             }
         }
 

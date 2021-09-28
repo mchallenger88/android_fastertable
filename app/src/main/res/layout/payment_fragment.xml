@@ -829,7 +829,7 @@
                     android:layout_height="wrap_content"
                     android:inputType="number"
                     android:textSize="@dimen/d21"
-                    android:nextFocusForward="@+id/manual_credit_month_layout" />
+                    android:nextFocusForward="@+id/manual_expiration_date" />
 
             </com.google.android.material.textfield.TextInputLayout>
 

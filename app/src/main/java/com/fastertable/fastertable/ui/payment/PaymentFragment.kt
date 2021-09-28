@@ -52,9 +52,12 @@ class PaymentFragment: BaseFragment() {
             }
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 var txt = s.toString()
-                if (s?.length == 4){
+                if (s?.length == 4 && !txt.contains("/")){
                     txt = txt.substring(0,2) + "/" + txt.substring(2, 4)
                     binding.manualExpirationDate.setText(txt)
+                }
+                if (s?.length == 6){
+                    binding.manualExpirationDate.setText("")
                 }
             }
         })
@@ -72,8 +75,10 @@ class PaymentFragment: BaseFragment() {
             cardNumber = binding.manualCreditCardNumber.text.toString(),
             expirationDate = binding.manualExpirationDate.text.toString(),
             cvv = binding.etCvv.text.toString(),
-            postalCode = binding.etZipcode.toString()
+            postalCode = binding.etZipcode.text.toString()
                 )
+
+
 
         viewModel.startManualCredit(manualCredit, viewModel.activeOrder.value!!)
     }
