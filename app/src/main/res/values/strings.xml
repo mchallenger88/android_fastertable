@@ -293,6 +293,15 @@
     <string name="expiration_date">MM/YY</string>
     <string name="cvv">CVV</string>
     <string name="zipcode">Zipcode</string>
+    <string name="order_options">Order Options</string>
+    <string name="add_misc_menu_item">Add Misc Menu Item</string>
+    <string name="add_menu_item_for_this_order_only">Add Menu Item for this Order Only</string>
+    <string name="menu_item_name">Menu Item Name</string>
+    <string name="quantity">Quantity</string>
+    <string name="price_per_item">Price per Item</string>
+    <string name="food">Food</string>
+    <string name="bar">Bar</string>
+    <string name="inventory">Inventory</string>
 
 
 </resources>

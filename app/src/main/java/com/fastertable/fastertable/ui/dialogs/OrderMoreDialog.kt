@@ -10,7 +10,7 @@ import com.fastertable.fastertable.databinding.BottomSheetOrderMoreBinding
 import com.fastertable.fastertable.ui.order.OrderViewModel
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
-class OrderMoreDialog: BottomSheetDialogFragment() {
+class OrderMoreDialog: BaseDialog() {
     private lateinit var dialogListener: DialogListener
     private val viewModel: OrderViewModel by activityViewModels()
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -22,14 +22,19 @@ class OrderMoreDialog: BottomSheetDialogFragment() {
             dismiss()
         }
 
+        binding.btnAdhocMenuItem.setOnClickListener {
+            dialogListener.returnValue("Misc Menu Item")
+            dismiss()
+        }
+
         return binding.root
     }
 
     override fun onStart() {
         super.onStart()
-        val width = 500
+        val width = 800
         val height= 500
-        dialog!!.window?.setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+        dialog!!.window?.setLayout(width, ViewGroup.LayoutParams.WRAP_CONTENT)
     }
 
     override fun onAttach(context: Context) {

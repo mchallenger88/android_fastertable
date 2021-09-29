@@ -58,6 +58,13 @@ fun payTicketTableNumber(textView: TextView, payTicket: PayTicket?) {
 
 }
 
+@BindingAdapter("disableTransfer")
+fun disableTransfer(textView: TextView, order: Order?){
+    if (order != null){
+        textView.isEnabled = order.orderNumber != 99
+    }
+}
+
 @SuppressLint("SetTextI18n")
 @BindingAdapter("telephone")
 fun telephoneFormat(textView: TextView, value: String?){

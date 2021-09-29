@@ -391,6 +391,14 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
         }
     }
 
+    fun addAdHocItem(item: OrderItem){
+        val g = _activeOrder.value!!.guests!!.find { it -> it.uiActive }
+        g?.orderItemAdd(item)
+
+        _activeOrder.value = _activeOrder.value
+        _menusNavigation.value = MenusNavigation.CATEGORIES
+    }
+
     fun saveModifiedItem(){
         val mods = arrayListOf<ModifierItem>()
         activeItem.value!!.modifiers.forEach { mod ->

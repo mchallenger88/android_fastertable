@@ -604,6 +604,9 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
             "Modify Order Item" -> {
                 return orderViewModel.actionOnItemClicked(value)
             }
+            "Misc Menu Item" -> {
+                MenuItemDialog().show(supportFragmentManager, MenuItemDialog.TAG)
+            }
         }
 
     }
