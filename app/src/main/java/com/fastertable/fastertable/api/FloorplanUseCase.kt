@@ -1,5 +1,6 @@
 package com.fastertable.fastertable.api
 
+import android.util.Log
 import com.fastertable.fastertable.data.models.Order
 import com.fastertable.fastertable.data.models.RestaurantFloorplan
 import kotlinx.coroutines.CancellationException
@@ -18,18 +19,23 @@ class FloorplanUseCase @Inject constructor(private val fastertableApi: Fastertab
         object Failure : SaveResult()
     }
 
-        suspend fun getFloorplans(lid: String, cid: String): FloorplanUseCase.Result {
+    sealed class DeleteResult {
+        data class Success(val b: Boolean): DeleteResult()
+        object Failure: DeleteResult()
+    }
+
+        suspend fun getFloorplans(lid: String, cid: String): Result {
             return withContext(Dispatchers.IO){
                 try{
                     val response = fastertableApi.getFloorplans(lid, cid)
                     if (response.isSuccessful && response.body() != null){
-                        return@withContext FloorplanUseCase.Result.Success(response.body()!!)
+                        return@withContext Result.Success(response.body()!!)
                     }else{
-                        return@withContext FloorplanUseCase.Result.Failure
+                        return@withContext Result.Failure
                     }
                 }catch (t: Throwable){
                     if (t !is CancellationException){
-                        return@withContext FloorplanUseCase.Result.Failure
+                        return@withContext Result.Failure
                     }else{
                         throw t
                     }
@@ -37,18 +43,18 @@ class FloorplanUseCase @Inject constructor(private val fastertableApi: Fastertab
             }
         }
 
-    suspend fun saveFloorplan(restaurantFloorplan: RestaurantFloorplan): FloorplanUseCase.SaveResult {
+    suspend fun saveFloorplan(restaurantFloorplan: RestaurantFloorplan): SaveResult {
         return withContext(Dispatchers.IO){
             try{
                 val response = fastertableApi.saveFloorplan(restaurantFloorplan)
                 if (response.isSuccessful && response.body() != null){
-                    return@withContext FloorplanUseCase.SaveResult.Success(response.body()!!)
+                    return@withContext SaveResult.Success(response.body()!!)
                 }else{
-                    return@withContext FloorplanUseCase.SaveResult.Failure
+                    return@withContext SaveResult.Failure
                 }
             }catch (t: Throwable){
                 if (t !is CancellationException){
-                    return@withContext  FloorplanUseCase.SaveResult.Failure
+                    return@withContext  SaveResult.Failure
                 }else{
                     throw t
                 }
@@ -56,18 +62,37 @@ class FloorplanUseCase @Inject constructor(private val fastertableApi: Fastertab
         }
     }
 
-    suspend fun updateFloorplan(restaurantFloorplan: RestaurantFloorplan): FloorplanUseCase.SaveResult {
+    suspend fun updateFloorplan(restaurantFloorplan: RestaurantFloorplan): SaveResult {
         return withContext(Dispatchers.IO){
             try{
                 val response = fastertableApi.updateFloorplan(restaurantFloorplan)
                 if (response.isSuccessful && response.body() != null){
-                    return@withContext FloorplanUseCase.SaveResult.Success(response.body()!!)
+                    return@withContext SaveResult.Success(response.body()!!)
                 }else{
-                    return@withContext FloorplanUseCase.SaveResult.Failure
+                    return@withContext SaveResult.Failure
                 }
             }catch (t: Throwable){
                 if (t !is CancellationException){
-                    return@withContext  FloorplanUseCase.SaveResult.Failure
+                    return@withContext  SaveResult.Failure
+                }else{
+                    throw t
+                }
+            }
+        }
+    }
+
+    suspend fun deleteFloorplan(id: String, cid: String): Any {
+        return withContext(Dispatchers.IO){
+            try{
+                val response = fastertableApi.deleteFloorplan(id, cid)
+                if (response.isSuccessful){
+                    return@withContext DeleteResult.Success(true)
+                }else{
+                    return@withContext DeleteResult.Failure
+                }
+            }catch (t: Throwable){
+                if (t !is CancellationException){
+                    return@withContext  DeleteResult.Failure
                 }else{
                     throw t
                 }

@@ -65,7 +65,6 @@ class InitiateCreditTransaction @Inject constructor(private val initiateCreditTr
 class AdjustTipTransaction @Inject constructor(private val adjustTipUseCase: AdjustTipUseCase){
     suspend fun adjustTip(request: AdjustTipTest): Any{
         val result = adjustTipUseCase.tipAdjust(request)
-        println(result)
         if (result is AdjustTipUseCase.Result.Success){
             return result.response
         }else{

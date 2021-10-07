@@ -153,7 +153,7 @@ class PrintTicketService {
         }
 
         if (item.dontMake){
-            line += " (Don't Make)"
+            line += " (No Make)"
         }
         document.color(PrinterDriver.COLOR.BLACK)
         document.text(line, TextSettings(size = 24f, bold = true))

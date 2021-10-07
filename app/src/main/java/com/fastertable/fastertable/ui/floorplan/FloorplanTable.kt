@@ -3,12 +3,17 @@ package com.fastertable.fastertable.ui.floorplan
 import android.content.Context
 import android.graphics.Color
 import android.util.AttributeSet
+import android.util.Log
+import android.view.GestureDetector
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.GestureDetectorCompat
+import androidx.core.view.MotionEventCompat
 import androidx.core.view.get
 import com.fastertable.fastertable.R
 import com.fastertable.fastertable.data.models.IdLocation
@@ -18,6 +23,8 @@ import com.fastertable.fastertable.data.models.TableType
 interface FloorplanTableListener{
     fun onClick(table: RestaurantTable)
 }
+
+private const val DEBUG_TAG = "Gestures"
 
 class FloorplanTable  @JvmOverloads
 constructor(private val ctx: Context, private val attributeSet: AttributeSet? = null, private val defStyleAttr: Int = 0)
@@ -214,5 +221,7 @@ constructor(private val ctx: Context, private val attributeSet: AttributeSet? = 
         }
         tableImage.rotation = table.rotate.toFloat()
     }
+
+
 }
 

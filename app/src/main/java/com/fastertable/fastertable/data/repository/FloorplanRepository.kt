@@ -30,6 +30,7 @@ class FloorplanQueries @Inject constructor(private val floorplanUseCase: Floorpl
         val result = floorplanUseCase.saveFloorplan(restaurantFloorplan)
         if (result is FloorplanUseCase.SaveResult.Success){
             floorplan = result.floorplan
+            floorplanRepository.saveFloorplan(floorplan)
             return floorplan
         }else{
             throw RuntimeException("fetch failed")
@@ -46,6 +47,15 @@ class FloorplanQueries @Inject constructor(private val floorplanUseCase: Floorpl
             throw RuntimeException("fetch failed")
         }
     }
+
+    suspend fun deleteFloorplan(restaurantFloorplan: RestaurantFloorplan): Boolean {
+        val result = floorplanUseCase.deleteFloorplan(restaurantFloorplan.id, restaurantFloorplan.companyId)
+        if (result is FloorplanUseCase.DeleteResult.Success){
+            return true
+        }else{
+            throw RuntimeException("fetch failed")
+        }
+    }
 }
 
 class FloorplanRepository @Inject constructor(private val app: Application) {
@@ -56,6 +66,24 @@ class FloorplanRepository @Inject constructor(private val app: Application) {
         val jsonString = gson.toJson(floorplans)
         val file= File(app.filesDir, "floorplans.json")
         file.writeText(jsonString)
+    }
+
+    fun saveFloorplan(floorplan: RestaurantFloorplan){
+        //Save order json to file
+        val gson = Gson()
+        val jsonString = gson.toJson(floorplan)
+        val file= File(app.filesDir, "floorplan.json")
+        file.writeText(jsonString)
+    }
+
+    fun getFloorplanFromFile(): RestaurantFloorplan?{
+        val gson = Gson()
+        if (File(app.filesDir, "floorplan.json").exists()){
+            val bufferedReader: BufferedReader = File(app.filesDir, "floorplan.json").bufferedReader()
+            val inputString = bufferedReader.use { it.readText() }
+            return gson.fromJson(inputString, RestaurantFloorplan::class.java)
+        }
+        return null
     }
 
     fun getFloorplansFromFile(): List<RestaurantFloorplan>?{

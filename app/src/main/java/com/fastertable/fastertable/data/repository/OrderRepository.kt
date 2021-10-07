@@ -19,7 +19,6 @@ class SaveOrder @Inject constructor(private val saveOrderUseCase: SaveOrderUseCa
         val o: Order
         val result = saveOrderUseCase.saveOrder(order)
         if (result is SaveOrderUseCase.Result.Success){
-            println("XXXXXXXXXXXXXXXXXXXXXX: Save Order Step 2")
             orderRepository.saveOrder(result.order)
             return result.order
         }

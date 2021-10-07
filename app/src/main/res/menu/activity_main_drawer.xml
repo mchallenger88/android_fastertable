@@ -32,5 +32,10 @@
             android:id="@+id/clockoutFragment"
             android:icon="@drawable/ic_outline_access_time_24"
             android:title="@string/clockout" />
+
+        <item
+            android:id="@+id/floorplanManagementFragment"
+            android:icon="@drawable/ic_outline_access_time_24"
+            android:title="@string/floorplan_management" />
     </group>
 </menu>

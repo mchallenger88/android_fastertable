@@ -37,6 +37,9 @@
         <action
             android:id="@+id/action_nav_home_to_takeoutFragment"
             app:destination="@id/takeoutFragment" />
+        <action
+            android:id="@+id/action_nav_home_to_floorplanManagementFragment"
+            app:destination="@id/floorplanManagementFragment" />
     </fragment>
     <fragment
         android:id="@+id/orderFragment"
@@ -145,6 +148,10 @@
             android:name="order_id"
             app:argType="string" />
     </fragment>
+    <fragment
+        android:id="@+id/floorplanManagementFragment"
+        android:name="com.fastertable.fastertable.ui.floorplan_manage.FloorplanManagementFragment"
+        android:label="FloorplanManagementFragment" />
 
 
 </navigation>

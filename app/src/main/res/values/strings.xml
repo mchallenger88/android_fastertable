@@ -302,6 +302,50 @@
     <string name="food">Food</string>
     <string name="bar">Bar</string>
     <string name="inventory">Inventory</string>
+    <string name="string_new">New</string>
+    <string name="remove">Remove</string>
+    <string name="settings">Settings</string>
+    <string name="save_the_floorplan">Save the Floorplan</string>
+    <string name="enter_the_floorplan_name">Enter the Floorplan Name</string>
+    <string name="floorplan_management">Floorplan Management</string>
 
-
+    //Floorplan
+    <string-array name="table_types">
+        <item>Booth</item>
+        <item>Round Two</item>
+        <item>Round Four</item>
+        <item>Round Eight</item>
+        <item>Round Ten</item>
+        <item>Round Stool</item>
+        <item>Round Booth</item>
+        <item>Rect Two</item>
+        <item>Rect Four</item>
+        <item>Rect Six</item>
+        <item>Rect Horz Six</item>
+        <item>Rect Horz Eight</item>
+        <item>Rect Horz Four</item>
+        <item>Rect Horz Ten</item>
+        <item>Square Four</item>
+        <item>Square Stool</item>
+    </string-array>
+    <string-array name="id_locations">
+        <item>TopLeft</item>
+        <item>TopCenter</item>
+        <item>TopRight</item>
+        <item>MiddleLeft</item>
+        <item>MiddleCenter</item>
+        <item>MiddleRight</item>
+        <item>BottomLeft</item>
+        <item>BottomCenter</item>
+        <item>BottomRight</item>
+    </string-array>
+    <string-array name="id_directions">
+        <item>Horizontal</item>
+        <item>Vertical</item>
+    </string-array>
+    <string-array name="combination_layout">
+        <item>Horizontal</item>
+        <item>Vertical</item>
+        <item>Grid</item>
+    </string-array>
 </resources>

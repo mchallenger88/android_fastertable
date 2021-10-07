@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/bottom_controller_layout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="#D1D1D1"
+    android:gravity="center_vertical"
+    android:padding="10dp">
+
+    <Spinner
+        android:id="@+id/floorplans"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="10dp" />
+
+    <Button
+        android:id="@+id/btn_create_floorplan"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:text="@string/string_new" />
+
+    <Button
+        android:id="@+id/btn_save_floorplan"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:text="@string/save" />
+
+    <Button
+        android:id="@+id/btn_remove_floorplan"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:text="@string/remove" />
+    <Button
+        android:id="@+id/btn_setting_floorplan"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:text="@string/settings" />
+
+</LinearLayout>

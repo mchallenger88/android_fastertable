@@ -9,6 +9,7 @@ import android.view.View
 import android.view.WindowInsets
 import android.view.WindowInsetsController
 import android.widget.ImageButton
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.WindowInsetsCompat
@@ -37,6 +38,7 @@ import com.fastertable.fastertable.ui.error.ErrorViewModel
 import com.fastertable.fastertable.ui.floorplan.FloorplanFragmentDirections
 import com.fastertable.fastertable.ui.floorplan.FloorplanTableListener
 import com.fastertable.fastertable.ui.floorplan.FloorplanViewModel
+import com.fastertable.fastertable.ui.floorplan_manage.FloorplanManageViewModel
 import com.fastertable.fastertable.ui.gift.GiftCardViewModel
 import com.fastertable.fastertable.ui.home.HomeFragmentDirections
 import com.fastertable.fastertable.ui.home.HomeViewModel
@@ -80,6 +82,8 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
     private val takeoutViewModel: TakeoutViewModel by viewModels()
     private val datePickerViewModel: DatePickerViewModel by viewModels()
     private val transferOrderViewModel: TransferOrderViewModel by viewModels()
+    private val floorplanManage: FloorplanManageViewModel by viewModels()
+    private var progressDialog: ProgressDialog? = null;
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -636,6 +640,24 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
             floorplanViewModel.tableClicked(table)
         } else {
             Log.d("Table", "Table Locked!");
+        }
+    }
+
+    fun loadDialog(type: Int, msg: String) {
+        if (type == 1) {
+            val args = Bundle()
+            args.putString("msg", msg)
+            progressDialog!!.arguments = args
+            progressDialog!!.show(supportFragmentManager, "Progress Dialog")
+        } else {
+            progressDialog!!.dismiss()
+        }
+    }
+
+    fun alertMessage(msg: String) {
+        runOnUiThread {
+            val myToast = Toast.makeText(applicationContext,msg, Toast.LENGTH_SHORT)
+            myToast.show()
         }
     }
 

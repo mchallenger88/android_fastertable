@@ -1,15 +1,17 @@
 package com.fastertable.fastertable.data.models
 
 import android.os.Parcelable
+import com.google.gson.annotations.SerializedName
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class RestaurantFloorplan(
-    val tables: ArrayList<RestaurantTable>,
+    var tables: ArrayList<RestaurantTable>,
     val walls: ArrayList<FloorplanWall>,
     val companyId: String,
-    val name: String,
+    var name: String,
     val id: String,
+    @SerializedName("locationid")
     val locationId: String,
     val archived: Boolean,
     val type: String,
@@ -44,17 +46,17 @@ data class TableClass (
 
 @Parcelize
 data class RestaurantTable (
-    val id: Int,
-    val type: String,
-    val rotate: Int,
+    var id: Int,
+    var type: String,
+    var rotate: Int,
     var locked: Boolean,
     val reserved: Boolean,
     var active: Boolean,
-    val id_location: String,
-    val maxSeats: Int,
-    val minSeats: Int,
-    val left: Int,
-    val top: Int,
+    var id_location: String,
+    var maxSeats: Int,
+    var minSeats: Int,
+    var left: Int,
+    var top: Int,
     var isCombination: Boolean,
     var combinationTables: ArrayList<RestaurantTable>?
 ): Parcelable
