@@ -7,53 +7,50 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
-import android.widget.AdapterView
-import android.widget.Button
-import android.widget.EditText
-import android.widget.Spinner
+import android.widget.*
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import com.fastertable.fastertable.R
 import com.fastertable.fastertable.data.models.FloorplanWall
+import com.fastertable.fastertable.data.models.TableType
 import com.fastertable.fastertable.data.models.WallDirection
 import com.fastertable.fastertable.databinding.FloorplanManagementFragmentBinding
+import com.fastertable.fastertable.databinding.WallPropertyDialogBinding
 import com.fastertable.fastertable.ui.floorplan_manage.FloorplanManageViewModel
 import com.fastertable.fastertable.ui.floorplan_manage.FloorplanManagementFragment
 
 
 class FloorplanWallDialog: DialogFragment() {
-    private var widthEditor: EditText? = null
-    private var thicknessEditor: EditText? = null
-    private var directionSelector: Spinner? = null
+    private lateinit var binding: WallPropertyDialogBinding
     private var wall: FloorplanWall?= null
-    private var btn_save: Button? = null
-    private var btn_remove: Button? = null
-    private var btn_cancel: Button? = null
     private val viewModel: FloorplanManageViewModel by activityViewModels()
     private var parentFragment: FloorplanManagementFragment? = null
     private var parentFragmentBinding: FloorplanManagementFragmentBinding? = null
 
+    private val directions = arrayOf(
+        WallDirection.Horizontal, WallDirection.Vertical
+    )
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.wall_property_dialog, container, false)
+        binding = WallPropertyDialogBinding.inflate(inflater)
+
+        val wallDirections = resources.getStringArray(R.array.id_directions)
+        val adapter = ArrayAdapter(requireContext(), R.layout.support_simple_spinner_dropdown_item, wallDirections)
+        binding.actWallDirection.setAdapter(adapter)
+
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         wall = arguments?.getParcelable("wall")
-        widthEditor = view.findViewById(R.id.id_width_value)
-        thicknessEditor = view.findViewById(R.id.id_thickness_value)
-        directionSelector = view.findViewById(R.id.id_direction)
-        btn_save = view.findViewById(R.id.btn_save)
-        btn_remove = view.findViewById(R.id.btn_remove)
-        btn_cancel = view.findViewById(R.id.btn_cancel)
-        widthEditor?.setText(wall!!.width.toString())
-        thicknessEditor?.setText(wall!!.thickness.toString())
-        if (wall?.direction == WallDirection.Horizontal.name) {
-            directionSelector?.setSelection(0)
-        } else {
-            directionSelector?.setSelection(1)
-        }
-        directionSelector?.onItemSelectedListener = object: AdapterView.OnItemSelectedListener {
+        binding.txtWallWidthValue.setText(wall!!.width.toString())
+        binding.txtWallThicknessValue.setText(wall!!.thickness.toString())
+        binding.txtWallLeftValue.setText(wall!!.left.toString())
+        binding.txtWallTopValue.setText(wall!!.top.toString())
+        binding.actWallDirection.setText(wall!!.direction, false)
+
+        binding.actWallDirection.onItemSelectedListener = object: AdapterView.OnItemSelectedListener {
             override fun onItemSelected(
                 parent: AdapterView<*>?,
                 view: View?,
@@ -71,36 +68,78 @@ class FloorplanWallDialog: DialogFragment() {
         }
 
 
-        btn_save?.setOnClickListener {
+        binding.btnWallSave.setOnClickListener {
             hideKeyboardFrom(requireContext(), requireView())
             updateWall()
         }
 
-        btn_remove?.setOnClickListener {
+        binding.btnWallRemove.setOnClickListener {
             removeWall()
         }
 
-        btn_cancel?.setOnClickListener {
-            dialog?.dismiss()
+        binding.btnWallCancel.setOnClickListener {
+            dismiss()
+        }
+
+        binding.btnWallCopy.setOnClickListener {
+            copyWall()
+            dismiss()
         }
     }
 
     private fun updateWall() {
-        if (widthEditor?.text.toString().length > 0) {
-            wall?.width = widthEditor?.text.toString().toInt()
+        val top = binding.txtWallTopValue.text
+        val left = binding.txtWallLeftValue.text
+        val thickness = binding.txtWallThicknessValue.text
+        val width = binding.txtWallWidthValue.text
+
+        if (top.toString().isNotEmpty()){
+            wall?.top = top.toString().toInt()
+        }else{
+            wall?.top = 10
         }
-        if (thicknessEditor?.text.toString().length > 0) {
-            wall?.thickness = thicknessEditor?.text.toString().toInt()
+
+        if (left.toString().isNotEmpty()){
+            wall?.left = left.toString().toInt()
+        }else{
+            wall?.left = 10
         }
+
+        if (width.toString().isNotEmpty()){
+            wall?.width = width.toString().toInt()
+        }else{
+            wall?.width = 10
+        }
+
+        if (thickness.toString().isNotEmpty()){
+            wall?.thickness = thickness.toString().toInt()
+        }else{
+            wall?.thickness = 100
+        }
+
+        if (binding.actWallDirection.text.isNotEmpty()){
+            wall?.direction = binding.actWallDirection.text.toString()
+        }
+
         wall?.let { viewModel.updateWall(it) }
-        parentFragmentBinding?.let { parentFragment?.loadTables(it) }
-        dialog?.dismiss()
+        viewModel.setReloadTables(true)
+        dismiss()
     }
 
     private fun removeWall() {
         wall?.let { viewModel.removeWall(it) }
         parentFragmentBinding?.let { parentFragment?.loadTables(it) }
         dialog?.dismiss()
+    }
+
+    private fun copyWall(){
+        val newWall = wall?.clone()
+        newWall?.id = viewModel.wallList.count().plus(1)
+        newWall?.left = 10
+        newWall?.top = 10
+        newWall?.let { viewModel.addWall(it) }
+        viewModel.setReloadTables(true)
+        dismiss()
     }
 
     fun setParentFragment(fragment: FloorplanManagementFragment, binding: FloorplanManagementFragmentBinding) {

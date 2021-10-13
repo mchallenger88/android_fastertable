@@ -1,18 +1,14 @@
 package com.fastertable.fastertable.ui.floorplan_manage
 
-import android.app.Application
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.fastertable.fastertable.R
-import com.fastertable.fastertable.api.FloorplanUseCase
 import com.fastertable.fastertable.common.base.BaseViewModel
 import com.fastertable.fastertable.data.models.*
 import com.fastertable.fastertable.data.repository.FloorplanQueries
 import com.fastertable.fastertable.data.repository.FloorplanRepository
 import com.fastertable.fastertable.data.repository.LoginRepository
-import com.google.gson.Gson
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -26,7 +22,7 @@ class FloorplanManageViewModel @Inject constructor(
     val user: OpsAuth = loginRepository.getOpsUser()!!
     val settings: Settings = loginRepository.getSettings()!!
     private var tableList = arrayListOf<RestaurantTable>()
-    private var wallList = arrayListOf<FloorplanWall>()
+    var wallList = arrayListOf<FloorplanWall>()
 
     private val _floorplans = MutableLiveData<MutableList<RestaurantFloorplan>>()
     val floorplans: LiveData<MutableList<RestaurantFloorplan>>
@@ -48,9 +44,18 @@ class FloorplanManageViewModel @Inject constructor(
     val saveReturn: LiveData<Int>
         get() = _saveReturn
 
+    private val _requestDelete = MutableLiveData<Boolean>(false)
+    val requestDelete: LiveData<Boolean>
+        get() = _requestDelete
+
     private val _deleteReturn = MutableLiveData<Int>(0)
     val deleteReturn: LiveData<Int>
         get() = _deleteReturn
+
+    private val _reloadTables = MutableLiveData<Boolean>(false)
+    val reloadTables: LiveData<Boolean>
+        get() = _reloadTables
+
 
     fun getFloorplans() {
         viewModelScope.launch {
@@ -98,6 +103,10 @@ class FloorplanManageViewModel @Inject constructor(
         }
     }
 
+    fun startDeleteFloorplan(){
+        _requestDelete.value = true
+    }
+
     fun deleteFloorplan(){
         viewModelScope.launch {
             if (_activeFloorplan.value != null){
@@ -125,6 +134,7 @@ class FloorplanManageViewModel @Inject constructor(
                     }
                 }
             }
+            _requestDelete.postValue(false)
         }
     }
 
@@ -153,6 +163,12 @@ class FloorplanManageViewModel @Inject constructor(
         wallList = _activeFloorplan.value!!.walls
         tableList = _activeFloorplan.value!!.tables
     }
+
+    fun setReloadTables(b: Boolean){
+        _reloadTables.value = b
+        saveFloorplanToCloud()
+    }
+
 
     fun updateTable(tableId: Int, x: Int, y: Int): Boolean {
         val index = tableList.indexOfFirst { it.id == tableId }
@@ -215,7 +231,7 @@ class FloorplanManageViewModel @Inject constructor(
             return id + 1
         } else { // Wall
             wallList.forEach {
-                if (it.id!! > id) id = it.id
+                if (it.id!! > id) id = it.id!!
             }
             return id + 1
         }

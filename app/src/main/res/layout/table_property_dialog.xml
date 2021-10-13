@@ -1,230 +1,258 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <data>
         <variable
             name="table"
             type="com.fastertable.fastertable.data.models.RestaurantTable" />
     </data>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:padding="30dp"
-        android:paddingTop="50dp">
-
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/dialog_table_layout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="15dp">
+            android:layout_height="match_parent">
 
             <TextView
-                android:id="@+id/id_table_label"
-                android:layout_width="120dp"
-                android:layout_height="wrap_content"
-                android:layout_marginRight="10dp"
-                android:fontFamily="@font/open_sans_semibold"
-                android:gravity="right"
-                android:scrollbarSize="14dp"
-                android:text="Table ID: "
-                android:textColor="@color/black"
-                android:textSize="16dp" />
-
-            <EditText
-                android:id="@+id/id_table_id_value"
+                android:id="@+id/txt_table_dialog_title"
+                style="@style/alert_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:paddingTop="10dp"
-                android:paddingBottom="10dp"
-                android:text="TextView"
-                android:textColor="#000000"
-                android:textSize="14dp" />
-        </LinearLayout>
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="20dp"
+                android:text="@string/set_table_properties"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:padding="15dp">
 
-            <TextView
-                android:id="@+id/id_table_type"
-                android:layout_width="120dp"
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/til_table_id_value"
+                style="@style/CreditCardInputLayoutBoxes"
+                android:layout_width="140dp"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="10dp"
-                android:fontFamily="@font/open_sans_semibold"
-                android:gravity="right"
-                android:scrollbarSize="14dp"
-                android:text="Table Type: "
-                android:textColor="@color/black"
-                android:textSize="16dp" />
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="15dp"
+                android:hint="@string/table_id"
+                app:errorEnabled="true"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/txt_table_dialog_title">
 
-            <Spinner
-                android:id="@+id/id_type"
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/txt_table_id_value"
+                    style="@style/InputEditTexts"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textCapWords"
+                    android:textSize="@dimen/d21" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/til_table_type_spinner"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:entries="@array/table_types"
-                android:paddingTop="10dp"
-                android:paddingBottom="10dp" />
+                android:hint="@string/table_type"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="15dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/til_table_id_value">
 
-        </LinearLayout>
+                <AutoCompleteTextView
+                    android:id="@+id/act_table_types_auto"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/table_type"
+                    android:inputType="none"
+                    />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:padding="15dp">
+            </com.google.android.material.textfield.TextInputLayout>
 
-            <TextView
-                android:id="@+id/id_location_label"
-                android:layout_width="120dp"
-                android:layout_height="wrap_content"
-                android:layout_marginRight="10dp"
-                android:fontFamily="@font/open_sans_semibold"
-                android:gravity="right"
-                android:scrollbarSize="14dp"
-                android:text="ID Location: "
-                android:textColor="@color/black"
-                android:textSize="16dp" />
 
-            <Spinner
-                android:id="@+id/id_location_list"
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/til_id_locations"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:entries="@array/id_locations"
-                android:paddingTop="10dp"
-                android:paddingBottom="10dp" />
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="15dp"
+                android:hint="@string/table_number_location"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/til_table_type_spinner">
 
-            <Space
-                android:layout_width="wrap_content"
+                <AutoCompleteTextView
+                    android:id="@+id/act_id_locations"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/table_number_location"
+                    android:inputType="none"
+                    />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/til_left_value"
+                style="@style/CreditCardInputLayoutBoxes"
+                android:layout_width="140dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1" />
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="15dp"
+                android:hint="@string/left_position"
+                app:errorEnabled="true"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/til_id_locations">
 
-            <TextView
-                android:id="@+id/id_location_label2"
-                android:layout_width="120dp"
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/txt_left_value"
+                    style="@style/InputEditTexts"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textCapWords"
+                    android:textSize="@dimen/d21" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/til_top_value"
+                style="@style/CreditCardInputLayoutBoxes"
+                android:layout_width="140dp"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="10dp"
-                android:layout_weight="1"
-                android:fontFamily="@font/open_sans_semibold"
-                android:gravity="right"
-                android:scrollbarSize="14dp"
-                android:text="Rotate: "
-                android:textColor="@color/black"
-                android:textSize="16dp" />
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="15dp"
+                android:hint="@string/top_position"
+                app:errorEnabled="true"
+                app:layout_constraintStart_toEndOf="@+id/til_left_value"
+                app:layout_constraintTop_toBottomOf="@+id/til_id_locations">
 
-            <EditText
-                android:id="@+id/id_rotation_value"
-                android:layout_width="wrap_content"
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/txt_top_value"
+                    style="@style/InputEditTexts"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textCapWords"
+                    android:textSize="@dimen/d21" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/til_rotate_value"
+                style="@style/CreditCardInputLayoutBoxes"
+                android:layout_width="140dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:ems="10"
-                android:inputType="numberSigned"
-                android:paddingTop="10dp" />
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="15dp"
+                android:hint="@string/rotate"
+                app:errorEnabled="true"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/til_left_value">
 
-        </LinearLayout>
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/txt_rotate_value"
+                    style="@style/InputEditTexts"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textCapWords"
+                    android:textSize="@dimen/d21" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="15dp">
+            </com.google.android.material.textfield.TextInputLayout>
 
-            <TextView
-                android:id="@+id/id_label_table_min_seats"
-                android:layout_width="120dp"
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/til_min_seats_value"
+                style="@style/CreditCardInputLayoutBoxes"
+                android:layout_width="140dp"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="10dp"
-                android:fontFamily="@font/open_sans_semibold"
-                android:gravity="right"
-                android:scrollbarSize="14dp"
-                android:text="Min Seats: "
-                android:textColor="@color/black"
-                android:textSize="16dp" />
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="15dp"
+                android:hint="@string/min_seats"
+                app:errorEnabled="true"
+                app:layout_constraintStart_toEndOf="@+id/til_rotate_value"
+                app:layout_constraintTop_toBottomOf="@+id/til_left_value">
 
-            <EditText
-                android:id="@+id/id_table_min_seats_value"
-                android:layout_width="wrap_content"
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/txt_min_seats_value"
+                style="@style/InputEditTexts"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:ems="10"
-                android:inputType="textPersonName"
-                android:paddingTop="10dp"
-                android:paddingBottom="10dp" />
+                android:inputType="textCapWords"
+                android:textSize="@dimen/d21" />
 
-            <TextView
-                android:id="@+id/id_label_table_max_seats"
-                android:layout_width="120dp"
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/til_max_seats_value"
+                style="@style/CreditCardInputLayoutBoxes"
+                android:layout_width="140dp"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="10dp"
-                android:layout_weight="1"
-                android:fontFamily="@font/open_sans_semibold"
-                android:gravity="right"
-                android:text="Max Seats"
-                android:textColor="@color/black"
-                android:textSize="16dp" />
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="15dp"
+                android:hint="@string/max_seats"
+                app:errorEnabled="true"
+                app:layout_constraintStart_toEndOf="@+id/til_min_seats_value"
+                app:layout_constraintTop_toBottomOf="@+id/til_left_value">
 
-            <EditText
-                android:id="@+id/id_table_max_seats_value"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:ems="10"
-                android:inputType="textPersonName"
-                android:paddingTop="10dp"
-                android:paddingBottom="10dp" />
-        </LinearLayout>
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/txt_max_seats_value"
+                    style="@style/InputEditTexts"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textCapWords"
+                    android:textSize="@dimen/d21" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="15dp">
-
-            <Space
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1" />
+            </com.google.android.material.textfield.TextInputLayout>
 
             <Button
                 android:id="@+id/btn_save"
+                style="@style/alert_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="5dp"
-                android:paddingTop="15dp"
-                android:paddingBottom="15dp"
-                android:text="Save"
-                app:icon="@drawable/ic_check" />
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginBottom="20dp"
+                android:text="@string/save"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/btn_remove"
+                app:layout_constraintTop_toBottomOf="@+id/til_max_seats_value" />
 
             <Button
                 android:id="@+id/btn_remove"
+                style="@style/alert_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="5dp"
-                android:paddingTop="15dp"
-                android:paddingBottom="15dp"
-                android:text="Remove"
-                app:icon="@drawable/ic_btn_remove" />
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginBottom="20dp"
+                android:text="@string/remove"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/btn_cancel"
+                app:layout_constraintTop_toBottomOf="@+id/til_max_seats_value" />
 
             <Button
                 android:id="@+id/btn_cancel"
+                style="@style/alert_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="5dp"
-                android:paddingTop="15dp"
-                android:paddingBottom="15dp"
-                android:text="Cancel"
-                app:icon="@drawable/ic_times" />
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginBottom="20dp"
+                android:text="@string/cancel"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/til_max_seats_value" />
 
-        </LinearLayout>
+            <Button
+                android:id="@+id/btn_copy"
+                style="@style/alert_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginBottom="20dp"
+                android:text="@string/copy"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/txt_table_dialog_title" />
 
-    </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
 </layout>

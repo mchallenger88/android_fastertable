@@ -1,6 +1,7 @@
 package com.fastertable.fastertable.data.models
 
 import android.os.Parcelable
+import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
 import kotlinx.parcelize.Parcelize
 
@@ -20,7 +21,11 @@ data class RestaurantFloorplan(
     val _etag: String?,
     val _attachments: String?,
     val _ts: Long?
-): Parcelable
+): Parcelable{
+    fun sortedTableList(): List<RestaurantTable>{
+        return tables.sortedWith(compareBy { it.id })
+    }
+}
 
 @Parcelize
 data class FloorPlanRequest (
@@ -59,7 +64,12 @@ data class RestaurantTable (
     var top: Int,
     var isCombination: Boolean,
     var combinationTables: ArrayList<RestaurantTable>?
-): Parcelable
+): Parcelable{
+    fun clone(): RestaurantTable{
+        val newTable: String = Gson().toJson(this, RestaurantTable::class.java)
+        return Gson().fromJson(newTable, RestaurantTable::class.java)
+    }
+}
 
 enum class IdLocation{
     TopLeft, TopCenter, TopRight,
@@ -82,14 +92,19 @@ enum class WallDirection{
 
 @Parcelize
 data class FloorplanWall (
-    val id: Int?,
+    var id: Int?,
     var left: Int,
     var top: Int,
     val height: Int?,
     var width: Int?,
     var direction:String?,
     var thickness: Int?
-): Parcelable
+): Parcelable{
+    fun clone(): FloorplanWall{
+        val newWall: String = Gson().toJson(this, FloorplanWall::class.java)
+        return Gson().fromJson(newWall, FloorplanWall::class.java)
+    }
+}
 
 @Parcelize
 data class TablePosition(

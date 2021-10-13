@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Paint
+import android.widget.AutoCompleteTextView
 import com.fastertable.fastertable.R
 import java.time.*
 

@@ -101,39 +101,70 @@ class ConfirmListAdapter(private val clickListener: ConfirmListListener, private
         }
 
         private fun getCashSales(list: List<Ticket>): Double{
+            val payments = mutableListOf<Double>()
             val paymentsList = mutableListOf<TicketPayment>()
             for (ticket in list){
-                for (p in ticket.paymentList!!){
-                    if (p.paymentType == "Cash"){
-                        paymentsList.add(p)
+                if (ticket.paymentList != null){
+                    for (p in ticket.paymentList!!){
+                        if (p.paymentType == "Cash"){
+                            paymentsList.add(p)
+                            payments.add(p.ticketPaymentAmount)
+                        }
+                    }
+                }else{
+                    if (ticket.paymentType == "Cash"){
+                        payments.add(ticket.paymentTotal)
                     }
                 }
+
             }
-            return paymentsList.sumOf{it.ticketPaymentAmount}
+//            return paymentsList.sumOf{it.ticketPaymentAmount}
+            return payments.sumOf{it}
         }
 
         private fun getCreditSales(list: List<Ticket>): Double{
+            val payments = mutableListOf<Double>()
             val paymentsList = mutableListOf<TicketPayment>()
             for (ticket in list){
-                for (p in ticket.paymentList!!){
-                    if (p.paymentType == "Credit" || p.paymentType == "Manual Credit"){
-                        paymentsList.add(p)
+                if (ticket.paymentList != null){
+                    for (p in ticket.paymentList!!){
+                        if (p.paymentType == "Credit" || p.paymentType == "Manual Credit"){
+                            paymentsList.add(p)
+                            payments.add(p.ticketPaymentAmount)
+                        }
                     }
+                }else{
+                    if (ticket.paymentType == "Credit" || ticket.paymentType == "Manual Credit"){
+                        payments.add(ticket.paymentTotal)
+                    }
+
                 }
+
             }
-            return paymentsList.sumOf{it.ticketPaymentAmount}
+            return payments.sumOf{it}
+//            return paymentsList.sumOf{it.ticketPaymentAmount}
         }
 
         private fun getCreditGratuity(list: List<Ticket>): Double{
+            val payments = mutableListOf<Double>()
             val paymentsList = mutableListOf<TicketPayment>()
             for (ticket in list){
-                for (p in ticket.paymentList!!){
-                    if (p.paymentType == "Credit" || p.paymentType == "Manual Credit"){
-                        paymentsList.add(p)
+                if (ticket.paymentList != null){
+                    for (p in ticket.paymentList!!){
+                        if (p.paymentType == "Credit" || p.paymentType == "Manual Credit"){
+                            paymentsList.add(p)
+                            payments.add(p.gratuity)
+                        }
                     }
+                }else{
+                     if (ticket.paymentType == "Credit" || ticket.paymentType == "Manual Credit"){
+                         payments.add(ticket.gratuity)
+                        }
                 }
+
             }
-            return paymentsList.sumOf{it.gratuity}
+            return payments.sumOf{it}
+//            return paymentsList.sumOf{it.gratuity}
         }
 
     }

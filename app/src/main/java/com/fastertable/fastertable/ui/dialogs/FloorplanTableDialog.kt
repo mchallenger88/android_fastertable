@@ -20,23 +20,20 @@ import com.fastertable.fastertable.ui.floorplan_manage.FloorplanManagementFragme
 import android.app.Activity
 import android.content.Context
 import android.view.inputmethod.InputMethodManager
+import com.fastertable.fastertable.databinding.TablePropertyDialogBinding
+import android.icu.lang.UCharacter.GraphemeClusterBreak.T
+
+
+
 
 
 class FloorplanTableDialog: DialogFragment() {
+    private lateinit var binding: TablePropertyDialogBinding
+
     private var table: RestaurantTable? = null
-    private var idView: EditText? = null
-    private var tableTypes: Spinner? = null
-    private var idLocationSpinner: Spinner? = null
-    private var editMinSeats: EditText? = null
-    private var editMaxSeats: EditText? = null
-    private var tableLocked: CheckBox? = null
-    private var btn_cancel: Button? = null
-    private var btn_save: Button? = null
-    private var btn_remove: Button? = null
     private val viewModel: FloorplanManageViewModel by activityViewModels()
     private var parentFragment: FloorplanManagementFragment? = null
     private var parentFragmentBinding: FloorplanManagementFragmentBinding? = null
-    private var rotationValue: EditText? = null
 
     private val tableTypeList = arrayOf(
         TableType.Booth, TableType.Round_Two, TableType.Round_Four, TableType.Round_Eight,
@@ -50,38 +47,50 @@ class FloorplanTableDialog: DialogFragment() {
         IdLocation.BottomLeft, IdLocation.BottomCenter, IdLocation.BottomRight
     );
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.table_property_dialog, container, false)
+        binding = TablePropertyDialogBinding.inflate(inflater)
+
+        val tableTypes = resources.getStringArray(R.array.table_types)
+        val adapter = ArrayAdapter(requireContext(), R.layout.support_simple_spinner_dropdown_item, tableTypes)
+        binding.actTableTypesAuto.setAdapter(adapter)
+
+        val idLocations = resources.getStringArray(R.array.id_locations)
+        val adapter2 = ArrayAdapter(requireContext(), R.layout.support_simple_spinner_dropdown_item, idLocations)
+        binding.actIdLocations.setAdapter(adapter2)
+        return binding.root
+
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        table = arguments?.getParcelable("table");
-        idView = view.findViewById(R.id.id_table_id_value)
-        tableTypes = view.findViewById(R.id.id_type)
-        idLocationSpinner = view.findViewById(R.id.id_location_list);
-        editMinSeats = view.findViewById(R.id.id_table_min_seats_value)
-        editMaxSeats = view.findViewById(R.id.id_table_max_seats_value)
-        btn_cancel = view.findViewById(R.id.btn_cancel)
-        btn_remove = view.findViewById(R.id.btn_remove)
-        btn_save = view.findViewById(R.id.btn_save)
-        rotationValue = view.findViewById(R.id.id_rotation_value);
-        idView?.setText(table!!.id.toString())
-        editMaxSeats?.setText(table!!.minSeats.toString())
-        editMaxSeats?.setText(table!!.maxSeats.toString())
-        rotationValue?.setText(table!!.rotate.toString())
-        btn_cancel?.setOnClickListener{
+
+        table = arguments?.getParcelable("table")
+
+        binding.txtTableIdValue.setText(table!!.id.toString())
+        binding.txtMaxSeatsValue.setText(table!!.maxSeats.toString())
+        binding.txtMinSeatsValue.setText(table!!.minSeats.toString())
+        binding.txtRotateValue.setText(table!!.rotate.toString())
+        binding.txtLeftValue.setText(table!!.left.toString())
+        binding.txtTopValue.setText(table!!.top.toString())
+
+        binding.btnCancel.setOnClickListener{
             dialog?.dismiss()
         }
-        btn_save?.setOnClickListener{
+        binding.btnSave.setOnClickListener{
             hideKeyboardFrom(requireContext(), requireView())
             updateTable()
         }
-        btn_remove?.setOnClickListener{
+        binding.btnRemove.setOnClickListener{
             removeTable()
         }
-        tableTypes?.setSelection(getPosition(TableType.valueOf(table!!.type)))
-        idLocationSpinner?.setSelection(getPositionIdLocation(IdLocation.valueOf(table!!.id_location)))
-        tableTypes?.onItemSelectedListener = object: AdapterView.OnItemSelectedListener {
+
+        binding.btnCopy.setOnClickListener {
+            copyTable()
+        }
+
+        binding.actIdLocations.setText(table!!.id_location, false)
+        binding.actTableTypesAuto.setText(table!!.type, false)
+
+        binding.actTableTypesAuto.onItemSelectedListener = object: AdapterView.OnItemSelectedListener {
             override fun onItemSelected(
                 parent: AdapterView<*>?,
                 view: View?,
@@ -93,7 +102,7 @@ class FloorplanTableDialog: DialogFragment() {
 
             override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
-        idLocationSpinner?.onItemSelectedListener = object: AdapterView.OnItemSelectedListener {
+        binding.actIdLocations.onItemSelectedListener = object: AdapterView.OnItemSelectedListener {
             override fun onItemSelected(
                 parent: AdapterView<*>?,
                 view: View?,
@@ -123,58 +132,107 @@ class FloorplanTableDialog: DialogFragment() {
     }
 
     private fun getPosition( tableType:TableType ): Int {
-        return tableTypeList.indexOf(tableType);
+        return tableTypeList.indexOfFirst { it.name == tableType.name }
     }
 
     private fun getPositionIdLocation(idLocation: IdLocation): Int {
-        return idLocationList.indexOf(idLocation);
+        return idLocationList.indexOfFirst { it.name == idLocation.name }
     }
 
     private fun updateTable() {
-        val id = idView?.text
+        val id = binding.txtTableIdValue.text
         val originId = table?.id
-        val maxSeats = editMaxSeats?.text
-        val minSeats = editMinSeats?.text
-        val checked = tableLocked?.isChecked
-        val rotate = rotationValue?.text
-        if (id.toString().length > 0) {
-            table?.id = id.toString().toInt()
+        val maxSeats = binding.txtMaxSeatsValue.text
+        val minSeats = binding.txtMinSeatsValue.text
+        val rotate = binding.txtRotateValue.text
+        val top = binding.txtTopValue.text
+        val left = binding.txtLeftValue.text
+
+        if (id.toString().isNotEmpty()) {
+            table?.id = id.toString().trim().toInt()
         }
-        if (minSeats.toString().length > 0) {
-            table?.minSeats = minSeats.toString().toInt()
+        if (minSeats.toString().isNotEmpty()) {
+            table?.minSeats = minSeats.toString().trim().toInt()
         } else {
             table?.minSeats = 0
         }
-        if (maxSeats.toString().length > 0) {
-            table?.maxSeats = maxSeats.toString().toInt()
+        if (maxSeats.toString().isNotEmpty()) {
+            table?.maxSeats = maxSeats.toString().trim().toInt()
         } else {
             table?.maxSeats = 0
         }
-        if (rotate.toString().length > 0) {
-            table?.rotate = rotate.toString().toInt()
+        if (rotate.toString().isNotEmpty()) {
+            table?.rotate = rotate.toString().trim().toInt()
         } else {
             table?.rotate = 0;
         }
-        if (checked != null) {
-            table?.locked = checked
-        } else {
-            table?.locked = false
+
+        if (top.toString().isNotEmpty()){
+            table?.top = top.toString().trim().toInt()
+        }else{
+            table?.top = 10
         }
-        Log.d("Floorplan", id.toString() + ", " + originId.toString())
+
+        if (left.toString().isNotEmpty()){
+            table?.left = left.toString().trim().toInt()
+        }else{
+            table?.left = 10
+        }
+
+        if (binding.actIdLocations.text.isNotEmpty()){
+            table?.id_location = binding.actIdLocations.text.toString()
+        }
+
+        if (binding.actTableTypesAuto.text.isNotEmpty()){
+            table?.type = binding.actTableTypesAuto.text.toString().replace(" ", "_")
+        }
+
 
         if (originId != null) {
             table?.let { viewModel.updateTable(it, originId.toInt()) }
         } else {
             table?.let { viewModel.updateTable(it) }
         }
-        parentFragmentBinding?.let { parentFragment?.loadTables(it) }
-        dialog?.dismiss()
+
+        viewModel.setReloadTables(true)
+        dismiss()
     }
 
     private fun removeTable() {
         table?.let { viewModel.removeTable(it) };
-        parentFragmentBinding?.let { parentFragment?.loadTables(it) }
-        dialog?.dismiss()
+        viewModel.setReloadTables(true)
+        dismiss()
+    }
+
+    private fun copyTable(){
+        val newTable = table?.clone()
+        newTable?.id = getNextId(newTable!!)
+        newTable.left = 10
+        newTable.top = 10
+        newTable.let { viewModel.addTable(it) }
+        viewModel.setReloadTables(true)
+        dismiss()
+    }
+
+    private fun getNextId(table: RestaurantTable): Int {
+        val ts = viewModel.activeFloorplan.value?.sortedTableList()
+        val idArray = mutableListOf<Int>()
+        if (ts != null) {
+            for (t in ts){
+                idArray.add(t.id)
+            }
+        }
+        var id = table.id.plus(1)
+        var b = true
+
+        while (b){
+            b = idArray.contains(id)
+            if (b){
+                id++
+            }
+        }
+
+        return id
     }
 
     private fun hideKeyboardFrom(context: Context, view: View) {
@@ -182,5 +240,6 @@ class FloorplanTableDialog: DialogFragment() {
             context.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(view.windowToken, 0)
     }
+
 }
 

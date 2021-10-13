@@ -35,7 +35,7 @@
 
         <item
             android:id="@+id/floorplanManagementFragment"
-            android:icon="@drawable/ic_outline_access_time_24"
+            android:icon="@drawable/ic_outline_view_quilt_24"
             android:title="@string/floorplan_management" />
     </group>
 </menu>

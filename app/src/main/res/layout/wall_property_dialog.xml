@@ -8,134 +8,183 @@
             type="com.fastertable.fastertable.data.models.RestaurantTable" />
     </data>
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/dialog_wall_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:padding="30dp"
-        android:paddingTop="50dp">
+        android:layout_height="match_parent">
 
-        <LinearLayout
-            android:layout_width="match_parent"
+        <TextView
+            android:id="@+id/txt_table_dialog_title"
+            style="@style/alert_title"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:padding="15dp">
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="20dp"
+            android:text="@string/set_wall_properties"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-            <TextView
-                android:id="@+id/id_table_type"
-                android:layout_width="120dp"
-                android:layout_height="wrap_content"
-                android:layout_marginRight="10dp"
-                android:fontFamily="@font/open_sans_semibold"
-                android:gravity="right"
-                android:scrollbarSize="14dp"
-                android:text="Direction"
-                android:textColor="@color/black"
-                android:textSize="16dp" />
-
-            <Spinner
-                android:id="@+id/id_direction"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:entries="@array/id_directions"
-                android:paddingTop="10dp"
-                android:paddingBottom="10dp" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/til_wall_direction_spinner"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="15dp">
+            android:hint="@string/wall_direction"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="15dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/txt_table_dialog_title">
 
-            <TextView
-                android:id="@+id/id_label_table_min_seats"
-                android:layout_width="120dp"
+            <AutoCompleteTextView
+                android:id="@+id/act_wall_direction"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="10dp"
-                android:fontFamily="@font/open_sans_semibold"
-                android:gravity="right"
-                android:scrollbarSize="14dp"
-                android:text="Width: "
-                android:textColor="@color/black"
-                android:textSize="16dp" />
+                android:hint="@string/wall_direction"
+                android:inputType="none"
+                />
+        </com.google.android.material.textfield.TextInputLayout>
 
-            <EditText
-                android:id="@+id/id_width_value"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:ems="10"
-                android:inputType="textPersonName"
-                android:paddingTop="10dp"
-                android:paddingBottom="10dp" />
-
-            <TextView
-                android:id="@+id/id_label_table_max_seats"
-                android:layout_width="120dp"
-                android:layout_height="wrap_content"
-                android:layout_marginRight="10dp"
-                android:layout_weight="1"
-                android:fontFamily="@font/open_sans_semibold"
-                android:gravity="right"
-                android:text="Thickness"
-                android:textColor="@color/black"
-                android:textSize="16dp" />
-
-            <EditText
-                android:id="@+id/id_thickness_value"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:ems="10"
-                android:inputType="textPersonName"
-                android:paddingTop="10dp"
-                android:paddingBottom="10dp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/til_wall_left_value"
+            style="@style/CreditCardInputLayoutBoxes"
+            android:layout_width="140dp"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="15dp">
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="15dp"
+            android:hint="@string/left_position"
+            app:errorEnabled="true"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/til_wall_direction_spinner">
 
-            <Space
-                android:layout_width="wrap_content"
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/txt_wall_left_value"
+                style="@style/InputEditTexts"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1" />
+                android:inputType="textCapWords"
+                android:textSize="@dimen/d21" />
 
-            <Button
-                android:id="@+id/btn_save"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="5dp"
-                android:paddingTop="15dp"
-                android:paddingBottom="15dp"
-                android:text="Save"
-                app:icon="@drawable/ic_check" />
+        </com.google.android.material.textfield.TextInputLayout>
 
-            <Button
-                android:id="@+id/btn_remove"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="5dp"
-                android:paddingTop="15dp"
-                android:paddingBottom="15dp"
-                android:text="Remove"
-                app:icon="@drawable/ic_btn_remove" />
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/til_wall_top_value"
+            style="@style/CreditCardInputLayoutBoxes"
+            android:layout_width="140dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="15dp"
+            android:hint="@string/top_position"
+            app:errorEnabled="true"
+            app:layout_constraintStart_toEndOf="@+id/til_wall_left_value"
+            app:layout_constraintTop_toBottomOf="@+id/til_wall_direction_spinner">
 
-            <Button
-                android:id="@+id/btn_cancel"
-                android:layout_width="wrap_content"
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/txt_wall_top_value"
+                style="@style/InputEditTexts"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="5dp"
-                android:paddingTop="15dp"
-                android:paddingBottom="15dp"
-                android:text="Cancel"
-                app:icon="@drawable/ic_times" />
-        </LinearLayout>
-    </LinearLayout>
+                android:inputType="textCapWords"
+                android:textSize="@dimen/d21" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/til_wall_width_value"
+            style="@style/CreditCardInputLayoutBoxes"
+            android:layout_width="140dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="15dp"
+            android:hint="@string/wall_width"
+            app:errorEnabled="true"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/til_wall_top_value">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/txt_wall_width_value"
+                style="@style/InputEditTexts"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textCapWords"
+                android:textSize="@dimen/d21" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/til_wall_thickness_value"
+            style="@style/CreditCardInputLayoutBoxes"
+            android:layout_width="140dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="15dp"
+            android:hint="@string/wall_thickness"
+            app:errorEnabled="true"
+            app:layout_constraintStart_toEndOf="@+id/til_wall_width_value"
+            app:layout_constraintTop_toBottomOf="@+id/til_wall_top_value">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/txt_wall_thickness_value"
+                style="@style/InputEditTexts"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textCapWords"
+                android:textSize="@dimen/d21" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+
+        <Button
+            android:id="@+id/btn_wall_save"
+            style="@style/alert_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginBottom="20dp"
+            android:text="@string/save"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/btn_wall_remove"
+            app:layout_constraintTop_toBottomOf="@+id/til_wall_thickness_value" />
+
+        <Button
+            android:id="@+id/btn_wall_remove"
+            style="@style/alert_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginBottom="20dp"
+            android:text="@string/remove"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/btn_wall_cancel"
+            app:layout_constraintTop_toBottomOf="@+id/til_wall_thickness_value" />
+
+        <Button
+            android:id="@+id/btn_wall_cancel"
+            style="@style/alert_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginBottom="20dp"
+            android:text="@string/cancel"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/til_wall_thickness_value" />
+
+        <Button
+            android:id="@+id/btn_wall_copy"
+            style="@style/alert_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginBottom="20dp"
+            android:text="@string/copy"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/txt_table_dialog_title" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
 </layout>

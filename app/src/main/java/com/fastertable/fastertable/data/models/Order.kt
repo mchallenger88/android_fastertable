@@ -244,7 +244,8 @@ data class Order(
                 paymentTotal = 0.00,
                 paymentList = null,
                 partialPayment = false,
-                uiActive = true
+                uiActive = true,
+                paymentType = ""
             )
         }else{
             return Ticket(
@@ -260,7 +261,8 @@ data class Order(
                 paymentTotal = 0.00,
                 paymentList = null,
                 partialPayment = false,
-                uiActive = true
+                uiActive = true,
+                paymentType = ""
             )
         }
     }

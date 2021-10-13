@@ -340,7 +340,9 @@ data class Ticket(
     var paymentTotal: Double = 0.00,
     var paymentList: MutableList<TicketPayment>?,
     var partialPayment: Boolean,
-    var uiActive: Boolean = false
+    var uiActive: Boolean = false,
+    //To be deprecated
+    var paymentType: String
 
     ): Parcelable{
         fun getTicketSubTotal(): Double{

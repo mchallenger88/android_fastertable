@@ -91,6 +91,7 @@ class LoginActivity : BaseActivity(), DialogListener {
 
     }
 
+    //TODO: Add all departments and directions
     override fun returnValue(value: String) {
         val employee = userViewModel.employee.value
         if (employee !=  null){

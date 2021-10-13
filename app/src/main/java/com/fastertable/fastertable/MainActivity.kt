@@ -82,14 +82,16 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
     private val takeoutViewModel: TakeoutViewModel by viewModels()
     private val datePickerViewModel: DatePickerViewModel by viewModels()
     private val transferOrderViewModel: TransferOrderViewModel by viewModels()
-    private val floorplanManage: FloorplanManageViewModel by viewModels()
-    private var progressDialog: ProgressDialog? = null;
+    private val floorplanManageViewModel: FloorplanManageViewModel by viewModels()
+    private var progressDialog: ProgressDialog? = null
+    private lateinit var user: OpsAuth
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         settings = loginRepository.getSettings()!!
+        user = loginRepository.getOpsUser()!!
         setSupportActionBar(toolbar)
 
         val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
@@ -102,6 +104,11 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
         exitButton.setOnClickListener{
             exitUser()
         }
+
+        val floorplanMenu = navView.menu.findItem(R.id.floorplanManagementFragment)
+        val permission = Permissions.viewOrders.toString()
+        val manager = user.claims.find { it.permission.name == permission && it.permission.value }
+        floorplanMenu.isVisible = user.claims.contains(manager)
 
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
@@ -123,6 +130,7 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
         giftCardObservables()
         datePickerObservables()
         transferOrderObservables(navController)
+        floorplanManageObservables()
 
         hideSystemUI()
     }
@@ -365,6 +373,17 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
 
     }
 
+    private fun floorplanManageObservables(){
+        floorplanManageViewModel.requestDelete.observe(this, {
+            if (it){
+                continueCancelViewModel.setTitle("Delete Floorplan Request")
+                continueCancelViewModel.setMessage("Are you sure you want to delete this floorplan? If yes, click Continue.")
+                ContinueCancelFragment().show(supportFragmentManager, ContinueCancelFragment.TAG)
+            }
+
+        })
+    }
+
     private fun datePickerObservables(){
         datePickerViewModel.source.observe( this, {
             if (it.isNotEmpty()){
@@ -569,6 +588,9 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
                 //Reopen Checkout then Send to Kitchen
                 checkoutViewModel.reopenCheckout()
                 orderViewModel.reOpenCheckoutSendOrder()
+            }
+            "Delete Floorplan Request" -> {
+                floorplanManageViewModel.deleteFloorplan()
             }
         }
     }

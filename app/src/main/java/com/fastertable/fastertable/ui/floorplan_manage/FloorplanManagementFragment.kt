@@ -1,18 +1,15 @@
 package com.fastertable.fastertable.ui.floorplan_manage
 
 import android.annotation.SuppressLint
-import android.app.AlertDialog
 import android.content.ClipData
 import android.content.ClipDescription
 import android.content.Context
-import android.content.DialogInterface
 import android.graphics.Color
 import android.graphics.Point
 import android.os.Bundle
-import android.util.Log
+import android.os.Handler
 import android.view.*
 import android.widget.*
-import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.ViewCompat
 import androidx.fragment.app.Fragment
@@ -31,7 +28,6 @@ import com.fastertable.fastertable.ui.dialogs.FloorplanWallDialog
 import com.fastertable.fastertable.ui.floorplan.FloorWall
 import com.fastertable.fastertable.ui.floorplan.FloorplanTable
 import com.fastertable.fastertable.ui.floorplan.FloorplanTableListener
-import com.fastertable.fastertable.utils.DoubleClickListener
 
 
 enum class ControllerType {
@@ -55,7 +51,7 @@ class FloorplanManagementFragment: Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FloorplanManagementFragmentBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = viewLifecycleOwner
         binding.viewModel = viewModel
@@ -105,7 +101,7 @@ class FloorplanManagementFragment: Fragment() {
         }
 
         binding.btnDeleteFloorplan.setOnClickListener {
-            viewModel.deleteFloorplan()
+            viewModel.startDeleteFloorplan()
         }
 
     }
@@ -113,7 +109,7 @@ class FloorplanManagementFragment: Fragment() {
     private fun loadFloorplans(binding: FloorplanManagementFragmentBinding){
         viewModel.getFloorplans()
 
-        viewModel.floorplans.observe(viewLifecycleOwner, { it ->
+        viewModel.floorplans.observe(viewLifecycleOwner, {
             if (it != null){
                 loadTables(binding)
                 initFloorplanSpinner()
@@ -122,9 +118,8 @@ class FloorplanManagementFragment: Fragment() {
     }
 
     private fun createObservers(){
-        viewModel.saveReturn.observe(viewLifecycleOwner, { it ->
+        viewModel.saveReturn.observe(viewLifecycleOwner, {
             when (it){
-//                0 -> {(activity as MainActivity).alertMessage("The Floorplan was not save.")}
                 1 -> { (activity as MainActivity).alertMessage("Saved the Floorplan Successfully!")}
                 2 -> {(activity as MainActivity).alertMessage("Updated the Floorplan Successfully!")}
                 else -> {(activity as MainActivity).alertMessage("The Floorplan was not saved.")}
@@ -143,6 +138,15 @@ class FloorplanManagementFragment: Fragment() {
                     refreshSpinnerList()
                     (activity as MainActivity).alertMessage("The Floorplan was deleted!")}
                 2 -> {(activity as MainActivity).alertMessage("An error occurred when deleting the Floorplan!")}
+            }
+        })
+
+        viewModel.reloadTables.observe(viewLifecycleOwner, {
+            if (it){
+                selectedTable=null
+                selectedWall=null
+                loadTables(binding)
+                viewModel.setReloadTables(false)
             }
         })
 
@@ -267,6 +271,9 @@ class FloorplanManagementFragment: Fragment() {
     @SuppressLint("ClickableViewAccessibility")
     fun loadTables(binding: FloorplanManagementFragmentBinding){
         binding.layoutFloorplan.removeAllViews()
+        val handler = Handler()
+        var counterClicks = 0
+        var isBusy = false
         if (viewModel.activeFloorplan.value !== null) {
             viewModel.activeFloorplan.value!!.tables.forEach { table ->
                 val btnTable = FloorplanTable(activity?.applicationContext!!)
@@ -277,10 +284,6 @@ class FloorplanManagementFragment: Fragment() {
                         btnTable.setTableColorFilter(Color.GREEN)
                     }
                 }
-                btnTable.setOnClickListener() {
-                    tableListener.onClick(table)
-                }
-
 
                 val currentLayout = RelativeLayout.LayoutParams(
                     RelativeLayout.LayoutParams.WRAP_CONTENT,
@@ -291,40 +294,62 @@ class FloorplanManagementFragment: Fragment() {
                 currentLayout.topMargin = table.top
                 btnTable.layoutParams = currentLayout
                 binding.layoutFloorplan.addView(btnTable)
-
                 btnTable.getTableImage().setOnTouchListener { v, event ->
-                    if (event != null) {
-                        if (event.action == MotionEvent.ACTION_DOWN) {
-                            val screenX = event.x
-                            val screenY = event.y
-                            v?.left?.let { it1 -> screenX.minus(it1) }
-                            v?.top?.let { it1 -> screenY.minus(it1) }
-                            viewX = screenX
-                            viewY = screenY
-                        }
+                    if (event.action == MotionEvent.ACTION_DOWN) {
+                        val screenX = event.x
+                        val screenY = event.y
+                        v?.left?.let { it1 -> screenX.minus(it1) }
+                        v?.top?.let { it1 -> screenY.minus(it1) }
+                        viewX = screenX
+                        viewY = screenY
                     }
-                    val item = ClipData.Item("move_table")
-                    btnTable.setTableColorFilter(Color.GREEN)
-                    v.invalidate()
 
-                    selectedTable = table
-                    selectedWall = null
-                    val dragData = ClipData(
-                        v?.tag as? CharSequence,
-                        arrayOf(ClipDescription.MIMETYPE_TEXT_PLAIN),
-                        item
-                    )
-                    dragData.addItem(ClipData.Item(table.id.toString()))
+                    if (!isBusy) {
+                        isBusy = true
+                        if (event.action == MotionEvent.ACTION_DOWN) {
+                            counterClicks++
+                        }
+                        handler.postDelayed({
+                            if (counterClicks > 1) {
+                                selectedTable = table
+                                selectedWall = null
+                                positionController(ControllerType.Property)
+                                loadTables(binding)
+                            } else if (counterClicks == 1) {
+                                if (event.action == MotionEvent.ACTION_UP) {
+                                    selectedTable = table
+                                    selectedWall = null
+                                    loadTables(binding)
+                                } else {
+                                    val item = ClipData.Item("move_table")
+                                    selectedTable = table
+                                    selectedWall = null
+                                    val dragData = ClipData(
+                                        v?.tag as? CharSequence,
+                                        arrayOf(ClipDescription.MIMETYPE_TEXT_PLAIN),
+                                        item
+                                    )
+                                    dragData.addItem(ClipData.Item(table.id.toString()))
 
-                    val shadowBuilder = MyDragShadowBuilder(btnTable.getTableImage(), viewX.toInt(), viewY.toInt())
+                                    val shadowBuilder = MyDragShadowBuilder(
+                                        btnTable.getTableImage(),
+                                        viewX.toInt(),
+                                        viewY.toInt()
+                                    )
 
-                    v?.startDragAndDrop(
-                        dragData,
-                        shadowBuilder,
-                        btnTable.getTableImage(),
-                        0
-                    )
-                    false
+                                    v?.startDragAndDrop(
+                                        dragData,
+                                        shadowBuilder,
+                                        btnTable.getTableImage(),
+                                        0
+                                    )
+                                }
+                            }
+                            counterClicks = 0
+                        }, 200L)
+                        isBusy = false
+                    }
+                    true
                 }
             }
             viewModel.activeFloorplan.value!!.walls.forEach { wall ->
@@ -345,6 +370,7 @@ class FloorplanManagementFragment: Fragment() {
                 currentLayout.topMargin = wall.top
                 floorWall.layoutParams = currentLayout
                 binding.layoutFloorplan.addView(floorWall)
+
                 floorWall.getWallImage().setOnTouchListener { v, event ->
                     if (event != null) {
                         if (event.action == MotionEvent.ACTION_DOWN) {
@@ -356,34 +382,59 @@ class FloorplanManagementFragment: Fragment() {
                             viewY = screenY
                         }
                     }
-                    val item = ClipData.Item("move_wall")
-                    selectedTable = null
-                    v.setBackgroundColor(Color.GREEN)
-                    v.invalidate()
-                    selectedWall = wall
-                    val dragData = ClipData(
-                        v?.tag as? CharSequence,
-                        arrayOf(ClipDescription.MIMETYPE_TEXT_PLAIN),
-                        item
-                    )
-                    dragData.addItem(ClipData.Item(wall.id.toString()))
-                    dragData.addItem(ClipData.Item(wall.direction.toString()))
-                    dragData.addItem(ClipData.Item(wall.width.toString()))
-                    val shadowBuilder = MyDragShadowBuilder(floorWall.getWallImage(), viewX.toInt(), viewY.toInt())
+                    if (!isBusy) {
+                        isBusy = true
+                        if (event.action == MotionEvent.ACTION_DOWN) {
+                            counterClicks++
+                        }
 
-                    v?.startDragAndDrop(
-                        dragData,
-                        shadowBuilder,
-                        null,
-                        0
-                    )
+                        handler.postDelayed({
+                            if (counterClicks > 1) {
+                                selectedTable = null
+                                selectedWall = wall
+                                positionController(ControllerType.Property)
+                                loadTables(binding)
+                            } else if (counterClicks == 1) {
+                                if (event.action == MotionEvent.ACTION_UP) {
+                                    selectedTable = null
+                                    selectedWall = wall
+                                    loadTables(binding)
+                                } else {
+                                    val item = ClipData.Item("move_wall")
+                                    selectedTable = null
+                                    v.setBackgroundColor(Color.GREEN)
+                                    v.invalidate()
+                                    selectedWall = wall
+                                    val dragData = ClipData(
+                                        v?.tag as? CharSequence,
+                                        arrayOf(ClipDescription.MIMETYPE_TEXT_PLAIN),
+                                        item
+                                    )
+                                    dragData.addItem(ClipData.Item(wall.id.toString()))
+                                    dragData.addItem(ClipData.Item(wall.direction.toString()))
+                                    dragData.addItem(ClipData.Item(wall.width.toString()))
+                                    val shadowBuilder = MyDragShadowBuilder(
+                                        floorWall.getWallImage(),
+                                        viewX.toInt(),
+                                        viewY.toInt()
+                                    )
+
+                                    v?.startDragAndDrop(
+                                        dragData,
+                                        shadowBuilder,
+                                        null,
+                                        0
+                                    )
+                                }
+                            }
+                            counterClicks = 0
+                        }, 200L)
+                        isBusy = false
+                    }
                     true
                 }
             }
-
-        }
-
-    }
+        }}
 
     private fun loadSidebar(binding: FloorplanManagementFragmentBinding) {
 
@@ -482,7 +533,7 @@ class FloorplanManagementFragment: Fragment() {
     private fun refreshSpinnerList(){
         val floorPlanNames = arrayListOf<String>()
         viewModel.floorplans.value?.forEach {
-            if (it.name.length > 0) {
+            if (it.name.isNotEmpty()) {
                 floorPlanNames.add(it.name)
             } else {
                 floorPlanNames.add("Untitled -> " + it.id)
@@ -501,10 +552,10 @@ class FloorplanManagementFragment: Fragment() {
 
     private fun initFloorplanSpinner() {
         val floorPlanNames = arrayListOf<String>()
-        var isDisplayModal = true
+//        var isDisplayModal = true
 
         viewModel.floorplans.value?.forEach {
-            if (it.name.length > 0) {
+            if (it.name.isNotEmpty()) {
                 floorPlanNames.add(it.name)
             } else {
                 floorPlanNames.add("Untitled -> " + it.id)
@@ -522,8 +573,7 @@ class FloorplanManagementFragment: Fragment() {
         floorplanSpinner!!.adapter = floorPlansAdapter
 
         if (viewModel.getCurrentIndex() > -1) {
-            Log.d("Floorplan Position_1", viewModel.getCurrentIndex().toString())
-            floorplanSpinner!!.setSelection(viewModel.getCurrentIndex());
+            floorplanSpinner!!.setSelection(viewModel.getCurrentIndex())
         }
         floorplanSpinner!!.onItemSelectedListener = object: AdapterView.OnItemSelectedListener {
             override fun onItemSelected(
