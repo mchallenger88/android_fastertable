@@ -59,10 +59,9 @@ class HomeViewModel @Inject constructor (private val loginRepository: LoginRepos
         viewModelScope.launch {
             getOrders()
         }
-
     }
 
-    private fun getOrders(){
+    fun getOrders(){
         viewModelScope.launch {
             _orders.postValue(orderRepository.getOrdersFromFile())
             _viewLoaded.postValue(true)

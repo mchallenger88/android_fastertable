@@ -8,7 +8,6 @@ import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import com.fastertable.fastertable.databinding.BottomSheetOrderMoreBinding
 import com.fastertable.fastertable.ui.order.OrderViewModel
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
 class OrderMoreDialog: BaseDialog() {
     private lateinit var dialogListener: DialogListener

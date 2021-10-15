@@ -92,10 +92,6 @@ class GiftCardViewModel @Inject constructor (
     val swipeResponse: LiveData<MutableList<String>>
         get() = _swipeResponse
 
-    init {
-
-    }
-
     fun addGiftAmount(amount: Double) {
         if (_activeOrder.value == null) {
             createGiftOrder(amount)
@@ -280,7 +276,7 @@ class GiftCardViewModel @Inject constructor (
             }
 
             if (cayanTransaction is CayanTransaction){
-                if (cayanTransaction.Status.toUpperCase() == "APPROVED"){
+                if (cayanTransaction.Status.uppercase(Locale.getDefault()) == "APPROVED"){
                     processApproval(activePayment.value!!.activeTicket()!!, cayanTransaction)
                 }else{
                     processDecline(cayanTransaction)
@@ -359,8 +355,8 @@ class GiftCardViewModel @Inject constructor (
 
     @SuppressLint("DefaultLocale")
     fun processDecline(cayanTransaction: CayanTransaction){
-        val status = cayanTransaction.Status.toUpperCase()
-        val error = cayanTransaction.ErrorMessage.toLowerCase()
+        val status = cayanTransaction.Status.uppercase(Locale.getDefault())
+        val error = cayanTransaction.ErrorMessage.lowercase(Locale.getDefault())
 
         if (status == "DECLINED"){
             if (error.contains("insufficient funds")){
@@ -428,7 +424,7 @@ class GiftCardViewModel @Inject constructor (
                 if (stageResponse is StageResponse){
                     val transportURL: String = "http://" + terminal.ccEquipment.ipAddress + ":8080/v2/pos?TransportKey=" + stageResponse.transportKey + "&Format=JSON"
                     val response: CayanTransaction = initiateCreditTransaction.initiateTransaction(transportURL)
-                    if (response.Status.toUpperCase(Locale.ROOT) == "APPROVED"){
+                    if (response.Status.uppercase(Locale.ROOT) == "APPROVED"){
                         _balanceResponse.value = response.AdditionalParameters?.Loyalty?.Balances?.AmountBalance.toString()
                     }
                 }
@@ -444,7 +440,7 @@ class GiftCardViewModel @Inject constructor (
 //                _activePayment.value?.tickets?.get(0)?.stageResponse?.add(stageResponse)
                 val transportURL: String = "http://" + terminal.ccEquipment.ipAddress + ":8080/v2/pos?TransportKey=" + stageResponse.transportKey + "&Format=JSON"
                 val response: CayanTransaction = initiateCreditTransaction.initiateTransaction(transportURL)
-                if (response.Status.toUpperCase(Locale.ROOT) == "APPROVED"){
+                if (response.Status.uppercase(Locale.ROOT) == "APPROVED"){
                     clearActiveOrderPayment()
                     _giftScreen.postValue(ShowGift.ADD_CASH)
                     val list = mutableListOf<String>()
@@ -648,5 +644,5 @@ class GiftCardViewModel @Inject constructor (
 
     }
 
-    fun randomUUID() = UUID.randomUUID().toString()
+    private fun randomUUID() = UUID.randomUUID().toString()
 }

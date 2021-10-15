@@ -5,21 +5,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.ViewCompat
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ConcatAdapter
-import com.fastertable.fastertable.R
 import com.fastertable.fastertable.adapters.TerminalAdapter
 import com.fastertable.fastertable.adapters.TerminalHeaderAdapter
 import com.fastertable.fastertable.common.base.BaseFragment
 import com.fastertable.fastertable.data.models.Terminal
-import com.fastertable.fastertable.data.repository.LoginRepository
 import com.fastertable.fastertable.databinding.TerminalSelectFragmentBinding
-import com.google.android.material.chip.Chip
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -30,7 +22,7 @@ class TerminalSelectFragment : BaseFragment()  {
     override fun onCreateView(
             inflater: LayoutInflater,
             container: ViewGroup?,
-            savedInstanceState: Bundle?): View? {
+            savedInstanceState: Bundle?): View {
         val binding = TerminalSelectFragmentBinding.inflate(inflater)
 
         binding.lifecycleOwner = viewLifecycleOwner
@@ -44,7 +36,7 @@ class TerminalSelectFragment : BaseFragment()  {
         val concatAdapter = ConcatAdapter(termHeadAdapter, adapter)
         binding.terminalRecycler.adapter = concatAdapter
 
-        viewModel.settings.observe(viewLifecycleOwner, Observer { it ->
+        viewModel.settings.observe(viewLifecycleOwner, {
 //            it?.terminals?.forEach { terminal ->
 //                val restChip = Chip(activity)
 //                restChip.id = ViewCompat.generateViewId();

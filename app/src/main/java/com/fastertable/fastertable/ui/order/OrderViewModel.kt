@@ -8,8 +8,11 @@ import com.fastertable.fastertable.common.base.BaseViewModel
 import com.fastertable.fastertable.data.models.*
 import com.fastertable.fastertable.data.repository.*
 import com.fastertable.fastertable.services.KitchenPrintingService
+import com.fastertable.fastertable.utils.GlobalUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 enum class MenusNavigation{
@@ -31,6 +34,7 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
                                           private val printerService: KitchenPrintingService,
                                           private val getPayment: GetPayment,
                                           private val saveOrder: SaveOrder,
+                                          private val getOrders: GetOrders,
                                           private val updateOrder: UpdateOrder) : BaseViewModel() {
 
     //region Model Variables
@@ -678,17 +682,18 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
         }
     }
 
-    suspend fun saveOrderToCloud(){
+    private suspend fun saveOrderToCloud(){
         var o: Order? = null
         val job = viewModelScope.launch {
             if (_activeOrder.value?.orderNumber!! == 99){
                 o = saveOrder.saveOrder(_activeOrder.value!!)
                 val list = o!!.getKitchenTickets()
                 printerService.printKitchenTickets(list, settings)
-
+                getOrders()
             }else{
                 val list = _activeOrder.value!!.getKitchenTickets()
                 printerService.printKitchenTickets(list, settings)
+                getOrders()
             }
         }
 
@@ -712,6 +717,14 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
             _activeOrder.postValue(o)
         }
 
+    }
+
+    private suspend fun getOrders(){
+        withContext(Dispatchers.IO){
+            val midnight = GlobalUtils().getMidnight()
+            val rid = loginRepository.getStringSharedPreferences("rid")
+            getOrders.getOrders(midnight, rid!!)
+        }
     }
 
     fun navToPayment(b: Boolean){

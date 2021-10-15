@@ -7,9 +7,8 @@ import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import com.fastertable.fastertable.databinding.BottomSheetErrorDialogBinding
 import com.fastertable.fastertable.ui.error.ErrorViewModel
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
-class ErrorAlertBottomSheet(): BaseDialog() {
+class ErrorAlertBottomSheet: BaseDialog() {
     private val viewModel: ErrorViewModel by activityViewModels()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {

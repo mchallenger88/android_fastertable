@@ -12,7 +12,6 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import com.fastertable.fastertable.R
 import com.fastertable.fastertable.data.models.FloorplanWall
-import com.fastertable.fastertable.data.models.TableType
 import com.fastertable.fastertable.data.models.WallDirection
 import com.fastertable.fastertable.databinding.FloorplanManagementFragmentBinding
 import com.fastertable.fastertable.databinding.WallPropertyDialogBinding
@@ -27,11 +26,7 @@ class FloorplanWallDialog: DialogFragment() {
     private var parentFragment: FloorplanManagementFragment? = null
     private var parentFragmentBinding: FloorplanManagementFragmentBinding? = null
 
-    private val directions = arrayOf(
-        WallDirection.Horizontal, WallDirection.Vertical
-    )
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = WallPropertyDialogBinding.inflate(inflater)
 
         val wallDirections = resources.getStringArray(R.array.id_directions)
@@ -58,9 +53,9 @@ class FloorplanWallDialog: DialogFragment() {
                 id: Long
             ) {
                 if (position == 0) {
-                    wall?.direction = WallDirection.Horizontal.name;
+                    wall?.direction = WallDirection.Horizontal.name
                 } else {
-                    wall?.direction = WallDirection.Vertical.name;
+                    wall?.direction = WallDirection.Vertical.name
                 }
             }
 
@@ -143,8 +138,8 @@ class FloorplanWallDialog: DialogFragment() {
     }
 
     fun setParentFragment(fragment: FloorplanManagementFragment, binding: FloorplanManagementFragmentBinding) {
-        parentFragment = fragment;
-        parentFragmentBinding = binding;
+        parentFragment = fragment
+        parentFragmentBinding = binding
     }
 
     override fun onStart() {

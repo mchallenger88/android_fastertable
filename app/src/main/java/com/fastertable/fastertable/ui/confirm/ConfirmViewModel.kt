@@ -64,7 +64,7 @@ class ConfirmViewModel @Inject constructor (
                 )
             }
             var list = getConfirmList.getList(request)
-            list = list.filter { it -> it.orders?.size!! > 0 }
+            list = list.filter { it.orders?.size!! > 0 }
             _confirmList.postValue(list)
             _progressVisibility.value = false
         }
@@ -77,7 +77,7 @@ class ConfirmViewModel @Inject constructor (
         getConfirmList()
     }
 
-    fun confirm(ce: ConfirmEmployee){
+    fun confirm(confirmEmployee: ConfirmEmployee) {
         viewModelScope.launch {
             val user = loginRepository.getOpsUser()
             if (user != null) {

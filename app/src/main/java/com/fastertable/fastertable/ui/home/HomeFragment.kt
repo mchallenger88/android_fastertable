@@ -1,27 +1,16 @@
 package com.fastertable.fastertable.ui.home
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.fastertable.fastertable.MainActivity
-import com.fastertable.fastertable.OrderActivity
 import com.fastertable.fastertable.R
-import com.fastertable.fastertable.api.CompanyLoginUseCase
 import com.fastertable.fastertable.common.base.BaseFragment
 import com.fastertable.fastertable.databinding.HomeFragmentBinding
-import com.fastertable.fastertable.data.repository.LoginRepository
-import com.fastertable.fastertable.data.repository.OrderRepository
 import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class HomeFragment : BaseFragment() {
@@ -32,17 +21,17 @@ class HomeFragment : BaseFragment() {
             inflater: LayoutInflater,
             container: ViewGroup?,
             savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         val binding = HomeFragmentBinding.inflate(inflater)
 
-        val navController = findNavController()
+//        val navController = findNavController()
 
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
 
         setChipDefaults(binding)
 
-        viewModel.showProgressBar.observe(viewLifecycleOwner, Observer { it ->
+        viewModel.showProgressBar.observe(viewLifecycleOwner, {
             if (it){
                 binding.progressBarHome.visibility = View.VISIBLE
             }else{
@@ -50,14 +39,14 @@ class HomeFragment : BaseFragment() {
             }
         })
 
-        viewModel.viewLoaded.observe(viewLifecycleOwner, Observer { it ->
+        viewModel.viewLoaded.observe(viewLifecycleOwner, {
             if (it){
                 viewModel.filterOrders("Open")
             }
         })
 
 
-        viewModel.orderFilter.observe(viewLifecycleOwner, Observer {  it ->
+        viewModel.orderFilter.observe(viewLifecycleOwner, {
 
             if (it == "All"){
                 binding.chipAllOrders.setChipBackgroundColorResource(R.color.secondaryColor)
@@ -83,7 +72,7 @@ class HomeFragment : BaseFragment() {
             orderId ->  viewModel.onOrderClicked(orderId)
         })
 
-        viewModel.filteredOrders.observe(viewLifecycleOwner, Observer {
+        viewModel.filteredOrders.observe(viewLifecycleOwner, {
             it?.let{
                 orderAdapter.submitList(it)
             }

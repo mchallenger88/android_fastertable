@@ -112,7 +112,7 @@ class MenusViewModel @Inject constructor(private val menusRepository: MenusRepos
     }
 
     fun decreaseItemQuantity(){
-        println(itemQuantity?.value)
+        println(itemQuantity.value)
         if (itemQuantity.value!! > 1){
             _itemQuantity.value = _itemQuantity.value?.minus(1)
         }

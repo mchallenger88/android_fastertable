@@ -645,7 +645,7 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
         _error.value = false
     }
 
-    fun setError(title: String, message: String){
+    private fun setError(title: String, message: String){
         _errorTitle.value = title
         _errorMessage.value = message
         _error.value = true

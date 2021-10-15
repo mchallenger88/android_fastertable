@@ -1,26 +1,16 @@
 package com.fastertable.fastertable.ui.floorplan
 
-import android.app.ActionBar
 import android.content.Context
-import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.RelativeLayout
-import androidx.constraintlayout.helper.widget.Flow
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.ViewCompat
 import androidx.fragment.app.activityViewModels
 import com.fastertable.fastertable.common.base.BaseFragment
-import androidx.fragment.app.activityViewModels
-import com.fastertable.fastertable.adapters.FloorplanAdapter
-import com.fastertable.fastertable.adapters.ModifierAdapter
-import com.fastertable.fastertable.data.models.IdLocation
-import com.fastertable.fastertable.data.models.RestaurantTable
-import com.fastertable.fastertable.data.models.TableType
 import com.fastertable.fastertable.databinding.FloorplanFragmentBinding
-import com.fastertable.fastertable.ui.dialogs.DialogListener
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -74,16 +64,12 @@ class FloorplanFragment: BaseFragment() {
                         ConstraintLayout.LayoutParams.MATCH_PARENT
                     )
 
-                    currentLayout.marginStart = wall.left ?: 0
-                    currentLayout.topMargin = wall.top ?: 0
+                    currentLayout.marginStart = wall.left
+                    currentLayout.topMargin = wall.top
                     floorWall.layoutParams = currentLayout
                     binding.layoutFloorplan.addView(floorWall)
                 }
         }})
-    }
-
-    fun tableClick(table: RestaurantTable){
-        println(table)
     }
 
     override fun onAttach(context: Context) {

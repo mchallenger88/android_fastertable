@@ -28,11 +28,11 @@ class ApprovalsFragment : BaseFragment() {
     }
 
     private fun createAdapters(binding: ApprovalsFragmentBinding){
-        val approvalsSideBarAdapter = ApprovalsSideBarAdapter(ApprovalsSideBarAdapter.ApprovalSideBarListener { it ->
+        val approvalsSideBarAdapter = ApprovalsSideBarAdapter(ApprovalsSideBarAdapter.ApprovalSideBarListener {
             viewModel.onApprovalSidebarClick(it)
         })
 
-        val ticketsAdapter = ApprovalAdapter(ApprovalAdapter.ApprovalListener { it ->
+        val ticketsAdapter = ApprovalAdapter(ApprovalAdapter.ApprovalListener {
 
         })
 
@@ -40,13 +40,13 @@ class ApprovalsFragment : BaseFragment() {
 
         binding.approvalItemsRecycler.adapter = ticketsAdapter
 
-        viewModel.showPending.observe(viewLifecycleOwner, { it ->
+        viewModel.showPending.observe(viewLifecycleOwner, {
             viewModel.setApprovalsView(it)
         })
 
         viewModel.liveApprovalItem.observe(viewLifecycleOwner, {
             if (it.ticket != null){
-                ticketsAdapter.submitList(it.ticket?.ticketItems)
+                ticketsAdapter.submitList(it.ticket.ticketItems)
             }
 
             if (it.ticketItem != null){

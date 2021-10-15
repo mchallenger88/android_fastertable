@@ -44,6 +44,11 @@ class PrintTicketService {
                     .alignment("center").text(formatPhone(order.takeOutCustomer?.telephone!!))
             }
 
+            if (order.takeOutCustomer?.notes != ""){
+                document.newLine()
+                    .alignment("center").text(order.takeOutCustomer?.notes.toString())
+            }
+
             document
                 .newLine()
         }

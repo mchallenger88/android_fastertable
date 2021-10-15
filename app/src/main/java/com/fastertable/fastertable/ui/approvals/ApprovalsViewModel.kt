@@ -21,7 +21,6 @@ class ApprovalsViewModel @Inject constructor(
                                         private val updatePayment: UpdatePayment,
                                         private val updateApproval: UpdateApproval,
                                         private val updateOrder: UpdateOrder,
-                                        private val approvalRepository: ApprovalRepository,
                                         private val loginRepository: LoginRepository) : BaseViewModel() {
 
     private val _approvals = MutableLiveData<List<Approval>>()
@@ -149,7 +148,7 @@ class ApprovalsViewModel @Inject constructor(
 
     private fun approveTicketItem(payment: Payment, order: Order){
         viewModelScope.launch {
-            val ticket = payment.tickets!!.find{it -> it.id == _liveApprovalItem.value?.ticket?.id}
+            val ticket = payment.tickets!!.find{ it.id == _liveApprovalItem.value?.ticket?.id}
             val ticketItem = _liveApprovalItem.value?.ticketItem
             ticket?.ticketItems?.find{ it -> it.id == ticketItem?.id}?.approve()
             ticket?.recalculateAfterApproval(order.taxRate)
@@ -161,7 +160,7 @@ class ApprovalsViewModel @Inject constructor(
 
     private fun approveTicket(payment: Payment, order: Order){
         viewModelScope.launch {
-            val ticket = payment.tickets!!.find{it -> it.id == _liveApprovalItem.value?.ticket?.id}
+            val ticket = payment.tickets!!.find{ it.id == _liveApprovalItem.value?.ticket?.id}
             ticket?.ticketItems?.forEach { it ->
                 it.approve()
             }
@@ -173,9 +172,9 @@ class ApprovalsViewModel @Inject constructor(
         }
     }
 
-    private fun rejectTicketItem(payment: Payment, order: Order){
+    private fun rejectTicketItem(payment: Payment){
         viewModelScope.launch {
-            val ticket = payment.tickets!!.find{it -> it.id == _liveApprovalItem.value?.ticket?.id}
+//            val ticket = payment.tickets!!.find{it -> it.id == _liveApprovalItem.value?.ticket?.id}
             val ticketItem = _liveApprovalItem.value?.ticketItem
             ticketItem?.reject()
             payment.statusApproval = "Rejected"
@@ -184,9 +183,9 @@ class ApprovalsViewModel @Inject constructor(
     }
 
 
-    private fun rejectTicket(payment: Payment, order: Order){
+    private fun rejectTicket(payment: Payment){
         viewModelScope.launch {
-            val ticket = payment.tickets!!.find{it -> it.id == _liveApprovalItem.value?.ticket?.id}
+            val ticket = payment.tickets!!.find{ it.id == _liveApprovalItem.value?.ticket?.id}
             ticket?.ticketItems?.forEach { it ->
                 it.reject()
             }
@@ -204,11 +203,11 @@ class ApprovalsViewModel @Inject constructor(
             val order = orderRepository.getOrder()
             if (payment != null && order != null){
                 when (liveApprovalItem.value?.approvalType){
-                    "Discount" -> { rejectTicketItem(payment, order) }
-                    "Modify Price" -> { rejectTicketItem(payment, order) }
-                    "Void Item" -> { rejectTicketItem(payment, order) }
-                    "Void Ticket" -> { rejectTicket(payment, order) }
-                    "Discount Ticket" -> { rejectTicket(payment, order) }
+                    "Discount" -> { rejectTicketItem(payment) }
+                    "Modify Price" -> { rejectTicketItem(payment) }
+                    "Void Item" -> { rejectTicketItem(payment) }
+                    "Void Ticket" -> { rejectTicket(payment) }
+                    "Discount Ticket" -> { rejectTicket(payment) }
                 }
                 _liveApprovalItem.value?.approved = false
                 _liveApprovalItem.value?.timeHandled = GlobalUtils().getNowEpoch()

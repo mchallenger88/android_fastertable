@@ -140,7 +140,7 @@ class UserLoginViewModel @Inject constructor(private val loginRepository: LoginR
     }
 
     private fun departmentNavigation(){
-        when(emp!!.employeeDetails?.department){
+        when(emp!!.employeeDetails.department){
             "Admin" -> _navigate.postValue(true)
             "Waitstaff" -> _navigate.postValue(true)
             "Support" -> _kitchen.postValue(true)

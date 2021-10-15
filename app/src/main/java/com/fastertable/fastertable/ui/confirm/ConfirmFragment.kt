@@ -11,7 +11,6 @@ import com.fastertable.fastertable.adapters.ConfirmListAdapter
 import com.fastertable.fastertable.common.base.BaseFragment
 import com.fastertable.fastertable.databinding.ConfirmFragmentBinding
 import com.fastertable.fastertable.ui.dialogs.DatePickerViewModel
-import com.google.android.material.datepicker.MaterialDatePicker
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -57,7 +56,7 @@ class ConfirmFragment  : BaseFragment(){
 
         binding.confirmListRecycler.adapter = concatAdapter
 
-        viewModel.confirmList.observe(viewLifecycleOwner, { it ->
+        viewModel.confirmList.observe(viewLifecycleOwner, {
             if (it != null){
                 confirmAdapter.submitList(it)
                 confirmAdapter.notifyDataSetChanged()

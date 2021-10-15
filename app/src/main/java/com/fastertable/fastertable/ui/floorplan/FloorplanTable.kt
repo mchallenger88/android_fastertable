@@ -3,22 +3,15 @@ package com.fastertable.fastertable.ui.floorplan
 import android.content.Context
 import android.graphics.Color
 import android.util.AttributeSet
-import android.util.Log
-import android.view.GestureDetector
 import android.view.LayoutInflater
-import android.view.MotionEvent
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.view.GestureDetectorCompat
-import androidx.core.view.MotionEventCompat
 import androidx.core.view.get
 import com.fastertable.fastertable.R
-import com.fastertable.fastertable.data.models.IdLocation
 import com.fastertable.fastertable.data.models.RestaurantTable
-import com.fastertable.fastertable.data.models.TableType
 
 interface FloorplanTableListener{
     fun onClick(table: RestaurantTable)
@@ -45,13 +38,8 @@ constructor(private val ctx: Context, private val attributeSet: AttributeSet? = 
     }
 
     fun getTableImage() : ImageView {
-        return tableImage;
+        return tableImage
     }
-
-    fun getTableImageList() : ArrayList<ImageView> {
-        return tableImageList
-    }
-
 
     fun loadTable(table: RestaurantTable){
         restaurantTable = table
@@ -59,7 +47,7 @@ constructor(private val ctx: Context, private val attributeSet: AttributeSet? = 
         val idLength = tableId.text.length
 
         val scale = resources.displayMetrics.density
-        val param: RelativeLayout.LayoutParams = RelativeLayout.LayoutParams((100.0f * scale + 0.5f).toInt() ,(20.0f * scale + 0.5f).toInt());
+        val param: RelativeLayout.LayoutParams = RelativeLayout.LayoutParams((100.0f * scale + 0.5f).toInt() ,(20.0f * scale + 0.5f).toInt())
         val idWidth = (idWidthUnit * idLength * scale + 0.5f).toInt()
         val idHeight = (20.0f * scale + 0.5f).toInt()
         var tableCnt = 1
@@ -74,75 +62,64 @@ constructor(private val ctx: Context, private val attributeSet: AttributeSet? = 
 
         param.width = idWidth
         param.height = idHeight
-        val paddingY = idHeight
-        val paddingX = idWidth
         val tableImageLayoutParam = RelativeLayout.LayoutParams(((60.0f + idLength * idWidthUnit * 2) * scale + 0.5f).toInt() ,(100.0f * scale + 0.5f).toInt())
-        tableImages.setPadding(paddingX, paddingY, paddingX, paddingY)
+        tableImages.setPadding(idWidth, idHeight, idWidth, idHeight)
 
         tableImages.layoutParams = tableImageLayoutParam
 
         tableId.layoutParams = param
         when (table.id_location) {
             "BottomLeft" -> {
-                param.setMargins(0, (imageHeight - paddingY),imageWidth - paddingX, 0)
+                param.setMargins(0, (imageHeight - idHeight), imageWidth - idWidth, 0)
                 tableId.textAlignment = TEXT_ALIGNMENT_TEXT_END
             }
             "BottomRight" -> {
-                param.setMargins(imageWidth - paddingX, (imageHeight - paddingY),0, 0)
-                tableId.textAlignment = TEXT_ALIGNMENT_TEXT_START;
+                param.setMargins(imageWidth - idWidth, (imageHeight - idHeight), 0, 0)
+                tableId.textAlignment = TEXT_ALIGNMENT_TEXT_START
             }
             "MiddleCenter" -> {
                 param.setMargins((imageWidth - idWidth) / 2, (imageHeight - idHeight) / 2,(imageWidth - idWidth) / 2, (imageHeight - idHeight) / 2)
             }
             "MiddleLeft" -> {
-                param.setMargins(0, (imageHeight - idHeight) / 2,imageWidth - paddingX, (imageHeight - idHeight) / 2)
-                tableId.textAlignment = TEXT_ALIGNMENT_TEXT_END;
+                param.setMargins(
+                    0,
+                    (imageHeight - idHeight) / 2,
+                    imageWidth - idWidth,
+                    (imageHeight - idHeight) / 2
+                )
+                tableId.textAlignment = TEXT_ALIGNMENT_TEXT_END
             }
             "MiddleRight" -> {
-                param.setMargins((imageWidth - paddingX), (imageHeight - idHeight) / 2,0, (imageHeight - idHeight) / 2)
-                tableId.textAlignment = TEXT_ALIGNMENT_TEXT_START;
+                param.setMargins((imageWidth - idWidth), (imageHeight - idHeight) / 2,0, (imageHeight - idHeight) / 2)
+                tableId.textAlignment = TEXT_ALIGNMENT_TEXT_START
             }
             "TopCenter" -> {
-                param.setMargins((imageWidth - idWidth) / 2 , 0,(imageWidth - idWidth) / 2, (imageHeight - paddingY))
+                param.setMargins((imageWidth - idWidth) / 2 , 0,(imageWidth - idWidth) / 2,
+                    (imageHeight - idHeight))
             }
             "TopLeft" -> {
-                param.setMargins(0, 0,imageWidth - paddingX, (imageHeight - paddingY))
-                tableId.textAlignment = TEXT_ALIGNMENT_TEXT_END;
+                param.setMargins(0, 0, imageWidth - idWidth, (imageHeight - idHeight))
+                tableId.textAlignment = TEXT_ALIGNMENT_TEXT_END
             }
             "TopRight" -> {
-                param.setMargins((imageWidth - paddingX), 0,0, (imageHeight - paddingY))
-                tableId.textAlignment = TEXT_ALIGNMENT_TEXT_START;
+                param.setMargins((imageWidth - idWidth), 0,0, (imageHeight - idHeight))
+                tableId.textAlignment = TEXT_ALIGNMENT_TEXT_START
             }
-            else -> param.setMargins((imageWidth - idWidth) / 2, (imageHeight - paddingY),(imageWidth - idWidth) / 2, 0)
+            else -> param.setMargins((imageWidth - idWidth) / 2,
+                (imageHeight - idHeight),(imageWidth - idWidth) / 2, 0)
 
         }
-        getTableImage(table)
-    }
-
-    fun loadReservation(table: RestaurantTable, lastName: String) {
-        tableId.text = lastName
-        val param: RelativeLayout.LayoutParams = RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT)
-        val scale = resources.displayMetrics.density
-
-        val imageHeight = ((100.0f) * scale + 0.5f).toInt()
-        if (!table.isCombination) {
-            param.width = (120.0f * scale + 0.5f).toInt()
-        } else {
-            val tableCnt = table.combinationTables?.count();
-            param.width = ((60.0f + 60.0f * tableCnt!!) * scale + 0.5f).toInt()
+        if (table.active){
+            val color: Int = Color.parseColor("#c2185b")
+            setTableColorFilter(color)
         }
-        param.height =  (40.0f * scale + 0.5f).toInt()
-        val paddingY = (20.0f * scale + 0.5f).toInt()
-        tableId.layoutParams = param
-
-        param.setMargins(0, (imageHeight - paddingY),0, 0)
         getTableImage(table)
     }
 
     fun setTableColorFilter(color: Int) {
         val count = tableImages.childCount - 1
         for(index in 0..count) {
-            val imageView = tableImages.get(index)
+            val imageView = tableImages[index]
             (imageView as ImageView).setColorFilter(color)
         }
     }
@@ -150,17 +127,16 @@ constructor(private val ctx: Context, private val attributeSet: AttributeSet? = 
     fun clearTableColorFilter() {
         val count = tableImages.childCount - 1
         for(index in 0..count) {
-            val imageView = tableImages.get(index)
+            val imageView = tableImages[index]
             (imageView as ImageView).clearColorFilter()
         }
     }
 
     private fun getTableImage(table: RestaurantTable){
-        val tables: ArrayList<RestaurantTable>
-        if (table.isCombination) {
-            tables = table.combinationTables!!
+        val tables: ArrayList<RestaurantTable> = if (table.isCombination) {
+            table.combinationTables!!
         } else {
-            tables = arrayListOf(table)
+            arrayListOf(table)
         }
         tableImageList = arrayListOf()
         var index = 0
@@ -168,7 +144,7 @@ constructor(private val ctx: Context, private val attributeSet: AttributeSet? = 
             index++
             run {
                 val tableType = it.type
-                var resourceId = R.drawable.ic_booth;
+                var resourceId = R.drawable.ic_booth
                 when (tableType) {
                     "Booth" -> resourceId =
                         if (!table.locked) R.drawable.ic_booth else R.drawable.ic_booth_locked
@@ -207,14 +183,14 @@ constructor(private val ctx: Context, private val attributeSet: AttributeSet? = 
                 }
                 if (index == 1) {
                     tableImage.setImageResource(resourceId)
-                    tableImageList.add(tableImage);
+                    tableImageList.add(tableImage)
                 } else {
                     val imageView = ImageView(context)
-                    tableImageList.add(imageView);
+                    tableImageList.add(imageView)
                     val scale = resources.displayMetrics.density
                     imageView.layoutParams =
                         LinearLayout.LayoutParams((60.0f * scale + 0.5f).toInt(), (60.0f * scale + 0.5f).toInt()) // value is in pixels
-                    imageView.setImageResource(resourceId);
+                    imageView.setImageResource(resourceId)
                     tableImages.addView(imageView)
                 }
             }

@@ -5,8 +5,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.fastertable.fastertable.common.base.BaseFragment
@@ -41,13 +39,13 @@ class RestaurantLoginFragment : BaseFragment() {
         binding.btnClear.setOnClickListener { pinClear() }
         binding.btnEnter.setOnClickListener { loginEnter() }
 
-        viewModel.navigateToTerminals.observe(viewLifecycleOwner, Observer { it ->
+        viewModel.navigateToTerminals.observe(viewLifecycleOwner, {
             if (it){
                 this.findNavController().navigate(RestaurantLoginFragmentDirections.actionRestaurantLoginFragmentToTerminalSelectFragment())
             }
         })
 
-        viewModel.showProgressBar.observe(viewLifecycleOwner, Observer { it ->
+        viewModel.showProgressBar.observe(viewLifecycleOwner, {
             if (it){
                 binding.progressBarRestLogin.visibility = View.VISIBLE
             }else{
@@ -55,14 +53,14 @@ class RestaurantLoginFragment : BaseFragment() {
             }
         })
 
-        viewModel.navigateToUserLogin.observe(viewLifecycleOwner, Observer { it ->
+        viewModel.navigateToUserLogin.observe(viewLifecycleOwner, {
             if (it){
                 this.findNavController().navigate(RestaurantLoginFragmentDirections.actionRestaurantLoginFragmentToUserLoginFragment())
             }
 
         })
 
-        viewModel.error.observe(viewLifecycleOwner, Observer { it ->
+        viewModel.error.observe(viewLifecycleOwner, {
             if (it){
                 binding.txtRestError.visibility = View.VISIBLE
             }else{

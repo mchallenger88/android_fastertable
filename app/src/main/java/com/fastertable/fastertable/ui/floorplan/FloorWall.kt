@@ -8,7 +8,6 @@ import android.widget.ImageView
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.fastertable.fastertable.R
 import com.fastertable.fastertable.data.models.FloorplanWall
-import com.fastertable.fastertable.data.models.WallDirection
 
 class FloorWall @JvmOverloads
 constructor(ctx: Context, attributeSet: AttributeSet? = null, private val defStyleAttr: Int = 0)
@@ -24,7 +23,7 @@ constructor(ctx: Context, attributeSet: AttributeSet? = null, private val defSty
 
 
     fun loadWall(wall: FloorplanWall) {
-        val param = LayoutParams(LayoutParams.WRAP_CONTENT, 100);
+        val param = LayoutParams(LayoutParams.WRAP_CONTENT, 100)
         when (wall.direction) {
             "Vertical" -> {
                 param.height = wall.width ?: 0
@@ -35,11 +34,11 @@ constructor(ctx: Context, attributeSet: AttributeSet? = null, private val defSty
                 param.height = wall.thickness ?: 10
             }
         }
-        wallView.layoutParams = param;
-        wallView.setBackgroundColor(Color.rgb(72, 72, 72));
+        wallView.layoutParams = param
+        wallView.setBackgroundColor(Color.rgb(72, 72, 72))
     }
 
     fun getWallImage(): ImageView {
-        return wallView;
+        return wallView
     }
 }

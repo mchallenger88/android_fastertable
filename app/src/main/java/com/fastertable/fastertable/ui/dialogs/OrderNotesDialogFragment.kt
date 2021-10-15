@@ -1,18 +1,11 @@
 package com.fastertable.fastertable.ui.dialogs
 
-import android.annotation.SuppressLint
-import android.app.Dialog
+import android.app.Activity
 import android.content.Context
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
-import android.graphics.drawable.Drawable
-import android.os.Build
 import android.os.Bundle
 import android.view.*
-import androidx.fragment.app.DialogFragment
+import android.view.inputmethod.InputMethodManager
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.ViewModelProvider
-import com.fastertable.fastertable.R
 import com.fastertable.fastertable.databinding.OrderNoteDialogBinding
 import com.fastertable.fastertable.ui.order.OrderViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -29,6 +22,7 @@ class OrderNotesDialogFragment : BaseDialog() {
 
         binding.btnSaveOrderNote.setOnClickListener {
             itemNoteListener.returnNote(binding.editOrderNote.editText?.text.toString())
+            hideKeyboardFrom(requireContext(), requireView())
             dismiss()
         }
 
@@ -57,5 +51,11 @@ class OrderNotesDialogFragment : BaseDialog() {
         }
 
         const val TAG = "OrderNotesDialogFragment"
+    }
+
+    private fun hideKeyboardFrom(context: Context, view: View) {
+        val imm: InputMethodManager =
+            context.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(view.windowToken, 0)
     }
 }

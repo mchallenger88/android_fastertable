@@ -1,13 +1,10 @@
 package com.fastertable.fastertable.ui.dialogs
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.WindowInsetsControllerCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import com.fastertable.fastertable.R
@@ -21,7 +18,6 @@ import android.app.Activity
 import android.content.Context
 import android.view.inputmethod.InputMethodManager
 import com.fastertable.fastertable.databinding.TablePropertyDialogBinding
-import android.icu.lang.UCharacter.GraphemeClusterBreak.T
 
 
 
@@ -45,8 +41,8 @@ class FloorplanTableDialog: DialogFragment() {
         IdLocation.TopLeft, IdLocation.TopCenter, IdLocation.TopRight,
         IdLocation.MiddleLeft, IdLocation.MiddleCenter, IdLocation.MiddleRight,
         IdLocation.BottomLeft, IdLocation.BottomCenter, IdLocation.BottomRight
-    );
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    )
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = TablePropertyDialogBinding.inflate(inflater)
 
         val tableTypes = resources.getStringArray(R.array.table_types)
@@ -97,7 +93,7 @@ class FloorplanTableDialog: DialogFragment() {
                 position: Int,
                 id: Long
             ) {
-                table?.type = tableTypeList[position].name;
+                table?.type = tableTypeList[position].name
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {}
@@ -118,8 +114,8 @@ class FloorplanTableDialog: DialogFragment() {
     }
 
     fun setParentFragment(fragment: FloorplanManagementFragment, binding: FloorplanManagementFragmentBinding) {
-        parentFragment = fragment;
-        parentFragmentBinding = binding;
+        parentFragment = fragment
+        parentFragmentBinding = binding
     }
 
     override fun onStart() {
@@ -129,14 +125,6 @@ class FloorplanTableDialog: DialogFragment() {
             width = 1500
         }
         dialog!!.window?.setLayout(width, ViewGroup.LayoutParams.WRAP_CONTENT)
-    }
-
-    private fun getPosition( tableType:TableType ): Int {
-        return tableTypeList.indexOfFirst { it.name == tableType.name }
-    }
-
-    private fun getPositionIdLocation(idLocation: IdLocation): Int {
-        return idLocationList.indexOfFirst { it.name == idLocation.name }
     }
 
     private fun updateTable() {
@@ -164,7 +152,7 @@ class FloorplanTableDialog: DialogFragment() {
         if (rotate.toString().isNotEmpty()) {
             table?.rotate = rotate.toString().trim().toInt()
         } else {
-            table?.rotate = 0;
+            table?.rotate = 0
         }
 
         if (top.toString().isNotEmpty()){
@@ -199,7 +187,7 @@ class FloorplanTableDialog: DialogFragment() {
     }
 
     private fun removeTable() {
-        table?.let { viewModel.removeTable(it) };
+        table?.let { viewModel.removeTable(it) }
         viewModel.setReloadTables(true)
         dismiss()
     }

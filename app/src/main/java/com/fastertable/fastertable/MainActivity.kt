@@ -451,6 +451,7 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
     override fun onSupportNavigateUp(): Boolean {
         val navController = findNavController(R.id.nav_host_fragment)
         hideKeyboard()
+        homeViewModel.getOrders()
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
     }
 
@@ -467,37 +468,6 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
         WindowInsetsControllerCompat(window, window.decorView).hide(WindowInsetsCompat.Type.ime())
     }
 
-
-    private suspend fun sendToKitchen(){
-        var send = false
-        val settings = loginRepository.getSettings()!!
-        val order = orderViewModel.activeOrder.value!!
-        order.guests?.forEach { guest ->
-            guest.orderItems?.forEach {
-                if (it.status == "Started"){
-                    send = true }}}
-
-        if (send){
-            if (settings.restaurantType == "Counter Service"){
-                if (order.orderNumber == 99 && order.tableNumber == null && order.orderType == "Counter"){
-                    AssignTableDialog().show(supportFragmentManager, AssignTableDialog.TAG)
-                }else{
-                    orderViewModel.saveOrderToCloud()
-                }
-            }
-            if (settings.restaurantType == "Full Service"){
-                orderViewModel.saveOrderToCloud()
-                orderRepository.clearNewOrder()
-                //TODO: Clear new payment
-                //TODO: Go Back to Home;
-            }
-        }
-
-        if (!send){
-            val view = findViewById<View>(R.id.nav_host_fragment)
-            Snackbar.make(view, R.string.kitchen_warning_message, Snackbar.LENGTH_LONG).show()
-        }
-    }
 
     private fun goToPayment(navController: NavController){
         var okToPay = true

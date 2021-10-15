@@ -75,7 +75,6 @@ class CompanyLoginViewModel @Inject constructor(
     @SuppressLint("CommitPrefEdits")
     private fun checkCompany(){
         viewModelScope.launch {
-            val sp =
             loginName.set(loginRepository.getStringSharedPreferences("loginName"))
             password.set(loginRepository.getStringSharedPreferences("password"))
         }

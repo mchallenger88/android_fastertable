@@ -1,6 +1,8 @@
 <component name="ProjectDictionaryState">
   <dictionary name="markc">
     <words>
+      <w>addvalue</w>
+      <w>balanceinquiry</w>
       <w>barstaff</w>
       <w>clockin</w>
       <w>clockout</w>
@@ -17,7 +19,9 @@
       <w>getfloorplans</w>
       <w>giftcard</w>
       <w>gson</w>
+      <w>horz</w>
       <w>locationid</w>
+      <w>poscancelled</w>
       <w>reopencheckout</w>
       <w>restaurantfloorplans</w>
       <w>semibold</w>
@@ -27,6 +31,7 @@
       <w>totalsales</w>
       <w>totaltips</w>
       <w>updatefloorplan</w>
+      <w>usercancelled</w>
     </words>
   </dictionary>
 </component>

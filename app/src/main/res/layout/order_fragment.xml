@@ -183,6 +183,20 @@
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <TextView
+                    android:id="@+id/txt_order_notes"
+                    style="@style/large_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:paddingTop="5dp"
+                    android:textAlignment="center"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/layout_order_header"
+                    app:setOrderNotes="@{viewModel.activeOrder}" />
+
+                <TextView
                     android:id="@+id/txt_guest_number"
                     style="@style/large_title"
                     android:layout_width="0dp"
@@ -192,10 +206,9 @@
                     android:text="@string/string_guest"
                     android:textAlignment="center"
                     android:textStyle="bold"
-                    app:layout_constraintBottom_toTopOf="@+id/viewLine1"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/layout_order_header"
+                    app:layout_constraintTop_toBottomOf="@+id/txt_order_notes"
                     app:layout_constraintVertical_bias="0.5"
                     app:setGuestNumberTitle="@{viewModel.activeOrder.guests}" />
 

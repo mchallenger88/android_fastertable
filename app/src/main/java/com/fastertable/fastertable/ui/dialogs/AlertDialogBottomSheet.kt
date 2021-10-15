@@ -1,19 +1,15 @@
 package com.fastertable.fastertable.ui.dialogs
 
-import android.app.Dialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
-import com.fastertable.fastertable.R
 import com.fastertable.fastertable.databinding.DialogErrorBinding
-import com.fastertable.fastertable.ui.order.OrderViewModel
 import com.fastertable.fastertable.ui.payment.PaymentViewModel
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
-class AlertDialogBottomSheet(): BottomSheetDialogFragment() {
+class AlertDialogBottomSheet: BottomSheetDialogFragment() {
     private val viewModel: PaymentViewModel by activityViewModels()
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val binding = DialogErrorBinding.inflate(inflater)

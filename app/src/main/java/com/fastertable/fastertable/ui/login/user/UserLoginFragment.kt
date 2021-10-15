@@ -6,14 +6,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import com.fastertable.fastertable.MainActivity
 import com.fastertable.fastertable.common.base.BaseFragment
-import com.fastertable.fastertable.data.repository.LoginRepository
-import com.fastertable.fastertable.data.repository.OrderRepository
 import com.fastertable.fastertable.databinding.UserLoginFragmentBinding
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -45,15 +40,15 @@ class UserLoginFragment: BaseFragment() {
         binding.btnUserClear.setOnClickListener { pinClear() }
         binding.btnUserEnter.setOnClickListener { loginEnter() }
 
-        viewModel.navigate.observe(viewLifecycleOwner, Observer { it ->
+        viewModel.navigate.observe(viewLifecycleOwner, {
             if (it){
                 val intent = Intent(this.context, MainActivity::class.java)
-                intent.setFlags(FLAG_ACTIVITY_NEW_TASK)
+                intent.flags = FLAG_ACTIVITY_NEW_TASK
                 startActivity(intent)
             }
         })
 
-        viewModel.showProgressBar.observe(viewLifecycleOwner, Observer { it ->
+        viewModel.showProgressBar.observe(viewLifecycleOwner, {
             if (it){
                 binding.progressBarUserLogin.visibility = View.VISIBLE
             }else{

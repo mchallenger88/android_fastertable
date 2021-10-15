@@ -21,9 +21,7 @@ import com.fastertable.fastertable.databinding.PaymentFragmentBinding
 import com.fastertable.fastertable.ui.order.OrderViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import android.text.Editable
-
 import android.text.TextWatcher
-import android.telephony.PhoneNumberFormattingTextWatcher
 import com.fastertable.fastertable.data.models.ManualCredit
 
 
@@ -84,7 +82,7 @@ class PaymentFragment: BaseFragment() {
     }
 
     private fun createObservers(binding: PaymentFragmentBinding){
-        viewModel.paymentScreen.observe(viewLifecycleOwner, {it ->
+        viewModel.paymentScreen.observe(viewLifecycleOwner, {
             when (it){
                 ShowPayment.NONE -> {
                     binding.cashLayout.visibility = View.GONE
@@ -117,16 +115,22 @@ class PaymentFragment: BaseFragment() {
                     binding.discountLayout.visibility = View.GONE
                     binding.creditLayout.visibility = View.GONE
                 }
+                else -> {
+                    binding.cashLayout.visibility = View.GONE
+                    binding.discountLayout.visibility = View.GONE
+                    binding.priceLayout.visibility = View.GONE
+                    binding.creditLayout.visibility = View.GONE
+                }
             }
         })
     }
 
     private fun createAdapters(binding: PaymentFragmentBinding){
-        val ticketNumberAdapter = TicketSideBarAdapter(TicketSideBarAdapter.TicketSideBarListener { it ->
+        val ticketNumberAdapter = TicketSideBarAdapter(TicketSideBarAdapter.TicketSideBarListener {
             viewModel.setActiveTicket(it)
         })
 
-        val ticketsAdapter = TicketItemAdapter(TicketItemAdapter.TicketItemListener { it ->
+        val ticketsAdapter = TicketItemAdapter(TicketItemAdapter.TicketItemListener {
             viewModel.toggleTicketItemMore(it)
         })
 

@@ -7,8 +7,6 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.fastertable.fastertable.data.models.Order
 import com.fastertable.fastertable.databinding.OrderListLineItemBinding
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 
 
 class OrderListAdapter(val clickListener: OrderListListener): ListAdapter<Order, OrderListAdapter.OrderViewHolder>(

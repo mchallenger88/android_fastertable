@@ -1,5 +1,6 @@
 package com.fastertable.fastertable.ui.floorplan
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -39,17 +40,12 @@ class FloorplanViewModel @Inject constructor
     val orders: LiveData<List<Order>?>
         get() = _orders
 
-    var prelimOrders: List<Order>? = null
-    var prelimFloorplan: List<RestaurantFloorplan>? = null
+    private var prelimOrders: List<Order>? = null
+    private var prelimFloorplan: List<RestaurantFloorplan>? = null
 
     private val _navigateToOrder = MutableLiveData<String>()
     val navigateToOrder: LiveData<String>
         get() = _navigateToOrder
-
-
-    init {
-
-    }
 
     fun getFloorplans(){
         viewModelScope.launch {
@@ -57,7 +53,7 @@ class FloorplanViewModel @Inject constructor
         }
     }
 
-    suspend fun reallyGetFloorplans(){
+    private suspend fun reallyGetFloorplans(){
         val job = viewModelScope.launch {
             prelimFloorplan = floorplanQueries.getFloorplans(settings.locationId, settings.companyId)
             if (prelimFloorplan!!.isNotEmpty()){
@@ -86,8 +82,12 @@ class FloorplanViewModel @Inject constructor
                         for (order in orderTables){
                             if (table.id == order.tableNumber){
                                 table.locked = true
-                                val manager = user.claims.find { it.permission.name == "viewOrders" }
-                                if (order.employeeId == user.employeeId || manager?.permission?.value!!){
+                                var manager: Boolean? = user.claims.find { it.permission.name == "viewOrders" }?.permission?.value
+                                if (manager == null){
+                                    manager = false
+                                }
+
+                                if (order.employeeId == user.employeeId || manager){
                                     table.locked = false
                                     table.active = true
                                 }

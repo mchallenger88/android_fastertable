@@ -45,7 +45,7 @@ class CheckoutFragment : BaseFragment() {
         binding.checkoutPaymentRecycler.adapter = paymentAdapter
 
 
-        viewModel.checkout.observe(viewLifecycleOwner, {it ->
+        viewModel.checkout.observe(viewLifecycleOwner, {
             if (it != null){
                 viewModel.separateTickets(it)
                 orderAdapter.submitList(it.payTickets)

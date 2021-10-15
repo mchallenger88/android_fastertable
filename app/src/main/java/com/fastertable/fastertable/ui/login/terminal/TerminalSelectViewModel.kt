@@ -46,7 +46,7 @@ class TerminalSelectViewModel @Inject constructor(private val loginRepository: L
         }
     }
 
-    fun setOnPage(b: Boolean){
+    private fun setOnPage(b: Boolean){
         _onPage.value = b
     }
 

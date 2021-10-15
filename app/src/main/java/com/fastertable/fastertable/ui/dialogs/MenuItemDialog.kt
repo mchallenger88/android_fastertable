@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.activityViewModels
 import com.fastertable.fastertable.data.models.*
 import com.fastertable.fastertable.databinding.AddMiscMenuItemBinding
@@ -51,7 +50,7 @@ class MenuItemDialog: BaseDialog() {
     }
 
     private fun createOrderItem(qty: Int, name: String, price: Double){
-        val g = viewModel.activeOrder.value!!.guests!!.find { it -> it.uiActive }
+        val g = viewModel.activeOrder.value!!.guests!!.find { it.uiActive }
         var id = 0
         if (!g!!.orderItems.isNullOrEmpty()){
             id = g.orderItems!!.size

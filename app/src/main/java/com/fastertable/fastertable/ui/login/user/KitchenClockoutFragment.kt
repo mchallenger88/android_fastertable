@@ -22,7 +22,7 @@ class KitchenClockoutFragment : BaseFragment(){
         binding.lifecycleOwner = viewLifecycleOwner
         binding.viewModel = viewModel
 
-        viewModel.errorMessage.observe(viewLifecycleOwner, {it ->
+        viewModel.errorMessage.observe(viewLifecycleOwner, {
             if (it != ""){
                 binding.txtClockoutError.text = it
             }

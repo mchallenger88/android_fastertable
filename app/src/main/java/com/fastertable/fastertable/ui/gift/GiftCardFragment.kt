@@ -8,8 +8,6 @@ import androidx.fragment.app.activityViewModels
 import com.fastertable.fastertable.adapters.TicketItemAdapter
 import com.fastertable.fastertable.common.base.BaseFragment
 import com.fastertable.fastertable.databinding.GiftCardFragmentBinding
-import com.fastertable.fastertable.databinding.PaymentFragmentBinding
-import com.fastertable.fastertable.ui.payment.ShowPayment
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -24,7 +22,7 @@ class GiftCardFragment : BaseFragment(){
         binding.lifecycleOwner = viewLifecycleOwner
         binding.viewModel = viewModel
 
-        val ticketsAdapter = TicketItemAdapter(TicketItemAdapter.TicketItemListener { it ->
+        val ticketsAdapter = TicketItemAdapter(TicketItemAdapter.TicketItemListener {
         })
         binding.ticketItemsRecycler.adapter = ticketsAdapter
 
@@ -48,7 +46,7 @@ class GiftCardFragment : BaseFragment(){
     }
 
     private fun createObservers(binding: GiftCardFragmentBinding){
-        viewModel.giftScreen.observe(viewLifecycleOwner, {it ->
+        viewModel.giftScreen.observe(viewLifecycleOwner, {
             when (it){
                 ShowGift.ADD_CASH -> {
                     binding.giftAddCashLayout.visibility = View.VISIBLE
@@ -74,11 +72,23 @@ class GiftCardFragment : BaseFragment(){
                     binding.giftCashLayout.visibility = View.GONE
                     binding.giftSwipeLayout.visibility = View.VISIBLE
                 }
+                ShowGift.PAY_CREDIT -> {
+                    binding.giftAddCashLayout.visibility = View.GONE
+                    binding.giftBalanceLayout .visibility = View.GONE
+                    binding.giftCashLayout.visibility = View.GONE
+                    binding.giftSwipeLayout.visibility = View.VISIBLE
+                }
+                else -> {
+                    binding.giftAddCashLayout.visibility = View.VISIBLE
+                    binding.giftBalanceLayout .visibility = View.GONE
+                    binding.giftCashLayout.visibility = View.GONE
+                    binding.giftSwipeLayout.visibility = View.GONE
+                }
             }
         })
     }
 
-    fun setAnyAmount(binding: GiftCardFragmentBinding){
+    private fun setAnyAmount(binding: GiftCardFragmentBinding){
         val amount = binding.editAnyAmount.editText?.text.toString()
         if (amount != ""){
             viewModel.addGiftAmount(amount.toDouble())

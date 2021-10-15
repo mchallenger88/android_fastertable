@@ -116,7 +116,7 @@ class RestaurantLoginViewModel @Inject constructor(
 
                 val terminal = loginRepository.getTerminal()
                 if (terminal != null){
-                    loginRepository.saveTerminal(settings.terminals.find{ it -> it.terminalId == terminal.terminalId}!!)
+                    loginRepository.saveTerminal(settings.terminals.find{ it.terminalId == terminal.terminalId}!!)
                 }
                 saveTaxRate(settings)
 

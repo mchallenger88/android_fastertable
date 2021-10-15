@@ -9,7 +9,6 @@ import androidx.recyclerview.widget.ConcatAdapter
 import com.fastertable.fastertable.adapters.IngredientsAdapter
 import com.fastertable.fastertable.adapters.ModifierAdapter
 import com.fastertable.fastertable.databinding.DialogEditItemBinding
-import com.fastertable.fastertable.databinding.OrderNoteDialogBinding
 import com.fastertable.fastertable.ui.order.OrderViewModel
 import dagger.hilt.android.AndroidEntryPoint
 

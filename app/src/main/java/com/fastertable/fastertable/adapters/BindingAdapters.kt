@@ -2,6 +2,7 @@ package com.fastertable.fastertable.adapters
 
 import android.annotation.SuppressLint
 import android.content.res.ColorStateList
+import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.CheckBox
@@ -14,6 +15,7 @@ import com.fastertable.fastertable.R
 import com.fastertable.fastertable.data.models.*
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import java.util.*
 
 
 @SuppressLint("SetTextI18n")
@@ -136,7 +138,18 @@ fun bindModifierRecycler(recyclerView: RecyclerView?, data: List<Modifier>?){
 
 }
 
+@BindingAdapter("setOrderNotes")
+fun setOrderNotes(textView: TextView, order: Order?){
+    if (order != null && order.orderType == "Takeout" && order.takeOutCustomer?.notes != ""){
+        val note = order.takeOutCustomer?.notes.toString()
+            .replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
 
+        textView.text = note
+        textView.visibility = View.VISIBLE
+    }else{
+        textView.visibility = View.GONE
+    }
+}
 
 
 @SuppressLint("SetTextI18n")

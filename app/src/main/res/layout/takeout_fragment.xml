@@ -71,7 +71,7 @@
                         android:id="@+id/edit_takeout_name"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:inputType="text"
+                        android:inputType="text|textCapWords"
                         android:textSize="@dimen/d21" />
 
                 </com.google.android.material.textfield.TextInputLayout>
@@ -115,7 +115,8 @@
                         android:id="@+id/edit_takeout_notes"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:inputType="text"
+                        android:inputType="text|textCapSentences"
+                        android:maxLength="35"
                         android:textSize="@dimen/d21" />
 
                 </com.google.android.material.textfield.TextInputLayout>

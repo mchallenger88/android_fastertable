@@ -28,7 +28,7 @@ class FloorplanManageViewModel @Inject constructor(
     val floorplans: LiveData<MutableList<RestaurantFloorplan>>
         get() = _floorplans
 
-    private val _selectedFloorplanIndex = MutableLiveData<Int>(-1)
+    private val _selectedFloorplanIndex = MutableLiveData(-1)
     val selectedFloorplanIndex: LiveData<Int>
         get() = _selectedFloorplanIndex
 
@@ -40,19 +40,19 @@ class FloorplanManageViewModel @Inject constructor(
     val activeFloorplan: LiveData<RestaurantFloorplan?>
         get() = _activeFloorplan
 
-    private val _saveReturn = MutableLiveData<Int>(0)
+    private val _saveReturn = MutableLiveData(0)
     val saveReturn: LiveData<Int>
         get() = _saveReturn
 
-    private val _requestDelete = MutableLiveData<Boolean>(false)
+    private val _requestDelete = MutableLiveData(false)
     val requestDelete: LiveData<Boolean>
         get() = _requestDelete
 
-    private val _deleteReturn = MutableLiveData<Int>(0)
+    private val _deleteReturn = MutableLiveData(0)
     val deleteReturn: LiveData<Int>
         get() = _deleteReturn
 
-    private val _reloadTables = MutableLiveData<Boolean>(false)
+    private val _reloadTables = MutableLiveData(false)
     val reloadTables: LiveData<Boolean>
         get() = _reloadTables
 
@@ -70,7 +70,7 @@ class FloorplanManageViewModel @Inject constructor(
         }
     }
 
-    fun setActiveFloorplan(floorplan: RestaurantFloorplan){
+    private fun setActiveFloorplan(floorplan: RestaurantFloorplan){
         _activeFloorplan.value = floorplan
         tableList = floorplan.tables
         wallList = floorplan.walls
@@ -172,26 +172,26 @@ class FloorplanManageViewModel @Inject constructor(
 
     fun updateTable(tableId: Int, x: Int, y: Int): Boolean {
         val index = tableList.indexOfFirst { it.id == tableId }
-        if (index > -1) {
+        return if (index > -1) {
             tableList[index].left = x
             tableList[index].top = y
-            return true
+            true
         } else {
-            return false
+            false
         }
     }
 
     fun updateTable(table: RestaurantTable, id: Int = -1): Boolean {
         var index = -1
-        if (id == -1) {
-            index = tableList.indexOfFirst { it.id == table.id }
+        index = if (id == -1) {
+            tableList.indexOfFirst { it.id == table.id }
         } else {
-            index = tableList.indexOfFirst { it.id == id }
+            tableList.indexOfFirst { it.id == id }
         }
         if ( index> -1) {
-            tableList[index] = table;
+            tableList[index] = table
         }
-        return true;
+        return true
     }
 
     fun updateWall(wallId: Int, x: Int, y: Int): Boolean {
@@ -215,12 +215,12 @@ class FloorplanManageViewModel @Inject constructor(
     }
 
     fun getUnitId(type: Int): Int {
-        var id = 0;
+        var id = 0
         if (type == 0) { // Table
             tableList.forEach {
                 if (it.id > id) id = it.id
                 if (it.isCombination) {
-                    val combinationTables = it.combinationTables;
+                    val combinationTables = it.combinationTables
                     combinationTables?.forEach { c_it ->
                         if (c_it.id > id) {
                             id = c_it.id
@@ -246,7 +246,7 @@ class FloorplanManageViewModel @Inject constructor(
     }
 
     fun addWall(wall: FloorplanWall) {
-        wallList.add(wallList.count(), wall);
+        wallList.add(wallList.count(), wall)
     }
 
     fun getWallById(id: Int): FloorplanWall {
@@ -270,7 +270,7 @@ class FloorplanManageViewModel @Inject constructor(
     fun removeTable(table: RestaurantTable): Boolean {
         val index = tableList.indexOfFirst { it.id == table.id }
         if (index > -1) {
-            tableList.removeAt(index);
+            tableList.removeAt(index)
         }
         return true
     }

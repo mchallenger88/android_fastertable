@@ -7,8 +7,6 @@ import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import com.fastertable.fastertable.common.base.BaseFragment
 import com.fastertable.fastertable.databinding.ClockoutFragmentBinding
-import com.fastertable.fastertable.ui.dialogs.AssignTableDialog
-import com.fastertable.fastertable.ui.dialogs.BaseDialog
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -24,7 +22,7 @@ class ClockoutFragment : BaseFragment(){
         binding.lifecycleOwner = viewLifecycleOwner
         binding.viewModel = viewModel
 
-        viewModel.errorMessage.observe(viewLifecycleOwner, {it ->
+        viewModel.errorMessage.observe(viewLifecycleOwner, {
             if (it != ""){
                 binding.txtClockoutError.text = it
             }

@@ -142,10 +142,10 @@ class CheckoutViewModel @Inject constructor (
             }
 
             if (ce.totalOwed < 0){
-                ce.totalOwed = abs(ce.totalOwed);
-                ce.totalNegative = true;
+                ce.totalOwed = abs(ce.totalOwed)
+                ce.totalNegative = true
             }else{
-                ce.totalNegative = false;
+                ce.totalNegative = false
             }
 
             val listApprovalItems = ce.approvals.flatMap{it.approvalItems}
@@ -169,7 +169,7 @@ class CheckoutViewModel @Inject constructor (
             val barItems = orderItems.filter{it.salesCategory == "Bar"}
             val barSales = barItems.sumOf { it.menuItemPrice.price }
 
-            ce.busShare = ce.orderTotal.times(settings.tipShare.busboy.div(100));
+            ce.busShare = ce.orderTotal.times(settings.tipShare.busboy.div(100))
             ce.barShare = barSales.times(settings.tipShare.bartender.div(100))
         }else{
             _checkoutNull.value = true
@@ -178,39 +178,70 @@ class CheckoutViewModel @Inject constructor (
     }
 
     private fun getCashSales(list: List<Ticket>): Double{
+        val payments = mutableListOf<Double>()
         val paymentsList = mutableListOf<TicketPayment>()
         for (ticket in list){
-            for (p in ticket.paymentList!!){
-                if (p.paymentType == "Cash"){
-                    paymentsList.add(p)
+            if (ticket.paymentList != null){
+                for (p in ticket.paymentList!!){
+                    if (p.paymentType == "Cash"){
+                        paymentsList.add(p)
+                        payments.add(p.ticketPaymentAmount)
+                    }
+                }
+            }else{
+                if (ticket.paymentType == "Cash"){
+                    payments.add(ticket.paymentTotal)
                 }
             }
+
         }
-        return paymentsList.sumOf{it.ticketPaymentAmount}
+//            return paymentsList.sumOf{it.ticketPaymentAmount}
+        return payments.sumOf{it}
     }
 
     private fun getCreditSales(list: List<Ticket>): Double{
+        val payments = mutableListOf<Double>()
         val paymentsList = mutableListOf<TicketPayment>()
         for (ticket in list){
-            for (p in ticket.paymentList!!){
-                if (p.paymentType == "Credit" || p.paymentType == "Manual Credit"){
-                    paymentsList.add(p)
+            if (ticket.paymentList != null){
+                for (p in ticket.paymentList!!){
+                    if (p.paymentType == "Credit" || p.paymentType == "Manual Credit"){
+                        paymentsList.add(p)
+                        payments.add(p.ticketPaymentAmount)
+                    }
                 }
+            }else{
+                if (ticket.paymentType == "Credit" || ticket.paymentType == "Manual Credit"){
+                    payments.add(ticket.paymentTotal)
+                }
+
             }
+
         }
-        return paymentsList.sumOf{it.ticketPaymentAmount}
+        return payments.sumOf{it}
+//            return paymentsList.sumOf{it.ticketPaymentAmount}
     }
 
     private fun getCreditGratuity(list: List<Ticket>): Double{
+        val payments = mutableListOf<Double>()
         val paymentsList = mutableListOf<TicketPayment>()
         for (ticket in list){
-            for (p in ticket.paymentList!!){
-                if (p.paymentType == "Credit" || p.paymentType == "Manual Credit"){
-                    paymentsList.add(p)
+            if (ticket.paymentList != null){
+                for (p in ticket.paymentList!!){
+                    if (p.paymentType == "Credit" || p.paymentType == "Manual Credit"){
+                        paymentsList.add(p)
+                        payments.add(p.gratuity)
+                    }
+                }
+            }else{
+                if (ticket.paymentType == "Credit" || ticket.paymentType == "Manual Credit"){
+                    payments.add(ticket.gratuity)
                 }
             }
+
         }
-        return paymentsList.sumOf{it.gratuity}
+        return payments.sumOf{it}
+//            return paymentsList.sumOf{it.gratuity}
     }
 
     fun setActiveTicket(ticket: Ticket){
@@ -323,9 +354,9 @@ class CheckoutViewModel @Inject constructor (
                                     creditTransaction.captureTotal = res.Amount
                                     creditTransaction.captureTransaction = adjustResponse(res)
 
-                                    val ticket = item.payment!!.tickets!!.find{ t -> t.id == item.ticket!!.id}
-                                    var ctNew = payment.creditCardTransactions?.find{ it -> it.creditTotal == creditTransaction.creditTotal}
-                                    ctNew = creditTransaction
+//                                    val ticket = item.payment!!.tickets!!.find{ t -> t.id == item.ticket!!.id}
+//                                    var ctNew = payment.creditCardTransactions?.find{ it -> it.creditTotal == creditTransaction.creditTotal}
+//                                    ctNew = creditTransaction
                                     saveCapturedPaymentToCloud(item.payment!!)
                                 }
                             }
@@ -343,7 +374,7 @@ class CheckoutViewModel @Inject constructor (
         }
     }
 
-    fun updateUserClock(){
+    private fun updateUserClock(){
         viewModelScope.launch {
             val user = loginRepository.getOpsUser()
             if (user != null) {
@@ -359,7 +390,7 @@ class CheckoutViewModel @Inject constructor (
         }
     }
 
-    fun adjustResponse(response45: TransactionResponse45): CaptureResponse{
+    private fun adjustResponse(response45: TransactionResponse45): CaptureResponse{
         return CaptureResponse(
             ApprovalStatus = response45.ApprovalStatus,
             Token = response45.Token,
@@ -369,14 +400,14 @@ class CheckoutViewModel @Inject constructor (
         )
     }
 
-    fun savePaymentToCloud(){
+    private fun savePaymentToCloud(){
         viewModelScope.launch {
             val p: Payment = updatePayment.savePayment(activePayment.value!!)
                 _activePayment.postValue(p)
             }
     }
 
-    fun saveCapturedPaymentToCloud(payment: Payment){
+    private fun saveCapturedPaymentToCloud(payment: Payment){
         viewModelScope.launch {
             updatePayment.savePayment(payment)
         }

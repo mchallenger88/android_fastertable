@@ -3,7 +3,6 @@ package com.fastertable.fastertable.ui.error
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.fastertable.fastertable.common.base.BaseViewModel
-import dagger.hilt.android.lifecycle.HiltViewModel
 
 
 class ErrorViewModel : BaseViewModel()  {

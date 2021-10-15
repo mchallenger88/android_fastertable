@@ -30,11 +30,11 @@ class SplitPaymentFragment: BaseFragment() {
     }
 
     private fun createAdapters(binding: PaymentSplitFragmentBinding){
-        val ticketNumberAdapter = TicketSideBarAdapter(TicketSideBarAdapter.TicketSideBarListener { it ->
+        val ticketNumberAdapter = TicketSideBarAdapter(TicketSideBarAdapter.TicketSideBarListener {
             viewModel.setActiveTicket(it)
         })
 
-        val ticketsAdapter = TicketItemAdapter(TicketItemAdapter.TicketItemListener { it ->
+        val ticketsAdapter = TicketItemAdapter(TicketItemAdapter.TicketItemListener {
 
         })
 

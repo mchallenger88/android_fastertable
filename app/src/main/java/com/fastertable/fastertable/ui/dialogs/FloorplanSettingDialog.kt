@@ -4,16 +4,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.*
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
-import com.fastertable.fastertable.R
 import com.fastertable.fastertable.data.models.RestaurantFloorplan
 import com.fastertable.fastertable.databinding.FloorplanPropertyDialogBinding
 import com.fastertable.fastertable.ui.floorplan_manage.FloorplanManageViewModel
-import com.fastertable.fastertable.ui.floorplan_manage.FloorplanManagementFragment
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 
 class FloorplanSettingDialog: DialogFragment() {
     private var floorplan: RestaurantFloorplan? = null
@@ -21,8 +16,7 @@ class FloorplanSettingDialog: DialogFragment() {
     private lateinit var binding: FloorplanPropertyDialogBinding
 
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-//        return inflater.inflate(R.layout.floorplan_property_dialog, container, false)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = FloorplanPropertyDialogBinding.inflate(inflater)
         return binding.root
     }

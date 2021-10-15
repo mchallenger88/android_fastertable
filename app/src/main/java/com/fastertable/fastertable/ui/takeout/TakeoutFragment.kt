@@ -6,14 +6,12 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.activityViewModels
 import com.fastertable.fastertable.R
 import com.fastertable.fastertable.common.base.BaseFragment
 import com.fastertable.fastertable.data.models.TakeOutCustomer
 import com.fastertable.fastertable.databinding.TakeoutFragmentBinding
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.MutableStateFlow
 
 @AndroidEntryPoint
 class TakeoutFragment : BaseFragment(){
@@ -63,7 +61,7 @@ class TakeoutFragment : BaseFragment(){
     }
 
     private fun validateTakeoutNumber(): Boolean {
-        if (!binding.editTakeoutPhone.text.toString().trim().isEmpty()){
+        if (binding.editTakeoutPhone.text.toString().trim().isNotEmpty()){
             if (!isValidPhone(binding.editTakeoutPhone.text.toString().trim())){
                 binding.editTakeoutPhoneLayout.error = "Enter a valid phone number"
                 binding.editTakeoutPhone.requestFocus()

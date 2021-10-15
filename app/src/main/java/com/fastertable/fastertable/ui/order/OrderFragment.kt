@@ -55,7 +55,7 @@ class OrderFragment : BaseFragment() {
     }
 
     private fun createObservers(binding: OrderFragmentBinding){
-        viewModel.pageLoaded.observe(viewLifecycleOwner, { it ->
+        viewModel.pageLoaded.observe(viewLifecycleOwner, {
             if (it){
                 createMenuButtons(viewModel.menus.value!!, binding)
                 viewModel.setPageLoaded(false)
@@ -70,13 +70,12 @@ class OrderFragment : BaseFragment() {
     }
 
     private fun createMenuButtons(menus: List<Menu>, binding: OrderFragmentBinding){
-        menus.forEachIndexed{ int, menu ->
+        for (menu in menus){
             val tab = binding.menusTabBar.newTab()
 
             tab.id = ViewCompat.generateViewId()
             tab.text = menu.name
             binding.menusTabBar.addTab(tab)
-
         }
 
         menus.forEachIndexed{ int, menu ->

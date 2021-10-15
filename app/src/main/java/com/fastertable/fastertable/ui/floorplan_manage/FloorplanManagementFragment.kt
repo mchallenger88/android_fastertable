@@ -8,6 +8,7 @@ import android.graphics.Color
 import android.graphics.Point
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
 import android.view.*
 import android.widget.*
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -271,7 +272,7 @@ class FloorplanManagementFragment: Fragment() {
     @SuppressLint("ClickableViewAccessibility")
     fun loadTables(binding: FloorplanManagementFragmentBinding){
         binding.layoutFloorplan.removeAllViews()
-        val handler = Handler()
+        val handler = Handler(Looper.myLooper()!!)
         var counterClicks = 0
         var isBusy = false
         if (viewModel.activeFloorplan.value !== null) {

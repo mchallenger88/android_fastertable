@@ -91,13 +91,18 @@ class LoginActivity : BaseActivity(), DialogListener {
 
     }
 
-    //TODO: Add all departments and directions
     override fun returnValue(value: String) {
         val employee = userViewModel.employee.value
         if (employee !=  null){
             when (employee.employeeDetails.department){
                 "Manager" -> userViewModel.navigateToHome()
                 "Waitstaff" -> userViewModel.navigateToHome()
+                "Admin" -> userViewModel.navigateToHome()
+                "Support" -> userViewModel.navigateToKitchen()
+                "Kitchen" -> userViewModel.navigateToKitchen()
+                "Host" -> userViewModel.navigateToHome()
+                "Barstaff" -> userViewModel.navigateToHome()
+                "Back Office" -> userViewModel.navigateToKitchen()
                 else -> null
             }
         }

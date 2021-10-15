@@ -16,7 +16,7 @@ import dagger.hilt.android.AndroidEntryPoint
 class TransferOrderFragment : BaseFragment() {
     private val viewModel: TransferOrderViewModel by activityViewModels()
     private lateinit var binding: TransferOrderFragmentBinding
-    val args: TransferOrderFragmentArgs by navArgs()
+    private val args: TransferOrderFragmentArgs by navArgs()
 
     override fun onCreateView(
         inflater: LayoutInflater,
