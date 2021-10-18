@@ -1,5 +1,6 @@
 package com.fastertable.fastertable.ui.login.restaurant
 
+import android.util.Log
 import androidx.lifecycle.*
 import com.fastertable.fastertable.data.models.Company
 import com.fastertable.fastertable.data.models.Location
@@ -110,13 +111,16 @@ class RestaurantLoginViewModel @Inject constructor(
             _showProgressBar.postValue(true)
             _status.postValue(ApiStatus.LOADING)
             try {
-                getRestaurantSettings.getRestaurantSettings(restaurant.value!!.id)
-                val settings: Settings? = loginRepository.getSettings()
-                _settings.postValue(settings!!)
+//                getRestaurantSettings.getRestaurantSettings(restaurant.value!!.id)
+                val settings: Settings = getRestaurantSettings.getRestaurantSettings(restaurant.value!!.id)
+                _settings.postValue(settings)
 
-                val terminal = loginRepository.getTerminal()
+                var terminal = loginRepository.getTerminal()
                 if (terminal != null){
-                    loginRepository.saveTerminal(settings.terminals.find{ it.terminalId == terminal.terminalId}!!)
+                    loginRepository.saveTerminal(settings.terminals.find{ it.terminalId == terminal!!.terminalId}!!)
+                    terminal = loginRepository.getTerminal()
+                }else{
+                    _navigateToTerminals.postValue(true)
                 }
                 saveTaxRate(settings)
 

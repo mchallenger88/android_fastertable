@@ -1,6 +1,7 @@
 package com.fastertable.fastertable.data.models
 
 import android.os.Parcelable
+import android.util.Log
 import com.fastertable.fastertable.services.PrintTicketService
 import com.fastertable.fastertable.utils.GlobalUtils
 import com.fastertable.fastertable.utils.round
@@ -309,8 +310,17 @@ data class Payment(
 
     fun getCashReceipt(printer: Printer, location: Location): Document{
         Epson.use()
+        var printerModel: String = ""
+        if (printer.printerModel.contains("88")){
+            Log.d("PrinterTest", printer.printerModel)
+            printerModel = "TM_T88V"
+            Log.d("PrinterTest", printerModel)
+        }else{
+            Log.d("PrinterTest", printer.printerModel)
+            printerModel = printer.printerModel
+        }
         val document = PrinterDriver.createDocument(
-            DocumentSettings(), printer.printerModel)
+            DocumentSettings(), printerModel)
         PrintTicketService().paidCashReceipt(document, this, activeTicket()!!, location)
 
         return document

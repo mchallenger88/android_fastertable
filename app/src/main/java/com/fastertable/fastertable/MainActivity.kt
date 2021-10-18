@@ -24,6 +24,7 @@ import com.fastertable.fastertable.common.base.BaseActivity
 import com.fastertable.fastertable.common.base.BaseContinueDialog
 import com.fastertable.fastertable.common.base.DismissListener
 import com.fastertable.fastertable.data.models.*
+import com.fastertable.fastertable.data.repository.GetPayment
 import com.fastertable.fastertable.data.repository.LoginRepository
 import com.fastertable.fastertable.data.repository.OrderRepository
 import com.fastertable.fastertable.data.repository.PaymentRepository
@@ -66,6 +67,7 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
     @Inject lateinit var loginRepository: LoginRepository
     @Inject lateinit var orderRepository: OrderRepository
     @Inject lateinit var paymentRepository: PaymentRepository
+    @Inject lateinit var getPayment: GetPayment
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var settings: Settings
     private val homeViewModel: HomeViewModel by viewModels()
@@ -165,6 +167,18 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
             if (it){
                 navController.navigate(HomeFragmentDirections.actionNavHomeToTakeoutFragment())
                 homeViewModel.setNavigateToTakeout(false)
+            }
+        })
+
+        homeViewModel.navigateToPayment.observe(this, {
+            if (it.contains("O_")){
+                orderViewModel.clearOrder()
+                paymentViewModel.clearPayment()
+                orderViewModel.setCurrentOrderId(it)
+
+                paymentViewModel.setCurrentPayment(it.replace("O", "P"))
+                navController.navigate(HomeFragmentDirections.actionNavHomeToPaymentFragment())
+                homeViewModel.navigationEnd()
             }
         })
     }
@@ -278,6 +292,27 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
                 orderViewModel.clearError()
             }
         })
+
+        orderViewModel.activeOrderSet.observe(this, {
+            if (it){
+                val o = orderViewModel.activeOrder.value!!
+                Log.d("OrderTesting", o.toString())
+                if (o.closeTime == null){
+                    Log.d("OrderTesting", "Open Order")
+                    navController.navigate(HomeFragmentDirections.actionNavHomeToOrderFragment())
+                    homeViewModel.navigationEnd()
+                }else if (o.closeTime != null){
+                    Log.d("OrderTesting", "Closed Order")
+                    goToPayment(navController)
+                }
+            }
+        })
+
+        orderViewModel.kitchenButtonEnabled.observe(this, {
+            if (!it){
+                alertMessage("Your order has been sent to the kitchen!")
+            }
+        })
     }
 
     private fun paymentObservables(navController: NavController){
@@ -300,7 +335,7 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
 
         paymentViewModel.activePayment.observe(this, { it ->
             if (it != null) {
-                if (it.closed){
+                if (it.closed && orderViewModel.activeOrder.value != null && orderViewModel.activeOrder.value!!.closeTime == null){
                     orderViewModel.closeOrder()
                 }
             }

@@ -26,13 +26,14 @@ class LoginCompany @Inject constructor(private val companyLoginUseCase: CompanyL
 class GetRestaurantSettings @Inject constructor(private val getSettingsUseCase: GetSettingsUseCase,
                                                 private val loginRepository: LoginRepository){
 
-    suspend fun getRestaurantSettings(rid: String) {
+    suspend fun getRestaurantSettings(rid: String): Settings {
         val result = getSettingsUseCase.getSettings(rid)
         val settings: Settings
 
         if (result is GetSettingsUseCase.Result.Success){
             settings = result.settings
             loginRepository.saveRestaurantSettings(settings)
+            return settings
         }else{
             throw RuntimeException("fetch failed")
         }

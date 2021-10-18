@@ -1,6 +1,7 @@
 package com.fastertable.fastertable.ui.payment
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -44,6 +45,7 @@ enum class ShowCreditPayment{
 @HiltViewModel
 class PaymentViewModel @Inject constructor (private val loginRepository: LoginRepository,
                                             private val approvalRepository: ApprovalRepository,
+                                            private val getOrder: GetOrder,
                                             private val savePayment: SavePayment,
                                             private val updatePayment: UpdatePayment,
                                             private val getPayment: GetPayment,
@@ -348,20 +350,29 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
             val ticket = _activePayment.value?.activeTicket()
             val printer = settings.printers.find { it.printerName == terminal.defaultPrinter.printerName }
             val location = company.getLocation(settings.locationId)
-            if (ticket?.activePayment()!!.paymentType == "Cash"){
-                if (printer != null){
-                    val ticketDocument = _activePayment.value?.getCashReceipt(printer, location!!)
-                    receiptPrintingService.printTicketReceipt(ticketDocument!!, printer, settings)
+            if (ticket?.activePayment() != null){
+                if (ticket.activePayment()!!.paymentType == "Cash"){
+                    if (printer != null){
+                        val ticketDocument = _activePayment.value?.getCashReceipt(printer, location!!)
+                        receiptPrintingService.printTicketReceipt(ticketDocument!!, printer, settings)
+                    }
+                }
+
+                if (ticket.activePayment()!!.paymentType == "Credit"){
+                    if (printer != null){
+                        val ticketDocument = _activePayment.value?.getCreditReceipt(printer, location!!)
+                        receiptPrintingService.printTicketReceipt(ticketDocument!!, printer, settings)
+                    }
                 }
             }
+        }
+    }
 
-            if (ticket.activePayment()!!.paymentType == "Credit"){
-                if (printer != null){
-                    val ticketDocument = _activePayment.value?.getCreditReceipt(printer, location!!)
-                    receiptPrintingService.printTicketReceipt(ticketDocument!!, printer, settings)
-                }
-            }
-
+    fun setCurrentPayment(id: String){
+        viewModelScope.launch {
+            val o = getOrder.getOrder(id.replace("P", "O"), settings.locationId)
+            _activeOrder.postValue(o)
+            getCloudPayment(id, settings.locationId)
         }
     }
 

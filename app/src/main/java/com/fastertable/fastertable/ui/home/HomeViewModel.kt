@@ -1,5 +1,6 @@
 package com.fastertable.fastertable.ui.home
 
+import android.util.Log
 import androidx.lifecycle.*
 import com.fastertable.fastertable.data.models.*
 import com.fastertable.fastertable.data.repository.LoginRepository
@@ -39,6 +40,10 @@ class HomeViewModel @Inject constructor (private val loginRepository: LoginRepos
     private val _navigateToOrder = MutableLiveData<String>()
     val navigateToOrder: LiveData<String>
         get() = _navigateToOrder
+
+    private val _navigateToPayment = MutableLiveData<String>()
+    val navigateToPayment: LiveData<String>
+        get() = _navigateToPayment
 
     private val _navigateToFloorplan = MutableLiveData<Boolean>()
     val navigateToFloorplan: LiveData<Boolean>
@@ -92,7 +97,15 @@ class HomeViewModel @Inject constructor (private val loginRepository: LoginRepos
     }
 
     fun onOrderClicked(id: String) {
-        _navigateToOrder.value = id
+        val selectedOrder = _orders.value?.find { it.id == id }
+        if (selectedOrder != null){
+            if (selectedOrder.closeTime == null){
+                _navigateToOrder.value = id
+            }else{
+                _navigateToPayment.value = id
+            }
+        }
+
     }
 
     fun onOpenClicked(){

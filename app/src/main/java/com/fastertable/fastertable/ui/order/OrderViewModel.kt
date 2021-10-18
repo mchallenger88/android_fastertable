@@ -1,5 +1,6 @@
 package com.fastertable.fastertable.ui.order
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -102,6 +103,10 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
     val activeOrder: LiveData<Order?>
         get() = _activeOrder
 
+    private val _activeOrderSet = MutableLiveData(false)
+    val activeOrderSet: LiveData<Boolean>
+        get() = _activeOrderSet
+
     private val _orderItem = MutableLiveData<OrderItem?>()
     val orderItem: LiveData<OrderItem?>
         get() = _orderItem
@@ -157,6 +162,10 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
     private val _errorMessage = MutableLiveData<String>()
     val errorMessage: LiveData<String>
         get() = _errorMessage
+
+    private val _kitchenButtonEnabled = MutableLiveData(false)
+    val kitchenButtonEnabled: LiveData<Boolean>
+        get() = _kitchenButtonEnabled
 
     //endregion
 
@@ -388,6 +397,7 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
             g?.orderItemAdd(item)
 
             _activeOrder.value = _activeOrder.value
+            _kitchenButtonEnabled.value = true
             _menusNavigation.value = MenusNavigation.CATEGORIES
             clearItemSettings()
         }else{
@@ -598,6 +608,7 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
 
     fun sendKitchenClick(){
         viewModelScope.launch {
+            _kitchenButtonEnabled.value = false
             sendToKitchen()
         }
     }

@@ -59,12 +59,13 @@ class UpdateOrder @Inject constructor(private val updateOrderUseCase: UpdateOrde
 class GetOrder @Inject constructor(private val getOrderUseCase: GetOrderUseCase,
                                    private val orderRepository: OrderRepository){
 
-    suspend fun getOrder(id: String, lid: String){
+    suspend fun getOrder(id: String, lid: String): Order{
         val order: Order
         val result = getOrderUseCase.getOrder(id, lid)
         if (result is GetOrderUseCase.Result.Success){
             order = result.order
             orderRepository.saveOrder(order)
+            return order
         }else{
             throw RuntimeException("fetch failed")
         }

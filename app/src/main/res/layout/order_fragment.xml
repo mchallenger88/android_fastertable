@@ -71,7 +71,9 @@
                     android:text="@string/send_kitchen"
                     android:textColor="@color/white"
                     android:textSize="@dimen/toolbar_button"
+                    android:enabled="@{viewModel.kitchenButtonEnabled}"
                     android:onClick="@{() -> viewModel.sendKitchenClick()}"
+                    app:toggleSendToKitchen="@{viewModel.activeOrder}"
                     app:layout_constraintEnd_toEndOf="@+id/layout_order_buttons"
                     app:layout_constraintTop_toTopOf="parent"
                     app:strokeColor="@color/white" />

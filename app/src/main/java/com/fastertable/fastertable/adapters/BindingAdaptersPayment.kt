@@ -1,6 +1,7 @@
 package com.fastertable.fastertable.adapters
 
 import android.content.res.ColorStateList
+import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.ImageButton

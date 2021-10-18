@@ -1,15 +1,19 @@
 package com.fastertable.fastertable.adapters
 
 import android.annotation.SuppressLint
+import android.content.res.ColorStateList
 import android.view.View
 import android.widget.ImageButton
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.databinding.BindingAdapter
 import com.fastertable.fastertable.R
 import com.fastertable.fastertable.data.models.Order
 import com.fastertable.fastertable.data.models.OrderItem
 import com.fastertable.fastertable.data.models.PayTicket
+import com.google.android.material.button.MaterialButton
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
@@ -208,4 +212,36 @@ fun toggleItemNoMake(image: ImageView, item: OrderItem?){
             image.visibility = View.INVISIBLE
         }
     }
+}
+
+@BindingAdapter("toggleSendToKitchen")
+fun toggleSendToKitchen(button: Button, order: Order?){
+    val btn: MaterialButton = button as MaterialButton
+    val white = ContextCompat.getColor(button.context, R.color.white)
+    val offWhite = ContextCompat.getColor(button.context, R.color.offWhite)
+    if (btn.isEnabled){
+        btn.setTextColor(ColorStateList.valueOf(white))
+        btn.strokeColor = ColorStateList.valueOf(white)
+    }else{
+        btn.setTextColor(ColorStateList.valueOf(offWhite))
+        btn.strokeColor = ColorStateList.valueOf(offWhite)
+    }
+//    if (order != null) {
+//        var hasOpenItems = false
+//        for (item in order.getAllOrderItems()){
+//            if (item.status == "Started"){
+//                hasOpenItems = true
+//            }
+//        }
+//        if (hasOpenItems){
+//            btn.isEnabled = true
+//            btn.setTextColor(ColorStateList.valueOf(white))
+//            btn.strokeColor = ColorStateList.valueOf(white)
+//
+//        }else{
+//            btn.isEnabled = false
+//            btn.setTextColor(ColorStateList.valueOf(offWhite))
+//            btn.strokeColor = ColorStateList.valueOf(offWhite)
+//        }
+//    }
 }
