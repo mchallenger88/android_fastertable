@@ -163,8 +163,8 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
     val errorMessage: LiveData<String>
         get() = _errorMessage
 
-    private val _kitchenButtonEnabled = MutableLiveData(false)
-    val kitchenButtonEnabled: LiveData<Boolean>
+    private val _kitchenButtonEnabled = MutableLiveData<Boolean?>()
+    val kitchenButtonEnabled: LiveData<Boolean?>
         get() = _kitchenButtonEnabled
 
     //endregion
@@ -293,7 +293,7 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
 
 
     private fun checkModifierValidation(){
-        var requireMet: Boolean = true
+        var requireMet = true
         activeItem.value!!.modifiers.forEach { mod ->
             var count = 0
             mod.modifierItems.forEach { mi ->
@@ -664,14 +664,24 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
             viewModelScope.launch {
                 reorderList = mutableListOf<ReorderDrink>()
                 for (guest in activeOrder.value?.guests!!) {
-                    val oi = guest.orderItems?.findLast { it.salesCategory == "Bar" }
+//                    val oi = guest.orderItems?.findLast { it.salesCategory == "Bar" }
+                    val oi = guest.orderItems?.filter { it.salesCategory == "Bar" }
                     if (oi != null) {
-                        val drink = ReorderDrink(
-                            guestId = guest.id,
-                            drink = oi
-                        )
-                        reorderList.add(drink)
+                        for (item in oi){
+                            val drink = ReorderDrink(
+                                guestId = guest.id,
+                                drink = item
+                            )
+                            reorderList.add(drink)
+                        }
                     }
+//                    if (oi != null) {
+//                        val drink = ReorderDrink(
+//                            guestId = guest.id,
+//                            drink = oi
+//                        )
+//                        reorderList.add(drink)
+//                    }
                 }
                 _drinkList.value = emptyList()
                 _drinkList.postValue(reorderList)
@@ -681,9 +691,9 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
         }
     }
 
-    fun addDrinksToOrder(){
-        if (activeOrder.value!!.closeTime != null){
-            for (drink in reorderList){
+    fun addDrinksToOrder(drinksList: MutableList<ReorderDrink>){
+        if (activeOrder.value!!.closeTime == null){
+            for (drink in drinksList){
                 val newOrderItem = drink.drink.deepCopy()
                 newOrderItem.id = _activeOrder.value?.guests?.get(drink.guestId)?.orderItems?.last()?.id!!.plus(1)
                 newOrderItem.status = "Started"

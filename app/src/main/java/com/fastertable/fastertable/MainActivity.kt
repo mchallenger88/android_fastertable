@@ -309,7 +309,7 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
         })
 
         orderViewModel.kitchenButtonEnabled.observe(this, {
-            if (!it){
+            if (it != null && !it){
                 alertMessage("Your order has been sent to the kitchen!")
             }
         })
@@ -369,6 +369,13 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
         paymentViewModel.navigateToPayment.observe(this, {
             if (it){
                 navController.navigate(SplitPaymentFragmentDirections.actionPaymentSplitFragmentToPaymentFragment())
+            }
+        })
+
+        paymentViewModel.navigateToHome.observe(this, {
+            if (it){
+                navController.navigate(PaymentFragmentDirections.actionPaymentFragmentToNavHome())
+                paymentViewModel.setReturnHome(false)
             }
         })
     }

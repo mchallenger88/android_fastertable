@@ -82,6 +82,21 @@
                 app:strokeColor="@color/white" />
 
             <Button
+                android:id="@+id/btn_cancel_credit"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:layout_marginStart="12dp"
+                android:text="@string/cancel_credit"
+                android:textColor="@color/white"
+                android:textSize="@dimen/toolbar_button"
+                android:onClick="@{() -> viewModel.cancelCredit()}"
+                app:layout_constraintStart_toEndOf="@+id/btn_pay_credit"
+                app:layout_constraintTop_toTopOf="@+id/layout_payment_buttons"
+                app:strokeColor="@color/white" />
+
+            <Button
                 android:id="@+id/btn_print_receipt"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="wrap_content"
@@ -92,20 +107,20 @@
                 android:textColor="@color/white"
                 android:textSize="@dimen/toolbar_button"
                 android:onClick="@{() -> viewModel.printReceipt()}"
-                app:layout_constraintStart_toEndOf="@+id/btn_pay_credit"
+                app:layout_constraintStart_toEndOf="@+id/btn_cancel_credit"
                 app:layout_constraintTop_toTopOf="@+id/layout_payment_buttons"
                 app:strokeColor="@color/white" />
 
             <Button
-                android:id="@+id/btn_cancel_credit"
+                android:id="@+id/btn_payment_home"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="6dp"
-                android:text="@string/cancel_credit"
+                android:text="@string/dashboard"
                 android:textColor="@color/white"
                 android:textSize="@dimen/toolbar_button"
-                android:onClick="@{() -> viewModel.cancelCredit()}"
+                android:onClick="@{() -> viewModel.returnHome()}"
                 app:layout_constraintEnd_toEndOf="@+id/layout_payment_buttons"
                 app:layout_constraintTop_toTopOf="parent"
                 app:strokeColor="@color/white" />

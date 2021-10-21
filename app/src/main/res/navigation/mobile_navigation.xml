@@ -54,7 +54,9 @@
             app:popUpToInclusive="true"/>
         <action
             android:id="@+id/action_orderFragment_to_paymentFragment"
-            app:destination="@id/paymentFragment" />
+            app:destination="@id/paymentFragment"
+            app:popUpTo="@id/nav_home"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_orderFragment_to_transferOrderFragment"
             app:destination="@id/transferOrderFragment" />
@@ -65,11 +67,10 @@
         android:label="PaymentFragment"
         tools:layout="@layout/payment_fragment">
         <action
-            android:id="@+id/action_paymentFragment_to_orderFragment"
-            app:destination="@id/orderFragment" />
-        <action
             android:id="@+id/action_paymentFragment_to_nav_home"
-            app:destination="@id/nav_home" />
+            app:destination="@id/nav_home"
+            app:popUpTo="@id/nav_home"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_paymentFragment_to_paymentSplitFragment"
             app:destination="@id/paymentSplitFragment" />

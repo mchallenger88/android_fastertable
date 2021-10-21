@@ -1,5 +1,6 @@
 package com.fastertable.fastertable.ui.approvals
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -111,11 +112,20 @@ class ApprovalsViewModel @Inject constructor(
 
     fun approveApproval(){
         viewModelScope.launch {
+            processApproval()
+        }
+    }
+
+    suspend fun processApproval(){
+        val job = viewModelScope.launch {
             _showProgress.postValue(true)
             getOrderPayment()
+        }
+
+        job.join()
+        viewModelScope.launch {
             val payment = paymentRepository.getPayment()
             val order = orderRepository.getOrder()
-
             if (payment != null && order != null){
                 when (liveApprovalItem.value?.approvalType){
                     "Discount Item" -> { approveTicketItem(payment, order) }
@@ -136,6 +146,7 @@ class ApprovalsViewModel @Inject constructor(
                 _showProgress.postValue(false)
             }
         }
+
     }
 
     private suspend fun getOrderPayment(){
@@ -153,6 +164,11 @@ class ApprovalsViewModel @Inject constructor(
             ticket?.ticketItems?.find{ it -> it.id == ticketItem?.id}?.approve()
             ticket?.recalculateAfterApproval(order.taxRate)
             payment.statusApproval = "Approved"
+
+            //Check the total owed and if it's zero then close the check
+            if (payment.allTicketsPaid()){
+                payment.close()
+            }
             updatePayment.savePayment(payment)
         }
     }

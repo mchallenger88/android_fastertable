@@ -22,6 +22,8 @@ import com.fastertable.fastertable.ui.order.OrderViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
+import androidx.navigation.fragment.findNavController
 import com.fastertable.fastertable.data.models.ManualCredit
 
 
@@ -229,7 +231,6 @@ class PaymentFragment: BaseFragment() {
 
         }
     }
-
 
 
 }

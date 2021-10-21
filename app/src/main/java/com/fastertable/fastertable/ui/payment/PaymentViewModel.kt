@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.fragment.findNavController
 import com.fastertable.fastertable.common.Constants.BAD_VALUE
 import com.fastertable.fastertable.common.Constants.COMMUNICATION_ERROR
 import com.fastertable.fastertable.common.Constants.DECLINED
@@ -142,6 +143,10 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
     private val _navigateToPayment = MutableLiveData<Boolean>()
     val navigateToPayment: LiveData<Boolean>
         get() = _navigateToPayment
+
+    private val _navigateToHome = MutableLiveData(false)
+    val navigateToHome: LiveData<Boolean>
+        get() = _navigateToHome
 
     private val _whichCreditPayment = MutableLiveData(ShowCreditPayment.DEFAULT)
     val whichCreditPayment: LiveData<ShowCreditPayment>
@@ -825,6 +830,15 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
 
     fun setActiveOrder(order: Order){
         _activeOrder.value = order
+    }
+
+
+    fun returnHome(){
+        setReturnHome(true)
+    }
+
+    fun setReturnHome(b: Boolean){
+        _navigateToHome.value = b
     }
 
     fun printReceipt(){
