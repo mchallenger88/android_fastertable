@@ -3,14 +3,17 @@ package com.fastertable.fastertable.ui.home
 import android.util.Log
 import androidx.lifecycle.*
 import com.fastertable.fastertable.data.models.*
+import com.fastertable.fastertable.data.repository.GetOrders
 import com.fastertable.fastertable.data.repository.LoginRepository
 import com.fastertable.fastertable.data.repository.OrderRepository
+import com.fastertable.fastertable.utils.GlobalUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor (private val loginRepository: LoginRepository,
+                                         private val getOrders: GetOrders,
                                          private val orderRepository: OrderRepository) : ViewModel() {
 
     val user: OpsAuth = loginRepository.getOpsUser()!!
@@ -62,16 +65,27 @@ class HomeViewModel @Inject constructor (private val loginRepository: LoginRepos
         _viewLoaded.value = false
 
         viewModelScope.launch {
-            getOrders()
+            _orders.postValue(orderRepository.getOrdersFromFile())
+            _viewLoaded.postValue(true)
         }
     }
 
     fun getOrders(){
         viewModelScope.launch {
-            _orders.postValue(orderRepository.getOrdersFromFile())
-            _viewLoaded.postValue(true)
+           getWebOrders()
+        }
+    }
+
+    private suspend fun getWebOrders(){
+        val job = viewModelScope.launch {
+            val midnight = GlobalUtils().getMidnight()
+            val rid = loginRepository.getStringSharedPreferences("rid")
+            getOrders.getOrders(midnight, rid!!)
         }
 
+        job.join()
+        _orders.postValue(orderRepository.getOrdersFromFile())
+        _viewLoaded.postValue(true)
     }
 
     fun getCompany(){

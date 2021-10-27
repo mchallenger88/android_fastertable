@@ -200,11 +200,16 @@ class PaymentFragment: BaseFragment() {
 
     private fun applyDiscount(discount: Discount){
         //Is it discount ticket or discount item
-        viewModel.discountTicket(orderViewModel.activeOrder.value!!, discount)
+        if (viewModel.liveTicketItem.value != null){
+            viewModel.initialDiscountItem(discount)
+        }else{
+            viewModel.initialDiscountTicket(discount)
+        }
+
     }
 
     private fun modifyPrice(binding: PaymentFragmentBinding){
-        viewModel.modifyPrice(orderViewModel.activeOrder.value!!, binding.editModifyPrice.editText?.text.toString())
+        viewModel.initialModifyPrice(binding.editModifyPrice.editText?.text.toString())
     }
 
     private val expirationWatcher = object : TextWatcher {

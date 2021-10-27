@@ -5,7 +5,6 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import androidx.navigation.fragment.findNavController
 import com.fastertable.fastertable.common.Constants.BAD_VALUE
 import com.fastertable.fastertable.common.Constants.COMMUNICATION_ERROR
 import com.fastertable.fastertable.common.Constants.DECLINED
@@ -56,7 +55,7 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
                                             private val stageTransaction: StageTransaction,
                                             private val creditCardRepository: CreditCardRepository,
                                             private val initiateCreditTransaction: InitiateCreditTransaction,
-                                            private val getApproval: GetApproval,
+                                            private val getPaymentApprovals: GetApprovalsById,
                                             private val saveApproval: SaveApproval,
                                             private val updateApproval: UpdateApproval,
                                             private val receiptPrintingService: ReceiptPrintingService,
@@ -714,104 +713,236 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
         _navigateToPayment.value = true
     }
 
-
-    fun voidTicket(order: Order){
+    fun initialVoidTicket(){
         viewModelScope.launch {
-            _activePayment.value?.voidTicket()
-            _activePayment.postValue(_activePayment.value)
-            val id: String = order.id.replace("O", "A")
-            getApproval.getApproval(id, order.locationId)
-            if (approvalRepository.getApproval() == null){
-                val approval = approvalRepository.createVoidTicketApproval(order, activePayment.value!!, null)
-                savePaymentToCloud()
-                saveApprovalToCloud(approval)
-            }else{
-                val approval = approvalRepository.createVoidTicketApproval(order, activePayment.value!!, approvalRepository.getApproval())
+            voidTicket()
+        }
+    }
+
+
+    private suspend fun voidTicket(){
+        val error = checkForPriceChanges(true, false)
+        when (error){
+            0 -> {
+                _activePayment.value?.voidTicket()
+                _activePayment.postValue(_activePayment.value)
+                val approval = approvalRepository.createApproval(
+                    _activePayment.value!!, "Void Ticket", _activePayment.value!!.activeTicket()!!,
+                    null, null, null
+                )
                 savePaymentToCloud()
                 saveApprovalToCloud(approval)
             }
-        }
+            1 -> {
+                setError("Void Ticket", "There is a pending approval for this payment ticket.")
+            }
+            2 -> {
+                setError("Void Ticket", "A manager approval is pending and must be approved or rejected before proceeding.")
+            }
+            else -> {
 
-    }
-
-    fun voidTicketItem(order: Order){
-        viewModelScope.launch {
-            _activePayment.value?.voidTicketItem(liveTicketItem.value!!)
-            _activePayment.value = _activePayment.value
-            val id: String = order.id.replace("O", "A")
-            getApproval.getApproval(id, order.locationId)
-            if (approvalRepository.getApprovalbyId(id) == null){
-                val approval = approvalRepository.createVoidTicketItemApproval(order, activePayment.value!!,liveTicketItem.value!!, null)
-                saveApprovalToCloud(approval)
-                savePaymentToCloud()
-            }else{
-                val approval = approvalRepository.createVoidTicketItemApproval(order, activePayment.value!!,liveTicketItem.value!!, approvalRepository.getApproval())
-                savePaymentToCloud()
-                saveApprovalToCloud(approval)
             }
         }
-
     }
 
-    fun discountTicket(order: Order, discount: Discount){
+    fun initialDiscountTicket(discount: Discount){
         viewModelScope.launch {
-            var disTotal: Double
-            if (discountType.value == "Discount Ticket"){
-                disTotal = _activePayment.value?.discountTicket(discount)!!
-                _activePayment.value = _activePayment.value
+            discountTicket(discount)
+        }
+    }
+
+
+    suspend fun discountTicket(discount: Discount){
+        val error = checkForPriceChanges(true, false)
+        when (error){
+            0 -> {
+                _activePayment.value?.discountTicket(discount)
+                _activePayment.postValue(_activePayment.value)
                 _paymentScreen.value = ShowPayment.NONE
-                val id: String = order.id.replace("O", "A")
-                getApproval.getApproval(id, order.locationId)
-                if (approvalRepository.getApproval() == null){
-                    val approval = approvalRepository.createDiscountTicketApproval(order, activePayment.value!!,discount, disTotal, null)
-                    savePaymentToCloud()
-                    saveApprovalToCloud(approval)
-                }else{
-                    val approval = approvalRepository.createDiscountTicketApproval(order, activePayment.value!!,discount, disTotal, approvalRepository.getApproval())
-                    savePaymentToCloud()
-                    saveApprovalToCloud(approval)
+                val approval = approvalRepository.createApproval(
+                    _activePayment.value!!,
+                    "Discount Ticket",
+                    _activePayment.value!!.activeTicket()!!,
+                    null,
+                    null,
+                    null
+                )
+                savePaymentToCloud()
+                saveApprovalToCloud(approval)
+            }
+            1 -> {
+                setError("Discount Ticket", "There is a pending approval for this payment ticket.")
+            }
+            2 -> {
+                setError("Discount Ticket", "A manager approval is pending and must be approved or rejected before proceeding.")
+            }
+            else -> {
+
+            }
+        }
+    }
+
+    fun initialVoidItem(){
+        viewModelScope.launch {
+            voidTicketItem()
+        }
+    }
+
+    private suspend fun voidTicketItem(){
+        val ticket = _activePayment.value!!.activeTicket()!!
+        val id = liveTicketItem.value!!.id
+
+        val error = checkForPriceChanges(false, true)
+        when (error){
+            0 -> {
+                _activePayment.value?.voidTicketItem(liveTicketItem.value!!)
+                _activePayment.value = _activePayment.value
+
+                val approval = approvalRepository.createApproval(_activePayment.value!!, "Void Item", ticket,
+                    ticket.ticketItems.find{it.id == id}, null, null)
+
+                saveApprovalToCloud(approval)
+                savePaymentToCloud()
+            }
+            1 -> {
+                setError("Void Ticket Item", "There is a pending approval for this payment ticket.")
+            }
+            3 -> {
+                setError("Void Ticket Item", "A manager approval for this item is pending and must be approved or rejected before proceeding.")
+            }
+            else -> {
+
+            }
+        }
+    }
+
+
+    fun initialDiscountItem(discount: Discount){
+        viewModelScope.launch {
+            discountTicketItem(discount)
+        }
+    }
+
+    private suspend fun discountTicketItem(discount: Discount){
+        val ticket = _activePayment.value!!.activeTicket()!!
+        val id = liveTicketItem.value!!.id
+
+        val error = checkForPriceChanges(false, true)
+        when (error){
+            0 -> {
+                val disTotal = _activePayment.value?.discountTicket(discount)!!
+                _paymentScreen.value = ShowPayment.NONE
+                val approval = approvalRepository.createApproval(_activePayment.value!!, "Discount Item", ticket,
+                    ticket.ticketItems.find{it.id == id}, disTotal, null)
+
+                saveApprovalToCloud(approval)
+                savePaymentToCloud()
+            }
+            1 -> {
+                setError("Void Ticket Item", "There is a pending approval for this payment ticket.")
+                _paymentScreen.value = ShowPayment.NONE
+            }
+            3 -> {
+                setError("Void Ticket Item", "A manager approval for this item is pending and must be approved or rejected before proceeding.")
+                _paymentScreen.value = ShowPayment.NONE
+            }
+            else -> {
+
+            }
+        }
+    }
+
+    fun initialModifyPrice(price: String){
+        viewModelScope.launch {
+            modifyPrice(price)
+        }
+    }
+
+    private suspend fun modifyPrice(price: String){
+        val ticket = _activePayment.value!!.activeTicket()!!
+        val id = liveTicketItem.value!!.id
+
+        val error = checkForPriceChanges(false, true)
+        when (error){
+            0 -> {
+                _activePayment.value?.modifyItemPrice(liveTicketItem.value!!,  price.toDouble())!!
+                _paymentScreen.value = ShowPayment.NONE
+                val approval = approvalRepository.createApproval(_activePayment.value!!, "Modify Price", ticket,
+                    ticket.ticketItems.find{it.id == id}, price.toDouble(), null)
+
+                saveApprovalToCloud(approval)
+                savePaymentToCloud()
+            }
+            1 -> {
+                setError("Void Ticket Item", "There is a pending approval for this payment ticket.")
+                _paymentScreen.value = ShowPayment.NONE
+            }
+            3 -> {
+                setError("Void Ticket Item", "A manager approval for this item is pending and must be approved or rejected before proceeding.")
+                _paymentScreen.value = ShowPayment.NONE
+            }
+            else -> {
+
+            }
+        }
+    }
+
+
+    private suspend fun checkForPriceChanges(forTicket: Boolean, forTicketItem: Boolean): Int {
+        var list = mutableListOf<Approval>()
+        val job = viewModelScope.launch {
+            list = getAllPaymentApprovals() as MutableList<Approval>
+        }
+
+        job.join()
+
+        val ticket = _activePayment.value!!.activeTicket()!!
+        val id = liveTicketItem.value?.id
+        //0 = no error, 1 = an Approval Ticket exists, 2 = an Approval Ticket Items Exists, 3 = an Approval for this Specific Item Exists
+        var error = 0
+        if (forTicket){
+            for (approval in list){
+                if (approval.approvalType == "Void Ticket" || approval.approvalType == "Discount Ticket" && approval.approved == null){
+                    error = 1
+                    break
+                }
+
+                if (approval.approvalType == "Void Item" || approval.approvalType == "Discount Item" || approval.approvalType == "Modify Price"){
+                    if (approval.ticketId == ticket.id && approval.approved == null){
+                        error = 2
+                        break
+                    }
                 }
             }
+        }
 
-            if (discountType.value == "Discount Item"){
-                disTotal = _activePayment.value?.discountTicketItem(liveTicketItem.value!!, discount)!!
-                _activePayment.value = _activePayment.value
-                _paymentScreen.value = ShowPayment.NONE
-                val id: String = order.id.replace("O", "A")
-                getApproval.getApproval(id, order.locationId)
-                if (approvalRepository.getApproval() == null){
-                    val approval = approvalRepository.createDiscountTicketItemApproval(order, activePayment.value!!, liveTicketItem.value!!, discount, disTotal, null)
-                    savePaymentToCloud()
-                    saveApprovalToCloud(approval)
-                }else{
-                    val approval = approvalRepository.createDiscountTicketItemApproval(order, activePayment.value!!,liveTicketItem.value!!, discount, disTotal, approvalRepository.getApproval())
-                    savePaymentToCloud()
-                    saveApprovalToCloud(approval)
+        if (forTicketItem){
+            for (approval in list){
+                if (approval.approvalType == "Void Ticket" || approval.approvalType == "Discount Ticket" && approval.approved == null){
+                    error = 1
+                    break
+                }
+
+                if (approval.approvalType == "Void Item" || approval.approvalType == "Discount Item" || approval.approvalType == "Modify Price"){
+                    if (approval.ticketId == ticket.id && approval.ticketItemId == id && approval.approved == null){
+                        error = 3
+                        break
+                    }
                 }
             }
-
-
         }
+
+        return error
     }
 
-    fun modifyPrice(order: Order, price: String){
-        viewModelScope.launch {
-            _activePayment.value?.modifyItemPrice(liveTicketItem.value!!, price.toDouble())!!
-            _activePayment.value = _activePayment.value
-            _paymentScreen.value = ShowPayment.NONE
-            val id: String = order.id.replace("O", "A")
-            getApproval.getApproval(id, order.locationId)
-
-            if (approvalRepository.getApproval() == null){
-                val approval = approvalRepository.createModifyItemPriceApproval(order, activePayment.value!!, liveTicketItem.value!!, null)
-                savePaymentToCloud()
-                saveApprovalToCloud(approval)
-            }else{
-                val approval = approvalRepository.createModifyItemPriceApproval(order, activePayment.value!!,liveTicketItem.value!!, approvalRepository.getApproval())
-                savePaymentToCloud()
-                saveApprovalToCloud(approval)
-            }
+    private suspend fun getAllPaymentApprovals(): List<Approval>{
+        var list = mutableListOf<Approval>()
+        val job = viewModelScope.launch {
+            list = getPaymentApprovals.getAllPaymentApprovals(activePayment.value?.id!!, activePayment.value?.locationId!!) as MutableList<Approval>
         }
+
+        job.join()
+        return list
     }
 
     fun cancelDiscount(){

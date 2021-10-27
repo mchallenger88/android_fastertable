@@ -5,16 +5,19 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.activityViewModels
 import com.fastertable.fastertable.databinding.BottomSheetTicketItemMoreBinding
+import com.fastertable.fastertable.ui.payment.PaymentViewModel
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
 class TicketItemMoreBottomSheet: BottomSheetDialogFragment() {
     private lateinit var dialogListener: DialogListener
+    private val viewModel: PaymentViewModel by activityViewModels()
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val binding = BottomSheetTicketItemMoreBinding.inflate(inflater)
 
         binding.btnTicketVoidItem.setOnClickListener {
-            dialogListener.returnValue("Void Item")
+            viewModel.initialVoidItem()
             dismiss()
         }
 

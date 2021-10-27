@@ -174,7 +174,8 @@ data class Order(
         val ticketItems = arrayListOf<TicketItem>()
         this.guests?.forEach { guest ->
             guest.orderItems?.forEachIndexed { index, orderItem ->
-                val ticketItem = createTicketItem(guest.id, orderItem)
+                val i = ticketItems.size.plus(1)
+                val ticketItem = createTicketItem(i, orderItem)
                 ticketItems.add(ticketItem)
             }
         }
@@ -183,6 +184,7 @@ data class Order(
 
 
     fun createTicketItem(index: Int, orderItem: OrderItem): TicketItem{
+
         return TicketItem(
             id = index,
             orderGuestNo = index,
@@ -245,6 +247,7 @@ data class Order(
                 paymentList = null,
                 partialPayment = false,
                 uiActive = true,
+                taxRate = taxRate,
                 paymentType = ""
             )
         }else{
@@ -262,6 +265,7 @@ data class Order(
                 paymentList = null,
                 partialPayment = false,
                 uiActive = true,
+                taxRate = taxRate,
                 paymentType = ""
             )
         }
@@ -570,6 +574,13 @@ data class TokenOrder(
     val locationName: String,
     val startTime: Long,
     val orderTotal: Double
+): Parcelable
+
+@Parcelize
+data class IdRequest
+    (
+    val id: String,
+    val lid: String
 ): Parcelable
 //
 //export interface OrderEmail{

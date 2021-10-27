@@ -95,7 +95,7 @@
         android:paddingBottom="10dp"
         app:cardBackgroundColor="#E8EAF6"
         app:cardElevation="0dp"
-        app:approvalCard="@{viewModel.approvalItems}"
+        app:approvalCard="@{viewModel.activeApproval}"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@+id/toolbar_approvalsSideBar"
         app:layout_constraintTop_toBottomOf="@+id/approvals_fastertoolbar">
@@ -116,7 +116,7 @@
                 android:layout_height="60dp"
                 android:background="@color/primaryLightColor"
                 android:gravity="center_horizontal|center_vertical"
-                app:approvalHeader="@{viewModel.approvalItems}"
+                app:approvalHeader="@{viewModel.activeApproval}"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -162,7 +162,7 @@
                     android:layout_marginEnd="24dp"
                     app:layout_constraintBottom_toTopOf="@+id/text_approval_salesTax"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:approvalSubTotal="@{viewModel.liveApprovalItem}" />
+                    app:approvalSubTotal="@{viewModel.approvalTicket}" />
 
                 <TextView
                     android:id="@+id/text_approval_tax"
@@ -182,7 +182,7 @@
                     android:layout_marginEnd="24dp"
                     app:layout_constraintBottom_toTopOf="@+id/text_approval_total"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:approvalTax="@{viewModel.liveApprovalItem}" />
+                    app:approvalTax="@{viewModel.approvalTicket}" />
 
                 <TextView
                     android:id="@+id/text_approval_total"
@@ -204,7 +204,7 @@
                     android:layout_marginBottom="16dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:approvalTotal="@{viewModel.liveApprovalItem}" />
+                    app:approvalTotal="@{viewModel.approvalTicket}" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -227,7 +227,7 @@
         android:layout_width="600dp"
         android:layout_height="0dp"
         android:animateLayoutChanges="true"
-        app:approvalCard="@{viewModel.approvalItems}"
+        app:approvalCard="@{viewModel.activeApproval}"
         app:cardBackgroundColor="#E8EAF6"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -258,7 +258,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
-                app:approvalEmployee="@{viewModel.liveApproval}"
+                app:approvalEmployee="@{viewModel.activePayment}"
                 app:layout_constraintBottom_toTopOf="@+id/txt_approval_explanation"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent" />
@@ -269,7 +269,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
-                app:approvalExplanation="@{viewModel.liveApprovalItem}"
+                app:approvalExplanation="@{viewModel.activeApproval}"
                 app:layout_constraintBottom_toTopOf="@+id/txt_approval_amount_large"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent" />
@@ -280,7 +280,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="30dp"
-                app:approvalDiscount="@{viewModel.liveApprovalItem}"
+                app:approvalDiscount="@{viewModel.activeApproval}"
                 app:layout_constraintBottom_toTopOf="@+id/approve_reject_button_holder"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent" />

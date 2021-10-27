@@ -270,3 +270,4 @@ fun showManualCredit(layout: ConstraintLayout, scp: ShowCreditPayment){
         layout.visibility = View.GONE
     }
 }
+

@@ -529,6 +529,7 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
 
             if (paymentViewModel.activePayment.value == null){
                 val flatten = order.getAllOrderItems()
+
                 if (flatten.size > 0){
                     order.guests?.forEach { guest ->
                         guest.orderItems?.forEach {
@@ -609,14 +610,8 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
 
     override fun returnValue(value: String) {
         when (value){
-            "Void Ticket" -> {
-                return paymentViewModel.voidTicket(orderViewModel.activeOrder.value!!)
-            }
             "Discount" -> {
                 return paymentViewModel.setPaymentScreen(ShowPayment.DISCOUNT, "Discount Ticket")
-            }
-            "Void Item" -> {
-                return paymentViewModel.voidTicketItem(orderViewModel.activeOrder.value!!)
             }
             "Discount Item" -> {
                 return paymentViewModel.setPaymentScreen(ShowPayment.DISCOUNT, "Discount Item")

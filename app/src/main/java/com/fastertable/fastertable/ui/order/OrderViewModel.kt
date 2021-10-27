@@ -32,10 +32,12 @@ enum class AddSubtract{
 class OrderViewModel @Inject constructor (private val menusRepository: MenusRepository,
                                           private val loginRepository: LoginRepository,
                                           private val orderRepository: OrderRepository,
+                                          private val paymentRepository: PaymentRepository,
                                           private val printerService: KitchenPrintingService,
                                           private val getPayment: GetPayment,
                                           private val saveOrder: SaveOrder,
                                           private val getOrders: GetOrders,
+                                          private val updatePayment: UpdatePayment,
                                           private val updateOrder: UpdateOrder) : BaseViewModel() {
 
     //region Model Variables
@@ -370,8 +372,14 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
                 }
             }
 
+            val ois = _activeOrder.value?.getAllOrderItems()
+            var oi_id = 0
+            if (ois != null){
+                oi_id = ois.size.plus(1)
+            }
+
             val item = OrderItem(
-                id = 1,
+                id = oi_id,
                 quantity = itemQuantity.value!!,
                 menuItemId = activeItem.value!!.id,
                 menuItemName = activeItem.value!!.itemName,
@@ -664,7 +672,6 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
             viewModelScope.launch {
                 reorderList = mutableListOf<ReorderDrink>()
                 for (guest in activeOrder.value?.guests!!) {
-//                    val oi = guest.orderItems?.findLast { it.salesCategory == "Bar" }
                     val oi = guest.orderItems?.filter { it.salesCategory == "Bar" }
                     if (oi != null) {
                         for (item in oi){
@@ -675,13 +682,6 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
                             reorderList.add(drink)
                         }
                     }
-//                    if (oi != null) {
-//                        val drink = ReorderDrink(
-//                            guestId = guest.id,
-//                            drink = oi
-//                        )
-//                        reorderList.add(drink)
-//                    }
                 }
                 _drinkList.value = emptyList()
                 _drinkList.postValue(reorderList)
@@ -714,6 +714,7 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
             }else{
                 val list = _activeOrder.value!!.getKitchenTickets()
                 printerService.printKitchenTickets(list, settings)
+                updatePayment()
                 getOrders()
             }
         }
@@ -724,6 +725,17 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
         }else{
             updateOrderStatus(_activeOrder.value!!)
         }
+
+    }
+
+    fun updatePayment(){
+        viewModelScope.launch {
+            val order = _activeOrder.value!!
+            val p = getPayment.getPayment(order.id.replace("O", "P"), order.locationId)
+            val payment = paymentRepository.updatePaymentNewOrderItems(p!!, order)
+            updatePayment.savePayment(payment)
+        }
+
 
     }
 

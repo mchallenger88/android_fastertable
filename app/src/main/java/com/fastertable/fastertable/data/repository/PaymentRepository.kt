@@ -4,6 +4,7 @@ import android.app.Application
 import com.fastertable.fastertable.api.*
 import com.fastertable.fastertable.data.models.*
 import com.fastertable.fastertable.utils.GlobalUtils
+import com.fastertable.fastertable.utils.round
 import com.google.gson.Gson
 import java.io.BufferedReader
 import java.io.File
@@ -43,12 +44,13 @@ class UpdatePayment @Inject constructor(private val updatePaymentUseCase: Update
 class GetPayment @Inject constructor(private val getPaymentUseCase: GetPaymentUseCase,
                                    private val paymentRepository: PaymentRepository){
 
-    suspend fun getPayment(id: String, lid: String){
+    suspend fun getPayment(id: String, lid: String): Payment?{
         val payment: Payment?
         val result = getPaymentUseCase.getPayment(id, lid)
         if (result is GetPaymentUseCase.Result.Success){
             payment = result.payment
             paymentRepository.savePayment(payment)
+            return payment
         }else{
             throw RuntimeException("fetch failed")
         }
@@ -146,6 +148,39 @@ class PaymentRepository @Inject constructor(private val app: Application) {
         }
         file.writeText(jsonString)
         return payment
+    }
+
+    suspend fun updatePaymentNewOrderItems(payment: Payment, order: Order): Payment{
+        for (guest in order.guests!!){
+            for (item in guest.orderItems!!){
+                if (item.status == "Started"){
+                    val ticket = payment.tickets?.get(0)
+                    createTicketItem(ticket!!, guest, item)
+                }
+            }
+        }
+        payment.recalculateTotals()
+        return payment
+    }
+
+    private fun createTicketItem(ticket: Ticket, guest: Guest, orderItem: OrderItem){
+        val i = ticket.ticketItems.size
+        val t = TicketItem(
+            id = i + 1,
+            orderGuestNo = guest.id,
+            orderItemId = orderItem.id,
+            quantity = orderItem.quantity,
+            itemName = orderItem.menuItemName,
+            itemSize = orderItem.menuItemPrice.size,
+            itemPrice = orderItem.menuItemPrice.price,
+            discountPrice = null,
+            priceModified = orderItem.priceAdjusted,
+            itemMods = ArrayList(orderItem.orderMods),
+            salesCategory = orderItem.salesCategory,
+            ticketItemPrice = orderItem.getTicketExtendedPrice(ticket.taxRate).round(2),
+            tax = orderItem.getSalesTax(orderItem.tax, ticket.taxRate).round(2)
+        )
+        ticket.ticketItems.add(t)
     }
 
 

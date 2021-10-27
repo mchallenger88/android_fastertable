@@ -6,7 +6,7 @@ import com.google.gson.annotations.SerializedName
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-data class Approval(
+data class TestApproval(
     val id: String,
     val order: Order,
     val approvalItems: ArrayList<ApprovalItem>,
@@ -43,6 +43,38 @@ data class Approval(
 }
 
 @Parcelize
+data class Approval(
+    val id: String,
+    val approvalType: String,
+    val ticketId: Int,
+    val ticketItemId: Int?,
+    val timeRequested: Long,
+    val newItemPrice: Double?,
+    var approved: Boolean?,
+    var timeHandled: Long?,
+    var managerId: String?,
+    val paymentId: String,
+    var discount: String,
+    @SerializedName("locationid")
+    val locationId: String,
+    val type: String,
+    val _rid: String?,
+    val _self: String?,
+    val _etag: String?,
+    val _attachments: String?,
+    val _ts: Long?
+
+): Parcelable{
+
+}
+
+@Parcelize
+data class ApprovalTicket(
+    val approval: Approval,
+    val ticket: Ticket
+): Parcelable
+
+@Parcelize
 data class ApprovalItem(
     val id: Int,
     val approvalType: String, //Price, Discount, Discount Ticket, Void Item, Void Ticket
@@ -58,24 +90,25 @@ data class ApprovalItem(
 ): Parcelable {
     fun ticketSubtotal(): Double{
         var price: Double = 0.00
-        ticket?.ticketItems?.forEach{ticketItem ->
-            if (ticketItem.discountPrice != null){
-                price += price.plus(ticketItem.discountPrice!!)
-            }else{
-                price += price.plus(ticketItem.ticketItemPrice)
-            }
-        }
-        return price
+//        ticket?.ticketItems?.forEach{ticketItem ->
+//            if (ticketItem.discountPrice != null){
+//                price += price.plus(ticketItem.discountPrice!!)
+//            }else{
+//                price += price.plus(ticketItem.ticketItemPrice)
+//            }
+//        }
+        return ticket!!.subTotal
     }
     fun ticketSalesTax(): Double{
         var tax: Double = 0.00
         ticket?.ticketItems?.forEach{ticketItem ->
             tax += tax.plus(ticketItem.tax)
         }
-        return tax
+        return ticket!!.tax
     }
     fun ticketTotal(): Double{
-        return this.ticketSubtotal().plus(this.ticketSalesTax())
+//        return this.ticketSubtotal().plus(this.ticketSalesTax())
+        return ticket!!.total
     }
 
     fun totalDiscount(): Double{

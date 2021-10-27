@@ -65,8 +65,8 @@ interface FastertableApi {
     @POST("approval/getapprovalsnew")
     suspend fun getApprovals(@Body timeBasedRequest: TimeBasedRequest): Response<List<Approval>>
 
-    @GET("approval/{id}/{lid}")
-    suspend fun getApproval(@Path("id") id: String?, @Path("lid") lid: String?): Response<Approval>
+    @POST("approval/getapprovalsbypaymentid")
+    suspend fun getApprovalsById(@Body idRequest: IdRequest): Response<List<Approval>>
 
     //Credit
     @GET

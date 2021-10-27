@@ -148,17 +148,26 @@ class CheckoutViewModel @Inject constructor (
                 ce.totalNegative = false
             }
 
-            val listApprovalItems = ce.approvals.flatMap{it.approvalItems}
+//            val listApprovalItems = ce.approvals.flatMap{it.approvalItems}
+            val listApprovalPayment = mutableListOf<ApprovalTicket>()
+            for (approval in ce.approvals){
+                val payment = ce.payments?.find{it.id == approval.id.replace("A", "P")}
+                val at = ApprovalTicket(
+                    approval = approval,
+                    ticket = payment?.tickets?.find{it.id == approval.ticketId}!!
+                )
+                listApprovalPayment.add(at)
+            }
 
-            val voidTickets = listApprovalItems.filter{ it.approvalType == "Void Ticket" && it.approved == true}
-            val voidItems = listApprovalItems.filter{ it.approvalType == "Void Item" && it.approved == true}
-            val discountTickets = listApprovalItems.filter{ it.approvalType == "Discount Ticket" && it.approved == true}
-            val discountItems = listApprovalItems.filter{ it.approvalType == "Discount Item" && it.approved == true}
+            val voidTickets = listApprovalPayment.filter{ it.approval.approvalType == "Void Ticket" && it.approval.approved == true}
+            val voidItems = listApprovalPayment.filter{ it.approval.approvalType == "Void Item" && it.approval.approved == true}
+            val discountTickets = listApprovalPayment.filter{ it.approval.approvalType == "Discount Ticket" && it.approval.approved == true}
+            val discountItems = listApprovalPayment.filter{ it.approval.approvalType == "Discount Item" && it.approval.approved == true}
 
-            val voidTicketTotal = voidTickets.sumOf { it.amount }
-            val voidItemTotal = voidItems.sumOf { it.amount }
-            val discountItemTotal = discountItems.sumOf { it.amount }
-            val discountTicketTotal = discountTickets.sumOf { it.amount }
+            val voidTicketTotal = voidTickets.sumOf { it.ticket.getTicketSubTotal() }
+            val voidItemTotal = voidItems.sumOf { it.approval.newItemPrice!! }
+            val discountItemTotal = discountItems.sumOf { it.approval.newItemPrice!! }
+            val discountTicketTotal = discountTickets.sumOf { it.ticket.getTicketSubTotal() }
 
             ce.voidTotal = voidTicketTotal.plus(voidItemTotal)
             ce.discountTotal = discountItemTotal.plus(discountTicketTotal)

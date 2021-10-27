@@ -106,7 +106,7 @@ data class Payment(
         return ticketItems
     }
 
-    private fun recalculateTotals(){
+    fun recalculateTotals(){
         if (tickets != null){
             for (ticket in tickets!!){
                 ticket.subTotal = ticket.ticketItems.sumOf { it -> it.ticketItemPrice }.round(2)
@@ -313,7 +313,7 @@ data class Payment(
         var printerModel: String = ""
         if (printer.printerModel.contains("88")){
             Log.d("PrinterTest", printer.printerModel)
-            printerModel = "TM_T88V"
+            printerModel = "TM_T88"
             Log.d("PrinterTest", printerModel)
         }else{
             Log.d("PrinterTest", printer.printerModel)
@@ -351,6 +351,7 @@ data class Ticket(
     var paymentList: MutableList<TicketPayment>?,
     var partialPayment: Boolean,
     var uiActive: Boolean = false,
+    val taxRate: Double,
     //To be deprecated
     var paymentType: String
 
@@ -469,6 +470,7 @@ data class TicketItem(
     var tax: Double,
 ): Parcelable{
     fun approve(){
+
         ticketItemPrice = discountPrice!!
     }
 

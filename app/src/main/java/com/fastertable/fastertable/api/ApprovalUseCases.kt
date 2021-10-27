@@ -1,6 +1,7 @@
 package com.fastertable.fastertable.api
 
 import com.fastertable.fastertable.data.models.Approval
+import com.fastertable.fastertable.data.models.IdRequest
 import com.fastertable.fastertable.data.models.TimeBasedRequest
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
@@ -62,14 +63,18 @@ class UpdateApprovalUseCase @Inject constructor(private val fastertableApi: Fast
 class GetApprovalUseCase @Inject constructor(private val fastertableApi: FastertableApi){
 
     sealed class Result {
-        data class Success(val approval: Approval?) : Result()
+        data class Success(val approvals: List<Approval>?) : Result()
         object Failure: Result()
     }
 
-    suspend fun getApproval(id: String, lid: String): Result {
+    suspend fun getApprovalsById(id: String, lid: String): Result {
         return withContext(Dispatchers.IO){
             try{
-                val response = fastertableApi.getApproval(id, lid)
+                val request = IdRequest(
+                    id = id,
+                    lid = lid
+                )
+                val response = fastertableApi.getApprovalsById(request)
                 when (response.isSuccessful){
                     response.body() != null -> {
                         return@withContext Result.Success(response.body()!!)

@@ -44,21 +44,32 @@ class ApprovalsFragment : BaseFragment() {
             viewModel.setApprovalsView(it)
         })
 
-        viewModel.liveApprovalItem.observe(viewLifecycleOwner, {
-            if (it.ticket != null){
+        viewModel.approvalTicket.observe(viewLifecycleOwner, {
+            if (it.approval.approvalType == "Void Ticket" || it.approval.approvalType == "Discount Ticket"){
                 ticketsAdapter.submitList(it.ticket.ticketItems)
-            }
-
-            if (it.ticketItem != null){
+            }else{
+                val ti = it.ticket.ticketItems.find{x -> x.id == it.approval.ticketItemId}
                 val ticketItems = arrayListOf<TicketItem>()
-                ticketItems.add(it.ticketItem)
+                if (ti != null){
+                    ticketItems.add(ti)
+                }
                 ticketsAdapter.submitList(ticketItems)
             }
+
+//            if (it.ticket != null){
+//                ticketsAdapter.submitList(it.ticket.ticketItems)
+//            }
+//
+//            if (it.ticketItem != null){
+//                val ticketItems = arrayListOf<TicketItem>()
+//                ticketItems.add(it.ticketItem)
+//                ticketsAdapter.submitList(ticketItems)
+//            }
 
             ticketsAdapter.notifyDataSetChanged()
         })
 
-        viewModel.approvalItems.observe(viewLifecycleOwner, {
+        viewModel.approvals.observe(viewLifecycleOwner, {
             approvalsSideBarAdapter.submitList(it)
             approvalsSideBarAdapter.notifyDataSetChanged()
         })

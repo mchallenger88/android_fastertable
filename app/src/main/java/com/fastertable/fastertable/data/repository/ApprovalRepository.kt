@@ -7,13 +7,13 @@ import com.fastertable.fastertable.api.SaveApprovalUseCase
 import com.fastertable.fastertable.api.UpdateApprovalUseCase
 import com.fastertable.fastertable.data.models.*
 import com.fastertable.fastertable.utils.GlobalUtils
-import com.fastertable.fastertable.utils.round
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.io.BufferedReader
 import java.io.File
 import java.lang.RuntimeException
 import javax.inject.Inject
+import java.util.UUID
 
 class SaveApproval @Inject constructor(private val saveApprovalUseCase: SaveApprovalUseCase,
                                       private val approvalRepository: ApprovalRepository){
@@ -45,15 +45,16 @@ class UpdateApproval @Inject constructor(private val updateApprovalUseCase: Upda
     }
 }
 
-class GetApproval @Inject constructor(private val getApprovalUseCase: GetApprovalUseCase,
-                                     private val approvalRepository: ApprovalRepository){
+class GetApprovalsById @Inject constructor(private val getApprovalUseCase: GetApprovalUseCase,
+                                           private val approvalRepository: ApprovalRepository){
 
-    suspend fun getApproval(id: String, lid: String){
-        val approval: Approval?
-        val result = getApprovalUseCase.getApproval(id, lid)
+    suspend fun getAllPaymentApprovals(id: String, lid: String): List<Approval>?{
+        val approvals: List<Approval>?
+        val result = getApprovalUseCase.getApprovalsById(id, lid)
         if (result is GetApprovalUseCase.Result.Success){
-            approval = result.approval
-            approvalRepository.saveApproval(approval)
+            approvals = result.approvals
+            approvalRepository.savePaymentApprovals(approvals)
+            return approvals
         }else{
             throw RuntimeException("fetch failed")
         }
@@ -131,6 +132,14 @@ class ApprovalRepository @Inject constructor(private val app: Application) {
         }
     }
 
+    fun savePaymentApprovals(approvals: List<Approval>?){
+        //Save approvals json to file
+        val gson = Gson()
+        val jsonString = gson.toJson(approvals)
+        val file= File(app.filesDir, "paymentApprovals.json")
+        file.writeText(jsonString)
+    }
+
     fun saveApprovals(approvals: List<Approval>){
         //Save approvals json to file
         val gson = Gson()
@@ -139,17 +148,56 @@ class ApprovalRepository @Inject constructor(private val app: Application) {
         file.writeText(jsonString)
     }
 
-    private fun createApproval(order: Order): Approval {
-        val id: String = order.id.replace("O", "A")
+//    private fun createApproval(order: Order): Approval {
+//        val id: String = order.id.replace("O", "A")
+//
+//        val approval = Approval(
+//            id = id,
+//            order = order,
+//            approvalItems = arrayListOf<ApprovalItem>(),
+//            locationId = order.locationId,
+//            timeRequested = GlobalUtils().getNowEpoch(),
+//            archived = false,
+//            type = "Approval",
+//            _rid = "",
+//            _self = "",
+//            _etag = "",
+//            _attachments = "",
+//            _ts = null)
+//
+//        val gson = Gson()
+//        val jsonString = gson.toJson(approval)
+//        val file= File(app.filesDir, "approval.json")
+//        if (file.exists()){
+//            file.delete()
+//        }
+//
+//        file.writeText(jsonString)
+//        return approval
+//    }
+
+    fun createApproval(payment: Payment, approvalType: String, ticket: Ticket, ticketItem: TicketItem?, newItemPrice: Double?, discount: Discount?): Approval {
+        val id = UUID.randomUUID()
+
+        var discountName = ""
+        if (discount != null){
+            discountName = discount.discountName
+        }
 
         val approval = Approval(
-            id = id,
-            order = order,
-            approvalItems = arrayListOf<ApprovalItem>(),
-            locationId = order.locationId,
+            id = id.toString(),
+            approvalType = approvalType,
+            ticketId = ticket.id,
+            ticketItemId = ticketItem?.id,
             timeRequested = GlobalUtils().getNowEpoch(),
-            archived = false,
+            newItemPrice = newItemPrice,
+            discount = discountName,
+            approved = null,
+            timeHandled = null,
+            managerId = null,
+            paymentId = payment.id,
             type = "Approval",
+            locationId = payment.locationId,
             _rid = "",
             _self = "",
             _etag = "",
@@ -168,104 +216,104 @@ class ApprovalRepository @Inject constructor(private val app: Application) {
     }
 
 
-    fun createVoidTicketApproval(order: Order, payment: Payment, approval: Approval?): Approval{
-        val app = approval ?: createApproval(order)
+//    fun createVoidTicketApproval(order: Order, payment: Payment, approval: Approval?): Approval{
+//        val app = approval ?: createApproval(order)
+//
+//        val ai = ApprovalItem(
+//            id = app.approvalItems.size,
+//            approvalType = "Void Ticket",
+//            discount = null,
+//            ticketItem = null,
+//            ticket = payment.activeTicket()!!,
+//            amount = payment.activeTicket()!!.total,
+//            timeRequested = GlobalUtils().getNowEpoch(),
+//            approved = null,
+//            timeHandled = null,
+//            managerId = null
+//        )
+//        app.approvalItems.add(ai)
+//
+//        return app
+//    }
 
-        val ai = ApprovalItem(
-            id = app.approvalItems.size,
-            approvalType = "Void Ticket",
-            discount = null,
-            ticketItem = null,
-            ticket = payment.activeTicket()!!,
-            amount = payment.activeTicket()!!.total,
-            timeRequested = GlobalUtils().getNowEpoch(),
-            approved = null,
-            timeHandled = null,
-            managerId = null
-        )
-        app.approvalItems.add(ai)
+//    fun createVoidTicketItemApproval(order: Order, payment: Payment, ticketItem: TicketItem, approval: Approval?): Approval{
+//        val app = approval ?: createApproval(order)
+//
+//        val ai = ApprovalItem(
+//            id = app.approvalItems.size,
+//            approvalType = "Void Item",
+//            discount = null,
+//            ticketItem = ticketItem,
+//            ticket = payment.activeTicket()!!,
+//            amount = ticketItem.ticketItemPrice,
+//            timeRequested = GlobalUtils().getNowEpoch(),
+//            approved = null,
+//            timeHandled = null,
+//            managerId = null
+//        )
+//        app.approvalItems.add(ai)
+//
+//        return app
+//    }
 
-        return app
-    }
+//    fun createDiscountTicketApproval(order: Order, payment: Payment, discount: Discount, disTotal: Double, approval: Approval?): Approval{
+//        val app = approval ?: createApproval(order)
+//
+//        val ai = ApprovalItem(
+//            id = app.approvalItems.size,
+//            approvalType = "Discount Ticket",
+//            discount = discount.discountName,
+//            ticketItem = null,
+//            ticket = payment.activeTicket()!!,
+//            amount = disTotal,
+//            timeRequested = GlobalUtils().getNowEpoch(),
+//            approved = null,
+//            timeHandled = null,
+//            managerId = null
+//        )
+//        app.approvalItems.add(ai)
+//
+//        return app
+//
+//    }
 
-    fun createVoidTicketItemApproval(order: Order, payment: Payment, ticketItem: TicketItem, approval: Approval?): Approval{
-        val app = approval ?: createApproval(order)
+//    fun createDiscountTicketItemApproval(order: Order, payment: Payment, ticketItem: TicketItem, discount: Discount, disTotal: Double, approval: Approval?): Approval{
+//        val app = approval ?: createApproval(order)
+//
+//        val ai = ApprovalItem(
+//            id = app.approvalItems.size,
+//            approvalType = "Discount Item",
+//            discount = discount.discountName,
+//            ticketItem = ticketItem,
+//            ticket = payment.activeTicket()!!,
+//            amount = disTotal,
+//            timeRequested = GlobalUtils().getNowEpoch(),
+//            approved = null,
+//            timeHandled = null,
+//            managerId = null
+//        )
+//        app.approvalItems.add(ai)
+//
+//        return app
+//    }
 
-        val ai = ApprovalItem(
-            id = app.approvalItems.size,
-            approvalType = "Void Item",
-            discount = null,
-            ticketItem = ticketItem,
-            ticket = payment.activeTicket()!!,
-            amount = ticketItem.ticketItemPrice,
-            timeRequested = GlobalUtils().getNowEpoch(),
-            approved = null,
-            timeHandled = null,
-            managerId = null
-        )
-        app.approvalItems.add(ai)
-
-        return app
-    }
-
-    fun createDiscountTicketApproval(order: Order, payment: Payment, discount: Discount, disTotal: Double, approval: Approval?): Approval{
-        val app = approval ?: createApproval(order)
-
-        val ai = ApprovalItem(
-            id = app.approvalItems.size,
-            approvalType = "Discount Ticket",
-            discount = discount.discountName,
-            ticketItem = null,
-            ticket = payment.activeTicket()!!,
-            amount = disTotal,
-            timeRequested = GlobalUtils().getNowEpoch(),
-            approved = null,
-            timeHandled = null,
-            managerId = null
-        )
-        app.approvalItems.add(ai)
-
-        return app
-
-    }
-
-    fun createDiscountTicketItemApproval(order: Order, payment: Payment, ticketItem: TicketItem, discount: Discount, disTotal: Double, approval: Approval?): Approval{
-        val app = approval ?: createApproval(order)
-
-        val ai = ApprovalItem(
-            id = app.approvalItems.size,
-            approvalType = "Discount Item",
-            discount = discount.discountName,
-            ticketItem = ticketItem,
-            ticket = payment.activeTicket()!!,
-            amount = disTotal,
-            timeRequested = GlobalUtils().getNowEpoch(),
-            approved = null,
-            timeHandled = null,
-            managerId = null
-        )
-        app.approvalItems.add(ai)
-
-        return app
-    }
-
-    fun createModifyItemPriceApproval(order: Order, payment: Payment, ticketItem: TicketItem, approval: Approval?): Approval{
-        val app = approval ?: createApproval(order)
-
-        val ai = ApprovalItem(
-            id = app.approvalItems.size,
-            approvalType = "Modify Price",
-            discount = null,
-            ticketItem = ticketItem,
-            ticket = payment.activeTicket()!!,
-            amount = ticketItem.ticketItemPrice.minus(ticketItem.discountPrice!!).round(2),
-            timeRequested = GlobalUtils().getNowEpoch(),
-            approved = null,
-            timeHandled = null,
-            managerId = null
-        )
-        app.approvalItems.add(ai)
-
-        return app
-    }
+//    fun createModifyItemPriceApproval(order: Order, payment: Payment, ticketItem: TicketItem, approval: Approval?): Approval{
+//        val app = approval ?: createApproval(order)
+//
+//        val ai = ApprovalItem(
+//            id = app.approvalItems.size,
+//            approvalType = "Modify Price",
+//            discount = null,
+//            ticketItem = ticketItem,
+//            ticket = payment.activeTicket()!!,
+//            amount = ticketItem.ticketItemPrice.minus(ticketItem.discountPrice!!).round(2),
+//            timeRequested = GlobalUtils().getNowEpoch(),
+//            approved = null,
+//            timeHandled = null,
+//            managerId = null
+//        )
+//        app.approvalItems.add(ai)
+//
+//        return app
+//    }
 }
