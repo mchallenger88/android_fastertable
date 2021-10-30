@@ -13,10 +13,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.fastertable.fastertable.R
 import com.fastertable.fastertable.data.models.Approval
 import com.fastertable.fastertable.data.models.ApprovalItem
+import com.fastertable.fastertable.data.models.ApprovalOrderPayment
 import com.fastertable.fastertable.databinding.ApprovalButtonBinding
 
 
-class ApprovalsSideBarAdapter(private val clickListener: ApprovalSideBarListener) : ListAdapter<Approval, ApprovalsSideBarAdapter.ApprovalSideBarViewHolder>(ApprovalsSideBarAdapter) {
+class ApprovalsSideBarAdapter(private val clickListener: ApprovalSideBarListener) : ListAdapter<ApprovalOrderPayment, ApprovalsSideBarAdapter.ApprovalSideBarViewHolder>(ApprovalsSideBarAdapter) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ApprovalSideBarViewHolder {
         return ApprovalSideBarViewHolder(
@@ -33,13 +34,15 @@ class ApprovalsSideBarAdapter(private val clickListener: ApprovalSideBarListener
 
     class ApprovalSideBarViewHolder(private var binding: ApprovalButtonBinding, private val parent: ViewGroup):
         RecyclerView.ViewHolder(binding.root) {
-        fun bind(approval: Approval, clickListener: ApprovalSideBarListener){
-            binding.approval = approval
+        fun bind(approval: ApprovalOrderPayment, clickListener: ApprovalSideBarListener){
+            binding.approval = approval.approval
             binding.clickListener = clickListener
             binding.executePendingBindings()
 
             val white = ContextCompat.getColor(parent.context, R.color.white)
             val offWhite = ContextCompat.getColor(parent.context, R.color.offWhite)
+            binding.approvalButton.setTextColor(ColorStateList.valueOf(white))
+            binding.approvalButton.setCompoundDrawablesRelativeWithIntrinsicBounds(0, R.drawable.ic_outline_fact_check_24_white, 0, 0)
 
             binding.approvalButton.text = parent.context.getString(R.string.approval)
 //            if (approvalItem.uiActive){
@@ -65,17 +68,17 @@ class ApprovalsSideBarAdapter(private val clickListener: ApprovalSideBarListener
         }
     }
 
-    class ApprovalSideBarListener(val clickListener: (item: Approval) -> Unit) {
-        fun onClick(item: Approval) = clickListener(item)
+    class ApprovalSideBarListener(val clickListener: (item: ApprovalOrderPayment) -> Unit) {
+        fun onClick(item: ApprovalOrderPayment) = clickListener(item)
     }
 
-    companion object DiffCallback : DiffUtil.ItemCallback<Approval>() {
-        override fun areItemsTheSame(oldItem: Approval, newItem: Approval): Boolean {
+    companion object DiffCallback : DiffUtil.ItemCallback<ApprovalOrderPayment>() {
+        override fun areItemsTheSame(oldItem: ApprovalOrderPayment, newItem: ApprovalOrderPayment): Boolean {
             return oldItem === newItem
         }
 
-        override fun areContentsTheSame(oldItem: Approval, newItem: Approval): Boolean {
-            return oldItem.id == newItem.id
+        override fun areContentsTheSame(oldItem: ApprovalOrderPayment, newItem: ApprovalOrderPayment): Boolean {
+            return oldItem.approval.id == newItem.approval.id
         }
     }
 }

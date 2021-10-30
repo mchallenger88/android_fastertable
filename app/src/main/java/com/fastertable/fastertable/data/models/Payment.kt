@@ -210,6 +210,7 @@ data class Payment(
             ti.discountPrice = 0.00
             ti.tax = 0.00
             ti.priceModified = true
+            ti.approvalType = "Void Ticket"
         }
         statusApproval = "Pending"
     }
@@ -218,6 +219,7 @@ data class Payment(
         ticketItem.discountPrice = 0.00
         ticketItem.tax = 0.00
         ticketItem.priceModified = true
+        ticketItem.approvalType = "Void Item"
         statusApproval = "Pending"
     }
 
@@ -225,6 +227,7 @@ data class Payment(
         ticketItem.discountPrice = price
         ticketItem.tax = (ticketItem.discountPrice!! * taxRate).round(2)
         ticketItem.priceModified = true
+        ticketItem.approvalType = "Modify Price"
         statusApproval = "Pending"
     }
 
@@ -235,11 +238,13 @@ data class Payment(
                 ticketItem.discountPrice = ticketItem.ticketItemPrice.minus(discount.discountAmount).round(2)
                 ticketItem.tax = (ticketItem.discountPrice!! * taxRate).round(2)
                 ticketItem.priceModified = true
+                ticketItem.approvalType = "Discount Item"
                 disTotal = discount.discountAmount
             }else{
                 ticketItem.discountPrice = 0.00
                 ticketItem.tax = 0.00
                 ticketItem.priceModified = true
+                ticketItem.approvalType = "Discount Item"
                 disTotal = ticketItem.ticketItemPrice
             }
         }
@@ -249,6 +254,7 @@ data class Payment(
             ticketItem.discountPrice = ticketItem.ticketItemPrice.minus(disTotal).round(2)
             ticketItem.tax = (ticketItem.discountPrice!! * taxRate).round(2)
             ticketItem.priceModified = true
+            ticketItem.approvalType = "Discount Item"
         }
         statusApproval = "Pending"
         return disTotal
@@ -269,6 +275,7 @@ data class Payment(
                 itemPrice = 0.00,
                 discountPrice = -discount.discountAmount.round(2),
                 priceModified = true,
+                approvalType = "Discount Ticket",
                 itemMods = arrayListOf<ModifierItem>(),
                 salesCategory = "Discount",
                 ticketItemPrice = -discount.discountAmount.round(2),
@@ -287,6 +294,7 @@ data class Payment(
                 ti.discountPrice = ti.ticketItemPrice.minus(dis)
                 ti.tax = (ti.discountPrice!! * taxRate).round(2)
                 ti.priceModified = true
+                ti.approvalType = "Discount Ticket"
             }
             statusApproval = "Pending"
         }
@@ -296,7 +304,7 @@ data class Payment(
     fun changeGiftItemAmount(amount: Double){
         this.tickets!!.get(0).ticketItems.get(0).itemPrice = amount
         this.tickets!!.get(0).ticketItems.get(0).ticketItemPrice = amount
-        this.tickets!!.get(0).recalculateAfterApproval(0.00)
+        this.tickets!!.get(0).recalculateAfterApproval()
     }
 
     fun getTicketReceipt(order: Order,printer: Printer, location: Location): Document{
@@ -369,7 +377,7 @@ data class Ticket(
             partialPayment = partial
         }
 
-        fun recalculateAfterApproval(taxRate: Double){
+        fun recalculateAfterApproval(){
             subTotal = ticketItems.sumOf { it.ticketItemPrice }.round(2)
             tax = subTotal.times(taxRate).round(2)
             total = subTotal.plus(tax)
@@ -378,7 +386,7 @@ data class Ticket(
         fun addTip(tip: Double, taxRate: Double){
             activePayment()!!.gratuity = tip
 //            this.gratuity = tip
-            recalculateAfterApproval(taxRate)
+            recalculateAfterApproval()
             this.total = this.total.plus(tip).round(2)
             this.paymentTotal = this.total;
         }
@@ -464,18 +472,22 @@ data class TicketItem(
     var itemPrice: Double,
     var discountPrice: Double?,
     var priceModified: Boolean,
+    var approvalType: String?,
+    var uiApproved: Boolean = false,
     val itemMods: ArrayList<ModifierItem>,
     val salesCategory: String,
     var ticketItemPrice: Double,
     var tax: Double,
 ): Parcelable{
     fun approve(){
-
         ticketItemPrice = discountPrice!!
+        discountPrice = null
+        approvalType = null
     }
 
     fun reject(){
         discountPrice = null
+        approvalType = null
         priceModified = false
     }
 

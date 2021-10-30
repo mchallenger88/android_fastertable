@@ -1,5 +1,6 @@
 package com.fastertable.fastertable.adapters
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.content.res.ResourcesCompat
@@ -7,39 +8,64 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.fastertable.fastertable.R
-import com.fastertable.fastertable.data.models.ApprovalItem
 import com.fastertable.fastertable.data.models.TicketItem
 import com.fastertable.fastertable.databinding.ApprovalLineItemBinding
-import com.fastertable.fastertable.databinding.TicketLineItemBinding
 import com.fastertable.fastertable.ui.dialogs.DialogListener
 
-class ApprovalAdapter(private val clickListener: ApprovalListener) : ListAdapter<TicketItem, ApprovalAdapter.ApprovalItemViewHolder>(ApprovalAdapter), DialogListener {
-
+class ApprovalAdapter(private val approveListener: ApproveListener, private val rejectListener: RejectListener) :
+    ListAdapter<TicketItem, ApprovalAdapter.ApprovalItemViewHolder>(ApprovalAdapter), DialogListener {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ApprovalItemViewHolder {
         return ApprovalItemViewHolder(ApprovalLineItemBinding.inflate(LayoutInflater.from(parent.context)), parent)
     }
 
     override fun onBindViewHolder(holder: ApprovalItemViewHolder, position: Int) {
         val ticketItem = getItem(position)
-        holder.bind(ticketItem, clickListener)
+        holder.bind(ticketItem, approveListener, rejectListener)
     }
     class ApprovalItemViewHolder(private var binding: ApprovalLineItemBinding, private val parent:ViewGroup):
         RecyclerView.ViewHolder(binding.root) {
-        fun bind(ticketItem: TicketItem, clickListener: ApprovalListener) {
+        fun bind(ticketItem: TicketItem, approveListener: ApproveListener, rejectListener: RejectListener) {
             binding.ticketItem = null
             binding.ticketItem = ticketItem
+
             binding.executePendingBindings()
 
-            val typeface = ResourcesCompat.getFont(parent.context, R.font.open_sans)
-            binding.txtApprovalItem.typeface = typeface
-            binding.txtApprovalItemPrice.typeface = typeface
-            binding.txtApprovalItemQuantity.typeface = typeface
-            binding.txtItemDiscount.typeface = typeface
+            binding.txtApprovalType.text = ticketItem.approvalType
+
+            if (ticketItem.discountPrice != null){
+                val typeface = ResourcesCompat.getFont(parent.context, R.font.open_sans_semibold)
+                binding.txtApprovalItem.typeface = typeface
+                binding.txtApprovalItemPrice.typeface = typeface
+                binding.txtApprovalItemQuantity.typeface = typeface
+                binding.txtItemDiscount.typeface = typeface
+
+            }else{
+                val typeface = ResourcesCompat.getFont(parent.context, R.font.open_sans)
+                binding.txtApprovalItem.typeface = typeface
+                binding.txtApprovalItemPrice.typeface = typeface
+                binding.txtApprovalItemQuantity.typeface = typeface
+                binding.txtItemDiscount.typeface = typeface
+            }
+
+            binding.switchApproval.setOnCheckedChangeListener{
+                    _, isChecked ->
+
+                if (isChecked){
+                    approveListener.onClick(ticketItem)
+                }else{
+                    rejectListener.onClick(ticketItem)
+                }
+
+            }
 
         }
     }
 
-    class ApprovalListener(val clickListener: (item: TicketItem) -> Unit) {
+    class ApproveListener(val clickListener: (item: TicketItem) -> Unit) {
+        fun onClick(item: TicketItem) = clickListener(item)
+    }
+
+    class RejectListener(val clickListener: (item: TicketItem) -> Unit) {
         fun onClick(item: TicketItem) = clickListener(item)
     }
 

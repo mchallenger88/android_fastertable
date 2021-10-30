@@ -1,14 +1,17 @@
 package com.fastertable.fastertable.ui.approvals
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
+import androidx.recyclerview.widget.ConcatAdapter
 import com.fastertable.fastertable.adapters.ApprovalAdapter
+import com.fastertable.fastertable.adapters.ApprovalHeaderAdapter
 import com.fastertable.fastertable.adapters.ApprovalsSideBarAdapter
 import com.fastertable.fastertable.common.base.BaseFragment
-import com.fastertable.fastertable.data.models.TicketItem
+import com.fastertable.fastertable.data.models.Approval
 import com.fastertable.fastertable.databinding.ApprovalsFragmentBinding
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -32,44 +35,42 @@ class ApprovalsFragment : BaseFragment() {
             viewModel.onApprovalSidebarClick(it)
         })
 
-        val ticketsAdapter = ApprovalAdapter(ApprovalAdapter.ApprovalListener {
-
+        val headerAdapter = ApprovalHeaderAdapter(ApprovalHeaderAdapter.ApproveAllListener {
+            viewModel.addAllToList(it)
         })
+
+        val ticketsAdapter = ApprovalAdapter(ApprovalAdapter.ApproveListener {
+            viewModel.addItemToApprovalList(it)
+        }, ApprovalAdapter.RejectListener {
+            viewModel.addItemToRejectList(it)
+        })
+
+        val concatAdapter = ConcatAdapter(headerAdapter, ticketsAdapter)
 
         binding.approvalsSideBarRecycler.adapter = approvalsSideBarAdapter
 
-        binding.approvalItemsRecycler.adapter = ticketsAdapter
-
-        viewModel.showPending.observe(viewLifecycleOwner, {
-            viewModel.setApprovalsView(it)
-        })
+        binding.approvalItemsRecycler.adapter = concatAdapter
 
         viewModel.approvalTicket.observe(viewLifecycleOwner, {
-            if (it.approval.approvalType == "Void Ticket" || it.approval.approvalType == "Discount Ticket"){
+            if (it != null){
                 ticketsAdapter.submitList(it.ticket.ticketItems)
             }else{
-                val ti = it.ticket.ticketItems.find{x -> x.id == it.approval.ticketItemId}
-                val ticketItems = arrayListOf<TicketItem>()
-                if (ti != null){
-                    ticketItems.add(ti)
-                }
-                ticketsAdapter.submitList(ticketItems)
+                ticketsAdapter.submitList(null)
             }
-
-//            if (it.ticket != null){
-//                ticketsAdapter.submitList(it.ticket.ticketItems)
-//            }
-//
-//            if (it.ticketItem != null){
-//                val ticketItems = arrayListOf<TicketItem>()
-//                ticketItems.add(it.ticketItem)
-//                ticketsAdapter.submitList(ticketItems)
-//            }
-
             ticketsAdapter.notifyDataSetChanged()
         })
 
-        viewModel.approvals.observe(viewLifecycleOwner, {
+        viewModel.activeApproval.observe(viewLifecycleOwner, {
+            if (it != null){
+                val list = mutableListOf<Approval>()
+                list.add(it.approval)
+                headerAdapter.submitList(list)
+                headerAdapter.notifyDataSetChanged()
+            }
+
+        })
+
+        viewModel.approvalsShown.observe(viewLifecycleOwner, {
             approvalsSideBarAdapter.submitList(it)
             approvalsSideBarAdapter.notifyDataSetChanged()
         })

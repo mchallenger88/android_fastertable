@@ -271,3 +271,12 @@ fun showManualCredit(layout: ConstraintLayout, scp: ShowCreditPayment){
     }
 }
 
+@BindingAdapter("showPriceModified")
+fun showPriceModified(textView: TextView, item: TicketItem){
+    if (item.priceModified){
+        textView.visibility = View.VISIBLE
+        textView.text = textView.context.getString(R.string.price_modified)
+    }else{
+        textView.visibility = View.GONE
+    }
+}

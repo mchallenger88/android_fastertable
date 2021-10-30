@@ -28,7 +28,9 @@
         <entry key="..\:/androidprojects/fastertable/app/src/main/res/drawable/spinner_txtcolor.xml" value="0.1" />
         <entry key="..\:/androidprojects/fastertable/app/src/main/res/layout/add_misc_menu_item.xml" value="0.303125" />
         <entry key="..\:/androidprojects/fastertable/app/src/main/res/layout/approval_button.xml" value="0.303125" />
+        <entry key="..\:/androidprojects/fastertable/app/src/main/res/layout/approval_line_header.xml" value="0.303125" />
         <entry key="..\:/androidprojects/fastertable/app/src/main/res/layout/approval_line_item.xml" value="0.194921875" />
+        <entry key="..\:/androidprojects/fastertable/app/src/main/res/layout/approvals_fragment.xml" value="0.303125" />
         <entry key="..\:/androidprojects/fastertable/app/src/main/res/layout/bottom_controller_bar.xml" value="0.303125" />
         <entry key="..\:/androidprojects/fastertable/app/src/main/res/layout/bottom_sheet_order_line_item.xml" value="0.303125" />
         <entry key="..\:/androidprojects/fastertable/app/src/main/res/layout/bottom_sheet_order_more.xml" value="0.303125" />
@@ -60,12 +62,13 @@
         <entry key="..\:/androidprojects/fastertable/app/src/main/res/layout/terminal_line_header.xml" value="0.303125" />
         <entry key="..\:/androidprojects/fastertable/app/src/main/res/layout/terminal_line_item.xml" value="0.303125" />
         <entry key="..\:/androidprojects/fastertable/app/src/main/res/layout/terminal_select_fragment.xml" value="0.303125" />
+        <entry key="..\:/androidprojects/fastertable/app/src/main/res/layout/ticket_line_item.xml" value="0.303125" />
         <entry key="..\:/androidprojects/fastertable/app/src/main/res/layout/user_login_fragment.xml" value="0.303125" />
         <entry key="..\:/androidprojects/fastertable/app/src/main/res/layout/wall_property_dialog.xml" value="0.303125" />
       </map>
     </option>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_15_PREVIEW" project-jdk-name="1.8" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_15" project-jdk-name="1.8" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>
   <component name="ProjectType">

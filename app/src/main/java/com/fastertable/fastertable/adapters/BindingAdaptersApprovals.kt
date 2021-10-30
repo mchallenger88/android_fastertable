@@ -1,7 +1,10 @@
 package com.fastertable.fastertable.adapters
 
 import android.annotation.SuppressLint
+import android.graphics.Typeface
+import android.util.Log
 import android.view.View
+import android.widget.Switch
 import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.databinding.BindingAdapter
@@ -9,45 +12,54 @@ import androidx.recyclerview.widget.RecyclerView
 import com.fastertable.fastertable.R
 import com.fastertable.fastertable.data.models.*
 import com.fastertable.fastertable.utils.round
+import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.switchmaterial.SwitchMaterial
 
 
 @SuppressLint("SetTextI18n")
 @BindingAdapter("approvalHeader")
-fun setApprovalNumber(textView: TextView, approval: Approval?){
-//    approvals?.forEach {
-//        if (it.uiActive){
-//            if (it.approvalType == "Discount Ticket"){
-//                textView.text = "${it.approvalType} - ${it.discount}"
-//            }else{
-//                textView.text = it.approvalType
-//            }
-//        }
-//    }
+fun setApprovalNumber(textView: TextView, approval: ApprovalOrderPayment?){
     if (approval != null){
-        textView.text = approval.approvalType
+        if (approval.order.tableNumber == null){
+            textView.text = "Order No. ${approval.order.orderNumber.toString()}"
+        }else{
+            textView.text = "Table No. ${approval.order.tableNumber.toString()}"
+        }
+
     }else{
         textView.text = ""
     }
 }
 
-@BindingAdapter("approvalItemListData")
-fun bindApprovalItemTicketRecyclerView(recyclerView: RecyclerView?, approvalItems: List<ApprovalItem>?) {
-    if (recyclerView != null){
-        val adapter = recyclerView.adapter as ApprovalAdapter
-        if (approvalItems != null){
-            val approvalItem = approvalItems.find { it -> it.uiActive }
-            if (approvalItem != null){
-                val ticket = approvalItem.ticket
-                adapter.submitList(ticket?.ticketItems)
-                adapter.notifyDataSetChanged()
-            }
+@SuppressLint("SetTextI18n")
+@BindingAdapter("approvalItemQuantity")
+fun approvalItemQuantity(textView: TextView, item: TicketItem?){
+    if (item != null){
+        textView.text = "${item.quantity}" + "x"
+    }
+
+}
+
+@BindingAdapter("approvalItemDiscount")
+fun getApprovalItemDiscount(textView: TextView, item: TicketItem?){
+    if (item != null){
+        if (item.discountPrice != null){
+            textView.text = textView.context.getString(R.string.item_price, "%.${2}f".format(item.discountPrice))
+        }else{
+            textView.text = ""
         }
     }
 }
 
-@BindingAdapter("approvalItemDiscount")
-fun getApprovalItemDiscount(textView: TextView, item: TicketItem){
-    textView.text = textView.context.getString(R.string.item_price, "%.${2}f".format(item.discountPrice))
+@BindingAdapter("showSwitch")
+fun showSwitch(switch: SwitchMaterial, item: TicketItem?){
+    if (item != null){
+        if (item.discountPrice != null){
+            switch.visibility = View.VISIBLE
+        }else{
+            switch.visibility = View.GONE
+        }
+    }
 }
 
 @BindingAdapter("approvalSubTotal")
@@ -65,6 +77,7 @@ fun getApprovalSubtotal(textView: TextView, item: ApprovalTicket?){
 @BindingAdapter("approvalTax")
 fun getApprovalTax(textView: TextView, item: ApprovalTicket?){
     if (item != null) {
+        Log.d("ApprovalTesting", item.approval.approvalType)
         if (item.approval.approvalType == "Void Ticket" || item.approval.approvalType == "Discount Ticket") {
             textView.text = textView.context.getString(
                 R.string.subtotal_price,
@@ -75,9 +88,7 @@ fun getApprovalTax(textView: TextView, item: ApprovalTicket?){
             textView.text = textView.context.getString(R.string.subtotal_price, "%.${2}f".format(tax))
         }
     }
-//    if (item != null){
-//        textView.text = textView.context.getString(R.string.subtotal_price, "%.${2}f".format(item.ticketSalesTax()))
-//    }
+
 }
 
 @BindingAdapter("approvalTotal")
@@ -102,18 +113,10 @@ fun getApprovalTotal(textView: TextView, item: ApprovalTicket?){
 }
 
 @BindingAdapter("approvalDiscount")
-fun getApprovalDiscount(textView: TextView, item: Approval?){
+fun getApprovalDiscount(textView: TextView, item: Double?){
         if (item != null){
-//        if (item.ticket != null){
-//            dis = item.ticket.subTotal.minus(item.totalDiscount())
-//        }
-//
-//        if (item.ticketItem != null){
-//            dis = item.ticketItem.ticketItemPrice.minus(item.totalDiscount())
-//        }
-
-        textView.setTextColor(textView.context.getColor(R.color.secondaryColor))
-        textView.text = textView.context.getString(R.string.discount_total_price, "%.${2}f".format(item.newItemPrice))
+            textView.setTextColor(textView.context.getColor(R.color.secondaryColor))
+            textView.text = textView.context.getString(R.string.discount_total_price, "%.${2}f".format(item))
     }
 }
 
@@ -138,12 +141,10 @@ fun getApprovalEmployee(textView: TextView, item: Payment?){
     }
 }
 
-//@BindingAdapter("approvalEmployee")
-//fun getApprovalEmployee(textView: TextView, item: Approval?){
-//    if (item != null){
-//        textView.text = textView.context.getString(R.string.requested_by, item.order.userName)
-//    }
-//}
+@BindingAdapter("disableApprovalSave")
+fun disableApprovalSave(button: FloatingActionButton, item: Approval?){
+    button.isEnabled = item?.timeHandled == null
+}
 
 @BindingAdapter("approvalCard")
 fun showApprovalCard(cardView: CardView, approval: Approval?){
@@ -154,11 +155,25 @@ fun showApprovalCard(cardView: CardView, approval: Approval?){
     }
 }
 
-//@BindingAdapter("approvalCard")
-//fun showApprovalCard(cardView: CardView, list: List<ApprovalItem>?){
-//    if (list != null && list.isNotEmpty()){
-//        cardView.visibility = View.VISIBLE
-//    }else{
-//        cardView.visibility = View.GONE
-//    }
-//}
+@BindingAdapter("showApproveAllSwitch")
+fun showApproveAllSwitch(switch: SwitchMaterial, approval: Approval?){
+    if (approval?.timeHandled == null){
+        switch.visibility = View.VISIBLE
+    }else{
+        switch.visibility = View.GONE
+    }
+}
+
+@BindingAdapter("showApprovedRejected")
+fun showApprovedRejected(textView: TextView, approval: Approval?){
+    if (approval?.timeHandled != null){
+        textView.visibility = View.VISIBLE
+        if (approval.approved == true){
+            textView.text = textView.context.getString(R.string.approved)
+        }else{
+            textView.text = textView.context.getString(R.string.rejected)
+        }
+    }else{
+        textView.visibility = View.GONE
+    }
+}

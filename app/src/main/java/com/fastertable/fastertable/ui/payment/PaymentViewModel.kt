@@ -799,7 +799,7 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
                 _activePayment.value = _activePayment.value
 
                 val approval = approvalRepository.createApproval(_activePayment.value!!, "Void Item", ticket,
-                    ticket.ticketItems.find{it.id == id}, null, null)
+                    ticket.ticketItems.find{it.id == id}, 0.00, null)
 
                 saveApprovalToCloud(approval)
                 savePaymentToCloud()
@@ -828,12 +828,14 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
         val id = liveTicketItem.value!!.id
 
         val error = checkForPriceChanges(false, true)
+        Log.d("ApprovalTesting", ticket.ticketItems.find{it.id == id}.toString())
         when (error){
             0 -> {
-                val disTotal = _activePayment.value?.discountTicket(discount)!!
+                val item = ticket.ticketItems.find{it.id == id}
+                val disTotal = _activePayment.value?.discountTicketItem(item!!, discount)!!
                 _paymentScreen.value = ShowPayment.NONE
                 val approval = approvalRepository.createApproval(_activePayment.value!!, "Discount Item", ticket,
-                    ticket.ticketItems.find{it.id == id}, disTotal, null)
+                    item!!, disTotal.round(2), null)
 
                 saveApprovalToCloud(approval)
                 savePaymentToCloud()
@@ -868,7 +870,7 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
                 _activePayment.value?.modifyItemPrice(liveTicketItem.value!!,  price.toDouble())!!
                 _paymentScreen.value = ShowPayment.NONE
                 val approval = approvalRepository.createApproval(_activePayment.value!!, "Modify Price", ticket,
-                    ticket.ticketItems.find{it.id == id}, price.toDouble(), null)
+                    ticket.ticketItems.find{it.id == id}, price.toDouble().round(2), null)
 
                 saveApprovalToCloud(approval)
                 savePaymentToCloud()

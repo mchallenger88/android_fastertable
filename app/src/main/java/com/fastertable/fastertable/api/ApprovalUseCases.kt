@@ -1,6 +1,7 @@
 package com.fastertable.fastertable.api
 
 import com.fastertable.fastertable.data.models.Approval
+import com.fastertable.fastertable.data.models.ApprovalOrderPayment
 import com.fastertable.fastertable.data.models.IdRequest
 import com.fastertable.fastertable.data.models.TimeBasedRequest
 import kotlinx.coroutines.CancellationException
@@ -98,7 +99,7 @@ class GetApprovalUseCase @Inject constructor(private val fastertableApi: Fastert
 class GetApprovalsUseCase @Inject constructor(private val fastertableApi: FastertableApi){
 
     sealed class Result {
-        data class Success(val approvals: List<Approval>) : Result()
+        data class Success(val approvals: List<ApprovalOrderPayment>) : Result()
         object Failure: Result()
     }
 

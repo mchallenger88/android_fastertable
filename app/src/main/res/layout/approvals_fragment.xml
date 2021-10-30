@@ -95,17 +95,17 @@
         android:paddingBottom="10dp"
         app:cardBackgroundColor="#E8EAF6"
         app:cardElevation="0dp"
-        app:approvalCard="@{viewModel.activeApproval}"
+        app:approvalCard="@{viewModel.activeApproval.approval}"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@+id/toolbar_approvalsSideBar"
         app:layout_constraintTop_toBottomOf="@+id/approvals_fastertoolbar">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/layout_approval"
-            android:layout_width="450dp"
+            android:layout_width="600dp"
             android:layout_height="match_parent"
-            android:layout_marginStart="@dimen/default_margin"
-            android:layout_marginEnd="@dimen/default_margin"
+            android:layout_marginStart="25dp"
+            android:layout_marginEnd="25dp"
             android:background="?android:attr/windowBackground"
             android:elevation="4dp">
 
@@ -127,10 +127,10 @@
                 android:layout_height="0dp"
                 android:layout_marginTop="10dp"
                 android:layout_marginEnd="10dp"
-                android:layout_marginBottom="16dp"
+                android:layout_marginBottom="25dp"
                 android:scrollbarStyle="outsideInset"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintBottom_toBottomOf="@+id/payment_totals_divider"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/txt_Approval"
@@ -141,71 +141,23 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="parent"
-                tools:layout_editor_absoluteX="0dp">
+                app:layout_constraintStart_toEndOf="parent">
 
-                <TextView
-                    android:id="@+id/text_approval_subtotal"
-                    style="@style/payment_totals"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="115dp"
-                    android:text="@string/subtotal"
-                    app:layout_constraintBottom_toTopOf="@+id/text_approval_salesTax"
-                    app:layout_constraintEnd_toEndOf="parent" />
 
-                <TextView
-                    android:id="@+id/text_approval_subtotal_price"
-                    style="@style/payment_totals"
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/floatingActionButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="24dp"
-                    app:layout_constraintBottom_toTopOf="@+id/text_approval_salesTax"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:approvalSubTotal="@{viewModel.approvalTicket}" />
-
-                <TextView
-                    android:id="@+id/text_approval_tax"
-                    style="@style/payment_totals"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="115dp"
-                    android:text="@string/tax"
-                    app:layout_constraintBottom_toTopOf="@+id/text_approval_total"
-                    app:layout_constraintEnd_toEndOf="parent" />
-
-                <TextView
-                    android:id="@+id/text_approval_salesTax"
-                    style="@style/payment_totals"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="24dp"
-                    app:layout_constraintBottom_toTopOf="@+id/text_approval_total"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:approvalTax="@{viewModel.approvalTicket}" />
-
-                <TextView
-                    android:id="@+id/text_approval_total"
-                    style="@style/payment_totals"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="115dp"
-                    android:layout_marginBottom="16dp"
-                    android:text="@string/total"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent" />
-
-                <TextView
-                    android:id="@+id/text_approval_total_price"
-                    style="@style/payment_totals"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="24dp"
-                    android:layout_marginBottom="16dp"
+                    android:layout_marginBottom="24dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    app:fabSize="auto"
+                    app:disableApprovalSave="@{viewModel.activeApproval.approval}"
+                    android:onClick="@{() -> viewModel.save()}"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:approvalTotal="@{viewModel.approvalTicket}" />
-
+                    app:srcCompat="@drawable/ic_outline_check_24" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <View
@@ -224,10 +176,10 @@
 
     <androidx.cardview.widget.CardView
         android:id="@+id/approve_reject_card_view"
-        android:layout_width="600dp"
+        android:layout_width="550dp"
         android:layout_height="0dp"
         android:animateLayoutChanges="true"
-        app:approvalCard="@{viewModel.activeApproval}"
+        app:approvalCard="@{viewModel.activeApproval.approval}"
         app:cardBackgroundColor="#E8EAF6"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -258,21 +210,22 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
-                app:approvalEmployee="@{viewModel.activePayment}"
-                app:layout_constraintBottom_toTopOf="@+id/txt_approval_explanation"
+                app:approvalEmployee="@{viewModel.activeApproval.payment}"
+                app:layout_constraintBottom_toTopOf="@+id/txt_approved"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent" />
 
             <TextView
-                android:id="@+id/txt_approval_explanation"
+                android:id="@+id/txt_approved"
                 style="@style/title_note"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
-                app:approvalExplanation="@{viewModel.activeApproval}"
+                app:showApprovedRejected="@{viewModel.activeApproval.approval}"
                 app:layout_constraintBottom_toTopOf="@+id/txt_approval_amount_large"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent" />
+
 
             <TextView
                 android:id="@+id/txt_approval_amount_large"
@@ -280,7 +233,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="30dp"
-                app:approvalDiscount="@{viewModel.activeApproval}"
+                app:approvalDiscount="@{viewModel.discountAmount}"
                 app:layout_constraintBottom_toTopOf="@+id/approve_reject_button_holder"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent" />
@@ -297,25 +250,6 @@
                 app:layout_constraintTop_toTopOf="parent"
                 android:gravity="center">
 
-                <Button
-                    android:id="@+id/btn_approve_approval"
-                    style="@style/primary_button_large"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:onClick="@{() -> viewModel.approveApproval()}"
-                    android:text="@string/approve" />
-
-                <Button
-                    android:id="@+id/btn_reject_approval"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:textColor="@color/white"
-                    android:textSize="@dimen/d21"
-                    android:onClick="@{() -> viewModel.rejectApproval()}"
-                    android:backgroundTint="@color/secondaryColor"
-                    android:text="@string/reject"
-                    style="?android:attr/buttonBarButtonStyle" />
             </LinearLayout>
 
             <ProgressBar

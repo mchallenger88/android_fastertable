@@ -69,6 +69,13 @@ data class Approval(
 }
 
 @Parcelize
+data class ApprovalOrderPayment(
+    val approval: Approval,
+    val order: Order,
+    val payment: Payment
+): Parcelable
+
+@Parcelize
 data class ApprovalTicket(
     val approval: Approval,
     val ticket: Ticket

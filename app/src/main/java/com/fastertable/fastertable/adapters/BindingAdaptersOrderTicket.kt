@@ -226,22 +226,5 @@ fun toggleSendToKitchen(button: Button, order: Order?){
         btn.setTextColor(ColorStateList.valueOf(offWhite))
         btn.strokeColor = ColorStateList.valueOf(offWhite)
     }
-//    if (order != null) {
-//        var hasOpenItems = false
-//        for (item in order.getAllOrderItems()){
-//            if (item.status == "Started"){
-//                hasOpenItems = true
-//            }
-//        }
-//        if (hasOpenItems){
-//            btn.isEnabled = true
-//            btn.setTextColor(ColorStateList.valueOf(white))
-//            btn.strokeColor = ColorStateList.valueOf(white)
-//
-//        }else{
-//            btn.isEnabled = false
-//            btn.setTextColor(ColorStateList.valueOf(offWhite))
-//            btn.strokeColor = ColorStateList.valueOf(offWhite)
-//        }
-//    }
+
 }

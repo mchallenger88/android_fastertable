@@ -143,7 +143,7 @@
 
     //Payment
     <string name="single_ticket">Single Ticket</string>
-    <string name="manage_payment">Manage Payment</string>
+    <string name="manage_payment">Split Checks</string>
     <string name="pay_cash">Pay Cash</string>
     <string name="pay_credit">Pay Credit</string>
     <string name="cancel_credit">Cancel Credit</string>
@@ -323,6 +323,9 @@
     <string name="wall_width">Wall Width</string>
     <string name="wall_thickness">Wall Thickness</string>
     <string name="set_wall_properties">Set Wall Properties</string>
+    <string name="price_modified">Price modified</string>
+    <string name="approved">Approved:</string>
+    <string name="rejected">Rejected:</string>
 
     //Floorplan
     <string-array name="table_types">

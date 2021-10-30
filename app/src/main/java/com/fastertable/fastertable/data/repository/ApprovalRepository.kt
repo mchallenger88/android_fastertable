@@ -64,12 +64,12 @@ class GetApprovalsById @Inject constructor(private val getApprovalUseCase: GetAp
 class GetApprovals @Inject constructor(private val getApprovalsUseCase: GetApprovalsUseCase,
                                       private val approvalRepository: ApprovalRepository){
 
-    suspend fun getApprovals(timeBasedRequest: TimeBasedRequest): List<Approval>{
-        val approvals: List<Approval>
+    suspend fun getApprovals(timeBasedRequest: TimeBasedRequest): List<ApprovalOrderPayment>{
+        val approvals: List<ApprovalOrderPayment>
         val result = getApprovalsUseCase.getApprovals(timeBasedRequest)
         if (result is GetApprovalsUseCase.Result.Success){
             approvals = result.approvals
-            approvalRepository.saveApprovals(approvals)
+            approvalRepository.saveApprovalOrderPayments(approvals)
             return approvals
         }else{
             throw RuntimeException("fetch failed")
@@ -145,6 +145,14 @@ class ApprovalRepository @Inject constructor(private val app: Application) {
         val gson = Gson()
         val jsonString = gson.toJson(approvals)
         val file= File(app.filesDir, "approvals.json")
+        file.writeText(jsonString)
+    }
+
+    fun saveApprovalOrderPayments(approvals: List<ApprovalOrderPayment>){
+        //Save approvals json to file
+        val gson = Gson()
+        val jsonString = gson.toJson(approvals)
+        val file= File(app.filesDir, "approvalorderpayments.json")
         file.writeText(jsonString)
     }
 

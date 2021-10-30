@@ -45,6 +45,7 @@
                 android:textColor="@color/white"
                 android:textSize="@dimen/toolbar_button"
                 android:onClick="@{() -> viewModel.setManagePayment()}"
+                app:disablePayButton="@{viewModel.activePayment.statusApproval}"
                 app:layout_constraintStart_toStartOf="@+id/layout_payment_buttons"
                 app:layout_constraintTop_toTopOf="@+id/layout_payment_buttons"
                 app:strokeColor="@color/white" />
