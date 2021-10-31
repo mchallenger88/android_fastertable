@@ -106,6 +106,16 @@ class OrderRepository @Inject constructor(private val app: Application) {
         val jsonString = gson.toJson(order)
         val file= File(app.filesDir, "order.json")
         file.writeText(jsonString)
+
+        val orders = getOrdersFromFile() as MutableList<Order>
+        var o = orders.find { it.id == order.id }
+        if (o == null){
+            orders.add(order)
+            saveOrders(orders)
+        }else{
+            o = order
+            saveOrders(orders)
+        }
     }
 
 

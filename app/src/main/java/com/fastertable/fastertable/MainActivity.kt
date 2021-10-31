@@ -296,13 +296,10 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
         orderViewModel.activeOrderSet.observe(this, {
             if (it){
                 val o = orderViewModel.activeOrder.value!!
-                Log.d("OrderTesting", o.toString())
                 if (o.closeTime == null){
-                    Log.d("OrderTesting", "Open Order")
                     navController.navigate(HomeFragmentDirections.actionNavHomeToOrderFragment())
                     homeViewModel.navigationEnd()
                 }else if (o.closeTime != null){
-                    Log.d("OrderTesting", "Closed Order")
                     goToPayment(navController)
                 }
             }
@@ -374,6 +371,7 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
 
         paymentViewModel.navigateToHome.observe(this, {
             if (it){
+                homeViewModel.getOrdersFromFile()
                 navController.navigate(PaymentFragmentDirections.actionPaymentFragmentToNavHome())
                 paymentViewModel.setReturnHome(false)
             }

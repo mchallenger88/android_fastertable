@@ -23,6 +23,7 @@ class SaveApproval @Inject constructor(private val saveApprovalUseCase: SaveAppr
         if (result is SaveApprovalUseCase.Result.Success){
             p = result.approval
             approvalRepository.saveApproval(p)
+            return p
         }else{
             throw RuntimeException("fetch failure")
         }
@@ -38,6 +39,7 @@ class UpdateApproval @Inject constructor(private val updateApprovalUseCase: Upda
         if (result is UpdateApprovalUseCase.Result.Success){
             p = result.approval
             approvalRepository.saveApproval(p)
+            return result.approval
         }else{
             throw RuntimeException("fetch failure")
         }

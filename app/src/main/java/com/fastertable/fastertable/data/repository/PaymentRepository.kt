@@ -176,6 +176,7 @@ class PaymentRepository @Inject constructor(private val app: Application) {
             discountPrice = null,
             priceModified = orderItem.priceAdjusted,
             approvalType = null,
+            approvalId = null,
             itemMods = ArrayList(orderItem.orderMods),
             salesCategory = orderItem.salesCategory,
             ticketItemPrice = orderItem.getTicketExtendedPrice(ticket.taxRate).round(2),

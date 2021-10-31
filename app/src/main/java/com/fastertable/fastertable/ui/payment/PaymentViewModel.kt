@@ -725,13 +725,19 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
         when (error){
             0 -> {
                 _activePayment.value?.voidTicket()
-                _activePayment.postValue(_activePayment.value)
-                val approval = approvalRepository.createApproval(
-                    _activePayment.value!!, "Void Ticket", _activePayment.value!!.activeTicket()!!,
-                    null, null, null
-                )
+                val ticket = _activePayment.value?.activeTicket()!!
+                _activePayment.value?.activeTicket()?.ticketItems?.forEach {
+                    var approval = approvalRepository.createApproval(_activePayment.value!!, "Void Item",
+                        ticket, it, 0.00, null)
+                    approval = saveApprovalToCloud(approval)!!
+                    it.approvalId = approval.id
+                    it.approvalType = "Void Item"
+
+                }
+
                 savePaymentToCloud()
-                saveApprovalToCloud(approval)
+
+
             }
             1 -> {
                 setError("Void Ticket", "There is a pending approval for this payment ticket.")
@@ -752,23 +758,39 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
     }
 
 
-    suspend fun discountTicket(discount: Discount){
+    private suspend fun discountTicket(discount: Discount){
         val error = checkForPriceChanges(true, false)
         when (error){
             0 -> {
-                _activePayment.value?.discountTicket(discount)
-                _activePayment.postValue(_activePayment.value)
-                _paymentScreen.value = ShowPayment.NONE
-                val approval = approvalRepository.createApproval(
-                    _activePayment.value!!,
-                    "Discount Ticket",
-                    _activePayment.value!!.activeTicket()!!,
-                    null,
-                    null,
-                    null
-                )
-                savePaymentToCloud()
-                saveApprovalToCloud(approval)
+                _activePayment.value?.voidTicket()
+                val ticket = _activePayment.value?.activeTicket()!!
+                _activePayment.value?.activeTicket()?.ticketItems?.forEach {
+
+                }
+                for(item in _activePayment.value?.activeTicket()?.ticketItems!!){
+                    val ticket = _activePayment.value?.activeTicket()!!
+                    val disTotal = _activePayment.value?.discountTicketItem(item, discount)!!
+                    var approval = approvalRepository.createApproval(_activePayment.value!!, "Discount Item", ticket,
+                        item, disTotal.round(2), null)
+
+                    approval = saveApprovalToCloud(approval)!!
+                    item.approvalId = approval.id
+                    item.approvalType = "Void Item"
+                    savePaymentToCloud()
+                }
+//                _activePayment.value?.discountTicket(discount)
+//                _activePayment.postValue(_activePayment.value)
+//                _paymentScreen.value = ShowPayment.NONE
+//                var approval = approvalRepository.createApproval(
+//                    _activePayment.value!!,
+//                    "Discount Ticket",
+//                    _activePayment.value!!.activeTicket()!!,
+//                    null,
+//                    null,
+//                    null
+//                )
+//                approval = saveApprovalToCloud(approval)!!
+//                savePaymentToCloud()
             }
             1 -> {
                 setError("Discount Ticket", "There is a pending approval for this payment ticket.")
@@ -798,10 +820,12 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
                 _activePayment.value?.voidTicketItem(liveTicketItem.value!!)
                 _activePayment.value = _activePayment.value
 
-                val approval = approvalRepository.createApproval(_activePayment.value!!, "Void Item", ticket,
+                var approval = approvalRepository.createApproval(_activePayment.value!!, "Void Item", ticket,
                     ticket.ticketItems.find{it.id == id}, 0.00, null)
 
-                saveApprovalToCloud(approval)
+                approval = saveApprovalToCloud(approval)!!
+                ticket.ticketItems.find{it.id == id}?.approvalId = approval.id
+                ticket.ticketItems.find{it.id == id}?.approvalType = "Void Item"
                 savePaymentToCloud()
             }
             1 -> {
@@ -834,10 +858,11 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
                 val item = ticket.ticketItems.find{it.id == id}
                 val disTotal = _activePayment.value?.discountTicketItem(item!!, discount)!!
                 _paymentScreen.value = ShowPayment.NONE
-                val approval = approvalRepository.createApproval(_activePayment.value!!, "Discount Item", ticket,
+                var approval = approvalRepository.createApproval(_activePayment.value!!, "Discount Item", ticket,
                     item!!, disTotal.round(2), null)
 
-                saveApprovalToCloud(approval)
+                approval = saveApprovalToCloud(approval)!!
+                ticket.ticketItems.find{it.id == id}?.approvalId = approval.id
                 savePaymentToCloud()
             }
             1 -> {
@@ -869,10 +894,11 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
             0 -> {
                 _activePayment.value?.modifyItemPrice(liveTicketItem.value!!,  price.toDouble())!!
                 _paymentScreen.value = ShowPayment.NONE
-                val approval = approvalRepository.createApproval(_activePayment.value!!, "Modify Price", ticket,
+                var approval = approvalRepository.createApproval(_activePayment.value!!, "Modify Price", ticket,
                     ticket.ticketItems.find{it.id == id}, price.toDouble().round(2), null)
 
-                saveApprovalToCloud(approval)
+                approval = saveApprovalToCloud(approval)!!
+                ticket.ticketItems.find{it.id == id}?.approvalId = approval.id
                 savePaymentToCloud()
             }
             1 -> {
@@ -951,14 +977,18 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
         _paymentScreen.value = ShowPayment.NONE
     }
 
-    private fun saveApprovalToCloud(approval: Approval){
-        viewModelScope.launch {
+    private suspend fun saveApprovalToCloud(approval: Approval): Approval?{
+        var x: Approval? = null
+         val job = viewModelScope.launch {
             if (approval._rid == ""){
-                saveApproval.saveApproval(approval)
+                x = saveApproval.saveApproval(approval)
             }else{
-                updateApproval.saveApproval(approval)
+                x = updateApproval.saveApproval(approval)
             }
         }
+
+        job.join()
+        return x
     }
 
     fun setActiveOrder(order: Order){

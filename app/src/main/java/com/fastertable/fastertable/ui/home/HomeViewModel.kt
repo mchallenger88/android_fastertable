@@ -76,6 +76,11 @@ class HomeViewModel @Inject constructor (private val loginRepository: LoginRepos
         }
     }
 
+    fun getOrdersFromFile(){
+        _orders.postValue(orderRepository.getOrdersFromFile())
+        _viewLoaded.postValue(true)
+    }
+
     private suspend fun getWebOrders(){
         val job = viewModelScope.launch {
             val midnight = GlobalUtils().getMidnight()

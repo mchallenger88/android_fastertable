@@ -136,74 +136,93 @@ class ApprovalsViewModel @Inject constructor(
     private fun processApproval(){
         viewModelScope.launch {
             _showProgress.postValue(true)
-            val aop = _activeApproval.value!!
             val ticket = _approvalTicket.value?.ticket
+
             if (ticket != null){
-                for (item in ticket.ticketItems){
-                    if (item.uiApproved){
-                        approveTicketItem(item, aop.payment, aop.order)
-                    }else{
-                        rejectTicketItem(item, aop.payment, aop.order)
-                    }
+                val approved = ticket.ticketItems.filter { it.uiApproved}
+                val rejected = ticket.ticketItems.filter { !it.uiApproved }
+                if (approved.isNotEmpty()){
+                    approveTicketItem(approved)
+                }
+                if (rejected.isNotEmpty()){
+                    rejectTicketItem(rejected)
                 }
             }
             _activeApproval.postValue(null)
             loadApprovals()
             _showProgress.postValue(false)
-
         }
 
     }
 
-    private fun approveTicketItem(item: TicketItem, payment: Payment, order: Order){
-        viewModelScope.launch {
-            val aop = _activeApproval.value!!
-            val ticket = payment.tickets!!.find{ it.id == aop.approval.ticketId}
-            item.approve()
-
-            ticket?.recalculateAfterApproval()
-            payment.statusApproval = "Approved"
-
-            //Check the total owed and if it's zero then close the check
-            if (payment.allTicketsPaid()){
-                payment.close()
-                order.close()
+    private fun findTicketItemApproval(item: TicketItem): ApprovalOrderPayment? {
+        if (_approvals.value != null){
+            for (aop in _approvals.value!!){
+                if (aop.approval.id == item.approvalId){
+                    return aop
+                }
             }
-            updatePayment.savePayment(payment)
+        }
+        return null
+    }
 
-            order.pendingApproval = false
-            updateOrder.saveOrder(order)
+    private fun approveTicketItem(list: List<TicketItem>){
+        viewModelScope.launch {
+            val aop = findTicketItemApproval(list[0])
+            if (aop != null){
+                val ticket = aop.payment.tickets!!.find{ it.id == aop.approval.ticketId}
+                if (ticket != null){
+                    for (item in list){
+                        item.approve()
+                        val tempAop = findTicketItemApproval(item)
+                        tempAop?.approval?.approved = true
+                        tempAop?.approval?.timeHandled = GlobalUtils().getNowEpoch()
+                        tempAop?.approval?.managerId = loginRepository.getOpsUser()?.employeeId
+                        updateApproval.saveApproval(tempAop?.approval!!)
+                    }
 
-            aop.approval.approved = true
-            aop.approval.timeHandled = GlobalUtils().getNowEpoch()
-            aop.approval.managerId = loginRepository.getOpsUser()?.employeeId
-            updateApproval.saveApproval(aop.approval)
+                    ticket.recalculateAfterApproval()
+
+                    aop.payment.statusApproval = "Approved"
+
+                    //Check the total owed and if it's zero then close the check
+                    if (aop.payment.allTicketsPaid()){
+                        aop.payment.close()
+                        aop.order.close()
+                    }
+
+                    updatePayment.savePayment(aop.payment)
+
+                    aop.order.pendingApproval = false
+                    updateOrder.saveOrder(aop.order)
+                }
+            }
         }
     }
 
-    private fun rejectTicketItem(item: TicketItem, payment: Payment, order: Order){
+    private fun rejectTicketItem(list: List<TicketItem>){
         viewModelScope.launch {
-            val aop = _activeApproval.value!!
-            val ticket = payment.tickets!!.find{ it.id == aop.approval.ticketId}
-            item.reject()
+            val aop = findTicketItemApproval(list[0])
+            if (aop != null){
+                val ticket = aop.payment.tickets!!.find{ it.id == aop.approval.ticketId}
+                if (ticket != null){
+                    for (item in list){
+                        item.reject()
+                        val tempAop = findTicketItemApproval(item)
+                        tempAop?.approval?.approved = false
+                        tempAop?.approval?.timeHandled = GlobalUtils().getNowEpoch()
+                        tempAop?.approval?.managerId = loginRepository.getOpsUser()?.employeeId
+                        updateApproval.saveApproval(tempAop?.approval!!)
+                    }
 
-            ticket?.recalculateAfterApproval()
-            payment.statusApproval = "Rejected"
+                    aop.payment.statusApproval = "Rejected"
+                    updatePayment.savePayment(aop.payment)
 
-            //Check the total owed and if it's zero then close the check
-            if (payment.allTicketsPaid()){
-                payment.close()
-                order.close()
+                    aop.order.pendingApproval = false
+                    updateOrder.saveOrder(aop.order)
+
+                }
             }
-            updatePayment.savePayment(payment)
-
-            order.pendingApproval = false
-            updateOrder.saveOrder(order)
-
-            aop.approval.approved = true
-            aop.approval.timeHandled = GlobalUtils().getNowEpoch()
-            aop.approval.managerId = loginRepository.getOpsUser()?.employeeId
-            updateApproval.saveApproval(aop.approval)
         }
     }
 
