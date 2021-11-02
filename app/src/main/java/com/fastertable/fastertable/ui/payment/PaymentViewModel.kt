@@ -1,7 +1,12 @@
 package com.fastertable.fastertable.ui.payment
 
 import android.annotation.SuppressLint
+import android.app.Activity
+import android.content.Context
 import android.util.Log
+import android.view.View
+import android.view.inputmethod.InputMethodManager
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -87,10 +92,6 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
     val amountOwed: LiveData<Double>
         get() = _amountOwed
 
-    private val _ticketPaid = MutableLiveData<Boolean>()
-    val ticketPaid: LiveData<Boolean>
-        get() = _ticketPaid
-
     private val _calculatingCash = MutableLiveData("")
     private val calculatingCash: LiveData<String>
         get() = _calculatingCash
@@ -151,41 +152,45 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
     val whichCreditPayment: LiveData<ShowCreditPayment>
         get() = _whichCreditPayment
 
+    private val _showProgress = MutableLiveData(false)
+    val showProgress: LiveData<Boolean>
+        get() = _showProgress
+
     //endregion
 
     //region Pay Cash
     fun payCashNow(){
-        _activePayment.value?.tickets?.forEach{ t ->
-            if (t.uiActive && cashAmount.value != null){
+        val payment = _activePayment.value
+        val ticket = payment?.tickets?.find{ it.uiActive}
+        if (ticket != null){
+            if (cashAmount.value != null){
                 val amountBeingPaid = cashAmount.value!!.round(2)
-                val amountOwed = t.total.minus(t.paymentTotal).minus(amountBeingPaid).round(2)
-
+                val amountOwed = ticket.total.minus(ticket.paymentTotal).minus(amountBeingPaid).round(2)
                 if (amountOwed < 0){
-                    createCashTicketPayment(t, t.total.minus(t.paymentTotal))
+                    createCashTicketPayment(ticket, ticket.total.minus(ticket.paymentTotal))
                 }else{
-                    createCashTicketPayment(t, amountBeingPaid)
+                    createCashTicketPayment(ticket, amountBeingPaid)
                 }
 
                 if (amountOwed < 0){
                     _amountOwed.value = amountOwed.absoluteValue
-                    t.calculatePaymentTotal(false)
+                    ticket.calculatePaymentTotal(false)
                 }
 
                 if (amountOwed == 0.00){
-                    t.calculatePaymentTotal(false)
+                    ticket.calculatePaymentTotal(false)
                 }
 
                 if (amountOwed > 0){
-                    t.calculatePaymentTotal(true)
+                    ticket.calculatePaymentTotal(true)
                 }
-                _activePayment.value = _activePayment.value
-                _cashAmount.value = 0.00
 
-                if (activePayment.value!!.allTicketsPaid()){
-                    _activePayment.value!!.close()
-                    _activePayment.value = _activePayment.value
+                if (payment.allTicketsPaid()){
+                    payment.close()
                 }
-                _ticketPaid.value = true
+                _activePayment.value = payment
+                savePaymentToCloud()
+                _cashAmount.value = 0.00
             }
         }
     }
@@ -204,7 +209,6 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
             creditCardTransactions = null,
             uiActive = true
         )
-
         if (ticket.paymentList.isNullOrEmpty()){
             list.add(ticketPayment)
             ticket.paymentList = list
@@ -281,19 +285,20 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
     }
 
 
-    fun savePaymentToCloud(){
+    private fun savePaymentToCloud(){
         viewModelScope.launch {
-            val p: Payment
+            var p: Payment
             if (activePayment.value?._rid == ""){
                 p = savePayment.savePayment(activePayment.value!!)
                 _activePayment.postValue(p)
                 printPaymentReceipt()
             }else{
                 p = updatePayment.savePayment(activePayment.value!!)
+                p = updatePayment.savePayment(p)
+                //Had to add this second save because the first save although it returned the correct values was not actually saving to the database
                 _activePayment.postValue(p)
                 printPaymentReceipt()
             }
-            _ticketPaid.value = false
         }
     }
 
@@ -551,7 +556,7 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
         }else{
             _activePayment.value = _activePayment.value
         }
-        _ticketPaid.value = true
+        savePaymentToCloud()
     }
 
     @SuppressLint("DefaultLocale")
@@ -721,6 +726,7 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
 
 
     private suspend fun voidTicket(){
+        _showProgress.value = true
         val error = checkForPriceChanges(true, false)
         when (error){
             0 -> {
@@ -749,6 +755,7 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
 
             }
         }
+        _showProgress.value = false
     }
 
     fun initialDiscountTicket(discount: Discount){
@@ -759,6 +766,7 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
 
 
     private suspend fun discountTicket(discount: Discount){
+        _showProgress.value = true
         val error = checkForPriceChanges(true, false)
         when (error){
             0 -> {
@@ -778,19 +786,6 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
                     item.approvalType = "Void Item"
                     savePaymentToCloud()
                 }
-//                _activePayment.value?.discountTicket(discount)
-//                _activePayment.postValue(_activePayment.value)
-//                _paymentScreen.value = ShowPayment.NONE
-//                var approval = approvalRepository.createApproval(
-//                    _activePayment.value!!,
-//                    "Discount Ticket",
-//                    _activePayment.value!!.activeTicket()!!,
-//                    null,
-//                    null,
-//                    null
-//                )
-//                approval = saveApprovalToCloud(approval)!!
-//                savePaymentToCloud()
             }
             1 -> {
                 setError("Discount Ticket", "There is a pending approval for this payment ticket.")
@@ -802,6 +797,7 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
 
             }
         }
+        _showProgress.value = false
     }
 
     fun initialVoidItem(){
@@ -811,6 +807,7 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
     }
 
     private suspend fun voidTicketItem(){
+        _showProgress.value = true
         val ticket = _activePayment.value!!.activeTicket()!!
         val id = liveTicketItem.value!!.id
 
@@ -838,6 +835,7 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
 
             }
         }
+        _showProgress.value = false
     }
 
 
@@ -848,11 +846,11 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
     }
 
     private suspend fun discountTicketItem(discount: Discount){
+        _showProgress.value = true
         val ticket = _activePayment.value!!.activeTicket()!!
         val id = liveTicketItem.value!!.id
 
         val error = checkForPriceChanges(false, true)
-        Log.d("ApprovalTesting", ticket.ticketItems.find{it.id == id}.toString())
         when (error){
             0 -> {
                 val item = ticket.ticketItems.find{it.id == id}
@@ -877,6 +875,7 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
 
             }
         }
+        _showProgress.value = false
     }
 
     fun initialModifyPrice(price: String){
@@ -886,6 +885,7 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
     }
 
     private suspend fun modifyPrice(price: String){
+        _showProgress.value = true
         val ticket = _activePayment.value!!.activeTicket()!!
         val id = liveTicketItem.value!!.id
 
@@ -913,6 +913,7 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
 
             }
         }
+        _showProgress.value = false
     }
 
 
@@ -1014,8 +1015,8 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
             }
 
         }
-
     }
+
 }
 
 

@@ -324,12 +324,6 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
             }
         })
 
-        paymentViewModel.ticketPaid.observe(this, { it ->
-            if (it){
-                paymentViewModel.savePaymentToCloud()
-            }
-        })
-
         paymentViewModel.activePayment.observe(this, { it ->
             if (it != null) {
                 if (it.closed && orderViewModel.activeOrder.value != null && orderViewModel.activeOrder.value!!.closeTime == null){
@@ -491,7 +485,7 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
     override fun onSupportNavigateUp(): Boolean {
         val navController = findNavController(R.id.nav_host_fragment)
         hideKeyboard()
-        homeViewModel.getOrders()
+        homeViewModel.getOrdersFromFile()
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
     }
 

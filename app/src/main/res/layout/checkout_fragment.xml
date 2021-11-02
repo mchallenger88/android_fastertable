@@ -435,16 +435,6 @@
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     tools:listitem="@layout/checkout_order_list_line_item"/>
 
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/checkout_payment_recycler"
-                    android:layout_width="wrap_content"
-                    android:layout_height="500dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/text_checkout_title"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                    tools:listitem="@layout/checkout_payment_list_line_item"/>
 
 
             </androidx.constraintlayout.widget.ConstraintLayout>

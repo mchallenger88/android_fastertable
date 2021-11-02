@@ -77,7 +77,6 @@ fun getApprovalSubtotal(textView: TextView, item: ApprovalTicket?){
 @BindingAdapter("approvalTax")
 fun getApprovalTax(textView: TextView, item: ApprovalTicket?){
     if (item != null) {
-        Log.d("ApprovalTesting", item.approval.approvalType)
         if (item.approval.approvalType == "Void Ticket" || item.approval.approvalType == "Discount Ticket") {
             textView.text = textView.context.getString(
                 R.string.subtotal_price,

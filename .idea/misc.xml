@@ -36,6 +36,8 @@
         <entry key="..\:/androidprojects/fastertable/app/src/main/res/layout/bottom_sheet_order_more.xml" value="0.303125" />
         <entry key="..\:/androidprojects/fastertable/app/src/main/res/layout/bottom_sheet_ticket_item_more.xml" value="0.303125" />
         <entry key="..\:/androidprojects/fastertable/app/src/main/res/layout/bottom_sheet_ticket_more.xml" value="0.303125" />
+        <entry key="..\:/androidprojects/fastertable/app/src/main/res/layout/checkout_add_tip_fragment.xml" value="0.264" />
+        <entry key="..\:/androidprojects/fastertable/app/src/main/res/layout/checkout_add_tip_line_item.xml" value="0.303125" />
         <entry key="..\:/androidprojects/fastertable/app/src/main/res/layout/clockout_fragment.xml" value="0.303125" />
         <entry key="..\:/androidprojects/fastertable/app/src/main/res/layout/confirm_list_line_item.xml" value="0.303125" />
         <entry key="..\:/androidprojects/fastertable/app/src/main/res/layout/dialog_continue_cancel.xml" value="0.303125" />

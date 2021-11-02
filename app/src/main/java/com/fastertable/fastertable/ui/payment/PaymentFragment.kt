@@ -1,5 +1,7 @@
 package com.fastertable.fastertable.ui.payment
 
+import android.app.Activity
+import android.content.Context
 import android.content.res.ColorStateList
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -23,6 +25,8 @@ import dagger.hilt.android.AndroidEntryPoint
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
+import android.view.inputmethod.InputMethodManager
+import androidx.core.content.ContentProviderCompat
 import androidx.navigation.fragment.findNavController
 import com.fastertable.fastertable.data.models.ManualCredit
 
@@ -209,6 +213,7 @@ class PaymentFragment: BaseFragment() {
     }
 
     private fun modifyPrice(binding: PaymentFragmentBinding){
+        hideKeyboardFrom(requireContext(), requireView())
         viewModel.initialModifyPrice(binding.editModifyPrice.editText?.text.toString())
     }
 
@@ -238,4 +243,9 @@ class PaymentFragment: BaseFragment() {
     }
 
 
+    private fun hideKeyboardFrom(context: Context, view: View) {
+        val imm: InputMethodManager =
+            context.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(view.windowToken, 0)
+    }
 }

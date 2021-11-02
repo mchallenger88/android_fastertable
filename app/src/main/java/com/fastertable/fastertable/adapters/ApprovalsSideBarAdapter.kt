@@ -45,13 +45,7 @@ class ApprovalsSideBarAdapter(private val clickListener: ApprovalSideBarListener
             binding.approvalButton.setCompoundDrawablesRelativeWithIntrinsicBounds(0, R.drawable.ic_outline_fact_check_24_white, 0, 0)
 
             binding.approvalButton.text = parent.context.getString(R.string.approval)
-//            if (approvalItem.uiActive){
-//                binding.approvalButton.setTextColor(ColorStateList.valueOf(white))
-//                binding.approvalButton.setCompoundDrawablesRelativeWithIntrinsicBounds(0, R.drawable.ic_outline_fact_check_24_white, 0, 0)
-//            }else{
-//                binding.approvalButton.setTextColor(ColorStateList.valueOf(offWhite))
-//                binding.approvalButton.setCompoundDrawablesRelativeWithIntrinsicBounds(0, R.drawable.ic_outline_fact_check_24_off_white, 0, 0)
-//            }
+
             binding.approvalButton.textSize = 16f
 
             binding.approvalButton.textAlignment = View.TEXT_ALIGNMENT_CENTER

@@ -28,8 +28,8 @@ class ApprovalsViewModel @Inject constructor(
     val approvals: LiveData<List<ApprovalOrderPayment>>
         get() = _approvals
 
-    private val _approvalsShown = MutableLiveData<List<ApprovalOrderPayment>>()
-    val approvalsShown: LiveData<List<ApprovalOrderPayment>>
+    private val _approvalsShown = MutableLiveData<List<ApprovalOrderPayment>?>()
+    val approvalsShown: LiveData<List<ApprovalOrderPayment>?>
         get() = _approvalsShown
 
     private val _approvalTicket = MutableLiveData<ApprovalTicket?>()
@@ -133,14 +133,14 @@ class ApprovalsViewModel @Inject constructor(
         }
     }
 
-    private fun processApproval(){
-        viewModelScope.launch {
+    private suspend fun processApproval(){
+        val job = viewModelScope.launch {
             _showProgress.postValue(true)
             val ticket = _approvalTicket.value?.ticket
 
             if (ticket != null){
-                val approved = ticket.ticketItems.filter { it.uiApproved}
-                val rejected = ticket.ticketItems.filter { !it.uiApproved }
+                val approved = ticket.ticketItems.filter { it.uiApproved && it.discountPrice != null}
+                val rejected = ticket.ticketItems.filter { !it.uiApproved && it.discountPrice != null}
                 if (approved.isNotEmpty()){
                     approveTicketItem(approved)
                 }
@@ -148,10 +148,13 @@ class ApprovalsViewModel @Inject constructor(
                     rejectTicketItem(rejected)
                 }
             }
-            _activeApproval.postValue(null)
-            loadApprovals()
-            _showProgress.postValue(false)
         }
+
+        job.join()
+        _activeApproval.postValue(null)
+        _approvalsShown.postValue(null)
+        loadApprovals()
+        _showProgress.postValue(false)
 
     }
 
@@ -205,9 +208,12 @@ class ApprovalsViewModel @Inject constructor(
             val aop = findTicketItemApproval(list[0])
             if (aop != null){
                 val ticket = aop.payment.tickets!!.find{ it.id == aop.approval.ticketId}
+                Log.d("ApprovalTesting", ticket.toString())
                 if (ticket != null){
                     for (item in list){
+                        Log.d("ApprovalTesting", item.toString())
                         item.reject()
+                        Log.d("ApprovalTesting", item.toString())
                         val tempAop = findTicketItemApproval(item)
                         tempAop?.approval?.approved = false
                         tempAop?.approval?.timeHandled = GlobalUtils().getNowEpoch()
@@ -216,6 +222,7 @@ class ApprovalsViewModel @Inject constructor(
                     }
 
                     aop.payment.statusApproval = "Rejected"
+                    Log.d("ApprovalTesting", aop.payment.tickets!![0].toString())
                     updatePayment.savePayment(aop.payment)
 
                     aop.order.pendingApproval = false

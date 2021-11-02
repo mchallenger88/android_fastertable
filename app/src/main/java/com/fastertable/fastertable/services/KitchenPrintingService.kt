@@ -4,7 +4,6 @@ import com.beust.klaxon.internal.firstNotNullResult
 import com.fastertable.fastertable.api.KitchenPrintUseCase
 import com.fastertable.fastertable.api.ReceiptPrintUseCase
 import com.fastertable.fastertable.data.models.*
-import com.fastertable.fastertable.utils.round
 import technology.master.kotlinprint.printer.*
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -811,11 +810,7 @@ class PrintTicketService {
         var concat: String
 
         ticket.ticketItems.forEachIndexed{index, item ->
-            if (item.priceModified){
-                itemPrice = item.discountPrice!!
-            }else{
-                itemPrice = item.ticketItemPrice
-            }
+            itemPrice = item.ticketItemPrice
 
             if (item.ticketItemPrice != 0.00){
                 subtotal += itemPrice
@@ -922,11 +917,7 @@ class PrintTicketService {
 
         ticket.ticketItems.forEachIndexed{index, item ->
             if (item.ticketItemPrice != 0.00){
-                if (item.priceModified){
-                    itemPrice = item.discountPrice!!
-                }else{
-                    itemPrice = item.ticketItemPrice
-                }
+                itemPrice = item.ticketItemPrice
                 val g: String = (index + 1).toString()
                 document
                     .newLine()

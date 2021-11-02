@@ -31,8 +31,11 @@ class SaveOrder @Inject constructor(private val saveOrderUseCase: SaveOrderUseCa
 class SaveGiftOrder @Inject constructor(private val saveOrderUseCase: SaveOrderUseCase,
                                     private val orderRepository: OrderRepository){
     suspend fun saveOrder(order: Order): Order?{
+        val o: Order
         val result = saveOrderUseCase.saveOrder(order)
         if (result is SaveOrderUseCase.Result.Success){
+            o = result.order
+            orderRepository.saveOrder(o)
             return result.order
         }
         else{
@@ -108,12 +111,13 @@ class OrderRepository @Inject constructor(private val app: Application) {
         file.writeText(jsonString)
 
         val orders = getOrdersFromFile() as MutableList<Order>
-        var o = orders.find { it.id == order.id }
+        val o = orders.find { it.id == order.id }
+        val index = orders.indexOf(o)
         if (o == null){
             orders.add(order)
             saveOrders(orders)
         }else{
-            o = order
+            orders[index] = order
             saveOrders(orders)
         }
     }

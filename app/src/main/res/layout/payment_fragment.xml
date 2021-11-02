@@ -235,10 +235,10 @@
                 android:layout_marginBottom="16dp"
                 android:scrollbarStyle="outsideInset"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/txt_approval_pending"
+                app:layout_constraintBottom_toTopOf="@+id/constraint_totals"
                 app:ticketListData="@{viewModel.activePayment}"
                 tools:listitem="@layout/ticket_line_item" />
 
@@ -1240,7 +1240,16 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
 
-    //Credit Payment
+    <ProgressBar
+        android:id="@+id/progressBar_payment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:showProgress="@{viewModel.showProgress}" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

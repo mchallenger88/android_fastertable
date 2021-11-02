@@ -381,7 +381,7 @@ data class Ticket(
         fun recalculateAfterApproval(){
             subTotal = ticketItems.sumOf { it.ticketItemPrice }.round(2)
             tax = subTotal.times(taxRate).round(2)
-            total = subTotal.plus(tax)
+            total = subTotal.plus(tax).round(2)
         }
 
         fun addTip(tip: Double, taxRate: Double){
@@ -594,26 +594,6 @@ enum class CreditTransactionType {
     PREAUTH
 }
 
-@Parcelize
-data class ModifyPrice(
-    val t: TicketItem,
-    val price: Double
-): Parcelable
-
-@Parcelize
-data class ticketAmount(
-    val amount: Double,
-): Parcelable
-
-@Parcelize
-data class secretKey(
-    val key: String,
-): Parcelable
-
-@Parcelize
-data class stripePayment(
-    val token: String,
-): Parcelable
 
 @Parcelize
 data class PayTicket(

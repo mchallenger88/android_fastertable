@@ -118,7 +118,7 @@
                 android:layout_marginBottom="16dp"
                 android:scrollbarStyle="outsideInset"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintBottom_toTopOf="@+id/constraint_totals"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/txt_approval_pending"
@@ -277,59 +277,30 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <TextView
-                android:id="@+id/txt_add_tip_explain"
-                style="@style/title_note"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="50dp"
-                android:text="@string/add_a_tip_to_this_ticket"
+            <View
+                android:id="@+id/divider_tip"
+                android:layout_width="798dp"
+                android:layout_height="1dp"
+                android:layout_marginTop="25dp"
+                android:background="?android:attr/listDivider"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/text_add_tip_title" />
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/edit_add_tip"
-                android:layout_width="200dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:hint="@string/tip"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/txt_add_tip_explain">
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="numberDecimal"
-                    android:textAlignment="center"
-                    android:textSize="@dimen/d26" />
-
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <Button
-                android:id="@+id/btn_add_tip"
-                android:layout_width="200dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="@string/save"
-                android:textSize="@dimen/d21"
-                app:tipCaptureDisabled="@{viewModel.activePayment}"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/edit_add_tip" />
-
-            <TextView
-                android:id="@+id/txt_captured"
-                style="@style/error_style_extra_small"
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler_ticket_payment"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:text="@string/ticket_captured"
-                app:tipCapturedError="@{viewModel.activePayment}"
+                android:layout_height="0dp"
+                android:layout_marginBottom="20dp"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                app:layout_constraintBottom_toTopOf="@+id/btn_cancel_add_tip"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/btn_add_tip" />
+                app:layout_constraintTop_toBottomOf="@+id/divider_tip"
+                tools:listitem="@layout/checkout_add_tip_line_item">
+
+            </androidx.recyclerview.widget.RecyclerView>
 
 
             <Button

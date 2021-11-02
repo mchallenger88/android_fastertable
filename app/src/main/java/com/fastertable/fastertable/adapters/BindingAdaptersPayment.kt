@@ -1,5 +1,6 @@
 package com.fastertable.fastertable.adapters
 
+import android.annotation.SuppressLint
 import android.content.res.ColorStateList
 import android.util.Log
 import android.view.View
@@ -14,6 +15,7 @@ import com.fastertable.fastertable.R
 import com.fastertable.fastertable.data.models.Payment
 import com.fastertable.fastertable.data.models.Ticket
 import com.fastertable.fastertable.data.models.TicketItem
+import com.fastertable.fastertable.data.models.TicketPayment
 import com.fastertable.fastertable.ui.payment.ShowCreditPayment
 
 @BindingAdapter("ticketsData")
@@ -278,5 +280,28 @@ fun showPriceModified(textView: TextView, item: TicketItem){
         textView.text = textView.context.getString(R.string.price_modified)
     }else{
         textView.visibility = View.GONE
+    }
+}
+
+@SuppressLint("SetTextI18n")
+@BindingAdapter("paymentListId")
+fun paymentListId(textView: TextView, item: TicketPayment?){
+    if (item != null){
+        val id = item.id.plus(1)
+        textView.text = "Payment #${id}"
+    }
+}
+
+@BindingAdapter("paymentListAmount")
+fun paymentListAmount(textView: TextView, item: TicketPayment?){
+    if (item != null){
+        textView.text = "Total Paid: $%.${2}f".format(item.ticketPaymentAmount)
+    }
+}
+
+@BindingAdapter("paymentListGratuity")
+fun paymentListGratuity(textView: TextView, item: TicketPayment?){
+    if (item != null){
+        textView.text = "Gratuity: $%.${2}f".format(item.gratuity)
     }
 }

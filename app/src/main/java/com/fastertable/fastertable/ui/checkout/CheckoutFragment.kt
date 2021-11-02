@@ -42,7 +42,7 @@ class CheckoutFragment : BaseFragment() {
         })
 
         binding.checkoutOrderRecycler.adapter = concatAdapter
-        binding.checkoutPaymentRecycler.adapter = paymentAdapter
+//        binding.checkoutPaymentRecycler.adapter = paymentAdapter
 
 
         viewModel.checkout.observe(viewLifecycleOwner, {

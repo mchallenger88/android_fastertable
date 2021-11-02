@@ -1,5 +1,6 @@
 package com.fastertable.fastertable.ui.checkout
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -295,39 +296,39 @@ class CheckoutViewModel @Inject constructor (
         _navToTip.value = ""
     }
 
-    fun addTip(tip: String){
+    fun addTipNew(tp: TicketPayment){
         viewModelScope.launch {
-            //find active ticket
-            for (ticket in _activePayment.value?.tickets!!) {
-                if (ticket.uiActive){
-                    for (payment in ticket.paymentList!!){
-                        if (payment.uiActive && payment.paymentType == "Cash"){
-                            ticket.addTip(tip.toDouble(), activePayment.value?.taxRate!!)
-                            _activePayment.value = _activePayment.value
-                            savePaymentToCloud()
-                        }
+            val payment = _activePayment.value
+            if (payment != null){
+                val ticket = payment.tickets?.find{ it.uiActive }
+                if (ticket != null){
+                    val tp1 = ticket.paymentList?.find { it.id == tp.id }
+                    if (tp1?.paymentType == "Cash"){
+                        savePaymentToCloud()
+                    }
 
-                        if (payment.uiActive && payment.paymentType == "Credit" || payment.paymentType == "Manual Credit"){
-//                            val ct = payment.creditCardTransactions!!.find{cc -> cc.creditTransaction.AmountApproved.toDouble() == payment.ticketPaymentAmount.minus(payment.gratuity)}
-                            val ct = payment.creditCardTransactions!!.first()
-
-                            val request = AdjustTipTest(
-                                MerchantName = settings.merchantCredentials.MerchantName,
-                                MerchantSiteId = settings.merchantCredentials.MerchantSiteId,
-                                MerchantKey = settings.merchantCredentials.MerchantKey,
-                                Token = ct.creditTransaction.Token,
-                                Amount = tip)
-                            val transaction: TransactionResponse45 = adjustTip.adjustTip(request) as TransactionResponse45
-                            ct.tipTransaction = transaction
-
-                            if (transaction.ApprovalStatus == "APPROVED"){
-                                ticket.addTip(tip.toDouble(), activePayment.value?.taxRate!!)
-                                _activePayment.value = _activePayment.value
-                                savePaymentToCloud()
-                            }
-                            }
+                    if (tp1?.paymentType == "Credit" || tp1?.paymentType == "Manual Credit"){
+                        processCreditTip(ticket, tp1)
                     }
                 }
+            }
+        }
+    }
+
+    private fun processCreditTip(ticket: Ticket, ticketPayment: TicketPayment){
+        viewModelScope.launch {
+            val ct = ticketPayment.creditCardTransactions!!.first()
+            val request = AdjustTipTest(
+                MerchantName = settings.merchantCredentials.MerchantName,
+                MerchantSiteId = settings.merchantCredentials.MerchantSiteId,
+                MerchantKey = settings.merchantCredentials.MerchantKey,
+                Token = ct.creditTransaction.Token,
+                Amount = ticketPayment.gratuity.toString())
+            val transaction: TransactionResponse45 = adjustTip.adjustTip(request) as TransactionResponse45
+            ct.tipTransaction = transaction
+
+            if (transaction.ApprovalStatus == "APPROVED"){
+                savePaymentToCloud()
             }
         }
     }

@@ -220,7 +220,7 @@
     <string name="checkout_orders">Checkout Orders</string>
     <string name="checkout_payments">Checkout Payments</string>
     <string name="checkout_total">Total</string>
-    <string name="add_tip">Add Tip</string>
+    <string name="add_tip">Add Tips</string>
     <string name="add_a_tip_to_this_ticket">Enter the tip amount:</string>
     <string name="tip">Tip</string>
     <string name="return_to_checkout">Return to Checkout</string>
@@ -326,6 +326,8 @@
     <string name="price_modified">Price modified</string>
     <string name="approved">Approved:</string>
     <string name="rejected">Rejected:</string>
+    <string name="cash_payment">Cash Payment</string>
+    <string name="credit_payment">Credit Card: %1$s</string>
 
     //Floorplan
     <string-array name="table_types">

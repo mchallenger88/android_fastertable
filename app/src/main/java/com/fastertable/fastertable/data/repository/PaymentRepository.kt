@@ -19,10 +19,10 @@ class SavePayment @Inject constructor(private val savePaymentUseCase: SavePaymen
         if (result is SavePaymentUseCase.Result.Success){
             p = result.payment
             paymentRepository.savePayment(p)
+            return p
         }else{
             throw RuntimeException("fetch failure")
         }
-        return p
     }
 }
 
@@ -34,10 +34,10 @@ class UpdatePayment @Inject constructor(private val updatePaymentUseCase: Update
         if (result is UpdatePaymentUseCase.Result.Success){
             p = result.payment
             paymentRepository.savePayment(p)
+            return p
         }else{
             throw RuntimeException("fetch failure")
         }
-        return p
     }
 }
 
