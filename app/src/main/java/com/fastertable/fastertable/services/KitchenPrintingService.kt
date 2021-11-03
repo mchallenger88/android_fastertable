@@ -579,24 +579,24 @@ class PrintTicketService {
         if (cct != null){
             document
                 .newLine()
-                .text(cct.creditTransaction.PaymentType)
+                .text(cct.creditTransaction?.PaymentType)
                 .newLine()
-                .text("Card: " + cct.creditTransaction.AccountNumber)
+                .text("Card: " + (cct.creditTransaction?.AccountNumber))
                 .newLine()
-                .text("Cardholder: " + cct.creditTransaction.Cardholder)
+                .text("Cardholder: " + cct.creditTransaction?.Cardholder)
                 .newLine()
-                .text("Approval: " + cct.creditTransaction.AuthorizationCode)
+                .text("Approval: " + cct.creditTransaction?.AuthorizationCode)
                 .newLine()
-            if (cct.creditTransaction.AdditionalParameters != null){
-                if (cct.creditTransaction.AdditionalParameters.EMV != null){
-                    if (cct.creditTransaction.AdditionalParameters.EMV != null){
-                        if (cct.creditTransaction.AdditionalParameters.EMV!!.ApplicationInformation != null){
+            if (cct.creditTransaction?.AdditionalParameters != null){
+                if (cct.creditTransaction!!.AdditionalParameters!!.EMV != null){
+                    if (cct.creditTransaction!!.AdditionalParameters!!.EMV != null){
+                        if (cct.creditTransaction?.AdditionalParameters!!.EMV!!.ApplicationInformation != null){
                             document
-                                .text("AID: " + cct.creditTransaction.AdditionalParameters.EMV!!.ApplicationInformation?.Aid)
+                                .text("AID: " + cct.creditTransaction!!.AdditionalParameters?.EMV!!.ApplicationInformation?.Aid)
                                 .newLine()
-                                .text("App Lbl: " + cct.creditTransaction.AdditionalParameters.EMV!!.ApplicationInformation?.ApplicationLabel)
+                                .text("App Lbl: " + cct.creditTransaction!!.AdditionalParameters?.EMV!!.ApplicationInformation?.ApplicationLabel)
                                 .newLine()
-                                .text("PIN Stmt: " + cct.creditTransaction.AdditionalParameters.EMV!!.PINStatement)
+                                .text("PIN Stmt: " + cct.creditTransaction!!.AdditionalParameters?.EMV!!.PINStatement)
                                 .newLine()
                         }
                     }
@@ -613,7 +613,7 @@ class PrintTicketService {
             .alignment("right")
             .text("Total:  $" + cct!!.creditTotal.toString())
             .newLine()
-            .text("Gift Card:  $" + cct!!.creditTransaction.AmountApproved)
+            .text("Gift Card:  $" + (cct.creditTransaction?.AmountApproved))
             .newLine()
             .newLine()
 
@@ -633,13 +633,13 @@ class PrintTicketService {
             .format(java.time.Instant.ofEpochSecond(payment.timeStamp))
 
         val creditTransaction = ticket.activePayment()!!.creditCardTransactions!!.last()
-        val addParams = creditTransaction.creditTransaction.AdditionalParameters
+        val addParams = creditTransaction.creditTransaction?.AdditionalParameters
         var appInfo: ApplicationInformation? = null
 
         if (addParams != null){
             if (addParams.EMV != null && addParams.EMV != null){
                 if (addParams.EMV!!.ApplicationInformation != null && addParams.EMV!!.ApplicationInformation != null){
-                    appInfo = creditTransaction.creditTransaction.AdditionalParameters.EMV?.ApplicationInformation!!
+                    appInfo = creditTransaction.creditTransaction!!.AdditionalParameters?.EMV?.ApplicationInformation!!
                 }
             }
         }
@@ -675,21 +675,21 @@ class PrintTicketService {
             }
             document
                 .newLine()
-                .text(creditTransaction.creditTransaction.PaymentType)
+                .text(creditTransaction.creditTransaction?.PaymentType)
                 .newLine()
-                .text("Card: " + creditTransaction.creditTransaction.AccountNumber)
+                .text("Card: " + (creditTransaction.creditTransaction?.AccountNumber))
                 .newLine()
-                .text("Cardholder: " + creditTransaction.creditTransaction.Cardholder)
+                .text("Cardholder: " + (creditTransaction.creditTransaction?.Cardholder))
                 .newLine()
-                .text("Approval: " + creditTransaction.creditTransaction.AuthorizationCode)
+                .text("Approval: " + creditTransaction.creditTransaction?.AuthorizationCode)
                 .newLine()
             if (appInfo != null){
                 document
-                    .text("AID: " + creditTransaction.creditTransaction.AdditionalParameters?.EMV?.ApplicationInformation?.Aid)
+                    .text("AID: " + creditTransaction.creditTransaction?.AdditionalParameters?.EMV?.ApplicationInformation?.Aid)
                     .newLine()
-                    .text("App Lbl: " + creditTransaction.creditTransaction.AdditionalParameters?.EMV?.ApplicationInformation?.ApplicationLabel)
+                    .text("App Lbl: " + creditTransaction.creditTransaction?.AdditionalParameters?.EMV?.ApplicationInformation?.ApplicationLabel)
                     .newLine()
-                    .text("PIN Stmt: " + creditTransaction.creditTransaction.AdditionalParameters?.EMV?.PINStatement)
+                    .text("PIN Stmt: " + creditTransaction.creditTransaction?.AdditionalParameters?.EMV?.PINStatement)
                     .newLine()
             }
 
@@ -704,7 +704,7 @@ class PrintTicketService {
                 .newLine()
                 .newLine()
                 .alignment("right")
-                .text("Amount:  $" + creditTransaction.creditTransaction.AmountApproved)
+                .text("Amount:  $" + creditTransaction.creditTransaction?.AmountApproved)
                 .newLine()
                 .newLine()
                 .text("Tip: ____________")

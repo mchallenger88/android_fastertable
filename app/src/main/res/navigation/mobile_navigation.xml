@@ -74,6 +74,9 @@
         <action
             android:id="@+id/action_paymentFragment_to_paymentSplitFragment"
             app:destination="@id/paymentSplitFragment" />
+        <action
+            android:id="@+id/action_paymentFragment_to_voidFragment"
+            app:destination="@id/voidFragment" />
     </fragment>
     <fragment
         android:id="@+id/paymentSplitFragment"
@@ -153,6 +156,14 @@
         android:id="@+id/floorplanManagementFragment"
         android:name="com.fastertable.fastertable.ui.floorplan_manage.FloorplanManagementFragment"
         android:label="FloorplanManagementFragment" />
+    <fragment
+        android:id="@+id/voidFragment"
+        android:name="com.fastertable.fastertable.ui.payment.VoidFragment"
+        android:label="VoidFragment" >
+        <action
+            android:id="@+id/action_voidFragment_to_nav_home"
+            app:destination="@id/nav_home" />
+    </fragment>
 
 
 </navigation>

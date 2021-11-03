@@ -328,6 +328,9 @@
     <string name="rejected">Rejected:</string>
     <string name="cash_payment">Cash Payment</string>
     <string name="credit_payment">Credit Card: %1$s</string>
+    <string name="void_payment">Void Payment</string>
+    <string name="are_your_sure_void">Voiding this payment will removed it entirely and reopen the order.</string>
+    <string name="payment_canceled">This payment has been canceled.</string>
 
     //Floorplan
     <string-array name="table_types">

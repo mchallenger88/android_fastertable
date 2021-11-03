@@ -297,6 +297,11 @@ data class Order(
         this.orderStatus = "Paid"
     }
 
+    fun reopen(){
+        this.closeTime = null
+        this.orderStatus = "Kitchen"
+    }
+
     fun getOrderTotal(): Double{
         return this.getSubtotal() + this.getSalesTax()
     }

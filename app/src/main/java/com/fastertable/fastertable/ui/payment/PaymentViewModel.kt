@@ -1,12 +1,7 @@
 package com.fastertable.fastertable.ui.payment
 
 import android.annotation.SuppressLint
-import android.app.Activity
-import android.content.Context
 import android.util.Log
-import android.view.View
-import android.view.inputmethod.InputMethodManager
-import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -64,6 +59,8 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
                                             private val saveApproval: SaveApproval,
                                             private val updateApproval: UpdateApproval,
                                             private val receiptPrintingService: ReceiptPrintingService,
+                                            private val updateOrder: UpdateOrder,
+                                            private val voidCreditTransaction: VoidCreditTransaction,
                                             private val paymentRepository: PaymentRepository): BaseViewModel() {
 
     //region Model Variables
@@ -148,6 +145,10 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
     val navigateToHome: LiveData<Boolean>
         get() = _navigateToHome
 
+    private val _navigateToDashboardFromVoid = MutableLiveData(false)
+    val navigateToDashboardFromVoid: LiveData<Boolean>
+        get() = _navigateToDashboardFromVoid
+
     private val _whichCreditPayment = MutableLiveData(ShowCreditPayment.DEFAULT)
     val whichCreditPayment: LiveData<ShowCreditPayment>
         get() = _whichCreditPayment
@@ -155,6 +156,10 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
     private val _showProgress = MutableLiveData(false)
     val showProgress: LiveData<Boolean>
         get() = _showProgress
+
+    private val _voidPayment = MutableLiveData(false)
+    val voidPayment: LiveData<Boolean>
+        get() = _voidPayment
 
     //endregion
 
@@ -210,13 +215,18 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
             uiActive = true
         )
         if (ticket.paymentList.isNullOrEmpty()){
-            list.add(ticketPayment)
-            ticket.paymentList = list
+            if (!ticketPayment.canceled){
+                list.add(ticketPayment)
+                ticket.paymentList = list
+            }
+
         }else{
             for (payment in ticket.paymentList!!){
                 payment.uiActive = false
             }
-            ticket.paymentList!!.add(ticketPayment)
+            if (!ticketPayment.canceled) {
+                ticket.paymentList!!.add(ticketPayment)
+            }
         }
     }
 
@@ -302,6 +312,18 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
         }
     }
 
+    private fun updatePaymentToCloud(payment: Payment){
+        viewModelScope.launch {
+            updatePayment.savePayment(payment)
+        }
+    }
+
+    private suspend fun saveOrderToCloud(order: Order){
+        val job = viewModelScope.launch {
+            updateOrder.saveOrder(order)
+        }
+    }
+
     fun setLivePayment(payment: Payment){
         _activePayment.value = payment
     }
@@ -321,6 +343,10 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
             t.uiActive = t.id == ticket.id
         }
         _activePayment.value = _activePayment.value
+    }
+
+    fun setVoidPayment(b: Boolean){
+        _voidPayment.value = b
     }
 
     //endregion
@@ -377,13 +403,104 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
         }
     }
 
-    fun setCurrentPayment(id: String){
+    fun setCurrentPayment(id: String) {
         viewModelScope.launch {
             val o = getOrder.getOrder(id.replace("P", "O"), settings.locationId)
             _activeOrder.postValue(o)
             getCloudPayment(id, settings.locationId)
         }
     }
+
+        fun clearError(){
+            _error.value = false
+        }
+
+        private fun setError(title: String, message: String){
+            _errorTitle.value = title
+            _errorMessage.value = message
+            _error.value = true
+
+        }
+
+        fun setManagePayment(){
+            if (!activePayment.value!!.anyTicketsPaid()){
+                _managePayment.value = !managePayment.value!!
+            }else{
+                setError("Manage Payment", "Once a ticket has been paid, splitting tickets is no longer possible.")
+            }
+        }
+
+
+        fun splitByGuest(order: Order){
+            _activePayment.value?.splitByGuest(order, settings.additionalFees)
+            _activePayment.value = _activePayment.value
+        }
+
+        fun noSplit(order: Order){
+            _activePayment.value?.createSingleTicket(order, settings.additionalFees)
+            _activePayment.value = _activePayment.value
+        }
+
+        fun evenSplit(order: Order){
+            _activePayment.value?.splitEvenly(order,
+                settings.additionalFees)
+            _activePayment.value = _activePayment.value
+        }
+
+        fun toggleTicketMore(){
+            _showTicketMore.value = !_showTicketMore.value!!
+        }
+
+        fun toggleTicketItemMore(item: TicketItem){
+            _liveTicketItem.value = item
+            _showTicketItemMore.value = !_showTicketItemMore.value!!
+        }
+
+        fun setPaymentScreen(showPayment: ShowPayment, type: String?){
+            when (type){
+                "Discount Ticket" -> _discountType.value = "Discount Ticket"
+                "Discount Item" -> _discountType.value = "Discount Item"
+            }
+            _paymentScreen.value = showPayment
+        }
+
+        fun goToPayment(){
+            _navigateToPayment.value = true
+        }
+
+    fun setActiveOrder(order: Order){
+        _activeOrder.value = order
+    }
+
+
+    fun returnHome(){
+        setReturnHome(true)
+    }
+
+    fun setReturnHome(b: Boolean){
+        _navigateToHome.value = b
+    }
+
+    fun returnDashboardFromVoid(){
+        setReturnDashboardFromVoid(true)
+    }
+
+    fun setReturnDashboardFromVoid(b: Boolean){
+        _navigateToDashboardFromVoid.value = b
+    }
+
+    fun printReceipt(){
+        viewModelScope.launch {
+            val printer = settings.printers.find { it.printerName == terminal.defaultPrinter.printerName }
+            val location = company.getLocation(settings.locationId)
+            if (printer != null){
+                val ticketDocument = _activePayment.value?.getTicketReceipt(_activeOrder.value!!, printer, location!!)
+                receiptPrintingService.printTicketReceipt(ticketDocument!!, printer, settings)
+            }
+
+        }
+    }
+
 
     //endregion
 
@@ -635,13 +752,19 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
         )
 
         if (ticket.paymentList.isNullOrEmpty()){
-            list.add(ticketPayment)
-            ticket.paymentList = list
+            if (!ticketPayment.canceled){
+                list.add(ticketPayment)
+                ticket.paymentList = list
+            }
+
         }else{
             for (p in ticket.paymentList!!){
                 p.uiActive = false
             }
-            ticket.paymentList!!.add(ticketPayment)
+            if (!ticketPayment.canceled){
+                ticket.paymentList!!.add(ticketPayment)
+            }
+
         }
 
     }
@@ -661,62 +784,7 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
 
     //endregion
 
-    fun clearError(){
-        _error.value = false
-    }
-
-    private fun setError(title: String, message: String){
-        _errorTitle.value = title
-        _errorMessage.value = message
-        _error.value = true
-
-    }
-
-    fun setManagePayment(){
-        if (!activePayment.value!!.anyTicketsPaid()){
-            _managePayment.value = !managePayment.value!!
-        }else{
-            setError("Manage Payment", "Once a ticket has been paid, splitting tickets is no longer possible.")
-        }
-    }
-
-
-    fun splitByGuest(order: Order){
-        _activePayment.value?.splitByGuest(order, settings.additionalFees)
-        _activePayment.value = _activePayment.value
-    }
-
-    fun noSplit(order: Order){
-        _activePayment.value?.createSingleTicket(order, settings.additionalFees)
-        _activePayment.value = _activePayment.value
-    }
-
-    fun evenSplit(order: Order){
-        _activePayment.value?.splitEvenly(order,
-            settings.additionalFees)
-        _activePayment.value = _activePayment.value
-    }
-
-    fun toggleTicketMore(){
-        _showTicketMore.value = !_showTicketMore.value!!
-    }
-
-    fun toggleTicketItemMore(item: TicketItem){
-        _liveTicketItem.value = item
-        _showTicketItemMore.value = !_showTicketItemMore.value!!
-    }
-
-    fun setPaymentScreen(showPayment: ShowPayment, type: String?){
-        when (type){
-            "Discount Ticket" -> _discountType.value = "Discount Ticket"
-            "Discount Item" -> _discountType.value = "Discount Item"
-        }
-        _paymentScreen.value = showPayment
-    }
-
-    fun goToPayment(){
-        _navigateToPayment.value = true
-    }
+    //region Manager Approvals
 
     fun initialVoidTicket(){
         viewModelScope.launch {
@@ -964,6 +1032,80 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
         return error
     }
 
+    //endregion
+
+    fun voidPayment(tp: TicketPayment){
+        viewModelScope.launch {
+            val payment = _activePayment.value
+            val order = _activeOrder.value
+            if (payment != null && order != null){
+                for (ticket in payment.tickets!!){
+                    val foundTicket = ticket.paymentList?.find { it.id == tp.id && !tp.canceled }
+
+                    if (foundTicket != null){
+                        if (tp.paymentType == "Cash"){
+                            reopenPaymentAndOrder(order, payment, ticket, tp)
+                        }
+
+                        if (tp.paymentType == "Credit" || tp.paymentType == "Manual Credit"){
+                            val response = voidCreditTransaction.void(creditRefundRequest(tp, payment))
+                            if (response.ApprovalStatus == "APPROVED"){
+                                val cc = tp.creditCardTransactions?.get(0)!!
+                                cc.creditTotal = 0.00
+                                cc.creditTransaction = null
+                                cc.voidTransaction = response
+                                reopenPaymentAndOrder(order, payment, ticket, tp)
+                            }
+                        }
+                    }
+                    break
+                }
+
+            }
+        }
+    }
+
+    private suspend fun reopenPaymentAndOrder(order: Order, payment: Payment, ticket: Ticket, ticketPayment: TicketPayment){
+        ticketPayment.canceled = true
+        val tempAmount = ticketPayment.ticketPaymentAmount.toString()
+
+        val total = ticket.paymentTotal.minus(ticketPayment.ticketPaymentAmount.plus(ticketPayment.gratuity)).round(2)
+
+        ticket.paymentTotal = total
+        payment.reopen()
+        _activePayment.postValue(payment)
+        order.reopen()
+        _activeOrder.postValue(order)
+        updatePaymentToCloud(payment)
+        saveOrderToCloud(order)
+    }
+
+    private fun creditRefundRequest(ticketPayment: TicketPayment, payment: Payment): RefundRequest {
+        val cc = ticketPayment.creditCardTransactions?.get(0)?.creditTransaction!!
+
+        return RefundRequest(
+            credentials = MerchantCredentials(
+                MerchantKey = settings.merchantCredentials.MerchantKey,
+                MerchantName = settings.merchantCredentials.MerchantName,
+                MerchantSiteId = settings.merchantCredentials.MerchantSiteId,
+                webAPIKey = settings.merchantCredentials.webAPIKey,
+                stripePrivateKey = "",
+                stripePublickey = ""
+            ),
+            paymentData = PaymentData(
+                source = "PreviousTransaction",
+                token = cc.Token
+            ),
+            request = RefundRequestData(
+                amount = cc.AmountApproved.toDouble(),
+                invoiceNumber = payment.orderNumber.toString(),
+                registerNumber = "",
+                merchantTransactionId = payment.id,
+                cardAcceptorTerminalId = null
+            )
+        )
+    }
+
     private suspend fun getAllPaymentApprovals(): List<Approval>{
         var list = mutableListOf<Approval>()
         val job = viewModelScope.launch {
@@ -992,30 +1134,7 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
         return x
     }
 
-    fun setActiveOrder(order: Order){
-        _activeOrder.value = order
-    }
 
-
-    fun returnHome(){
-        setReturnHome(true)
-    }
-
-    fun setReturnHome(b: Boolean){
-        _navigateToHome.value = b
-    }
-
-    fun printReceipt(){
-        viewModelScope.launch {
-            val printer = settings.printers.find { it.printerName == terminal.defaultPrinter.printerName }
-            val location = company.getLocation(settings.locationId)
-            if (printer != null){
-                val ticketDocument = _activePayment.value?.getTicketReceipt(_activeOrder.value!!, printer, location!!)
-                receiptPrintingService.printTicketReceipt(ticketDocument!!, printer, settings)
-            }
-
-        }
-    }
 
 }
 

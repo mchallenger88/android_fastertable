@@ -322,7 +322,7 @@ class CheckoutViewModel @Inject constructor (
                 MerchantName = settings.merchantCredentials.MerchantName,
                 MerchantSiteId = settings.merchantCredentials.MerchantSiteId,
                 MerchantKey = settings.merchantCredentials.MerchantKey,
-                Token = ct.creditTransaction.Token,
+                Token = ct.creditTransaction?.Token!!,
                 Amount = ticketPayment.gratuity.toString())
             val transaction: TransactionResponse45 = adjustTip.adjustTip(request) as TransactionResponse45
             ct.tipTransaction = transaction
@@ -342,12 +342,12 @@ class CheckoutViewModel @Inject constructor (
             if (!checkout.value?.openOrders!!){
                 for (item in checkout.value?.payTickets!!) {
                     for (payment in item.ticket!!.paymentList!!){
-                        val creditTransaction = payment.creditCardTransactions?.find{ cc -> cc.creditTransaction.AmountApproved.toDouble() == payment.ticketPaymentAmount.minus(
+                        val creditTransaction = payment.creditCardTransactions?.find{ cc -> cc.creditTransaction?.AmountApproved?.toDouble() == payment.ticketPaymentAmount.minus(
                             payment.gratuity)}
 
                         if (creditTransaction != null) {
                             val capture = Capture(
-                                Token = creditTransaction.creditTransaction.Token,
+                                Token = creditTransaction.creditTransaction?.Token!!,
                                 Amount = payment.ticketPaymentAmount,
                                 InvoiceNumber = "",
                                 RegisterNumber = "",

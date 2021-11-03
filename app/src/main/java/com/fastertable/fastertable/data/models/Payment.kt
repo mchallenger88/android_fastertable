@@ -48,6 +48,11 @@ data class Payment(
         this.closed = true
     }
 
+    fun reopen(){
+        this.orderCloseTime = null
+        this.closed = false
+    }
+
     fun allTicketsPaid(): Boolean{
         var paid: Boolean = true
         this.tickets!!.forEach { ticket ->
@@ -374,7 +379,8 @@ data class Ticket(
         }
 
         fun calculatePaymentTotal(partial: Boolean){
-            paymentTotal = paymentList!!.sumOf {it.ticketPaymentAmount}.round(2)
+            val list = paymentList!!.filter { !it.canceled }
+            paymentTotal = list.sumOf {it.ticketPaymentAmount}.round(2)
             partialPayment = partial
         }
 
@@ -434,6 +440,7 @@ data class TicketPayment(
     val ticketPaymentAmount: Double = 0.00,
     var gratuity: Double = 0.00,
     var creditCardTransactions: ArrayList<CreditCardTransaction>?,
+    var canceled: Boolean = false,
     var uiActive: Boolean
     ): Parcelable {
 
@@ -442,14 +449,14 @@ data class TicketPayment(
 @Parcelize
 data class CreditCardTransaction(
     val ticketId: Int,
-    val creditTotal: Double?,
+    var creditTotal: Double?,
     var captureTotal: String?,
     val refundTotal: Double?,
     val voidTotal: Double?,
-    val creditTransaction: CayanTransaction,
+    var creditTransaction: CayanTransaction?,
     var captureTransaction: CaptureResponse?,
     val refundTransaction: TransactionResponse45?,
-    val voidTransaction: TransactionResponse45?,
+    var voidTransaction: TransactionResponse45?,
     var tipTransaction: TransactionResponse45?
 ): Parcelable
 

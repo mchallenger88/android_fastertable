@@ -732,11 +732,11 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
         viewModelScope.launch {
             val order = _activeOrder.value!!
             val p = getPayment.getPayment(order.id.replace("O", "P"), order.locationId)
-            val payment = paymentRepository.updatePaymentNewOrderItems(p!!, order)
-            updatePayment.savePayment(payment)
+            if (p != null){
+                val payment = paymentRepository.updatePaymentNewOrderItems(p!!, order)
+                updatePayment.savePayment(payment)
+            }
         }
-
-
     }
 
     fun updateOrderStatus(order: Order){

@@ -392,7 +392,7 @@ data class RefundRequestData(
     val invoiceNumber: String,
     val registerNumber: String,
     val merchantTransactionId: String,
-    val cardAcceptorTerminalId: String,
+    val cardAcceptorTerminalId: String?,
 ): Parcelable
 @Parcelize
 data class LineItem(

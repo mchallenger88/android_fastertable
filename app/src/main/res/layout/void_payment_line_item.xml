@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <data>
+        <variable
+            name="payment"
+            type="com.fastertable.fastertable.data.models.TicketPayment" />
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/void_payment_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/txt_void_payment_list_id"
+            style="@style/F6"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginStart="20dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:paymentListId="@{payment}" />
+
+        <TextView
+            android:id="@+id/txt_void_credit_card_number"
+            style="@style/F6"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/txt_void_payment_list_id" />
+
+        <TextView
+            android:id="@+id/txt_void_payment_list_amount"
+            style="@style/F6"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            app:paymentListAmount="@{payment}"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/txt_void_credit_card_number" />
+
+        <TextView
+            android:id="@+id/txt_void_payment_gratuity"
+            style="@style/F6"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            app:paymentListGratuity="@{payment}"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/txt_void_payment_list_amount" />
+
+        <TextView
+            android:id="@+id/txt_void_payment_info"
+            style="@style/F6"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            app:showVoidMessage="@{payment}"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/txt_void_payment_gratuity" />
+
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab_void_payment"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="50dp"
+            android:layout_marginBottom="20dp"
+            android:layout_marginTop="20dp"
+            android:clickable="true"
+            app:layout_constraintBottom_toTopOf="@+id/divider2"
+            app:layout_constraintTop_toBottomOf="@+id/txt_void_payment_info"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:srcCompat="@drawable/ic_outline_check_24"
+            android:focusable="true"
+            android:contentDescription="@string/save"
+            app:disableVoidButton="@{payment}"/>
+
+        <View
+            android:id="@+id/divider2"
+            android:layout_width="798dp"
+            android:layout_height="1dp"
+            android:layout_marginTop="25dp"
+            android:background="?android:attr/listDivider"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/fab_void_payment" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

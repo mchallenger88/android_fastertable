@@ -46,6 +46,7 @@
                 android:textSize="@dimen/toolbar_button"
                 android:onClick="@{() -> viewModel.setManagePayment()}"
                 app:disablePayButton="@{viewModel.activePayment.statusApproval}"
+                app:hidePayButton="@{viewModel.activePayment}"
                 app:layout_constraintStart_toStartOf="@+id/layout_payment_buttons"
                 app:layout_constraintTop_toTopOf="@+id/layout_payment_buttons"
                 app:strokeColor="@color/white" />
@@ -62,6 +63,7 @@
                 android:textSize="@dimen/toolbar_button"
                 android:onClick="@{() -> viewModel.showCashView()}"
                 app:disablePayButton="@{viewModel.activePayment.statusApproval}"
+                app:hidePayButton="@{viewModel.activePayment}"
                 app:layout_constraintStart_toEndOf="@+id/btn_manage_payment"
                 app:layout_constraintTop_toTopOf="@+id/layout_payment_buttons"
                 app:strokeColor="@color/white" />
@@ -78,6 +80,7 @@
                 android:textSize="@dimen/toolbar_button"
                 android:onClick="@{() -> viewModel.showCreditView()}"
                 app:disablePayButton="@{viewModel.activePayment.statusApproval}"
+                app:hidePayButton="@{viewModel.activePayment}"
                 app:layout_constraintStart_toEndOf="@+id/btn_pay_cash"
                 app:layout_constraintTop_toTopOf="@+id/layout_payment_buttons"
                 app:strokeColor="@color/white" />
@@ -93,6 +96,7 @@
                 android:textColor="@color/white"
                 android:textSize="@dimen/toolbar_button"
                 android:onClick="@{() -> viewModel.cancelCredit()}"
+                app:hidePayButton="@{viewModel.activePayment}"
                 app:layout_constraintStart_toEndOf="@+id/btn_pay_credit"
                 app:layout_constraintTop_toTopOf="@+id/layout_payment_buttons"
                 app:strokeColor="@color/white" />
@@ -109,6 +113,22 @@
                 android:textSize="@dimen/toolbar_button"
                 android:onClick="@{() -> viewModel.printReceipt()}"
                 app:layout_constraintStart_toEndOf="@+id/btn_cancel_credit"
+                app:layout_constraintTop_toTopOf="@+id/layout_payment_buttons"
+                app:strokeColor="@color/white" />
+
+            <Button
+                android:id="@+id/btn_void_payment"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:layout_marginStart="12dp"
+                android:text="@string/void_payment"
+                android:textColor="@color/white"
+                android:textSize="@dimen/toolbar_button"
+                android:onClick="@{() -> viewModel.setVoidPayment(true)}"
+                app:showVoidButton="@{viewModel.activePayment}"
+                app:layout_constraintStart_toEndOf="@+id/btn_print_receipt"
                 app:layout_constraintTop_toTopOf="@+id/layout_payment_buttons"
                 app:strokeColor="@color/white" />
 

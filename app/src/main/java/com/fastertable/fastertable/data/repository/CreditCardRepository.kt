@@ -84,6 +84,16 @@ class CaptureTicketTransaction @Inject constructor(private val captureRequestUse
     }
 }
 
+class VoidCreditTransaction @Inject constructor(private val voidCreditUseCase: VoidCreditUseCase){
+    suspend fun void(refundRequest: RefundRequest): TransactionResponse45{
+        val result = voidCreditUseCase.void(refundRequest)
+        if (result is VoidCreditUseCase.Result.Success){
+            return result.response
+        }else{
+            throw java.lang.RuntimeException("fetch failed")
+        }
+    }
+}
 
 class CreditCardRepository @Inject constructor(private val app: Application){
 

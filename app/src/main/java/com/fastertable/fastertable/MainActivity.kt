@@ -47,10 +47,7 @@ import com.fastertable.fastertable.ui.order.OrderFragmentDirections
 import com.fastertable.fastertable.ui.order.OrderViewModel
 import com.fastertable.fastertable.ui.order.TransferOrderFragmentDirections
 import com.fastertable.fastertable.ui.order.TransferOrderViewModel
-import com.fastertable.fastertable.ui.payment.PaymentFragmentDirections
-import com.fastertable.fastertable.ui.payment.PaymentViewModel
-import com.fastertable.fastertable.ui.payment.ShowPayment
-import com.fastertable.fastertable.ui.payment.SplitPaymentFragmentDirections
+import com.fastertable.fastertable.ui.payment.*
 import com.fastertable.fastertable.ui.takeout.TakeoutFragmentDirections
 import com.fastertable.fastertable.ui.takeout.TakeoutViewModel
 import com.google.android.material.navigation.NavigationView
@@ -368,6 +365,20 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
                 homeViewModel.getOrdersFromFile()
                 navController.navigate(PaymentFragmentDirections.actionPaymentFragmentToNavHome())
                 paymentViewModel.setReturnHome(false)
+            }
+        })
+
+        paymentViewModel.voidPayment.observe(this, {
+            if (it){
+                navController.navigate(PaymentFragmentDirections.actionPaymentFragmentToVoidFragment())
+                paymentViewModel.setVoidPayment(false)
+            }
+        })
+
+        paymentViewModel.navigateToDashboardFromVoid.observe(this, {
+            if (it){
+                navController.navigate(VoidFragmentDirections.actionVoidFragmentToNavHome())
+                paymentViewModel.setReturnDashboardFromVoid(false)
             }
         })
     }

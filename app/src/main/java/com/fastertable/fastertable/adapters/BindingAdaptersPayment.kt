@@ -17,6 +17,7 @@ import com.fastertable.fastertable.data.models.Ticket
 import com.fastertable.fastertable.data.models.TicketItem
 import com.fastertable.fastertable.data.models.TicketPayment
 import com.fastertable.fastertable.ui.payment.ShowCreditPayment
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 @BindingAdapter("ticketsData")
 fun bindTicketsRecyclerView(recyclerView: RecyclerView?, payment: Payment?) {
@@ -239,6 +240,28 @@ fun disablePayButton(button: Button, value: String?){
     }
 }
 
+@BindingAdapter("hidePayButton")
+fun hidePayButton(button: Button, payment: Payment?){
+    if (payment != null){
+        if (payment.orderCloseTime != null){
+            button.visibility = View.GONE
+        }else{
+            button.visibility = View.VISIBLE
+        }
+    }
+}
+
+@BindingAdapter("showVoidButton")
+fun showVoidButton(button: Button, payment: Payment?){
+    if (payment != null){
+        if (payment.orderCloseTime != null){
+            button.visibility = View.VISIBLE
+        }else{
+            button.visibility = View.GONE
+        }
+    }
+}
+
 @BindingAdapter("hideItemMore")
 fun hideItemMore(imageButton: ImageButton, payment: Payment?){
     if (payment != null && payment.closed){
@@ -303,5 +326,23 @@ fun paymentListAmount(textView: TextView, item: TicketPayment?){
 fun paymentListGratuity(textView: TextView, item: TicketPayment?){
     if (item != null){
         textView.text = "Gratuity: $%.${2}f".format(item.gratuity)
+    }
+}
+
+@BindingAdapter("disableVoidButton")
+fun disableVoidButton(button: FloatingActionButton, item: TicketPayment?){
+    if (item != null){
+        button.isEnabled = !item.canceled
+    }
+}
+
+@BindingAdapter("showVoidMessage")
+fun showVoidMessage(textView: TextView, item: TicketPayment?){
+    if (item != null){
+        if (item.canceled){
+            textView.text = textView.context.getString(R.string.payment_canceled)
+        }else{
+            textView.text = textView.context.getString(R.string.are_your_sure_void)
+        }
     }
 }

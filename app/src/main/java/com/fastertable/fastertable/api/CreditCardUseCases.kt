@@ -181,3 +181,29 @@ class ManualCreditAuthorizationUseCase @Inject constructor(private val fastertab
     }
 
 }
+
+class VoidCreditUseCase @Inject constructor(private val fastertableApi: FastertableApi){
+    sealed class Result {
+        data class Success(val response: TransactionResponse45) : Result()
+        object Failure: Result()
+    }
+
+    suspend fun void(refundRequest: RefundRequest): Result {
+        return withContext(Dispatchers.IO){
+            try {
+                val response = fastertableApi.voidCreditPayment(refundRequest)
+                if (response.isSuccessful && response.body() != null ){
+                    return@withContext Result.Success(response.body()!!)
+                }else{
+                    return@withContext Result.Failure
+                }
+            }catch (t: Throwable){
+                if (t !is CancellationException){
+                    return@withContext Result.Failure
+                }else{
+                    throw t
+                }
+            }
+        }
+    }
+}
