@@ -331,6 +331,9 @@
     <string name="void_payment">Void Payment</string>
     <string name="are_your_sure_void">Voiding this payment will removed it entirely and reopen the order.</string>
     <string name="payment_canceled">This payment has been canceled.</string>
+    <string name="transfer_order_item">Transfer Order Item</string>
+    <string name="transfer_item_instructions">Tap on the order to which you wish to transfer this item</string>
+    <string name="tap_the_order">Tap the Order To Which Items Should be Transferred</string>
 
     //Floorplan
     <string-array name="table_types">

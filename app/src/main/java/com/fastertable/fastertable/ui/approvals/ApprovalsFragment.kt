@@ -18,12 +18,13 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class ApprovalsFragment : BaseFragment() {
     private val viewModel: ApprovalsViewModel by activityViewModels()
+    private lateinit var binding: ApprovalsFragmentBinding
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val binding = ApprovalsFragmentBinding.inflate(inflater)
+        binding = ApprovalsFragmentBinding.inflate(inflater)
         binding.lifecycleOwner = viewLifecycleOwner
         binding.viewModel = viewModel
         createAdapters(binding)
@@ -75,5 +76,10 @@ class ApprovalsFragment : BaseFragment() {
             approvalsSideBarAdapter.notifyDataSetChanged()
         })
 
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        binding.unbind()
     }
 }

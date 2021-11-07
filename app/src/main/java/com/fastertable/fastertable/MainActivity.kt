@@ -43,10 +43,7 @@ import com.fastertable.fastertable.ui.floorplan_manage.FloorplanManageViewModel
 import com.fastertable.fastertable.ui.gift.GiftCardViewModel
 import com.fastertable.fastertable.ui.home.HomeFragmentDirections
 import com.fastertable.fastertable.ui.home.HomeViewModel
-import com.fastertable.fastertable.ui.order.OrderFragmentDirections
-import com.fastertable.fastertable.ui.order.OrderViewModel
-import com.fastertable.fastertable.ui.order.TransferOrderFragmentDirections
-import com.fastertable.fastertable.ui.order.TransferOrderViewModel
+import com.fastertable.fastertable.ui.order.*
 import com.fastertable.fastertable.ui.payment.*
 import com.fastertable.fastertable.ui.takeout.TakeoutFragmentDirections
 import com.fastertable.fastertable.ui.takeout.TakeoutViewModel
@@ -74,7 +71,6 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
     private val checkoutViewModel: CheckoutViewModel by viewModels()
     private val clockoutViewModel: ClockoutViewModel by viewModels()
     private val confirmViewModel: ConfirmViewModel by viewModels()
-    private val approvalViewModel: ApprovalsViewModel by viewModels()
     private val giftCardViewModel: GiftCardViewModel by viewModels()
     private val errorViewModel: ErrorViewModel by viewModels()
     private val floorplanViewModel: FloorplanViewModel by viewModels()
@@ -175,6 +171,17 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
 
                 paymentViewModel.setCurrentPayment(it.replace("O", "P"))
                 navController.navigate(HomeFragmentDirections.actionNavHomeToPaymentFragment())
+                homeViewModel.navigationEnd()
+            }
+        })
+
+        homeViewModel.navigateToVoid.observe(this, {
+            if (it.contains("O_")) {
+                orderViewModel.clearOrder()
+                paymentViewModel.clearPayment()
+                orderViewModel.setCurrentOrderId(it)
+                paymentViewModel.setCurrentPayment(it.replace("O", "P"))
+                navController.navigate(HomeFragmentDirections.actionNavHomeToVoidStartFragment())
                 homeViewModel.navigationEnd()
             }
         })
@@ -307,6 +314,13 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
                 alertMessage("Your order has been sent to the kitchen!")
             }
         })
+
+        orderViewModel.transferComplete.observe(this, {
+            if (it){
+                navController.navigate(TransferItemFragmentDirections.actionTransferItemFragmentToNavHome())
+                orderViewModel.setTransferComplete(false)
+            }
+        })
     }
 
     private fun paymentObservables(navController: NavController){
@@ -375,10 +389,24 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
             }
         })
 
+        paymentViewModel.voidStart.observe(this, {
+            if (it){
+                navController.navigate(VoidStartFragmentDirections.actionVoidStartFragmentToVoidFragment())
+                paymentViewModel.setVoidStart(false)
+            }
+        })
+
         paymentViewModel.navigateToDashboardFromVoid.observe(this, {
             if (it){
                 navController.navigate(VoidFragmentDirections.actionVoidFragmentToNavHome())
                 paymentViewModel.setReturnDashboardFromVoid(false)
+            }
+        })
+
+        paymentViewModel.navigateToHomeFromVoid.observe(this, {
+            if (it){
+                navController.navigate(VoidStartFragmentDirections.actionVoidStartFragmentToNavHome())
+                paymentViewModel.setReturnHomeFromVoidStart(false)
             }
         })
     }
@@ -533,25 +561,23 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
             if (paymentViewModel.activePayment.value == null){
                 val flatten = order.getAllOrderItems()
 
-                if (flatten.size > 0){
-                    order.guests?.forEach { guest ->
-                        guest.orderItems?.forEach {
-                            if (it.status == "Started"){
-                                okToPay = false }}}
+                if (order.orderItems != null) {
+                    okToPay = !order.orderItems.any { it.status == "Started" }
 
-                    if (okToPay){
-                        paymentViewModel.getCloudPayment(order.id.replace("O_", "P_"), settings.locationId)
-                        if (paymentViewModel.activePayment.value == null){
-                            val payment = paymentRepository.createNewPayment(order, terminal, settings.additionalFees)
-                            paymentViewModel.setActiveOrder(orderViewModel.activeOrder.value!!)
-                            paymentViewModel.setLivePayment(payment)
+                        if (okToPay){
+                            paymentViewModel.getCloudPayment(order.id.replace("O_", "P_"), settings.locationId)
+                            if (paymentViewModel.activePayment.value == null){
+                                val payment = paymentRepository.createNewPayment(order, terminal, settings.additionalFees)
+                                paymentViewModel.setActiveOrder(orderViewModel.activeOrder.value!!)
+                                paymentViewModel.setLivePayment(payment)
+                            }
+                            navController.navigate(OrderFragmentDirections.actionOrderFragmentToPaymentFragment())
+                            orderViewModel.navToPayment(false)
+                        }else{
+                            val view = findViewById<View>(R.id.nav_host_fragment)
+                            Snackbar.make(view, R.string.payment_warning_message1, Snackbar.LENGTH_LONG).show()
                         }
-                        navController.navigate(OrderFragmentDirections.actionOrderFragmentToPaymentFragment())
-                        orderViewModel.navToPayment(false)
-                    }else{
-                        val view = findViewById<View>(R.id.nav_host_fragment)
-                        Snackbar.make(view, R.string.payment_warning_message1, Snackbar.LENGTH_LONG).show()
-                    }
+//                    }
                 }
             }else{
                 navController.navigate(OrderFragmentDirections.actionOrderFragmentToPaymentFragment())
@@ -637,6 +663,9 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
             "Transfer Order" -> {
                 return orderViewModel.showTransferOrder(true)
             }
+            "Transfer Order Item" -> {
+                openOrderItemTransfer()
+            }
             "Modify Order Item" -> {
                 return orderViewModel.actionOnItemClicked(value)
             }
@@ -644,7 +673,14 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
                 MenuItemDialog().show(supportFragmentManager, MenuItemDialog.TAG)
             }
         }
+    }
 
+    private fun openOrderItemTransfer(){
+        orderViewModel.getOrdersFromFile()
+        val navHostFragment =
+            supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+        val navController = navHostFragment.navController
+        navController.navigate(OrderFragmentDirections.actionOrderFragmentToTransferItemFragment())
     }
 
     override fun returnNote(value: String) {

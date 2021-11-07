@@ -4,13 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
-        <variable
-            name="guest"
-            type="com.fastertable.fastertable.data.models.Guest" />
 
-        <variable
-            name="clickListener"
-            type="com.fastertable.fastertable.adapters.GuestSideBarAdapter.GuestSideBarListener" />
     </data>
 
     <Button

@@ -28,9 +28,12 @@ data class Order(
     val kitchenStatus: Boolean,
     val rush: Boolean?,
 
-    var guests: MutableList<Guest>?,
+//    var guests: MutableList<Guest>?,
+    var guestCount: Int = 1,
+    var activeGuest: Int = 1,
     var splitChecks: MutableList<Check>?,
     var note: String?,
+    val orderItems: MutableList<OrderItem>?,
 
     var customer: Customer?,
     var takeOutCustomer: TakeOutCustomer?,
@@ -63,72 +66,36 @@ data class Order(
     val _ts: Long?
 ): Parcelable {
     fun guestAdd(){
-        val newGuest = Guest(
-            id = this.guests?.size!!,
-            startTime = GlobalUtils().getNowEpoch(),
-            orderItems = null,
-            subTotal = null,
-            tax = null,
-            gratuity = 0.00,
-            total = null,
-            uiActive = true
-        )
-        this.guests?.add(newGuest)
-        this.guests?.forEach{guest ->
-            if (guest.id != newGuest.id){
-                guest.uiActive = false
-            }
-        }
+        guestCount = guestCount.plus(1)
     }
 
     fun setActiveGuestFirst(){
-        this.guests?.forEach{guest ->
-            guest.uiActive = guest.id == 0
-        }
+        activeGuest = 1
     }
 
     fun guestRemove(guest: Guest){
-        this.guests?.remove(guest)
+//        this.guests?.remove(guest)
     }
 
     fun orderItemRemove(item: OrderItem){
-        this.guests?.forEach{guest ->
-            guest.orderItems?.forEach { oi ->
-                if (oi == item){
-                    guest.orderItems?.remove(item)
-                }}}
+        orderItems?.remove(item)
+
     }
 
     fun toggleItemRush(item: OrderItem){
-        this.guests?.forEach{guest ->
-            guest.orderItems?.forEach { oi ->
-                if (oi == item){
-                    oi.rush = !oi.rush
-                }}}
+        item.rush = !item.rush
     }
 
     fun toggleItemTakeout(item: OrderItem){
-        this.guests?.forEach{guest ->
-            guest.orderItems?.forEach { oi ->
-                if (oi == item){
-                    oi.takeOutFlag = !oi.takeOutFlag
-                }}}
+        item.takeOutFlag = !item.takeOutFlag
     }
 
     fun toggleItemNoMake(item: OrderItem){
-        this.guests?.forEach{guest ->
-            guest.orderItems?.forEach { oi ->
-                if (oi == item){
-                    oi.dontMake = !oi.dontMake
-                }}}
+        item.dontMake = !item.dontMake
     }
 
     fun addItemNote(item: OrderItem){
-        this.guests?.forEach{guest ->
-            guest.orderItems?.forEach { oi ->
-                if (oi == item){
-                    oi.note = item.note
-                }}}
+        item.note = item.note
     }
 
     fun acceptTakeoutOrder(accept: Boolean, readyTime: Long) = if (accept){
@@ -145,21 +112,15 @@ data class Order(
         this.accepted = false
     }
 
-    fun getAllOrderItems(): ArrayList<OrderItem>{
-        val list: ArrayList<OrderItem> = arrayListOf()
-        this.guests?.forEach{g ->
-            g.orderItems?.forEach{ it
-                list.add(it)
-            }
-        }
-        return list
+    fun getAllOrderItems(): MutableList<OrderItem>? {
+        return orderItems
     }
 
     fun getSubtotal(): Double{
         var price: Double = 0.00
-        val list: ArrayList<OrderItem> = this.getAllOrderItems()
+        val list: MutableList<OrderItem>? = orderItems
 
-        list.forEach{item ->
+        list?.forEach{ item ->
             price += item.getExtendedPrice()
         }
         return price
@@ -172,14 +133,14 @@ data class Order(
 
     fun createSingleTicket(fees: List<AdditionalFees>?): Ticket{
         val ticketItems = arrayListOf<TicketItem>()
-        this.guests?.forEach { guest ->
-            guest.orderItems?.forEachIndexed { index, orderItem ->
+        if (orderItems != null) {
+            for (item in orderItems){
                 val i = ticketItems.size.plus(1)
-                val ticketItem = createTicketItem(i, orderItem)
+                val ticketItem = createTicketItem(i, item)
                 ticketItems.add(ticketItem)
             }
         }
-        return createTicket(0, ticketItems, fees)
+        return createTicket(1, ticketItems, fees)
     }
 
 
@@ -187,7 +148,7 @@ data class Order(
 
         return TicketItem(
             id = index,
-            orderGuestNo = index,
+            orderGuestNo = orderItem.guestId,
             orderItemId = orderItem.id,
             quantity = orderItem.quantity,
             itemName = orderItem.menuItemName,
@@ -289,7 +250,10 @@ data class Order(
     }
 
     fun changeGiftItemAmount(amount: Double){
-        this.guests?.get(0)?.orderItems?.get(0)?.menuItemPrice?.price = amount
+        if (orderItems != null){
+            orderItems?.get(0)?.menuItemPrice?.price = amount
+        }
+//        this.guests?.get(0)?.orderItems?.get(0)?.menuItemPrice?.price = amount
     }
 
     fun close(){
@@ -315,15 +279,15 @@ data class Order(
         val printers = mutableListOf<Printer>()
         val documents = mutableListOf<Document>()
 
-        for (guest in guests!!){
-            for (item in guest.orderItems!!){
+        if (orderItems != null){
+            for (item in orderItems){
                 if (item.status == "Started"){
                     val p = printers.find{it.id == item.printer.id}
                     if (p == null){
                         printers.add(item.printer)
                     }}
-                }
             }
+        }
 
         for (printer in printers){
             Epson.use()
@@ -383,6 +347,7 @@ data class Guest(
 @Parcelize
 data class OrderItem(
     var id: Int,
+    var guestId: Int = 1,
     var quantity: Int,
     val menuItemId: String,
     val menuItemName: String,
@@ -487,88 +452,12 @@ data class ModifierOrderItem(
     val orderMods: List<ModifierItem>?,
 ): Parcelable
 
-//export interface ReorderDrink{
-//    guest: number;
-//    item: OrderItem
-//}
+@Parcelize
+data class newGuest(
+    val guest: Int,
+    val activeGuest: Int
+): Parcelable
 
-
-//export interface OrderItemSelected{
-//    item: OrderItem,
-//    selected: boolean
-//}
-//
-//export interface AddItemtoOrder{
-//    item: MenuItem,
-//    price: ItemPrice,
-//    modifiers: ModifierItem[] | null
-//}
-//
-//export interface ItemTotals{
-//    subTotal: number;
-//    tax: number;
-//}
-//
-//export interface ModItemSearch{
-//    modName: string;
-//    itemName: string;
-//}
-//
-//export interface AddItem{
-//    item: MenuItem,
-//    price: ItemPrice
-//}
-//
-//export interface CustomerOptions{
-//    takeOutCustomer: TakeOutCustomer,
-//    customer: Customer
-//}
-//
-//export interface TableSelect{
-//    tableNumber: number;
-//    inUse: boolean;
-//    order: Order
-//}
-//
-//export interface GuestDrinks{
-//    guestId: number;
-//    drink: OrderItem;
-//}
-//
-//export interface OrderItemDelete{
-//    guest: Guest,
-//    item: OrderItem
-//}
-//
-//export interface SellingItemsRequest{
-//    locationId: string;
-//    startDate: number;
-//    endDate: number;
-//    salesCategory: string
-//}
-//
-//export interface SellingItem{
-//    item: string;
-//    sum: number;
-//}
-//
-//export interface ItemTap{
-//    item: OrderItem;
-//    action: string;
-//}
-//
-//export interface TransferGuest{
-//    guest: Guest;
-//    order: Order;
-//}
-//
-
-//
-//export interface OrderPayment{
-//    o: Order;
-//    p: Payment;
-//}
-//
 @Parcelize
 data class TimeBasedRequest
     (
@@ -591,16 +480,3 @@ data class IdRequest
     val id: String,
     val lid: String
 ): Parcelable
-//
-//export interface OrderEmail{
-//    email: string;
-//    name: string;
-//    order: Order;
-//    payment: Payment;
-//}
-//
-//export interface OrderPayment{
-//    order: Order;
-//    payment: Payment;
-//    settings: Settings;
-//}

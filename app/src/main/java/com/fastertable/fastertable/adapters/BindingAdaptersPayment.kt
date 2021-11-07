@@ -32,7 +32,7 @@ fun bindTicketsRecyclerView(recyclerView: RecyclerView?, payment: Payment?) {
 fun setTicketNumber(textView: TextView, tickets: List<Ticket>?){
     tickets?.forEach {
         if (it.uiActive){
-            textView.text = textView.context.getString(R.string.ticket_with_number,  it.id.plus(1).toString())
+            textView.text = textView.context.getString(R.string.ticket_with_number,  it.id.toString())
         }
     }
 }

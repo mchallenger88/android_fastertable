@@ -12,7 +12,7 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class MenusFragment : BaseFragment(){
     private lateinit var viewModel: MenusViewModel
-
+    private lateinit var binding: MenusFragmentBinding
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -25,10 +25,12 @@ class MenusFragment : BaseFragment(){
         binding.lifecycleOwner = viewLifecycleOwner
         binding.viewModel = viewModel
 
-
-
-
             return binding.root
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        binding.unbind()
     }
 
 }

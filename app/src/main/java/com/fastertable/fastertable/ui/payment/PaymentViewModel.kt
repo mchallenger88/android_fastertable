@@ -145,6 +145,10 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
     val navigateToHome: LiveData<Boolean>
         get() = _navigateToHome
 
+    private val _navigateToHomeFromVoid = MutableLiveData(false)
+    val navigateToHomeFromVoid: LiveData<Boolean>
+        get() = _navigateToHomeFromVoid
+
     private val _navigateToDashboardFromVoid = MutableLiveData(false)
     val navigateToDashboardFromVoid: LiveData<Boolean>
         get() = _navigateToDashboardFromVoid
@@ -160,6 +164,10 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
     private val _voidPayment = MutableLiveData(false)
     val voidPayment: LiveData<Boolean>
         get() = _voidPayment
+
+    private val _voidStart = MutableLiveData(false)
+    val voidStart: LiveData<Boolean>
+        get() = _voidStart
 
     //endregion
 
@@ -349,6 +357,10 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
         _voidPayment.value = b
     }
 
+    fun setVoidStart(b: Boolean){
+        _voidStart.value = b
+    }
+
     //endregion
 
     //region Fragment Functions
@@ -477,8 +489,16 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
         setReturnHome(true)
     }
 
+    fun returnHomeFromVoidStart(){
+        setReturnHomeFromVoidStart(true)
+    }
+
     fun setReturnHome(b: Boolean){
         _navigateToHome.value = b
+    }
+
+    fun setReturnHomeFromVoidStart(b: Boolean){
+        _navigateToHomeFromVoid.value = b
     }
 
     fun returnDashboardFromVoid(){

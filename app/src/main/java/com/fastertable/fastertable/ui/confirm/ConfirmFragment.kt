@@ -17,13 +17,14 @@ import dagger.hilt.android.AndroidEntryPoint
 class ConfirmFragment  : BaseFragment(){
     private val viewModel: ConfirmViewModel by activityViewModels()
     private val dateViewModel: DatePickerViewModel by activityViewModels()
+    private lateinit var binding: ConfirmFragmentBinding
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val binding = ConfirmFragmentBinding.inflate(inflater)
+        binding = ConfirmFragmentBinding.inflate(inflater)
         binding.lifecycleOwner = viewLifecycleOwner
         binding.viewModel = viewModel
         viewModel.getConfirmList()
@@ -63,4 +64,9 @@ class ConfirmFragment  : BaseFragment(){
             }
         })
     }
+    override fun onDestroyView() {
+        super.onDestroyView()
+        binding.unbind()
+    }
+
 }

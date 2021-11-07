@@ -56,4 +56,9 @@ class TransferOrderFragment : BaseFragment() {
             employeeAdapter.notifyDataSetChanged()
         })
     }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        binding.unbind()
+    }
 }

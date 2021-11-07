@@ -48,6 +48,10 @@ class HomeViewModel @Inject constructor (private val loginRepository: LoginRepos
     val navigateToPayment: LiveData<String>
         get() = _navigateToPayment
 
+    private val _navigateToVoid = MutableLiveData<String>()
+    val navigateToVoid: LiveData<String>
+        get() = _navigateToVoid
+
     private val _navigateToFloorplan = MutableLiveData<Boolean>()
     val navigateToFloorplan: LiveData<Boolean>
         get() = _navigateToFloorplan
@@ -121,7 +125,7 @@ class HomeViewModel @Inject constructor (private val loginRepository: LoginRepos
             if (selectedOrder.closeTime == null){
                 _navigateToOrder.value = id
             }else{
-                _navigateToPayment.value = id
+                _navigateToVoid.value = id
             }
         }
 

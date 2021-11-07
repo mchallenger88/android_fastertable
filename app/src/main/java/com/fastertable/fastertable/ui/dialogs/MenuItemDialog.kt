@@ -50,11 +50,9 @@ class MenuItemDialog: BaseDialog() {
     }
 
     private fun createOrderItem(qty: Int, name: String, price: Double){
-        val g = viewModel.activeOrder.value!!.guests!!.find { it.uiActive }
-        var id = 0
-        if (!g!!.orderItems.isNullOrEmpty()){
-            id = g.orderItems!!.size
-        }
+        val order = viewModel.activeOrder.value
+        val id = order?.orderItems?.last()?.id?.plus(1)!!
+
         val p = ItemPrice(
             price = price,
             size = "Regular",

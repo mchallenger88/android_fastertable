@@ -17,13 +17,13 @@ import dagger.hilt.android.AndroidEntryPoint
 class CompanyLoginFragment : Fragment()  {
 
     private lateinit var viewModel: CompanyLoginViewModel
-
+    private lateinit var binding: CompanyLoginFragmentBinding
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?): View {
 
-        val binding = CompanyLoginFragmentBinding.inflate(inflater)
+        binding = CompanyLoginFragmentBinding.inflate(inflater)
 
         viewModel = ViewModelProvider(this).get(CompanyLoginViewModel::class.java)
 
@@ -65,6 +65,11 @@ class CompanyLoginFragment : Fragment()  {
     private fun setRestaurant(loc: Location){
         viewModel.setRestaurant(loc)
         this.findNavController().navigate(CompanyLoginFragmentDirections.actionCompanyLoginFragmentToRestaurantLoginFragment())
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        binding.unbind()
     }
 
 }

@@ -21,6 +21,11 @@ class OrderMoreDialog: BaseDialog() {
             dismiss()
         }
 
+        binding.btnTransferOrderItem.setOnClickListener {
+            dialogListener.returnValue("Transfer Order Item")
+            dismiss()
+        }
+
         binding.btnAdhocMenuItem.setOnClickListener {
             dialogListener.returnValue("Misc Menu Item")
             dismiss()

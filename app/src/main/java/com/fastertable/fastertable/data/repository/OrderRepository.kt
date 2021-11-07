@@ -178,6 +178,8 @@ class OrderRepository @Inject constructor(private val app: Application) {
         val guests = ArrayList<Guest>()
         guests.add(newGuest)
 
+        val orderItems = mutableListOf<OrderItem>()
+
 
         val order = Order(
             orderType = orderType,
@@ -192,7 +194,8 @@ class OrderRepository @Inject constructor(private val app: Application) {
             kitchenStatus = false,
             rush = false,
 
-            guests = guests,
+//            guests = guests,
+            orderItems = orderItems,
             splitChecks = null,
             note = "",
 

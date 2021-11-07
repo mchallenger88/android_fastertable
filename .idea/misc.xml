@@ -44,6 +44,7 @@
         <entry key="..\:/androidprojects/fastertable/app/src/main/res/layout/dialog_edit_item.xml" value="0.303125" />
         <entry key="..\:/androidprojects/fastertable/app/src/main/res/layout/dialog_error.xml" value="0.303125" />
         <entry key="..\:/androidprojects/fastertable/app/src/main/res/layout/dialog_reorder_drinks.xml" value="0.303125" />
+        <entry key="..\:/androidprojects/fastertable/app/src/main/res/layout/dialog_transfer_order_item.xml" value="0.303125" />
         <entry key="..\:/androidprojects/fastertable/app/src/main/res/layout/drink_line_item.xml" value="0.303125" />
         <entry key="..\:/androidprojects/fastertable/app/src/main/res/layout/drop_down_layout.xml" value="0.2078125" />
         <entry key="..\:/androidprojects/fastertable/app/src/main/res/layout/edit_modifier_line_item.xml" value="0.303125" />
@@ -65,7 +66,12 @@
         <entry key="..\:/androidprojects/fastertable/app/src/main/res/layout/terminal_line_item.xml" value="0.303125" />
         <entry key="..\:/androidprojects/fastertable/app/src/main/res/layout/terminal_select_fragment.xml" value="0.303125" />
         <entry key="..\:/androidprojects/fastertable/app/src/main/res/layout/ticket_line_item.xml" value="0.303125" />
+        <entry key="..\:/androidprojects/fastertable/app/src/main/res/layout/transfer_item_orders_header.xml" value="0.303125" />
+        <entry key="..\:/androidprojects/fastertable/app/src/main/res/layout/transfer_item_orders_line_item.xml" value="0.303125" />
+        <entry key="..\:/androidprojects/fastertable/app/src/main/res/layout/transfer_order_item_fragment.xml" value="0.333984375" />
+        <entry key="..\:/androidprojects/fastertable/app/src/main/res/layout/transfer_order_line_item.xml" value="0.192578125" />
         <entry key="..\:/androidprojects/fastertable/app/src/main/res/layout/user_login_fragment.xml" value="0.303125" />
+        <entry key="..\:/androidprojects/fastertable/app/src/main/res/layout/void_fragment_start.xml" value="0.1" />
         <entry key="..\:/androidprojects/fastertable/app/src/main/res/layout/void_payment_fragment.xml" value="0.303125" />
         <entry key="..\:/androidprojects/fastertable/app/src/main/res/layout/void_payment_line_item.xml" value="0.303125" />
         <entry key="..\:/androidprojects/fastertable/app/src/main/res/layout/wall_property_dialog.xml" value="0.303125" />

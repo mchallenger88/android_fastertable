@@ -593,4 +593,9 @@ class FloorplanManagementFragment: Fragment() {
             override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
     }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        binding.unbind()
+    }
 }

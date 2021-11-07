@@ -14,12 +14,13 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class RestaurantLoginFragment : BaseFragment() {
     private lateinit var viewModel: RestaurantLoginViewModel
+    private lateinit var binding: RestaurantLoginFragmentBinding
 
     override fun onCreateView(
             inflater: LayoutInflater,
             container: ViewGroup?,
             savedInstanceState: Bundle?): View {
-        val binding = RestaurantLoginFragmentBinding.inflate(inflater)
+        binding = RestaurantLoginFragmentBinding.inflate(inflater)
         viewModel = ViewModelProvider(this).get(RestaurantLoginViewModel::class.java)
 
         binding.lifecycleOwner = viewLifecycleOwner
@@ -82,5 +83,8 @@ class RestaurantLoginFragment : BaseFragment() {
         viewModel.restLogin()
     }
 
-
+    override fun onDestroyView() {
+        super.onDestroyView()
+        binding.unbind()
+    }
 }

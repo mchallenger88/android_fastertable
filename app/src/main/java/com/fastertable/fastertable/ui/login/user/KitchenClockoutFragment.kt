@@ -12,12 +12,13 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class KitchenClockoutFragment : BaseFragment(){
     private val viewModel: KitchenClockoutViewModel by activityViewModels()
+    private lateinit var binding: KitchenClockoutFragmentBinding
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val binding = KitchenClockoutFragmentBinding.inflate(inflater)
+        binding = KitchenClockoutFragmentBinding.inflate(inflater)
 
         binding.lifecycleOwner = viewLifecycleOwner
         binding.viewModel = viewModel
@@ -30,4 +31,8 @@ class KitchenClockoutFragment : BaseFragment(){
         return binding.root
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        binding.unbind()
+    }
 }

@@ -105,21 +105,21 @@ class KitchenPrintUseCase @Inject constructor(private val app: Application){
         }
     }
 
-    private fun orderPrinterList(order: Order): List<Printer>{
-        val printers = mutableListOf<Printer>()
-        var printer: Printer?
-        order.guests?.forEach{g ->
-            if (g.orderItems != null){
-                g.orderItems!!.forEach{oi ->
-                    if (oi.status == "Started"){
-                        printer = printers.find{it.id == oi.printer.id}
-                        if (printer == null){
-                            printers.add(oi.printer)
-                        }}
-                }}
-        }
-        return printers
-    }
+//    private fun orderPrinterList(order: Order): List<Printer>{
+//        val printers = mutableListOf<Printer>()
+//        var printer: Printer?
+//        order.guests?.forEach{g ->
+//            if (g.orderItems != null){
+//                g.orderItems!!.forEach{oi ->
+//                    if (oi.status == "Started"){
+//                        printer = printers.find{it.id == oi.printer.id}
+//                        if (printer == null){
+//                            printers.add(oi.printer)
+//                        }}
+//                }}
+//        }
+//        return printers
+//    }
 
     private fun onError(s: String, p: PrinterDriver): Boolean {
         Log.d("Printer Error", s)

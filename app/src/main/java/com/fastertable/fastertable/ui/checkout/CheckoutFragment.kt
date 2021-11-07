@@ -15,13 +15,14 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class CheckoutFragment : BaseFragment() {
     private val viewModel: CheckoutViewModel by activityViewModels()
+    private lateinit var binding: CheckoutFragmentBinding
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val binding = CheckoutFragmentBinding.inflate(inflater)
+        binding = CheckoutFragmentBinding.inflate(inflater)
         binding.lifecycleOwner = viewLifecycleOwner
         binding.viewModel = viewModel
         viewModel.getEmployeeCheckout()
@@ -52,5 +53,10 @@ class CheckoutFragment : BaseFragment() {
                 paymentAdapter.submitList(it.payments)
             }
         })
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        binding.unbind()
     }
 }

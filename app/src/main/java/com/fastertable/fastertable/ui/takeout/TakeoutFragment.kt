@@ -96,4 +96,9 @@ class TakeoutFragment : BaseFragment(){
         }
 
     }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        binding.unbind()
+    }
 }

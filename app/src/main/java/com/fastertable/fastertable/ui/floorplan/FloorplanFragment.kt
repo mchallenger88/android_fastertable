@@ -17,12 +17,13 @@ import dagger.hilt.android.AndroidEntryPoint
 class FloorplanFragment: BaseFragment() {
     private val viewModel: FloorplanViewModel by activityViewModels()
     private lateinit var tableListener: FloorplanTableListener
+    private lateinit var binding: FloorplanFragmentBinding
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val binding = FloorplanFragmentBinding.inflate(inflater)
+        binding = FloorplanFragmentBinding.inflate(inflater)
         binding.lifecycleOwner = viewLifecycleOwner
         binding.viewModel = viewModel
 
@@ -79,6 +80,11 @@ class FloorplanFragment: BaseFragment() {
         } else {
             throw RuntimeException(requireContext().toString() + " must implement OnFragmentInteractionListener")
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        binding.unbind()
     }
 
 }

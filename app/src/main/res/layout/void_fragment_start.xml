@@ -1,0 +1,343 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+    <data>
+        <variable
+            name="viewModel"
+            type="com.fastertable.fastertable.ui.payment.PaymentViewModel" />
+
+        <variable
+            name="orderViewModel"
+            type="com.fastertable.fastertable.ui.order.OrderViewModel" />
+
+    </data>
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/view_background"
+        tools:ignore="ExtraText">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/void_start_fastertoolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/fasterToolBar"
+        android:paddingStart="80dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:popupTheme="@style/Theme.Fastertable.PopupOverlay"
+        tools:ignore="RtlSymmetry">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layout_void_start_buttons"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <Button
+            android:id="@+id/btn_void_print_receipt"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:layout_marginStart="12dp"
+            android:text="@string/print_receipt"
+            android:textColor="@color/white"
+            android:textSize="@dimen/toolbar_button"
+            android:onClick="@{() -> viewModel.printReceipt()}"
+            app:layout_constraintStart_toStartOf="@+id/layout_void_start_buttons"
+            app:layout_constraintTop_toTopOf="@+id/layout_void_start_buttons"
+            app:strokeColor="@color/white" />
+
+        <Button
+            android:id="@+id/btn_void_payment"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:layout_marginStart="12dp"
+            android:text="@string/void_payment"
+            android:textColor="@color/white"
+            android:textSize="@dimen/toolbar_button"
+            android:onClick="@{() -> viewModel.setVoidStart(true)}"
+            app:showVoidButton="@{viewModel.activePayment}"
+            app:layout_constraintStart_toEndOf="@+id/btn_void_print_receipt"
+            app:layout_constraintTop_toTopOf="@+id/layout_void_start_buttons"
+            app:strokeColor="@color/white" />
+
+        <Button
+            android:id="@+id/btn_void_payment_home"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:text="@string/dashboard"
+            android:textColor="@color/white"
+            android:textSize="@dimen/toolbar_button"
+            android:onClick="@{() -> viewModel.returnHomeFromVoidStart()}"
+            app:layout_constraintEnd_toEndOf="@+id/layout_void_start_buttons"
+            app:layout_constraintTop_toTopOf="parent"
+            app:strokeColor="@color/white" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.appcompat.widget.Toolbar>
+
+        <LinearLayout
+            android:id="@+id/toolbar_void_ticketSideBar"
+            android:layout_width="80dp"
+            android:layout_height="0dp"
+            android:background="@color/guest_toolbar"
+            android:gravity="fill_vertical"
+            android:orientation="vertical"
+            android:elevation="10dp"
+            android:padding="10dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/void_start_fastertoolbar"
+            app:layout_constraintVertical_bias="0.5">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/void_ticket_recycler"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:ticketsData="@{viewModel.activePayment}"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:listitem="@layout/ticket_button"
+                />
+        </LinearLayout>
+
+        //Ticket Card View
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/void_ticket_card_view"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:fitsSystemWindows="true"
+            android:paddingBottom="10dp"
+            app:cardBackgroundColor="#E8EAF6"
+            app:cardElevation="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/toolbar_void_ticketSideBar"
+            app:layout_constraintTop_toBottomOf="@+id/void_start_fastertoolbar"
+            app:layout_constraintVertical_bias="0.0">
+
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/layout_void_payment"
+                android:layout_width="450dp"
+                android:layout_height="match_parent"
+                android:layout_marginStart="@dimen/default_margin"
+                android:layout_marginEnd="@dimen/default_margin"
+                android:background="?android:attr/windowBackground"
+                android:elevation="4dp">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/layout_void_payment_header"
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <TextView
+                        android:id="@+id/txt_Ticket1"
+                        style="@style/header"
+                        android:layout_width="0dp"
+                        android:layout_height="60dp"
+                        android:background="@color/primary_payment_color"
+                        android:gravity="center_horizontal|center_vertical"
+                        android:text="@string/ticket_with_number"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:ticketNumber="@{viewModel.activePayment.tickets}" />
+
+                    <ImageButton
+                        android:id="@+id/btn_ticket_more1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="10dp"
+                        android:background="@color/primary_payment_color"
+                        android:contentDescription="@string/ticket_options"
+                        android:onClick="@{() -> viewModel.toggleTicketMore()}"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:srcCompat="@drawable/ic_baseline_more_vert_24_white" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <TextView
+                    android:id="@+id/txt_approval_pending1"
+                    style="@style/error_style_small"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="@string/approval_pending"
+                    app:approvalPending="@{viewModel.activePayment}"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/layout_void_payment_header" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/ticketItemsRecycler1"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginBottom="16dp"
+                    android:scrollbarStyle="outsideInset"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    app:layout_constraintBottom_toTopOf="@+id/constraint_totals1"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/txt_approval_pending1"
+                    app:ticketListData="@{viewModel.activePayment}"
+                    tools:listitem="@layout/ticket_line_item" />
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/constraint_totals1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="parent"
+                    tools:layout_editor_absoluteX="0dp">
+
+                    <TextView
+                        android:id="@+id/txt_paid_in_full1"
+                        style="@style/error_style"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/paid_in_full"
+                        app:layout_constraintBottom_toTopOf="@+id/text_subtotal1"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="@+id/constraint_totals1"
+                        app:paidInFull="@{viewModel.activePayment}" />
+
+
+                    <TextView
+                        android:id="@+id/text_subtotal1"
+                        style="@style/payment_totals"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="115dp"
+                        android:text="@string/subtotal"
+                        app:layout_constraintBottom_toTopOf="@+id/text_salesTax1"
+                        app:layout_constraintEnd_toEndOf="parent" />
+
+                    <TextView
+                        android:id="@+id/text_subtotal_price1"
+                        style="@style/payment_totals"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="24dp"
+                        app:layout_constraintBottom_toTopOf="@+id/text_salesTax1"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        tools:ticketSubTotal="@{viewModel.activePayment}" />
+
+                    <TextView
+                        android:id="@+id/text_tax1"
+                        style="@style/payment_totals"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="115dp"
+                        android:text="@string/tax"
+                        app:layout_constraintBottom_toTopOf="@+id/text_gratuity1"
+                        app:layout_constraintEnd_toEndOf="parent" />
+
+                    <TextView
+                        android:id="@+id/text_salesTax1"
+                        style="@style/payment_totals"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="24dp"
+                        app:layout_constraintBottom_toTopOf="@+id/text_gratuity1"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        tools:ticketTax="@{viewModel.activePayment}" />
+
+                    <TextView
+                        android:id="@+id/text_gratuity1"
+                        style="@style/payment_totals"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="115dp"
+                        android:text="@string/gratuity"
+                        app:layout_constraintBottom_toTopOf="@+id/text_total1"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:ticketGratuityText="@{viewModel.activePayment}" />
+
+                    <TextView
+                        android:id="@+id/text_gratuity_amount1"
+                        style="@style/payment_totals"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="24dp"
+                        app:layout_constraintBottom_toTopOf="@+id/text_total1"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:ticketGratuity="@{viewModel.activePayment}" />
+
+                    <TextView
+                        android:id="@+id/text_total1"
+                        style="@style/payment_totals"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="115dp"
+                        android:text="@string/total"
+                        app:layout_constraintBottom_toTopOf="@+id/text_partial1"
+                        app:layout_constraintEnd_toEndOf="parent" />
+
+                    <TextView
+                        android:id="@+id/text_total_price1"
+                        style="@style/payment_totals"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="24dp"
+                        app:layout_constraintBottom_toTopOf="@+id/text_partial1"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:ticketTotal="@{viewModel.activePayment}" />
+
+                    <TextView
+                        android:id="@+id/text_partial1"
+                        style="@style/amount_owed"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="115dp"
+                        android:text="@string/partial_payment"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:partialPaymentText="@{viewModel.activePayment}" />
+
+                    <TextView
+                        android:id="@+id/text_partial_amount1"
+                        style="@style/amount_owed"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="24dp"
+                        android:text="@string/partial_payment"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:partialPaymentAmount="@{viewModel.activePayment}" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <View
+                    android:id="@+id/payment_totals_divider"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginBottom="8dp"
+                    android:background="?android:attr/listDivider"
+                    app:layout_constraintBottom_toTopOf="@+id/constraint_totals1"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent" />
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+        </androidx.cardview.widget.CardView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

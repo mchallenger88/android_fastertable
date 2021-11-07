@@ -20,6 +20,7 @@ import com.fastertable.fastertable.common.base.BaseFragment
 import com.fastertable.fastertable.data.models.Menu
 import com.fastertable.fastertable.data.models.MenuCategory
 import com.fastertable.fastertable.data.models.MenuItem
+import com.fastertable.fastertable.data.models.newGuest
 import com.fastertable.fastertable.databinding.OrderFragmentBinding
 import com.google.android.material.tabs.TabLayout
 import dagger.hilt.android.AndroidEntryPoint
@@ -27,12 +28,13 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class OrderFragment : BaseFragment() {
     private val viewModel: OrderViewModel by activityViewModels()
+    private lateinit var binding: OrderFragmentBinding
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val binding = OrderFragmentBinding.inflate(inflater)
+        binding = OrderFragmentBinding.inflate(inflater)
         binding.lifecycleOwner = viewLifecycleOwner
         binding.viewModel = viewModel
         viewModel.initOrder()
@@ -200,14 +202,15 @@ class OrderFragment : BaseFragment() {
         })
 
         val guestAdapter = GuestSideBarAdapter(GuestSideBarAdapter.GuestSideBarListener {item ->
-            viewModel.setActiveGuest(item)
+            viewModel.setActiveGuest(item.guest)
         })
 
         val concatAdapter = ConcatAdapter(modAdapter, ingAdapter)
-
-        binding.orderItems.adapter = OrderItemAdapter(OrderItemAdapter.OrderItemListener { item ->
+        val orderItemsAdapter = OrderItemAdapter(OrderItemAdapter.OrderItemListener { item ->
             viewModel.orderItemClicked(item)
         })
+
+        binding.orderItems.adapter = orderItemsAdapter
         binding.modRecyclerView.adapter = concatAdapter
 
         binding.guestRecycler.adapter = guestAdapter
@@ -223,10 +226,31 @@ class OrderFragment : BaseFragment() {
         })
 
         viewModel.activeOrder.observe(viewLifecycleOwner, { item ->
-            guestAdapter.notifyDataSetChanged()
+            val list = mutableListOf<newGuest>()
+            if (item != null){
+                for (i in 1..item.guestCount){
+                    val newGuest = newGuest(
+                        guest = i,
+                        activeGuest = item.activeGuest
+                    )
+                    list.add(newGuest)
+                }
+                guestAdapter.submitList(list)
+                guestAdapter.notifyDataSetChanged()
+
+                val list1 = item.orderItems?.filter { it.guestId == item.activeGuest }
+                if (list1 != null){
+                    orderItemsAdapter.submitList(list1)
+                    orderItemsAdapter.notifyDataSetChanged()
+                }
+            }
+
         })
     }
 
-
+    override fun onDestroyView() {
+        super.onDestroyView()
+        binding.unbind()
+    }
 
 }

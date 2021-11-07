@@ -103,18 +103,11 @@ fun getOrderTotal(textView: TextView, total: Double){
 }
 
 @BindingAdapter("orderItemListData")
-fun bindRecyclerView(recyclerView: RecyclerView?, order: Order?) {
+fun orderItemListData(recyclerView: RecyclerView?, order: Order?) {
     val adapter = recyclerView?.adapter as OrderItemAdapter
-    val guest = order?.guests?.find{it -> it.uiActive}
-    adapter.submitList(guest?.getOrderItems())
-    adapter.notifyDataSetChanged()
-}
-
-@BindingAdapter("guestListData")
-fun bindGuestRecyclerView(recyclerView: RecyclerView?, data: List<Guest>?) {
-    if (data != null){
-        val adapter = recyclerView?.adapter as GuestSideBarAdapter
-        adapter.submitList(data)
+    val list = order?.orderItems?.filter { it.guestId == order.activeGuest }
+    if (list != null){
+        adapter.submitList(list)
         adapter.notifyDataSetChanged()
     }
 }
@@ -154,12 +147,8 @@ fun setOrderNotes(textView: TextView, order: Order?){
 
 @SuppressLint("SetTextI18n")
 @BindingAdapter("setGuestNumberTitle")
-fun setGuestNumberTitle(textView: TextView, guests: List<Guest>?){
-    guests?.forEach {
-        if (it.uiActive){
-            textView.text = "Guest ${it.id.plus(1)}"
-        }
-    }
+fun setGuestNumberTitle(textView: TextView, activeGuest: Int){
+    textView.text = "Guest $activeGuest"
 }
 
 @SuppressLint("SetTextI18n")

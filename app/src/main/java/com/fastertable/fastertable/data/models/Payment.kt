@@ -126,13 +126,14 @@ data class Payment(
         if (tickets == null){
             val tickets = arrayListOf<Ticket>()
             val ticketItems = arrayListOf<TicketItem>()
-            order.guests?.forEach { guest ->
-                guest.orderItems?.forEachIndexed { index, orderItem ->
-                    val ticketItem = order.createTicketItem(index, orderItem)
-                    ticketItems.add(ticketItem)
-                }
+            var i = 1
+            for (item in order.orderItems!!){
+                val ticketItem = order.createTicketItem(i, item)
+                ticketItems.add(ticketItem)
+                i += i
             }
-            val ticket = order.createTicket(0, ticketItems, fees)
+
+            val ticket = order.createTicket(1, ticketItems, fees)
             tickets.add(ticket)
             this.tickets = tickets
         }else{
@@ -174,14 +175,15 @@ data class Payment(
             if (!anyTicketsPaid()) {
                 val ticketItems = allTicketItems()
                 val ts = arrayListOf<Ticket>()
-                for (guest in order.guests!!){
-                    val tis = ticketItems.filter{it.orderGuestNo == guest.id}
-                    val ticket = order.createTicket(guest.id, tis.toCollection(ArrayList()), fees)
-                    ticket.uiActive = ticket.id == 0
+                tickets?.clear()
+                for (i in 1..order.guestCount){
+                    val tis = ticketItems.filter{it.orderGuestNo == i}
+                    val ticket = order.createTicket(i, tis.toCollection(ArrayList()), fees)
+                    ticket.uiActive = ticket.id == 1
                     ts.add(ticket)
                 }
                 recalculateTotals()
-                splitTicket = order.guests!!.size
+                splitTicket = order.guestCount
                 splitType = "Guest"
                 this.tickets = ts
             }
@@ -192,18 +194,19 @@ data class Payment(
         if (!anyTicketsPaid()) {
             val ticketItems = allTicketItems()
             val ts = arrayListOf<Ticket>()
-            val guestCount = order.guests?.size
-            for (item in ticketItems){
-                item.ticketItemPrice = item.ticketItemPrice.div(guestCount!!).round(2)
-            }
 
-            for (guest in order.guests!!){
-                val ticket = order.createTicket(guest.id, ticketItems.toCollection(ArrayList()), fees)
+            val guestCount = order.guestCount
+            for (item in ticketItems){
+                item.ticketItemPrice = item.ticketItemPrice.div(guestCount).round(2)
+            }
+            for (i in 1..order.guestCount){
+                val ticket = order.createTicket(i, ticketItems.toCollection(ArrayList()), fees)
                 ticket.uiActive = ticket.id == 0
                 ts.add(ticket)
             }
+
             recalculateTotals()
-            splitTicket = order.guests!!.size
+            splitTicket = order.guestCount
             splitType = "Evenly"
             this.tickets = ts
         }
@@ -424,7 +427,13 @@ data class Ticket(
             }else{
                 return null
             }
+        }
 
+        fun removeTicketItem(item: OrderItem){
+            val found = ticketItems.find { it.orderItemId == item.id }
+            if (found != null){
+                ticketItems.remove(found)
+            }
         }
 
     }

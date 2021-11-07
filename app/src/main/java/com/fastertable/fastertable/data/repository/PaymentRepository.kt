@@ -120,7 +120,7 @@ class PaymentRepository @Inject constructor(private val app: Application) {
             timeStamp = GlobalUtils().getNowEpoch(),
             orderStartTime = order.startTime,
             orderCloseTime = order.closeTime,
-            guestCount = order.guests?.size!!,
+            guestCount = order.guestCount,
             splitType = "",
             splitTicket = null,
             employeeId = order.employeeId!!,
@@ -150,24 +150,28 @@ class PaymentRepository @Inject constructor(private val app: Application) {
         return payment
     }
 
-    suspend fun updatePaymentNewOrderItems(payment: Payment, order: Order): Payment{
-        for (guest in order.guests!!){
-            for (item in guest.orderItems!!){
-                if (item.status == "Started"){
-                    val ticket = payment.tickets?.get(0)
-                    createTicketItem(ticket!!, guest, item)
-                }
-            }
+    fun updatePaymentNewOrderItems(payment: Payment, order: Order): Payment{
+        for (item in order.orderItems!!){
+            val ticket = payment.tickets?.get(0)
+            createTicketItem(ticket!!, item.guestId, item)
         }
+//        for (guest in order.guests!!){
+//            for (item in guest.orderItems!!){
+//                if (item.status == "Started"){
+//                    val ticket = payment.tickets?.get(0)
+//                    createTicketItem(ticket!!, guest, item)
+//                }
+//            }
+//        }
         payment.recalculateTotals()
         return payment
     }
 
-    private fun createTicketItem(ticket: Ticket, guest: Guest, orderItem: OrderItem){
+    private fun createTicketItem(ticket: Ticket, guest: Int, orderItem: OrderItem){
         val i = ticket.ticketItems.size
         val t = TicketItem(
             id = i + 1,
-            orderGuestNo = guest.id,
+            orderGuestNo = guest,
             orderItemId = orderItem.id,
             quantity = orderItem.quantity,
             itemName = orderItem.menuItemName,

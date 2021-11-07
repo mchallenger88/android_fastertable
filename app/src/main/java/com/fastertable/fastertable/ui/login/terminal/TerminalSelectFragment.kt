@@ -17,13 +17,14 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class TerminalSelectFragment : BaseFragment()  {
     private val viewModel: TerminalSelectViewModel by activityViewModels()
+    private lateinit var binding: TerminalSelectFragmentBinding
 
     @SuppressLint("ResourceAsColor")
     override fun onCreateView(
             inflater: LayoutInflater,
             container: ViewGroup?,
             savedInstanceState: Bundle?): View {
-        val binding = TerminalSelectFragmentBinding.inflate(inflater)
+        binding = TerminalSelectFragmentBinding.inflate(inflater)
 
         binding.lifecycleOwner = viewLifecycleOwner
         binding.viewModel = viewModel
@@ -65,9 +66,12 @@ class TerminalSelectFragment : BaseFragment()  {
         return binding.root
     }
 
-
-
     private fun setTerminal(t: Terminal){
         viewModel.setTerminal((t))
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        binding.unbind()
     }
 }

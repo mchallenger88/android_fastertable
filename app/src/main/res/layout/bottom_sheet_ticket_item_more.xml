@@ -65,7 +65,6 @@
             app:layout_constraintTop_toBottomOf="@+id/btn_ticket_discount_item"
             tools:ignore="RtlHardcoded" />
 
-
         <Button
             android:id="@+id/btn_ticket_item_close"
             style="@style/bottom_sheet_button"

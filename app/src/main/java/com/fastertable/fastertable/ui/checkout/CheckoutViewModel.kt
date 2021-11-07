@@ -124,8 +124,6 @@ class CheckoutViewModel @Inject constructor (
             ce.openOrders = ce.orders.any{ it.closeTime == null }
             ce.allTickets = listTickets
             ce.paidTickets = ce.allTickets.filter{ it.paymentTotal != 0.00}
-//            ce.cashSales = ce.allTickets.filter{ it.paymentType == "Cash"}
-//            ce.creditSales = ce.allTickets.filter{ it.paymentType == "Credit" || it.paymentType == "Manual Credit"}
 
             ce.orderTotal =  ce.allTickets.sumOf { it.paymentTotal }
             ce.paymentTotal = ce.paidTickets.sumOf { it.paymentTotal }
@@ -173,8 +171,7 @@ class CheckoutViewModel @Inject constructor (
             ce.voidTotal = voidTicketTotal.plus(voidItemTotal)
             ce.discountTotal = discountItemTotal.plus(discountTicketTotal)
 
-            val listGuests = ce.orders.flatMap { it.guests!! }
-            val orderItems = listGuests.flatMap { it.orderItems!! }
+            val orderItems = ce.orders.flatMap { it.orderItems!! }
             //TODO: Not precise because an item might be discounted in the Payment
             val barItems = orderItems.filter{it.salesCategory == "Bar"}
             val barSales = barItems.sumOf { it.menuItemPrice.price }

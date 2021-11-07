@@ -19,12 +19,13 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class AddTipFragment: BaseFragment() {
     private val viewModel: CheckoutViewModel by activityViewModels()
+    private lateinit var binding: CheckoutAddTipFragmentBinding
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val binding = CheckoutAddTipFragmentBinding.inflate(inflater)
+        binding = CheckoutAddTipFragmentBinding.inflate(inflater)
         binding.lifecycleOwner = viewLifecycleOwner
         binding.viewModel = viewModel
 //        binding.btnAddTip.setOnClickListener {
@@ -71,5 +72,10 @@ class AddTipFragment: BaseFragment() {
         val imm: InputMethodManager =
             context.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(view.windowToken, 0)
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        binding.unbind()
     }
 }

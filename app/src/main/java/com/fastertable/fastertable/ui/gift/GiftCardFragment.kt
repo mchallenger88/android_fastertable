@@ -13,12 +13,13 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class GiftCardFragment : BaseFragment(){
     private val viewModel: GiftCardViewModel by activityViewModels()
+    private lateinit var binding: GiftCardFragmentBinding
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val binding = GiftCardFragmentBinding.inflate(inflater)
+        binding = GiftCardFragmentBinding.inflate(inflater)
         binding.lifecycleOwner = viewLifecycleOwner
         binding.viewModel = viewModel
 
@@ -93,5 +94,10 @@ class GiftCardFragment : BaseFragment(){
         if (amount != ""){
             viewModel.addGiftAmount(amount.toDouble())
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        binding.unbind()
     }
 }

@@ -15,13 +15,14 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class UserLoginFragment: BaseFragment() {
     private val viewModel: UserLoginViewModel by activityViewModels()
+    private lateinit var binding: UserLoginFragmentBinding
 
     override fun onCreateView(
             inflater: LayoutInflater,
             container: ViewGroup?,
             savedInstanceState: Bundle?): View {
 
-        val binding = UserLoginFragmentBinding.inflate(inflater)
+        binding = UserLoginFragmentBinding.inflate(inflater)
 
         binding.lifecycleOwner = viewLifecycleOwner
         binding.viewModel = viewModel
@@ -69,5 +70,10 @@ class UserLoginFragment: BaseFragment() {
 
     private fun loginEnter(){
         viewModel.userLogin()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        binding.unbind()
     }
 }

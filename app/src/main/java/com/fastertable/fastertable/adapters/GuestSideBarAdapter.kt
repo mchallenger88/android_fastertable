@@ -13,10 +13,11 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.fastertable.fastertable.R
 import com.fastertable.fastertable.data.models.Guest
+import com.fastertable.fastertable.data.models.newGuest
 import com.fastertable.fastertable.databinding.GuestButtonBinding
 
 
-class GuestSideBarAdapter(private val clickListener: GuestSideBarListener) : ListAdapter<Guest, GuestSideBarAdapter.GuestSideBarViewHolder>(DiffCallback) {
+class GuestSideBarAdapter(private val clickListener: GuestSideBarListener) : ListAdapter<newGuest, GuestSideBarAdapter.GuestSideBarViewHolder>(DiffCallback) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GuestSideBarViewHolder {
         return GuestSideBarViewHolder(GuestButtonBinding.inflate(LayoutInflater.from(parent.context)), parent)
@@ -29,17 +30,16 @@ class GuestSideBarAdapter(private val clickListener: GuestSideBarListener) : Lis
 
     class GuestSideBarViewHolder(private var binding: GuestButtonBinding, private val parent: ViewGroup):
         RecyclerView.ViewHolder(binding.root) {
-        fun bind(guest: Guest, clickListener: GuestSideBarListener) {
-            binding.guest = guest
-            binding.clickListener = clickListener
+        fun bind(guest: newGuest, clickListener: GuestSideBarListener) {
             binding.executePendingBindings()
 
 
             val white = ContextCompat.getColor(parent.context, R.color.white)
             val offwhite = ContextCompat.getColor(parent.context, R.color.offWhite)
 
-            binding.guestButton.text = parent.context.getString(R.string.guest_with_number, guest.id.plus(1).toString())
-            if (guest.uiActive){
+            binding.guestButton.text = parent.context.getString(R.string.guest_with_number, guest.guest.toString())
+
+            if (guest.activeGuest == guest.guest){
                 binding.guestButton.setTextColor(ColorStateList.valueOf(white))
                 binding.guestButton.setCompoundDrawablesRelativeWithIntrinsicBounds(0, R.drawable.ic_user_white, 0, 0)
             }else{
@@ -62,17 +62,17 @@ class GuestSideBarAdapter(private val clickListener: GuestSideBarListener) : Lis
         }
     }
 
-    class GuestSideBarListener(val clickListener: (item: Guest) -> Unit) {
-        fun onClick(item: Guest) = clickListener(item)
+    class GuestSideBarListener(val clickListener: (item: newGuest) -> Unit) {
+        fun onClick(item: newGuest) = clickListener(item)
     }
 
-    companion object DiffCallback : DiffUtil.ItemCallback<Guest>() {
-        override fun areItemsTheSame(oldItem: Guest, newItem: Guest): Boolean {
-            return oldItem === newItem
+    companion object DiffCallback : DiffUtil.ItemCallback<newGuest>() {
+        override fun areItemsTheSame(oldItem: newGuest, newItem: newGuest): Boolean {
+            return oldItem == newItem
         }
 
-        override fun areContentsTheSame(oldItem: Guest, newItem: Guest): Boolean {
-            return oldItem.id == newItem.id
+        override fun areContentsTheSame(oldItem: newGuest, newItem: newGuest): Boolean {
+            return oldItem == newItem
         }
     }
 }

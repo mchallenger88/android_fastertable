@@ -40,6 +40,9 @@
         <action
             android:id="@+id/action_nav_home_to_floorplanManagementFragment"
             app:destination="@id/floorplanManagementFragment" />
+        <action
+            android:id="@+id/action_nav_home_to_voidStartFragment"
+            app:destination="@id/voidStartFragment" />
     </fragment>
     <fragment
         android:id="@+id/orderFragment"
@@ -60,6 +63,9 @@
         <action
             android:id="@+id/action_orderFragment_to_transferOrderFragment"
             app:destination="@id/transferOrderFragment" />
+        <action
+            android:id="@+id/action_orderFragment_to_transferItemFragment"
+            app:destination="@id/transferItemFragment" />
     </fragment>
     <fragment
         android:id="@+id/paymentFragment"
@@ -163,6 +169,25 @@
         <action
             android:id="@+id/action_voidFragment_to_nav_home"
             app:destination="@id/nav_home" />
+    </fragment>
+    <fragment
+        android:id="@+id/transferItemFragment"
+        android:name="com.fastertable.fastertable.ui.order.TransferItemFragment"
+        android:label="TransferItemFragment" >
+        <action
+            android:id="@+id/action_transferItemFragment_to_nav_home"
+            app:destination="@id/nav_home" />
+    </fragment>
+    <fragment
+        android:id="@+id/voidStartFragment"
+        android:name="com.fastertable.fastertable.ui.payment.VoidStartFragment"
+        android:label="VoidStartFragment" >
+        <action
+            android:id="@+id/action_voidStartFragment_to_nav_home"
+            app:destination="@id/nav_home" />
+        <action
+            android:id="@+id/action_voidStartFragment_to_voidFragment"
+            app:destination="@id/voidFragment" />
     </fragment>
 
 

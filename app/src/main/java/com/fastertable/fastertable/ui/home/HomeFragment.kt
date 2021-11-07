@@ -16,15 +16,13 @@ import dagger.hilt.android.AndroidEntryPoint
 class HomeFragment : BaseFragment() {
 
     private val viewModel: HomeViewModel by activityViewModels()
-
+    private lateinit var binding: HomeFragmentBinding
     override fun onCreateView(
             inflater: LayoutInflater,
             container: ViewGroup?,
             savedInstanceState: Bundle?
     ): View {
-        val binding = HomeFragmentBinding.inflate(inflater)
-
-//        val navController = findNavController()
+        binding = HomeFragmentBinding.inflate(inflater)
 
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
@@ -103,4 +101,8 @@ class HomeFragment : BaseFragment() {
         binding.chipOpenOrders.setOnClickListener{ viewModel.onOpenClicked()}
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        binding.unbind()
+    }
 }
