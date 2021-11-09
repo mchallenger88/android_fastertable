@@ -283,8 +283,10 @@
         app:cardBackgroundColor="#E8EAF6"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/gift_fastertoolbar">
+        app:layout_constraintTop_toBottomOf="@+id/gift_fastertoolbar"
+        tools:ignore="ExtraText">
 
+        //Cash Layout
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/gift_cash_layout"
             android:layout_width="match_parent"
@@ -570,6 +572,7 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
+        //Default Add to Gift Card
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/gift_add_cash_layout"
             android:layout_width="match_parent"
@@ -687,6 +690,17 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/edit_any_amount" />
+
+                <com.google.android.material.progressindicator.CircularProgressIndicator
+                    android:id="@+id/gift_card_spinner"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:indeterminate="true"
+                    android:layout_marginBottom="20dp"
+                    app:showCreditSpinner="@{viewModel.showSpinner}"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/btn_add_any"/>
             </androidx.constraintlayout.widget.ConstraintLayout>
 
 

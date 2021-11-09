@@ -24,7 +24,7 @@ class TransferOrderViewModel @Inject constructor (
 
     val user: OpsAuth = loginRepository.getOpsUser()!!
     val settings: Settings = loginRepository.getSettings()!!
-    val orders: List<Order> = orderRepository.getOrdersFromFile()!!
+    var orders: List<Order> = orderRepository.getOrdersFromFile()!!
 
     private val _activeEmployees = MutableLiveData<List<Employee>>()
     val activeEmployees: LiveData<List<Employee>>
@@ -63,6 +63,10 @@ class TransferOrderViewModel @Inject constructor (
         }
     }
 
+    fun refreshOrders(){
+        orders = orderRepository.getOrdersFromFile()!!
+    }
+
     private fun filterOrders() {
         val permission = Permissions.viewOrders.toString()
         val manager = user.claims.find { it.permission.name == permission && it.permission.value }
@@ -75,11 +79,14 @@ class TransferOrderViewModel @Inject constructor (
     }
 
     fun setInitialOrderId(id: String){
-        _initialOrderId.value = id
-        _activeOrders.value?.find{ it -> it.id == _initialOrderId.value!!}?.transfer = true
-        val o = _activeOrders.value?.find{ it -> it.id == _initialOrderId.value!!}!!
-        orderClicked(o)
-
+        if (id.isNotBlank()){
+            _initialOrderId.value = id
+            _activeOrders.value?.find{ it -> it.id == _initialOrderId.value!!}?.transfer = true
+            val o = _activeOrders.value?.find{ it -> it.id == id}
+            if (o != null){
+                orderClicked(o)
+            }
+        }
     }
 
     fun orderClicked(order: Order){

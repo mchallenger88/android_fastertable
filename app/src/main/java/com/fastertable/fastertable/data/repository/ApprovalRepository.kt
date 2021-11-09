@@ -119,6 +119,21 @@ class ApprovalRepository @Inject constructor(private val app: Application) {
         return null
     }
 
+    fun getApprovalOrderPaymentsFromFile(): List<ApprovalOrderPayment>?{
+        val gson = Gson()
+        if (File(app.filesDir, "approvalorderpayments.json").exists()) {
+            val bufferedReader: BufferedReader =
+                File(app.filesDir, "approvalorderpayments.json").bufferedReader()
+            val inputString = bufferedReader.use { it.readText() }
+            val arrayList: ArrayList<ApprovalOrderPayment> = gson.fromJson(
+                inputString,
+                object : TypeToken<List<ApprovalOrderPayment?>?>() {}.type
+            )
+            return arrayList
+        }
+        return null
+    }
+
     fun saveApproval(approval: Approval?) {
         //Save order json to file
         val gson = Gson()
@@ -131,6 +146,16 @@ class ApprovalRepository @Inject constructor(private val app: Application) {
             if (file.exists()){
                 file.delete()
             }
+        }
+    }
+
+    fun updateApprovalOrderPayment(a: ApprovalOrderPayment){
+        val approvals = getApprovalOrderPaymentsFromFile() as MutableList<ApprovalOrderPayment>
+        val aop = approvals.find { it.approval.id == a.approval.id }
+        val index = approvals.indexOf(aop)
+        if (aop != null){
+            approvals[index] = aop
+            saveApprovalOrderPayments(approvals)
         }
     }
 
@@ -157,34 +182,6 @@ class ApprovalRepository @Inject constructor(private val app: Application) {
         val file= File(app.filesDir, "approvalorderpayments.json")
         file.writeText(jsonString)
     }
-
-//    private fun createApproval(order: Order): Approval {
-//        val id: String = order.id.replace("O", "A")
-//
-//        val approval = Approval(
-//            id = id,
-//            order = order,
-//            approvalItems = arrayListOf<ApprovalItem>(),
-//            locationId = order.locationId,
-//            timeRequested = GlobalUtils().getNowEpoch(),
-//            archived = false,
-//            type = "Approval",
-//            _rid = "",
-//            _self = "",
-//            _etag = "",
-//            _attachments = "",
-//            _ts = null)
-//
-//        val gson = Gson()
-//        val jsonString = gson.toJson(approval)
-//        val file= File(app.filesDir, "approval.json")
-//        if (file.exists()){
-//            file.delete()
-//        }
-//
-//        file.writeText(jsonString)
-//        return approval
-//    }
 
     fun createApproval(payment: Payment, approvalType: String, ticket: Ticket, ticketItem: TicketItem?, newItemPrice: Double?, discount: Discount?): Approval {
         val id = UUID.randomUUID()

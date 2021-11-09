@@ -1,6 +1,7 @@
 package com.fastertable.fastertable.ui.gift
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -92,6 +93,10 @@ class GiftCardViewModel @Inject constructor (
     val swipeResponse: LiveData<MutableList<String>>
         get() = _swipeResponse
 
+    private val _showSpinner = MutableLiveData(false)
+    val showSpinner: LiveData<Boolean>
+        get() = _showSpinner
+
     fun addGiftAmount(amount: Double) {
         if (_activeOrder.value == null) {
             createGiftOrder(amount)
@@ -138,6 +143,16 @@ class GiftCardViewModel @Inject constructor (
     }
 
     fun payNow() {
+//        val payment = _activePayment.value
+//        val ticket = payment?.tickets?.get(0)
+//        if (ticket != null){
+//            ticket.paymentTotal = ticket.total
+//            val amountOwed = ticket.total.round(2)
+//            createCashTicketPayment(ticket, amountOwed)
+//            Log.d("Testing", ticket.paymentList.toString())
+//        }
+
+
         _activePayment.value?.tickets?.forEach { t ->
             if (t.uiActive && cashAmount.value != null){
                 val paidAmount = cashAmount.value!!.round(2)
@@ -167,10 +182,11 @@ class GiftCardViewModel @Inject constructor (
                     _activePayment.value!!.close()
                     _activePayment.value = _activePayment.value
                 }
-                _ticketPaid.value = true
+                savePaymentToCloud()
             }
         }
     }
+
 
     private fun createCashTicketPayment(ticket: Ticket, amount: Double){
         val list = mutableListOf<TicketPayment>()
@@ -228,6 +244,7 @@ class GiftCardViewModel @Inject constructor (
 
     fun startCredit() {
         viewModelScope.launch {
+            _showSpinner.value = true
             try{
                 val url = "http://" + terminal.ccEquipment.ipAddress + ":8080/pos?Action=StartOrder&Order=" + activeOrder.value?.orderNumber.toString() + "&Format=JSON"
                 val response: TerminalResponse = startCredit.startCreditProcess(url)
@@ -290,10 +307,9 @@ class GiftCardViewModel @Inject constructor (
         val cc: CreditCardTransaction = creditCardRepository.createCreditCardTransaction(ticket, cayanTransaction)
         createCreditTicketPayment(ticket, "Credit", amount, cc)
 
-        ticket.paymentTotal = amount
 
-//        val cc: CreditCardTransaction = creditCardRepository.createCreditCardTransaction(ticket, cayanTransaction)
-//        ticket.creditCardTransactions.add(cc)
+
+        ticket.paymentTotal = amount
 
         if (ticket.paymentTotal > ticket.total){
             ticket.gratuity = ticket.paymentTotal.minus(ticket.total).round(2)
@@ -322,8 +338,9 @@ class GiftCardViewModel @Inject constructor (
         }else{
             _activePayment.value = _activePayment.value
         }
-        _ticketPaid.value = true
+        savePaymentToCloud()
     }
+
 
     private fun createCreditTicketPayment(ticket: Ticket, paymentType: String,
                                           amount: Double, creditCardTransaction: CreditCardTransaction){
@@ -332,23 +349,42 @@ class GiftCardViewModel @Inject constructor (
         if (!ticket.paymentList.isNullOrEmpty()){
             id = ticket.paymentList!!.size
         }
+
+        val ccList = arrayListOf<CreditCardTransaction>()
+        ccList.add(creditCardTransaction)
+
+        var gratuity = 0.00
+        var payment = 0.00
+        if (amount > ticket.total){
+            gratuity = amount.minus(ticket.total).round(2)
+            payment = ticket.total.round(2)
+        }else{
+            payment = ticket.total.round(2)
+        }
+
         val ticketPayment = TicketPayment (
             id = id,
             paymentType = paymentType,
-            ticketPaymentAmount = amount,
-            gratuity = 0.00,
-            creditCardTransactions = null,
+            ticketPaymentAmount = payment,
+            gratuity = gratuity,
+            creditCardTransactions = ccList,
             uiActive = true
         )
 
         if (ticket.paymentList.isNullOrEmpty()){
-            list.add(ticketPayment)
-            ticket.paymentList = list
-        }else{
-            for (payment in ticket.paymentList!!){
-                payment.uiActive = false
+            if (!ticketPayment.canceled){
+                list.add(ticketPayment)
+                ticket.paymentList = list
             }
-            ticket.paymentList!!.add(ticketPayment)
+
+        }else{
+            for (p in ticket.paymentList!!){
+                p.uiActive = false
+            }
+            if (!ticketPayment.canceled){
+                ticket.paymentList!!.add(ticketPayment)
+            }
+
         }
 
     }
@@ -403,6 +439,7 @@ class GiftCardViewModel @Inject constructor (
         viewModelScope.launch {
             val terminal = loginRepository.getTerminal()!!
             try{
+                _showSpinner.value = true
                 val url = "http://" + terminal.ccEquipment.ipAddress + ":8080/pos?Action=StartOrder&Order=100&Format=JSON"
                 val response: TerminalResponse = startCredit.startCreditProcess(url)
                 if (response.Status == "Success"){
@@ -412,7 +449,7 @@ class GiftCardViewModel @Inject constructor (
 //                    setError("Error Notification", Constants.TERMINAL_ERROR)
                 }
             }catch(ex: Exception){
-//                setError("Error Notification", Constants.TIMEOUT_ERROR)
+                setError("Error Notification", Constants.TIMEOUT_ERROR)
             }
         }
     }
@@ -428,8 +465,8 @@ class GiftCardViewModel @Inject constructor (
                         _balanceResponse.value = response.AdditionalParameters?.Loyalty?.Balances?.AmountBalance.toString()
                     }
                 }
-
-            }
+            _showSpinner.value = false
+        }
     }
 
     private suspend fun addValueStaging(){
@@ -480,6 +517,7 @@ class GiftCardViewModel @Inject constructor (
 
     fun cancelCredit(){
         viewModelScope.launch {
+            _showSpinner.value = false
             val terminal = loginRepository.getTerminal()
             try {
                 val url =
@@ -493,9 +531,14 @@ class GiftCardViewModel @Inject constructor (
     }
 
     private fun setError(title: String, message: String){
+        _showSpinner.value = false
         _errorTitle.value = title
         _errorMessage.value = message
         _error.value = true
+    }
+
+    fun clearError(){
+        _error.value = false
     }
 
     private fun createGiftOrder(amount: Double) {
@@ -623,6 +666,8 @@ class GiftCardViewModel @Inject constructor (
 
         }
     }
+
+
 
     fun closeOrder(){
         _activeOrder.value?.close()

@@ -96,7 +96,7 @@ class HomeFragment : BaseFragment() {
         binding.chipClosedOrders.setTextAppearance(R.style.ChipTextAppearance)
         binding.chipClosedOrders.setOnClickListener{ viewModel.onClosedClicked()}
 
-        binding.chipOpenOrders.setChipBackgroundColorResource(R.color.primaryColor)
+        binding.chipOpenOrders.setChipBackgroundColorResource(R.color.secondaryColor)
         binding.chipOpenOrders.setTextAppearance(R.style.ChipTextAppearance)
         binding.chipOpenOrders.setOnClickListener{ viewModel.onOpenClicked()}
     }

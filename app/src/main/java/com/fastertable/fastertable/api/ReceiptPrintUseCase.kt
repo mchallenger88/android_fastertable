@@ -23,7 +23,7 @@ class ReceiptPrintUseCase @Inject constructor(private val app: Application) {
         return withContext(Dispatchers.IO){
             val context = app.applicationContext
             printTicket(document, printer, context, settings)
-            return@withContext ReceiptPrintUseCase.Result.Success(true)
+            return@withContext Result.Success(true)
         }
     }
 

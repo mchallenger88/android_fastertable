@@ -11,7 +11,10 @@ import com.fastertable.fastertable.utils.GlobalUtils
 import com.fastertable.fastertable.utils.round
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.time.Instant
 import java.time.LocalDate
+import java.time.ZoneId
 import javax.inject.Inject
 import kotlin.math.abs
 
@@ -85,6 +88,8 @@ class CheckoutViewModel @Inject constructor (
                     midnight = midnight,
                     clockInTime = user.userClock.clockInTime
                 )
+                val em = getCheckout.getCheckout(request)
+
                 _checkout.postValue(getCheckout.getCheckout(request))
             }else{
                 val request = CheckoutRequest(
@@ -266,7 +271,14 @@ class CheckoutViewModel @Inject constructor (
     }
 
     fun dateBack(){
+        val epoch = GlobalUtils().unixMidnight(_activeDate.value!!.minusDays(1))
+        val lastChange = GlobalUtils().getPreviousAdjustmentDay(epoch)
+
         _activeDate.value = _activeDate.value?.minusDays(1)
+
+        if (epoch == lastChange){
+
+        }
         getEmployeeCheckout()
     }
 

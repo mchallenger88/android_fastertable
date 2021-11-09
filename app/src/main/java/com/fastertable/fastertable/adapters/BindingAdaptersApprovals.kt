@@ -21,9 +21,9 @@ import com.google.android.material.switchmaterial.SwitchMaterial
 fun setApprovalNumber(textView: TextView, approval: ApprovalOrderPayment?){
     if (approval != null){
         if (approval.order.tableNumber == null){
-            textView.text = "Order No. ${approval.order.orderNumber.toString()}"
+            textView.text = "Order # ${approval.order.orderNumber.toString()}"
         }else{
-            textView.text = "Table No. ${approval.order.tableNumber.toString()}"
+            textView.text = "Table # ${approval.order.tableNumber.toString()}"
         }
 
     }else{

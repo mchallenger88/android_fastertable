@@ -217,7 +217,6 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
     //region Guest Functions
 
     fun setActiveGuest(activeGuest: Int){
-        Log.d("OrderTesting", activeGuest.toString())
         _activeOrder.value?.activeGuest = activeGuest
         _activeOrder.value = _activeOrder.value
     }

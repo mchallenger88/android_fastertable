@@ -15,10 +15,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ApprovalsViewModel @Inject constructor(
                                         private val getApprovals: GetApprovals,
-                                        private val orderRepository: OrderRepository,
-                                        private val paymentRepository: PaymentRepository,
-                                        private val getPayment: GetPayment,
-                                        private val getOrder: GetOrder,
+                                        private val approvalRepository: ApprovalRepository,
                                         private val updatePayment: UpdatePayment,
                                         private val updateApproval: UpdateApproval,
                                         private val updateOrder: UpdateOrder,
@@ -51,6 +48,10 @@ class ApprovalsViewModel @Inject constructor(
     private val _discountAmount = MutableLiveData(0.00)
     val discountAmount: LiveData<Double>
         get() = _discountAmount
+
+    private val _orderSaved = MutableLiveData(false)
+    val orderSaved: LiveData<Boolean>
+        get() = _orderSaved
 
     init{
         viewModelScope.launch {
@@ -85,7 +86,23 @@ class ApprovalsViewModel @Inject constructor(
         val distinctList = listNew.distinctBy{it.payment.id}
 
         _approvalsShown.postValue(distinctList)
+    }
 
+    fun findFirstApproval(){
+        val list = _approvalsShown.value
+        if (!list.isNullOrEmpty()){
+            val aop = list[0]
+            _activeApproval.value = aop
+            val at = ApprovalTicket(
+                approval = aop.approval,
+                ticket = aop.payment.tickets?.find{it.id == aop.approval.ticketId}!!
+            )
+            _approvalTicket.value = at
+
+            if (aop.approval.timeHandled != null){
+                calculateApprovedAmount()
+            }
+        }
     }
 
 
@@ -98,7 +115,6 @@ class ApprovalsViewModel @Inject constructor(
                 ticket = aop.payment.tickets?.find{it.id == aop.approval.ticketId}!!
             )
             _approvalTicket.value = at
-
             if (aop.approval.timeHandled != null){
                 calculateApprovedAmount()
             }
@@ -153,7 +169,7 @@ class ApprovalsViewModel @Inject constructor(
         job.join()
         _activeApproval.postValue(null)
         _approvalsShown.postValue(null)
-        loadApprovals()
+        approvalRepository.getApprovalOrderPaymentsFromFile()
         _showProgress.postValue(false)
 
     }
@@ -198,6 +214,8 @@ class ApprovalsViewModel @Inject constructor(
 
                     aop.order.pendingApproval = false
                     updateOrder.saveOrder(aop.order)
+                    setOrderSaved(true)
+                    approvalRepository.updateApprovalOrderPayment(aop)
                 }
             }
         }
@@ -227,6 +245,7 @@ class ApprovalsViewModel @Inject constructor(
 
                     aop.order.pendingApproval = false
                     updateOrder.saveOrder(aop.order)
+                    setOrderSaved(true)
 
                 }
             }
@@ -274,6 +293,10 @@ class ApprovalsViewModel @Inject constructor(
         viewModelScope.launch {
             findApproval(approval.approval.id)
         }
+    }
+
+    fun setOrderSaved(b: Boolean){
+        _orderSaved.value = b
     }
 
 }

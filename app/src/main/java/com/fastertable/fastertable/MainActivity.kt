@@ -78,6 +78,7 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
     private val datePickerViewModel: DatePickerViewModel by viewModels()
     private val transferOrderViewModel: TransferOrderViewModel by viewModels()
     private val floorplanManageViewModel: FloorplanManageViewModel by viewModels()
+    private val approvalsViewModel: ApprovalsViewModel by viewModels()
     private var progressDialog: ProgressDialog? = null
     private lateinit var user: OpsAuth
 
@@ -126,6 +127,7 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
         datePickerObservables()
         transferOrderObservables(navController)
         floorplanManageObservables()
+        approvalsObservables()
 
         hideSystemUI()
     }
@@ -321,6 +323,10 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
                 orderViewModel.setTransferComplete(false)
             }
         })
+
+        orderViewModel.activeOrder.observe(this, {
+            homeViewModel.getOrdersFromFile()
+        })
     }
 
     private fun paymentObservables(navController: NavController){
@@ -337,6 +343,7 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
 
         paymentViewModel.activePayment.observe(this, { it ->
             if (it != null) {
+                homeViewModel.getOrdersFromFile()
                 if (it.closed && orderViewModel.activeOrder.value != null && orderViewModel.activeOrder.value!!.closeTime == null){
                     orderViewModel.closeOrder()
                 }
@@ -457,6 +464,14 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
         })
     }
 
+    private fun approvalsObservables(){
+        approvalsViewModel.orderSaved.observe(this, {
+            if (it){
+                homeViewModel.getOrdersFromFile()
+            }
+        })
+    }
+
     private fun datePickerObservables(){
         datePickerViewModel.source.observe( this, {
             if (it.isNotEmpty()){
@@ -498,17 +513,21 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
             }
         })
 
-        giftCardViewModel.ticketPaid.observe(this, { it ->
-            if (it){
-                giftCardViewModel.savePaymentToCloud()
-            }
-        })
-
         giftCardViewModel.activePayment.observe(this, {it ->
             if (it != null) {
                 if (it.closed){
                     giftCardViewModel.closeOrder()
                 }
+            }
+        })
+
+        giftCardViewModel.error.observe(this, {
+            if (it){
+                errorViewModel.setMessage(giftCardViewModel.errorMessage.value!!)
+                errorViewModel.setTitle(giftCardViewModel.errorTitle.value!!)
+
+                ErrorAlertBottomSheet().show(supportFragmentManager, ErrorAlertBottomSheet.TAG)
+                giftCardViewModel.clearError()
             }
         })
     }
@@ -524,7 +543,7 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
     override fun onSupportNavigateUp(): Boolean {
         val navController = findNavController(R.id.nav_host_fragment)
         hideKeyboard()
-        homeViewModel.getOrdersFromFile()
+//        homeViewModel.getOrdersFromFile()
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
     }
 

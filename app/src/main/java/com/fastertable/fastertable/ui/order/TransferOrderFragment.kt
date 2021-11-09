@@ -26,6 +26,7 @@ class TransferOrderFragment : BaseFragment() {
         binding = TransferOrderFragmentBinding.inflate(inflater)
         binding.lifecycleOwner = viewLifecycleOwner
         binding.viewModel = viewModel
+        viewModel.refreshOrders()
         viewModel.setInitialOrderId(args.orderId)
         transferObservables()
         return binding.root

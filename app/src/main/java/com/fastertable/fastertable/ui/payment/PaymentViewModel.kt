@@ -169,13 +169,21 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
     val voidStart: LiveData<Boolean>
         get() = _voidStart
 
+    private val _showCreditSpinner = MutableLiveData(false)
+    val showCreditSpinner: LiveData<Boolean>
+        get() = _showCreditSpinner
+
+    private val _showVoidSpinner = MutableLiveData(false)
+    val showVoidSpinner: LiveData<Boolean>
+        get() = _showVoidSpinner
+
     //endregion
 
     //region Pay Cash
     fun payCashNow(){
         val payment = _activePayment.value
         val ticket = payment?.tickets?.find{ it.uiActive}
-        if (ticket != null){
+        if (ticket != null && ticket.paymentTotal < ticket.total){
             if (cashAmount.value != null){
                 val amountBeingPaid = cashAmount.value!!.round(2)
                 val amountOwed = ticket.total.minus(ticket.paymentTotal).minus(amountBeingPaid).round(2)
@@ -388,6 +396,10 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
         fun showManualCredit(){
             _whichCreditPayment.value = ShowCreditPayment.MANUAL
         }
+
+        fun showNone(){
+            _paymentScreen.value = ShowPayment.NONE
+        }
     //endregion
 
     //region Misc Functions
@@ -428,6 +440,7 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
         }
 
         private fun setError(title: String, message: String){
+            _showCreditSpinner.value = false
             _errorTitle.value = title
             _errorMessage.value = message
             _error.value = true
@@ -527,6 +540,7 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
     //region Pay Credit Functions
     fun startCredit(order: Order){
         viewModelScope.launch {
+            _showCreditSpinner.value = true
             if (_creditAmount.value!! <= _activePayment.value!!.amountOwed()){
                 try{
                     val url = "http://" + terminal.ccEquipment.ipAddress + ":8080/pos?Action=StartOrder&Order=" + order.orderNumber.toString() + "&Format=JSON"
@@ -619,6 +633,7 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
             val transportURL: String = "http://" + terminal.ccEquipment.ipAddress + ":8080/v2/pos?TransportKey=" + stageResponse.transportKey + "&Format=JSON"
             val cayanTransaction: Any = initiateCreditTransaction.initiateTransaction(transportURL)
             if (cayanTransaction is String){
+                _showCreditSpinner.value = false
                 cancelCredit()
                 _error.postValue(true)
             }
@@ -652,40 +667,22 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
         val amountOwed = _activePayment.value!!.amountOwed().minus(amountBeingPaid).round(2)
 
         if (amountOwed < 0){
+            _creditAmount.value = 0.00
             ticket.calculatePaymentTotal(false)
             setError("Credit Card Process", "A tip was added to the payment. The Tip Amount is: $${ticket.gratuity}")
         }
 
         if (amountOwed == 0.00){
-            ticket.calculatePaymentTotal(false)
+            _creditAmount.value = 0.00
+                ticket.calculatePaymentTotal(false)
             setError("Credit Card Process","The credit was approved.")
         }
 
         if (amountOwed > 0){
+            _creditAmount.value = amountOwed
             ticket.calculatePaymentTotal(true)
             setError("Credit Card Process","The credit was approved.")
         }
-
-//        if (ticket.paymentTotal > ticket.total){
-//            ticket.gratuity = ticket.paymentTotal.minus(ticket.total).round(2)
-//            _amountOwed.value = 0.00
-//            ticket.paymentTotal = ticket.total
-//            setError("Credit Card Process", "A tip was added to the payment. The Tip Amount is: $${ticket.gratuity}")
-//            //TODO: Need to make sure tip is added to the cc receipt
-//        }
-//
-//        if (ticket.paymentTotal == ticket.total){
-//            _amountOwed.value = 0.00
-//            ticket.paymentTotal = ticket.total
-//            setError("Credit Card Process","The credit was approved.")
-//        }
-//
-//        if (ticket.paymentTotal < ticket.total){
-//            _amountOwed.value = ticket.total.minus(ticket.paymentTotal).round(2)
-//            ticket.paymentTotal = amountOwed.value!!
-//            ticket.partialPayment = true
-//            setError("Credit Card Process","The credit was approved.")
-//        }
 
         if (activePayment.value!!.allTicketsPaid()){
             _activePayment.value!!.close()
@@ -1154,7 +1151,9 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
         return x
     }
 
-
+    fun setVoidSpinner(b: Boolean){
+        _showVoidSpinner.value = b
+    }
 
 }
 

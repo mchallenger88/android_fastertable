@@ -25,6 +25,7 @@ class VoidStartFragment: BaseFragment()  {
         binding.lifecycleOwner = viewLifecycleOwner
         binding.viewModel = viewModel
         binding.orderViewModel = orderViewModel
+        viewModel.setVoidSpinner(true)
 
         val ticketNumberAdapter = TicketSideBarAdapter(TicketSideBarAdapter.TicketSideBarListener {
             viewModel.setActiveTicket(it)
@@ -39,6 +40,9 @@ class VoidStartFragment: BaseFragment()  {
         binding.ticketItemsRecycler1.adapter = ticketsAdapter
 
         viewModel.activePayment.observe(viewLifecycleOwner, { item ->
+            if (item != null){
+                viewModel.setVoidSpinner(false)
+            }
             item?.tickets?.forEach { ticket ->
                 if (ticket.uiActive){
                     ticketsAdapter.submitList(ticket.ticketItems)

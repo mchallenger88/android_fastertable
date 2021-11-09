@@ -28,6 +28,7 @@ class ApprovalsFragment : BaseFragment() {
         binding.lifecycleOwner = viewLifecycleOwner
         binding.viewModel = viewModel
         createAdapters(binding)
+
         return binding.root
     }
 
@@ -74,6 +75,7 @@ class ApprovalsFragment : BaseFragment() {
         viewModel.approvalsShown.observe(viewLifecycleOwner, {
             approvalsSideBarAdapter.submitList(it)
             approvalsSideBarAdapter.notifyDataSetChanged()
+            viewModel.findFirstApproval()
         })
 
     }

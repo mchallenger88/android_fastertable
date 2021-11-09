@@ -6,7 +6,9 @@ import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.ImageButton
+import android.widget.ProgressBar
 import android.widget.TextView
+import androidx.cardview.widget.CardView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.databinding.BindingAdapter
@@ -344,5 +346,23 @@ fun showVoidMessage(textView: TextView, item: TicketPayment?){
         }else{
             textView.text = textView.context.getString(R.string.are_your_sure_void)
         }
+    }
+}
+
+@BindingAdapter("showCreditSpinner")
+fun showCreditSpinner(spinner: ProgressBar, b: Boolean){
+    if(b){
+        spinner.visibility = View.VISIBLE
+    }else{
+        spinner.visibility = View.GONE
+    }
+}
+
+@BindingAdapter("showTicketCard")
+fun showTicketCard(card: CardView, payment: Payment?){
+    if (payment != null){
+        card.visibility = View.VISIBLE
+    }else{
+        card.visibility = View.GONE
     }
 }

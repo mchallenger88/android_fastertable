@@ -68,6 +68,7 @@ class PaymentFragment: BaseFragment() {
         binding.btnPayManualCredit.setOnClickListener {
             getManualCreditData()
         }
+        viewModel.showNone()
         createAdapters(binding)
         createObservers(binding)
         return binding.root

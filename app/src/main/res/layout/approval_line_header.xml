@@ -24,7 +24,7 @@
         android:id="@+id/switch_approve_all"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/approve"
+        android:text="@string/approval_all"
         app:showApproveAllSwitch="@{approval}"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

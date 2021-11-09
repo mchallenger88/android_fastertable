@@ -750,6 +750,8 @@
                 app:layout_constraintTop_toBottomOf="@+id/txt_amount_owed2"
                 app:priceDouble="@{viewModel.creditAmount}" />
 
+
+
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/layout_credit_submit"
                 android:layout_width="wrap_content"
@@ -774,6 +776,17 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     app:showCreditPayment="@{viewModel.whichCreditPayment}"/>
+
+                <com.google.android.material.progressindicator.CircularProgressIndicator
+                    android:id="@+id/credit_spinner"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:indeterminate="true"
+                    android:layout_marginBottom="20dp"
+                    app:showCreditSpinner="@{viewModel.showCreditSpinner}"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/btn_pay_credit_no_changes"/>
 
                 <Button
                     android:id="@+id/btn_show_manual_credit"

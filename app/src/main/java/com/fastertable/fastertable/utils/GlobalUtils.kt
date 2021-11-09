@@ -4,9 +4,13 @@ import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Paint
+import android.util.Log
 import android.widget.AutoCompleteTextView
 import com.fastertable.fastertable.R
+import java.text.SimpleDateFormat
 import java.time.*
+import java.time.zone.ZoneOffsetTransition
+import java.util.*
 
 
 class GlobalUtils() {
@@ -21,6 +25,33 @@ class GlobalUtils() {
         val now: OffsetDateTime = OffsetDateTime.now()
         val startOfDay: OffsetDateTime = now.withHour(0).withMinute(0).withSecond(0)
         return startOfDay.toEpochSecond()
+    }
+
+    fun getNextAdjustmentDay(midnight: LocalDate){
+        val nextTransition: ZoneOffsetTransition = ZoneId.systemDefault()
+            .rules
+            .nextTransition(Instant.parse(midnight.toString()))
+        val timeBefore: LocalDateTime = nextTransition.dateTimeBefore
+        println(timeBefore.toLocalDate())
+    }
+
+    @SuppressLint("SimpleDateFormat")
+    fun getDateTime(midnight: Long): String? {
+        try {
+            val sdf = SimpleDateFormat("MM/dd/yyyy")
+            val netDate = Date(midnight * 1000)
+                return sdf.format(netDate)
+        } catch (e: Exception) {
+            return e.toString()
+        }
+    }
+
+    fun getPreviousAdjustmentDay(midnight: Long): Long? {
+        val previousTransition: ZoneOffsetTransition = ZoneId.systemDefault()
+            .rules
+            .nextTransition(Instant.ofEpochSecond(midnight))
+        val timeBefore: LocalDateTime = previousTransition.dateTimeBefore
+        return unixMidnight(timeBefore.toLocalDate())
     }
 
     fun unixMidnight(date: LocalDate): Long{
