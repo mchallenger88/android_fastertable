@@ -153,7 +153,13 @@ class PaymentRepository @Inject constructor(private val app: Application) {
     fun updatePaymentNewOrderItems(payment: Payment, order: Order): Payment{
         for (item in order.orderItems!!){
             val ticket = payment.tickets?.get(0)
-            createTicketItem(ticket!!, item.guestId, item)
+            if (ticket != null){
+                val found = ticket.ticketItems.findLast { it.orderItemId == item.id }
+                if (found == null){
+                    createTicketItem(ticket, item.guestId, item)
+                }
+            }
+
         }
 //        for (guest in order.guests!!){
 //            for (item in guest.orderItems!!){

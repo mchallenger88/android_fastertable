@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+    <data>
+        <variable
+            name="viewModel"
+            type="com.fastertable.fastertable.ui.approvals.CompletedApprovalsViewModel" />
+    </data>
+<androidx.constraintlayout.widget.ConstraintLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/view_background">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/completed_fastertoolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/fasterToolBar"
+        android:paddingStart="80dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:popupTheme="@style/Theme.Fastertable.PopupOverlay"
+        tools:ignore="RtlSymmetry">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/layout_completed_buttons"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <Button
+                android:id="@+id/btn_completed_pending"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:text="@string/pending_approvals"
+                android:textColor="@color/white"
+                android:textSize="@dimen/toolbar_button"
+                android:onClick="@{() -> viewModel.setPending(true)}"
+                app:layout_constraintStart_toStartOf="@+id/layout_completed_buttons"
+                app:layout_constraintTop_toTopOf="@+id/layout_completed_buttons"
+                app:strokeColor="@color/white" />
+
+            <Button
+                android:id="@+id/btn_completed_complete"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:layout_marginStart="12dp"
+                android:text="@string/completed_approvals"
+                android:textColor="@color/white"
+                android:textSize="@dimen/toolbar_button"
+                app:layout_constraintStart_toEndOf="@+id/btn_completed_pending"
+                app:layout_constraintTop_toTopOf="@+id/layout_completed_buttons"
+                app:strokeColor="@color/white" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.appcompat.widget.Toolbar>
+
+    <LinearLayout
+        android:id="@+id/toolbar_completedSideBar"
+        android:layout_width="80dp"
+        android:layout_height="0dp"
+        android:background="@color/guest_toolbar"
+        android:gravity="fill_vertical"
+        android:orientation="vertical"
+        android:elevation="10dp"
+        android:padding="10dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/completed_fastertoolbar"
+        app:layout_constraintVertical_bias="0.5">
+
+    </LinearLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layout_completed"
+        android:layout_width="600dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="50dp"
+        android:layout_marginBottom="30dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/toolbar_completedSideBar"
+        app:layout_constraintTop_toTopOf="@+id/completed_fastertoolbar"
+>
+
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/closedItemsRecycler"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:layout_marginEnd="10dp"
+            android:scrollbarStyle="outsideInset"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:listitem="@layout/closed_approval_line_item" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

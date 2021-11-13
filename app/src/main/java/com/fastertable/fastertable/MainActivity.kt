@@ -28,7 +28,10 @@ import com.fastertable.fastertable.data.repository.GetPayment
 import com.fastertable.fastertable.data.repository.LoginRepository
 import com.fastertable.fastertable.data.repository.OrderRepository
 import com.fastertable.fastertable.data.repository.PaymentRepository
+import com.fastertable.fastertable.ui.approvals.ApprovalsFragmentDirections
 import com.fastertable.fastertable.ui.approvals.ApprovalsViewModel
+import com.fastertable.fastertable.ui.approvals.CompletedApprovalsFragmentDirections
+import com.fastertable.fastertable.ui.approvals.CompletedApprovalsViewModel
 import com.fastertable.fastertable.ui.checkout.AddTipFragmentDirections
 import com.fastertable.fastertable.ui.checkout.CheckoutFragmentDirections
 import com.fastertable.fastertable.ui.checkout.CheckoutViewModel
@@ -79,6 +82,7 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
     private val transferOrderViewModel: TransferOrderViewModel by viewModels()
     private val floorplanManageViewModel: FloorplanManageViewModel by viewModels()
     private val approvalsViewModel: ApprovalsViewModel by viewModels()
+    private val completedApprovalsViewModel: CompletedApprovalsViewModel by viewModels()
     private var progressDialog: ProgressDialog? = null
     private lateinit var user: OpsAuth
 
@@ -127,7 +131,7 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
         datePickerObservables()
         transferOrderObservables(navController)
         floorplanManageObservables()
-        approvalsObservables()
+        approvalsObservables(navController)
 
         hideSystemUI()
     }
@@ -416,6 +420,15 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
                 paymentViewModel.setReturnHomeFromVoidStart(false)
             }
         })
+
+        paymentViewModel.approvalSaved.observe(this, {
+            if (it){
+                lifecycleScope.launch{
+                    approvalsViewModel.loadApprovals()
+                }
+
+            }
+        })
     }
 
     private fun checkoutObservables(navController: NavController){
@@ -464,10 +477,23 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
         })
     }
 
-    private fun approvalsObservables(){
+    private fun approvalsObservables(navController: NavController){
         approvalsViewModel.orderSaved.observe(this, {
             if (it){
                 homeViewModel.getOrdersFromFile()
+            }
+        })
+
+        approvalsViewModel.navigateToCompleted.observe(this, {
+            if (it){
+                navController.navigate(ApprovalsFragmentDirections.actionApprovalsFragmentToCompletedApprovalsFragment())
+                approvalsViewModel.setPending(false)
+            }
+        })
+
+        completedApprovalsViewModel.navigateToApprovals.observe(this, {
+            if (it){
+                navController.navigate(CompletedApprovalsFragmentDirections.actionCompletedApprovalsFragmentToApprovalsFragment())
             }
         })
     }

@@ -1,12 +1,11 @@
 package com.fastertable.fastertable.ui.login.terminal
 
-import android.annotation.SuppressLint
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.ConcatAdapter
+import by.kirich1409.viewbindingdelegate.viewBinding
+import com.fastertable.fastertable.R
 import com.fastertable.fastertable.adapters.TerminalAdapter
 import com.fastertable.fastertable.adapters.TerminalHeaderAdapter
 import com.fastertable.fastertable.common.base.BaseFragment
@@ -15,17 +14,12 @@ import com.fastertable.fastertable.databinding.TerminalSelectFragmentBinding
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class TerminalSelectFragment : BaseFragment()  {
+class TerminalSelectFragment : BaseFragment(R.layout.terminal_select_fragment) {
     private val viewModel: TerminalSelectViewModel by activityViewModels()
-    private lateinit var binding: TerminalSelectFragmentBinding
+    private val binding: TerminalSelectFragmentBinding by viewBinding()
 
-    @SuppressLint("ResourceAsColor")
-    override fun onCreateView(
-            inflater: LayoutInflater,
-            container: ViewGroup?,
-            savedInstanceState: Bundle?): View {
-        binding = TerminalSelectFragmentBinding.inflate(inflater)
-
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         binding.lifecycleOwner = viewLifecycleOwner
         binding.viewModel = viewModel
 
@@ -38,40 +32,15 @@ class TerminalSelectFragment : BaseFragment()  {
         binding.terminalRecycler.adapter = concatAdapter
 
         viewModel.settings.observe(viewLifecycleOwner, {
-//            it?.terminals?.forEach { terminal ->
-//                val restChip = Chip(activity)
-//                restChip.id = ViewCompat.generateViewId();
-//                restChip.text = terminal.terminalName
-//                restChip.setChipBackgroundColorResource(R.color.primaryColor);
-//                restChip.setTextAppearance(R.style.ChipTextAppearance);
-//                restChip.setOnClickListener{ setTerminal( terminal )}
-//
-//                if (viewModel.terminal.value != null){
-//                    if (viewModel.terminal.value!!.terminalId == terminal.terminalId){
-//                        restChip.setChipBackgroundColorResource(R.color.secondaryColor);
-//                    }
-//
-//                }
-//                binding.chipsRestaurants.addView(restChip)
-//
-//            }
             if (it != null) {
-               adapter.submitList(it.terminals)
+                adapter.submitList(it.terminals)
                 adapter.notifyDataSetChanged()
             }
         })
-
-
-
-        return binding.root
     }
 
     private fun setTerminal(t: Terminal){
         viewModel.setTerminal((t))
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        binding.unbind()
-    }
 }

@@ -1,16 +1,16 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 buildscript {
-    ext.okhttpLoggingVersion = '4.7.2'
-    ext.pagingVersion = '3.0.0-alpha02'
-    ext.recyclerViewVersion = '1.2.0-alpha04'
-    ext.retrofitVersion = '2.9.0'
-    ext.roomVersion = '2.2.5'
-    ext.glideVersion = '4.10.0'
-    ext.viewPagerVersion = '1.0.0'
-    ext.workVersion = '2.1.0'
-    ext.materialVersion = '1.2.0'
-    ext.gsonVersion = '2.8.2'
-    ext.coroutinesVersion = "1.4.2"
+//    ext.okhttpLoggingVersion = '4.7.2'
+//    ext.pagingVersion = '3.0.0-alpha02'
+//    ext.recyclerViewVersion = '1.2.0-alpha04'
+//    ext.retrofitVersion = '2.9.0'
+//    ext.roomVersion = '2.2.5'
+//    ext.glideVersion = '4.10.0'
+//    ext.viewPagerVersion = '1.0.0'
+//    ext.workVersion = '2.1.0'
+//    ext.materialVersion = '1.2.0'
+//    ext.gsonVersion = '2.8.2'
+//    ext.coroutinesVersion = "1.4.2"
     repositories {
         google()
         mavenCentral()

@@ -1,10 +1,10 @@
 package com.fastertable.fastertable.ui.payment
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
+import by.kirich1409.viewbindingdelegate.viewBinding
+import com.fastertable.fastertable.R
 import com.fastertable.fastertable.adapters.TicketItemAdapter
 import com.fastertable.fastertable.adapters.TicketSideBarAdapter
 import com.fastertable.fastertable.common.base.BaseFragment
@@ -13,21 +13,17 @@ import com.fastertable.fastertable.ui.order.OrderViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class SplitPaymentFragment: BaseFragment() {
+class SplitPaymentFragment: BaseFragment(R.layout.payment_split_fragment) {
     private val viewModel: PaymentViewModel by activityViewModels()
     private val orderViewModel: OrderViewModel by activityViewModels()
-    private lateinit var binding: PaymentSplitFragmentBinding
-    override fun onCreateView(
-            inflater: LayoutInflater,
-            container: ViewGroup?,
-            savedInstanceState: Bundle?
-    ): View {
-        binding = PaymentSplitFragmentBinding.inflate(inflater)
+    private val binding: PaymentSplitFragmentBinding by viewBinding()
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         binding.lifecycleOwner = viewLifecycleOwner
         binding.viewModel = viewModel
         binding.orderViewModel = orderViewModel
         createAdapters(binding)
-        return binding.root
     }
 
     private fun createAdapters(binding: PaymentSplitFragmentBinding){
@@ -55,8 +51,4 @@ class SplitPaymentFragment: BaseFragment() {
         })
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        binding.unbind()
-    }
 }

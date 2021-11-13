@@ -2,34 +2,29 @@ package com.fastertable.fastertable.ui.floorplan
 
 import android.content.Context
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.RelativeLayout
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.ViewCompat
 import androidx.fragment.app.activityViewModels
+import by.kirich1409.viewbindingdelegate.viewBinding
+import com.fastertable.fastertable.R
 import com.fastertable.fastertable.common.base.BaseFragment
 import com.fastertable.fastertable.databinding.FloorplanFragmentBinding
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class FloorplanFragment: BaseFragment() {
+class FloorplanFragment: BaseFragment(R.layout.floorplan_fragment) {
     private val viewModel: FloorplanViewModel by activityViewModels()
     private lateinit var tableListener: FloorplanTableListener
-    private lateinit var binding: FloorplanFragmentBinding
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        binding = FloorplanFragmentBinding.inflate(inflater)
+    private val binding: FloorplanFragmentBinding by viewBinding()
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         binding.lifecycleOwner = viewLifecycleOwner
         binding.viewModel = viewModel
 
         loadTables(binding)
-
-        return binding.root
     }
 
     private fun loadTables(binding: FloorplanFragmentBinding){
@@ -80,11 +75,6 @@ class FloorplanFragment: BaseFragment() {
         } else {
             throw RuntimeException(requireContext().toString() + " must implement OnFragmentInteractionListener")
         }
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        binding.unbind()
     }
 
 }

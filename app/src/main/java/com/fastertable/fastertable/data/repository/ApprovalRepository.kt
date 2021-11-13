@@ -183,7 +183,7 @@ class ApprovalRepository @Inject constructor(private val app: Application) {
         file.writeText(jsonString)
     }
 
-    fun createApproval(payment: Payment, approvalType: String, ticket: Ticket, ticketItem: TicketItem?, newItemPrice: Double?, discount: Discount?): Approval {
+    fun createApproval(payment: Payment, approvalType: String, ticket: Ticket, ticketItem: TicketItem?, newItemPrice: Double?, discount: Discount?, user: String): Approval {
         val id = UUID.randomUUID()
 
         var discountName = ""
@@ -196,6 +196,7 @@ class ApprovalRepository @Inject constructor(private val app: Application) {
             approvalType = approvalType,
             ticketId = ticket.id,
             ticketItemId = ticketItem?.id,
+            whoRequested = user,
             timeRequested = GlobalUtils().getNowEpoch(),
             newItemPrice = newItemPrice,
             discount = discountName,

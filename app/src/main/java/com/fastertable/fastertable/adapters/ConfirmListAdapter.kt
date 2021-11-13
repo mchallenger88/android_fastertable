@@ -151,13 +151,13 @@ class ConfirmListAdapter(private val clickListener: ConfirmListListener, private
             for (ticket in list){
                 if (ticket.paymentList != null){
                     for (p in ticket.paymentList!!){
-                        if (p.paymentType == "Credit" || p.paymentType == "Manual Credit"){
+                        if (p.paymentType == "Credit" || p.paymentType == "Manual Credit" || p.paymentType == "Gift"){
                             paymentsList.add(p)
                             payments.add(p.gratuity)
                         }
                     }
                 }else{
-                     if (ticket.paymentType == "Credit" || ticket.paymentType == "Manual Credit"){
+                     if (ticket.paymentType == "Credit" || ticket.paymentType == "Manual Credit" || ticket.paymentType == "Gift"){
                          payments.add(ticket.gratuity)
                         }
                 }

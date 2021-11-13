@@ -1,30 +1,24 @@
 package com.fastertable.fastertable.ui.login.company
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import by.kirich1409.viewbindingdelegate.viewBinding
 import com.fastertable.fastertable.R
+import com.fastertable.fastertable.common.base.BaseFragment
 import com.fastertable.fastertable.data.models.Location
 import com.fastertable.fastertable.databinding.CompanyLoginFragmentBinding
 import com.google.android.material.button.MaterialButton
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class CompanyLoginFragment : Fragment()  {
-
+class CompanyLoginFragment : BaseFragment(R.layout.company_login_fragment)  {
     private lateinit var viewModel: CompanyLoginViewModel
-    private lateinit var binding: CompanyLoginFragmentBinding
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?): View {
+    private val binding: CompanyLoginFragmentBinding by viewBinding()
 
-        binding = CompanyLoginFragmentBinding.inflate(inflater)
-
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         viewModel = ViewModelProvider(this).get(CompanyLoginViewModel::class.java)
 
         binding.lifecycleOwner = viewLifecycleOwner
@@ -57,19 +51,11 @@ class CompanyLoginFragment : Fragment()  {
                 binding.txtCompanyError.visibility = View.GONE
             }
         })
-
-
-    return binding.root
-}
+    }
 
     private fun setRestaurant(loc: Location){
         viewModel.setRestaurant(loc)
         this.findNavController().navigate(CompanyLoginFragmentDirections.actionCompanyLoginFragmentToRestaurantLoginFragment())
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        binding.unbind()
     }
 
 }

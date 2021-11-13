@@ -145,7 +145,7 @@
     <string name="single_ticket">Single Ticket</string>
     <string name="manage_payment">Split Checks</string>
     <string name="pay_cash">Pay Cash</string>
-    <string name="pay_credit">Pay Credit</string>
+    <string name="pay_credit">Pay with Card</string>
     <string name="cancel_credit">Cancel Credit</string>
     <string name="split_evenly">Split Evenly</string>
     <string name="split_by_guest">Split by Guest</string>

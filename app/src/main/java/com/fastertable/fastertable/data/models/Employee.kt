@@ -72,6 +72,7 @@ data class OverTime(
 
 @Parcelize
 data class ConfirmEmployee(
+    val checkoutDate: Long,
     val employeeName: String,
     val employeeId: String,
     val shifts: UserClock?,

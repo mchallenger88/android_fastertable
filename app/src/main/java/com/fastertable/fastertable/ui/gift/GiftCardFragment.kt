@@ -1,25 +1,22 @@
 package com.fastertable.fastertable.ui.gift
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
+import by.kirich1409.viewbindingdelegate.viewBinding
+import com.fastertable.fastertable.R
 import com.fastertable.fastertable.adapters.TicketItemAdapter
 import com.fastertable.fastertable.common.base.BaseFragment
 import com.fastertable.fastertable.databinding.GiftCardFragmentBinding
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class GiftCardFragment : BaseFragment(){
+class GiftCardFragment : BaseFragment(R.layout.gift_card_fragment) {
     private val viewModel: GiftCardViewModel by activityViewModels()
-    private lateinit var binding: GiftCardFragmentBinding
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        binding = GiftCardFragmentBinding.inflate(inflater)
+    private val binding: GiftCardFragmentBinding by viewBinding()
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         binding.lifecycleOwner = viewLifecycleOwner
         binding.viewModel = viewModel
 
@@ -42,8 +39,6 @@ class GiftCardFragment : BaseFragment(){
         }
 
         createObservers(binding)
-
-        return binding.root
     }
 
     private fun createObservers(binding: GiftCardFragmentBinding){
@@ -96,8 +91,4 @@ class GiftCardFragment : BaseFragment(){
         }
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        binding.unbind()
-    }
 }

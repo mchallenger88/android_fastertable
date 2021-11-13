@@ -177,6 +177,10 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
     val showVoidSpinner: LiveData<Boolean>
         get() = _showVoidSpinner
 
+    private val _approvalSaved = MutableLiveData(false)
+    val approvalSaved: LiveData<Boolean>
+        get() = _approvalSaved
+
     //endregion
 
     //region Pay Cash
@@ -407,17 +411,18 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
     private fun printPaymentReceipt(){
         viewModelScope.launch {
             val ticket = _activePayment.value?.activeTicket()
+            val activePayment = ticket?.activePayment()
             val printer = settings.printers.find { it.printerName == terminal.defaultPrinter.printerName }
             val location = company.getLocation(settings.locationId)
-            if (ticket?.activePayment() != null){
-                if (ticket.activePayment()!!.paymentType == "Cash"){
+            if (activePayment != null){
+                if (activePayment.paymentType == "Cash" || activePayment.paymentType == "Gift"){
                     if (printer != null){
                         val ticketDocument = _activePayment.value?.getCashReceipt(printer, location!!)
                         receiptPrintingService.printTicketReceipt(ticketDocument!!, printer, settings)
                     }
                 }
 
-                if (ticket.activePayment()!!.paymentType == "Credit"){
+                if (activePayment.paymentType == "Credit" || activePayment.paymentType == "Manual Credit"){
                     if (printer != null){
                         val ticketDocument = _activePayment.value?.getCreditReceipt(printer, location!!)
                         receiptPrintingService.printTicketReceipt(ticketDocument!!, printer, settings)
@@ -540,23 +545,28 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
     //region Pay Credit Functions
     fun startCredit(order: Order){
         viewModelScope.launch {
-            _showCreditSpinner.value = true
-            if (_creditAmount.value!! <= _activePayment.value!!.amountOwed()){
-                try{
-                    val url = "http://" + terminal.ccEquipment.ipAddress + ":8080/pos?Action=StartOrder&Order=" + order.orderNumber.toString() + "&Format=JSON"
-                    val response: TerminalResponse = startCredit.startCreditProcess(url)
-                    if (response.Status == "Success"){
-                        creditStaging(order, settings, terminal)
-                    }else{
-                        setError("Error Notification", TERMINAL_ERROR)
+            val payment = _activePayment.value
+            val ticket = payment?.tickets?.find{ it.uiActive}
+            if (ticket != null && ticket.paymentTotal < ticket.total){
+                _showCreditSpinner.value = true
+                Log.d("Testing", "In the credit process")
+                if (_creditAmount.value!! <= _activePayment.value!!.amountOwed()){
+                    try{
+                        val url = "http://" + terminal.ccEquipment.ipAddress + ":8080/pos?Action=StartOrder&Order=" + order.orderNumber.toString() + "&Format=JSON"
+                        val response: TerminalResponse = startCredit.startCreditProcess(url)
+                        if (response.Status == "Success"){
+                            creditStaging(order, settings, terminal)
+                        }else{
+                            setError("Error Notification", TERMINAL_ERROR)
+                        }
+                    }catch(ex: Exception){
+                        setError("Error Notification", TIMEOUT_ERROR)
                     }
-                }catch(ex: Exception){
-                    setError("Error Notification", TIMEOUT_ERROR)
+                }else{
+                    clearCreditAmount()
+                    _creditAmount.value = _activePayment.value?.amountOwed()
+                    setError("Over Payment","Credit payments cannot be more than what is owed on the ticket")
                 }
-            }else{
-                clearCreditAmount()
-                _creditAmount.value = _activePayment.value?.amountOwed()
-                setError("Over Payment","Credit payments cannot be more than what is owed on the ticket")
             }
         }
     }
@@ -610,7 +620,8 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
         viewModelScope.launch {
         //TODO: Handle partial payments
             try{
-                val transaction: CayanCardTransaction = creditCardRepository.createCayanTransaction(order, activePayment.value?.activeTicket()!!, settings, terminal, creditAmount.value!!)
+                val ticket = activePayment.value?.activeTicket()!!
+                val transaction: CayanCardTransaction = creditCardRepository.createCayanTransaction(order, ticket, settings, terminal, creditAmount.value!!)
                 val stageResponse: Any = stageTransaction.stageTransaction(transaction)
 
                 if (stageResponse is String){
@@ -815,19 +826,12 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
         val error = checkForPriceChanges(true, false)
         when (error){
             0 -> {
-                _activePayment.value?.voidTicket()
                 val ticket = _activePayment.value?.activeTicket()!!
-                _activePayment.value?.activeTicket()?.ticketItems?.forEach {
-                    var approval = approvalRepository.createApproval(_activePayment.value!!, "Void Item",
-                        ticket, it, 0.00, null)
-                    approval = saveApprovalToCloud(approval)!!
-                    it.approvalId = approval.id
-                    it.approvalType = "Void Item"
-
-                }
-
+                var approval = approvalRepository.createApproval(_activePayment.value!!, "Void Ticket",
+                    ticket, null, 0.00, null, user.userName)
+                approval = saveApprovalToCloud(approval)!!
+                _activePayment.value?.voidTicket(approval.id)
                 savePaymentToCloud()
-
 
             }
             1 -> {
@@ -855,22 +859,19 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
         val error = checkForPriceChanges(true, false)
         when (error){
             0 -> {
-                _activePayment.value?.voidTicket()
                 val ticket = _activePayment.value?.activeTicket()!!
-                _activePayment.value?.activeTicket()?.ticketItems?.forEach {
-
+                var disTotal = 0.00
+                if (discount.discountType == "Flat Amount"){
+                    disTotal = discount.discountAmount
                 }
-                for(item in _activePayment.value?.activeTicket()?.ticketItems!!){
-                    val ticket = _activePayment.value?.activeTicket()!!
-                    val disTotal = _activePayment.value?.discountTicketItem(item, discount)!!
-                    var approval = approvalRepository.createApproval(_activePayment.value!!, "Discount Item", ticket,
-                        item, disTotal.round(2), null)
-
-                    approval = saveApprovalToCloud(approval)!!
-                    item.approvalId = approval.id
-                    item.approvalType = "Void Item"
-                    savePaymentToCloud()
+                if (discount.discountType == "Percentage"){
+                    disTotal = ticket.subTotal.times(discount.discountAmount.div(100)).round(2)
                 }
+                var approval = approvalRepository.createApproval(_activePayment.value!!, "Discount Ticket", ticket,
+                    null, disTotal, discount, user.userName)
+                approval = saveApprovalToCloud(approval)!!
+                activePayment.value!!.discountTicket(discount, approval.id)
+                savePaymentToCloud()
             }
             1 -> {
                 setError("Discount Ticket", "There is a pending approval for this payment ticket.")
@@ -899,15 +900,12 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
         val error = checkForPriceChanges(false, true)
         when (error){
             0 -> {
-                _activePayment.value?.voidTicketItem(liveTicketItem.value!!)
-                _activePayment.value = _activePayment.value
-
                 var approval = approvalRepository.createApproval(_activePayment.value!!, "Void Item", ticket,
-                    ticket.ticketItems.find{it.id == id}, 0.00, null)
+                    ticket.ticketItems.find{it.id == id}, 0.00, null, user.userName)
 
                 approval = saveApprovalToCloud(approval)!!
-                ticket.ticketItems.find{it.id == id}?.approvalId = approval.id
-                ticket.ticketItems.find{it.id == id}?.approvalType = "Void Item"
+
+                _activePayment.value?.voidTicketItem(liveTicketItem.value!!, approval.id)
                 savePaymentToCloud()
             }
             1 -> {
@@ -942,7 +940,7 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
                 val disTotal = _activePayment.value?.discountTicketItem(item!!, discount)!!
                 _paymentScreen.value = ShowPayment.NONE
                 var approval = approvalRepository.createApproval(_activePayment.value!!, "Discount Item", ticket,
-                    item!!, disTotal.round(2), null)
+                    item!!, disTotal.round(2), null, user.userName)
 
                 approval = saveApprovalToCloud(approval)!!
                 ticket.ticketItems.find{it.id == id}?.approvalId = approval.id
@@ -980,7 +978,7 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
                 _activePayment.value?.modifyItemPrice(liveTicketItem.value!!,  price.toDouble())!!
                 _paymentScreen.value = ShowPayment.NONE
                 var approval = approvalRepository.createApproval(_activePayment.value!!, "Modify Price", ticket,
-                    ticket.ticketItems.find{it.id == id}, price.toDouble().round(2), null)
+                    ticket.ticketItems.find{it.id == id}, price.toDouble().round(2), null, user.userName)
 
                 approval = saveApprovalToCloud(approval)!!
                 ticket.ticketItems.find{it.id == id}?.approvalId = approval.id
@@ -1142,13 +1140,19 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
          val job = viewModelScope.launch {
             if (approval._rid == ""){
                 x = saveApproval.saveApproval(approval)
+                setApprovalSaved(true)
             }else{
                 x = updateApproval.saveApproval(approval)
+                setApprovalSaved(true)
             }
         }
 
         job.join()
         return x
+    }
+
+    fun setApprovalSaved(b: Boolean){
+        _approvalSaved.value = b
     }
 
     fun setVoidSpinner(b: Boolean){

@@ -5,42 +5,7 @@ import com.fastertable.fastertable.utils.round
 import com.google.gson.annotations.SerializedName
 import kotlinx.parcelize.Parcelize
 
-@Parcelize
-data class TestApproval(
-    val id: String,
-    val order: Order,
-    val approvalItems: ArrayList<ApprovalItem>,
-    val timeRequested: Long,
-    val type: String,
-    @SerializedName("locationid")
-    val locationId: String,
-    val archived: Boolean,
-    val _rid: String?,
-    val _self: String?,
-    val _etag: String?,
-    val _attachments: String?,
-    val _ts: Long?
-): Parcelable {
-    fun getPending(): List<ApprovalItem>{
-        val list = arrayListOf<ApprovalItem>()
-        approvalItems.forEach { it ->
-            if (it.approved == null){
-                list.add(it)
-            }
-        }
-        return list
-    }
 
-    fun getComplete(): List<ApprovalItem>{
-        val list = arrayListOf<ApprovalItem>()
-        approvalItems.forEach { it ->
-            if (it.approved != null){
-                list.add(it)
-            }
-        }
-        return list
-    }
-}
 
 @Parcelize
 data class Approval(
@@ -48,6 +13,7 @@ data class Approval(
     val approvalType: String,
     val ticketId: Int,
     val ticketItemId: Int?,
+    val whoRequested: String,
     val timeRequested: Long,
     val newItemPrice: Double?,
     var approved: Boolean?,
@@ -96,14 +62,6 @@ data class ApprovalItem(
     var uiActive: Boolean = false
 ): Parcelable {
     fun ticketSubtotal(): Double{
-        var price: Double = 0.00
-//        ticket?.ticketItems?.forEach{ticketItem ->
-//            if (ticketItem.discountPrice != null){
-//                price += price.plus(ticketItem.discountPrice!!)
-//            }else{
-//                price += price.plus(ticketItem.ticketItemPrice)
-//            }
-//        }
         return ticket!!.subTotal
     }
     fun ticketSalesTax(): Double{

@@ -32,6 +32,7 @@ class ApprovalAdapter(private val approveListener: ApproveListener, private val 
 
             binding.txtApprovalType.text = ticketItem.approvalType
 
+
             if (ticketItem.discountPrice != null){
                 val typeface = ResourcesCompat.getFont(parent.context, R.font.open_sans_semibold)
                 binding.txtApprovalItem.typeface = typeface

@@ -3,10 +3,9 @@ package com.fastertable.fastertable.ui.takeout
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
+import by.kirich1409.viewbindingdelegate.viewBinding
 import com.fastertable.fastertable.R
 import com.fastertable.fastertable.common.base.BaseFragment
 import com.fastertable.fastertable.data.models.TakeOutCustomer
@@ -14,16 +13,12 @@ import com.fastertable.fastertable.databinding.TakeoutFragmentBinding
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class TakeoutFragment : BaseFragment(){
+class TakeoutFragment : BaseFragment(R.layout.takeout_fragment) {
     private val viewModel: TakeoutViewModel by activityViewModels()
-    private lateinit var binding: TakeoutFragmentBinding
+    private val binding: TakeoutFragmentBinding by viewBinding()
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        binding = TakeoutFragmentBinding.inflate(inflater)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         binding.lifecycleOwner = viewLifecycleOwner
         binding.viewModel = viewModel
         setUpListeners()
@@ -38,7 +33,6 @@ class TakeoutFragment : BaseFragment(){
                 viewModel.startTakeoutOrder(takeoutCustomer)
             }
         }
-        return binding.root
     }
 
     private fun isValidate(): Boolean =
@@ -95,10 +89,5 @@ class TakeoutFragment : BaseFragment(){
             }
         }
 
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        binding.unbind()
     }
 }

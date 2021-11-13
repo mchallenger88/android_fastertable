@@ -100,7 +100,7 @@ data class Payment(
             0.00
     }
 
-    private fun allTicketItems(): ArrayList<TicketItem>{
+    fun allTicketItems(): ArrayList<TicketItem>{
         val ticketItems = arrayListOf<TicketItem>()
         if (tickets != null){
             for (ticket in tickets!!){
@@ -213,21 +213,23 @@ data class Payment(
 
     }
 
-    fun voidTicket(){
+    fun voidTicket(approvalId: String){
         activeTicket()?.ticketItems?.forEach { ti ->
             ti.discountPrice = 0.00
             ti.tax = 0.00
             ti.priceModified = true
             ti.approvalType = "Void Ticket"
+            ti.approvalId = approvalId
         }
         statusApproval = "Pending"
     }
 
-    fun voidTicketItem(ticketItem: TicketItem){
+    fun voidTicketItem(ticketItem: TicketItem, approvalId: String){
         ticketItem.discountPrice = 0.00
         ticketItem.tax = 0.00
         ticketItem.priceModified = true
         ticketItem.approvalType = "Void Item"
+        ticketItem.approvalId = approvalId
         statusApproval = "Pending"
     }
 
@@ -242,17 +244,17 @@ data class Payment(
     fun discountTicketItem(ticketItem: TicketItem, discount: Discount): Double{
         var disTotal: Double = 0.00
         if (discount.discountType == "Flat Amount"){
-            if (ticketItem.ticketItemPrice < discount.discountAmount){
+            if (ticketItem.ticketItemPrice > discount.discountAmount){
                 ticketItem.discountPrice = ticketItem.ticketItemPrice.minus(discount.discountAmount).round(2)
                 ticketItem.tax = (ticketItem.discountPrice!! * taxRate).round(2)
                 ticketItem.priceModified = true
-                ticketItem.approvalType = "Discount Item"
+                ticketItem.approvalType = "Discount Item: ${discount.discountName}"
                 disTotal = discount.discountAmount
             }else{
                 ticketItem.discountPrice = 0.00
                 ticketItem.tax = 0.00
                 ticketItem.priceModified = true
-                ticketItem.approvalType = "Discount Item"
+                ticketItem.approvalType = "Discount Item: ${discount.discountName}"
                 disTotal = ticketItem.ticketItemPrice
             }
         }
@@ -269,30 +271,32 @@ data class Payment(
     }
 
 
-    fun discountTicket(discount: Discount): Double{
-        var disTotal: Double = 0.00
+    fun discountTicket(discount: Discount, approvalId: String): Double{
+        var disTotal = 0.00
         if (discount.discountType == "Flat Amount"){
-            //Because it's a flat amount have to create a new ticket item to hold the discount amount
-            val ticketItem = TicketItem(
-                id = activeTicket()!!.ticketItems.size + 1,
-                orderGuestNo = 0,
-                orderItemId = 0,
-                quantity = 1,
-                itemName = "Discount",
-                itemSize = "Regular",
-                itemPrice = 0.00,
-                discountPrice = -discount.discountAmount.round(2),
-                priceModified = true,
-                approvalType = "Discount Ticket",
-                approvalId = null,
-                itemMods = arrayListOf<ModifierItem>(),
-                salesCategory = "Discount",
-                ticketItemPrice = -discount.discountAmount.round(2),
-                tax = 0.00
-            )
-            activeTicket()!!.ticketItems.add(ticketItem)
-            statusApproval = "Pending"
-            disTotal = activeTicket()!!.total.minus(discount.discountAmount)
+            disTotal = discount.discountAmount
+            var discountLeft = discount.discountAmount
+            activeTicket()?.ticketItems?.forEach { ticketItem ->
+                if (discountLeft > 0.00){
+                    if (ticketItem.ticketItemPrice <= discountLeft){
+                        ticketItem.discountPrice = 0.00
+                        discountLeft = discountLeft.minus(ticketItem.ticketItemPrice)
+                        ticketItem.priceModified = true
+                        ticketItem.approvalType = "Discount Ticket: ${discount.discountName}"
+                        ticketItem.approvalId = approvalId
+                        ticketItem.tax = 0.00
+
+                    }else{
+                        ticketItem.discountPrice = ticketItem.ticketItemPrice.minus(discountLeft).round(2)
+                        discountLeft = 0.00
+                        ticketItem.priceModified = true
+                        ticketItem.approvalType = "Discount Ticket: ${discount.discountName}"
+                        ticketItem.approvalId = approvalId
+                        ticketItem.tax = ticketItem.discountPrice!!.times(taxRate)
+                    }
+                }
+                statusApproval = "Pending"
+            }
         }
 
         if (discount.discountType == "Percentage"){
@@ -301,9 +305,10 @@ data class Payment(
                 val dis = ti.ticketItemPrice * (discount.discountAmount.div(100)).round(2)
                 disTotal = disTotal.plus(ti.ticketItemPrice.minus(dis))
                 ti.discountPrice = ti.ticketItemPrice.minus(dis)
-                ti.tax = (ti.discountPrice!! * taxRate).round(2)
+                ti.tax = ti.discountPrice!!.times(taxRate).round(2)
                 ti.priceModified = true
-                ti.approvalType = "Discount Ticket"
+                ti.approvalType = "Discount Ticket: ${discount.discountName}"
+                ti.approvalId = approvalId
             }
             statusApproval = "Pending"
         }
@@ -329,11 +334,8 @@ data class Payment(
         Epson.use()
         var printerModel: String = ""
         if (printer.printerModel.contains("88")){
-            Log.d("PrinterTest", printer.printerModel)
             printerModel = "TM_T88"
-            Log.d("PrinterTest", printerModel)
         }else{
-            Log.d("PrinterTest", printer.printerModel)
             printerModel = printer.printerModel
         }
         val document = PrinterDriver.createDocument(
@@ -436,6 +438,20 @@ data class Ticket(
             }
         }
 
+        fun getApprovedTotal(): Double{
+            var total = 0.00
+            for (ticketItem in ticketItems){
+                val itemTotal = ticketItem.quantity.times(ticketItem.itemPrice).round(2)
+                if (itemTotal != ticketItem.ticketItemPrice && ticketItem.ticketItemPrice == 0.00){
+                    total = total.plus(itemTotal)
+                }
+
+                if (itemTotal != ticketItem.ticketItemPrice && ticketItem.ticketItemPrice != 0.00){
+                    total = total.plus(itemTotal.minus(ticketItem.ticketItemPrice))
+                }
+            }
+            return total
+        }
     }
 
 //    var paymentType: String,

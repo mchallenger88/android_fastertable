@@ -1,35 +1,30 @@
 package com.fastertable.fastertable.ui.order
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.ConcatAdapter
+import by.kirich1409.viewbindingdelegate.viewBinding
+import com.fastertable.fastertable.R
 import com.fastertable.fastertable.adapters.*
 import com.fastertable.fastertable.common.base.BaseFragment
 import com.fastertable.fastertable.databinding.TransferOrderFragmentBinding
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class TransferOrderFragment : BaseFragment() {
+class TransferOrderFragment : BaseFragment(R.layout.transfer_order_fragment) {
     private val viewModel: TransferOrderViewModel by activityViewModels()
-    private lateinit var binding: TransferOrderFragmentBinding
+    private val binding: TransferOrderFragmentBinding by viewBinding()
     private val args: TransferOrderFragmentArgs by navArgs()
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        binding = TransferOrderFragmentBinding.inflate(inflater)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         binding.lifecycleOwner = viewLifecycleOwner
         binding.viewModel = viewModel
         viewModel.refreshOrders()
         viewModel.setInitialOrderId(args.orderId)
         transferObservables()
-        return binding.root
     }
 
     private fun transferObservables(){
@@ -58,8 +53,4 @@ class TransferOrderFragment : BaseFragment() {
         })
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        binding.unbind()
-    }
 }

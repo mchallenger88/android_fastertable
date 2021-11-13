@@ -2,25 +2,22 @@ package com.fastertable.fastertable.ui.login.restaurant
 
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import by.kirich1409.viewbindingdelegate.viewBinding
+import com.fastertable.fastertable.R
 import com.fastertable.fastertable.common.base.BaseFragment
 import com.fastertable.fastertable.databinding.RestaurantLoginFragmentBinding
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class RestaurantLoginFragment : BaseFragment() {
+class RestaurantLoginFragment : BaseFragment(R.layout.restaurant_login_fragment) {
     private lateinit var viewModel: RestaurantLoginViewModel
-    private lateinit var binding: RestaurantLoginFragmentBinding
+    private val binding: RestaurantLoginFragmentBinding by viewBinding()
 
-    override fun onCreateView(
-            inflater: LayoutInflater,
-            container: ViewGroup?,
-            savedInstanceState: Bundle?): View {
-        binding = RestaurantLoginFragmentBinding.inflate(inflater)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         viewModel = ViewModelProvider(this).get(RestaurantLoginViewModel::class.java)
 
         binding.lifecycleOwner = viewLifecycleOwner
@@ -68,7 +65,6 @@ class RestaurantLoginFragment : BaseFragment() {
                 binding.txtRestError.visibility = View.GONE
             }
         })
-        return binding.root
     }
 
     private fun numClick(num: Int){
@@ -81,10 +77,5 @@ class RestaurantLoginFragment : BaseFragment() {
 
     private fun loginEnter(){
         viewModel.restLogin()
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        binding.unbind()
     }
 }

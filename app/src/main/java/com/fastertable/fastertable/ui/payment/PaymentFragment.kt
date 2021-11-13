@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Context
 import android.content.res.ColorStateList
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
@@ -17,31 +16,25 @@ import androidx.fragment.app.activityViewModels
 import com.fastertable.fastertable.R
 import com.fastertable.fastertable.adapters.TicketItemAdapter
 import com.fastertable.fastertable.adapters.TicketSideBarAdapter
-import com.fastertable.fastertable.common.base.BaseFragment
 import com.fastertable.fastertable.data.models.Discount
 import com.fastertable.fastertable.databinding.PaymentFragmentBinding
 import com.fastertable.fastertable.ui.order.OrderViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.inputmethod.InputMethodManager
-import androidx.core.content.ContentProviderCompat
-import androidx.navigation.fragment.findNavController
+import by.kirich1409.viewbindingdelegate.viewBinding
+import com.fastertable.fastertable.common.base.BaseFragment
 import com.fastertable.fastertable.data.models.ManualCredit
 
 
 @AndroidEntryPoint
-class PaymentFragment: BaseFragment() {
+class PaymentFragment: BaseFragment(R.layout.payment_fragment) {
     private val viewModel: PaymentViewModel by activityViewModels()
     private val orderViewModel: OrderViewModel by activityViewModels()
-    private lateinit var binding: PaymentFragmentBinding
-    override fun onCreateView(
-            inflater: LayoutInflater,
-            container: ViewGroup?,
-            savedInstanceState: Bundle?
-    ): View {
-        binding = PaymentFragmentBinding.inflate(inflater)
+    private val binding: PaymentFragmentBinding by viewBinding()
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         binding.lifecycleOwner = viewLifecycleOwner
         binding.viewModel = viewModel
         binding.orderViewModel = orderViewModel
@@ -71,7 +64,6 @@ class PaymentFragment: BaseFragment() {
         viewModel.showNone()
         createAdapters(binding)
         createObservers(binding)
-        return binding.root
     }
 
     private fun getManualCreditData(){
@@ -247,8 +239,4 @@ class PaymentFragment: BaseFragment() {
         imm.hideSoftInputFromWindow(view.windowToken, 0)
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        binding.unbind()
-    }
 }

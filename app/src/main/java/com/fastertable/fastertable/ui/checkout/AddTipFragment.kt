@@ -3,11 +3,11 @@ package com.fastertable.fastertable.ui.checkout
 import android.app.Activity
 import android.content.Context
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import androidx.fragment.app.activityViewModels
+import by.kirich1409.viewbindingdelegate.viewBinding
+import com.fastertable.fastertable.R
 import com.fastertable.fastertable.adapters.TicketItemAdapter
 import com.fastertable.fastertable.adapters.TicketPaymentAdapter
 import com.fastertable.fastertable.adapters.TicketSideBarAdapter
@@ -17,23 +17,17 @@ import com.fastertable.fastertable.databinding.CheckoutAddTipFragmentBinding
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class AddTipFragment: BaseFragment() {
+class AddTipFragment: BaseFragment(R.layout.checkout_add_tip_fragment) {
     private val viewModel: CheckoutViewModel by activityViewModels()
-    private lateinit var binding: CheckoutAddTipFragmentBinding
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        binding = CheckoutAddTipFragmentBinding.inflate(inflater)
+    private val binding: CheckoutAddTipFragmentBinding by viewBinding()
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         binding.lifecycleOwner = viewLifecycleOwner
         binding.viewModel = viewModel
-//        binding.btnAddTip.setOnClickListener {
-//            viewModel.addTip(binding.editAddTip.editText?.text.toString())
-//        }
         bindingObservables(binding)
-        return binding.root
     }
+
 
     private fun bindingObservables(binding: CheckoutAddTipFragmentBinding){
         val ticketNumberAdapter = TicketSideBarAdapter(TicketSideBarAdapter.TicketSideBarListener {
@@ -74,8 +68,4 @@ class AddTipFragment: BaseFragment() {
         imm.hideSoftInputFromWindow(view.windowToken, 0)
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        binding.unbind()
-    }
 }

@@ -1,11 +1,11 @@
 package com.fastertable.fastertable.ui.checkout
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.ConcatAdapter
+import by.kirich1409.viewbindingdelegate.viewBinding
+import com.fastertable.fastertable.R
 import com.fastertable.fastertable.adapters.*
 import com.fastertable.fastertable.common.base.BaseFragment
 import com.fastertable.fastertable.databinding.CheckoutFragmentBinding
@@ -13,22 +13,17 @@ import com.fastertable.fastertable.databinding.CheckoutFragmentBinding
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class CheckoutFragment : BaseFragment() {
+class CheckoutFragment : BaseFragment(R.layout.checkout_fragment) {
     private val viewModel: CheckoutViewModel by activityViewModels()
-    private lateinit var binding: CheckoutFragmentBinding
+    private val binding: CheckoutFragmentBinding by viewBinding()
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        binding = CheckoutFragmentBinding.inflate(inflater)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         binding.lifecycleOwner = viewLifecycleOwner
         binding.viewModel = viewModel
         viewModel.getEmployeeCheckout()
         bindingObservables(binding)
         viewModel.activated()
-        return binding.root
     }
 
     private fun bindingObservables(binding: CheckoutFragmentBinding){
@@ -43,8 +38,6 @@ class CheckoutFragment : BaseFragment() {
         })
 
         binding.checkoutOrderRecycler.adapter = concatAdapter
-//        binding.checkoutPaymentRecycler.adapter = paymentAdapter
-
 
         viewModel.checkout.observe(viewLifecycleOwner, {
             if (it != null){
@@ -55,8 +48,4 @@ class CheckoutFragment : BaseFragment() {
         })
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        binding.unbind()
-    }
 }

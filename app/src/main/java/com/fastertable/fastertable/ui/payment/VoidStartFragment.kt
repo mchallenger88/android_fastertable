@@ -1,27 +1,23 @@
 package com.fastertable.fastertable.ui.payment
 
 import android.os.Bundle
-import android.util.Log
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
+import by.kirich1409.viewbindingdelegate.viewBinding
+import com.fastertable.fastertable.R
 import com.fastertable.fastertable.adapters.TicketItemAdapter
 import com.fastertable.fastertable.adapters.TicketSideBarAdapter
 import com.fastertable.fastertable.common.base.BaseFragment
 import com.fastertable.fastertable.databinding.VoidFragmentStartBinding
 import com.fastertable.fastertable.ui.order.OrderViewModel
 
-class VoidStartFragment: BaseFragment()  {
+class VoidStartFragment: BaseFragment(R.layout.void_fragment_start) {
     private val viewModel: PaymentViewModel by activityViewModels()
     private val orderViewModel: OrderViewModel by activityViewModels()
-    private lateinit var binding: VoidFragmentStartBinding
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        binding = VoidFragmentStartBinding.inflate(inflater)
+    private val binding: VoidFragmentStartBinding by viewBinding()
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         binding.lifecycleOwner = viewLifecycleOwner
         binding.viewModel = viewModel
         binding.orderViewModel = orderViewModel
@@ -51,12 +47,6 @@ class VoidStartFragment: BaseFragment()  {
                 }
             }
         })
-
-        return binding.root
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        binding.unbind()
-    }
 }

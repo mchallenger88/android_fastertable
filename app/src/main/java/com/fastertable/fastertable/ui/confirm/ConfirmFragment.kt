@@ -1,11 +1,11 @@
 package com.fastertable.fastertable.ui.confirm
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.ConcatAdapter
+import by.kirich1409.viewbindingdelegate.viewBinding
+import com.fastertable.fastertable.R
 import com.fastertable.fastertable.adapters.ConfirmHeaderAdapter
 import com.fastertable.fastertable.adapters.ConfirmListAdapter
 import com.fastertable.fastertable.common.base.BaseFragment
@@ -14,17 +14,13 @@ import com.fastertable.fastertable.ui.dialogs.DatePickerViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class ConfirmFragment  : BaseFragment(){
+class ConfirmFragment  : BaseFragment(R.layout.confirm_fragment) {
     private val viewModel: ConfirmViewModel by activityViewModels()
     private val dateViewModel: DatePickerViewModel by activityViewModels()
-    private lateinit var binding: ConfirmFragmentBinding
+    private val binding: ConfirmFragmentBinding by viewBinding()
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        binding = ConfirmFragmentBinding.inflate(inflater)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         binding.lifecycleOwner = viewLifecycleOwner
         binding.viewModel = viewModel
         viewModel.getConfirmList()
@@ -41,8 +37,8 @@ class ConfirmFragment  : BaseFragment(){
                 binding.confirmProgressBar.visibility = View.INVISIBLE
             }
         })
-        return binding.root
     }
+
 
     private fun bindingObservables(binding: ConfirmFragmentBinding){
         val confirmAdapter = ConfirmListAdapter(ConfirmListAdapter.ConfirmListListener {
@@ -64,9 +60,6 @@ class ConfirmFragment  : BaseFragment(){
             }
         })
     }
-    override fun onDestroyView() {
-        super.onDestroyView()
-        binding.unbind()
-    }
+
 
 }

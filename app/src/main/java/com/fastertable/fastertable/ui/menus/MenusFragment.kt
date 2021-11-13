@@ -1,36 +1,26 @@
 package com.fastertable.fastertable.ui.menus
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProvider
+import by.kirich1409.viewbindingdelegate.viewBinding
+import com.fastertable.fastertable.R
 import com.fastertable.fastertable.common.base.BaseFragment
 import com.fastertable.fastertable.databinding.MenusFragmentBinding
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class MenusFragment : BaseFragment(){
+class MenusFragment : BaseFragment(R.layout.menus_fragment) {
     private lateinit var viewModel: MenusViewModel
-    private lateinit var binding: MenusFragmentBinding
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        val binding = MenusFragmentBinding.inflate(inflater)
+    private val binding: MenusFragmentBinding by viewBinding()
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         viewModel = ViewModelProvider(this).get(MenusViewModel::class.java)
 
         binding.lifecycleOwner = viewLifecycleOwner
         binding.viewModel = viewModel
-
-            return binding.root
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        binding.unbind()
-    }
 
 }

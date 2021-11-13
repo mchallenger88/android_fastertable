@@ -88,7 +88,6 @@ class CheckoutViewModel @Inject constructor (
                     midnight = midnight,
                     clockInTime = user.userClock.clockInTime
                 )
-                val em = getCheckout.getCheckout(request)
 
                 _checkout.postValue(getCheckout.getCheckout(request))
             }else{
@@ -240,13 +239,13 @@ class CheckoutViewModel @Inject constructor (
         for (ticket in list){
             if (ticket.paymentList != null){
                 for (p in ticket.paymentList!!){
-                    if (p.paymentType == "Credit" || p.paymentType == "Manual Credit"){
+                    if (p.paymentType == "Credit" || p.paymentType == "Manual Credit" || p.paymentType == "Gift"){
                         paymentsList.add(p)
                         payments.add(p.gratuity)
                     }
                 }
             }else{
-                if (ticket.paymentType == "Credit" || ticket.paymentType == "Manual Credit"){
+                if (ticket.paymentType == "Credit" || ticket.paymentType == "Manual Credit" || ticket.paymentType == "Gift"){
                     payments.add(ticket.gratuity)
                 }
             }
@@ -348,52 +347,58 @@ class CheckoutViewModel @Inject constructor (
 
     fun captureTickets(){
         viewModelScope.launch {
-            if (!checkout.value?.openOrders!!){
-                for (item in checkout.value?.payTickets!!) {
-                    for (payment in item.ticket!!.paymentList!!){
-                        val creditTransaction = payment.creditCardTransactions?.find{ cc -> cc.creditTransaction?.AmountApproved?.toDouble() == payment.ticketPaymentAmount.minus(
-                            payment.gratuity)}
+            val checkout = _checkout.value
+            val epoch = GlobalUtils().unixMidnight(_activeDate.value!!)
+            if (checkout != null && checkout.checkoutDate == epoch){
+                if (!checkout.openOrders){
+                    if (checkout.payTickets.isNotEmpty()){
+                        for (item in checkout.payTickets) {
+                            if (item.ticket != null){
+                                if (item.ticket!!.paymentList != null){
+                                    for (payment in item.ticket!!.paymentList!!){
+                                        val creditTransaction = payment.creditCardTransactions?.find{ cc -> cc.creditTransaction?.AmountApproved?.toDouble() == payment.ticketPaymentAmount.minus(
+                                            payment.gratuity)}
 
-                        if (creditTransaction != null) {
-                            val capture = Capture(
-                                Token = creditTransaction.creditTransaction?.Token!!,
-                                Amount = payment.ticketPaymentAmount,
-                                InvoiceNumber = "",
-                                RegisterNumber = "",
-                                MerchantTransactionId = item.payment!!.id + "_" + item.ticket!!.id,
-                                CardAcceptorTerminalId = null
-                            )
-                            val captureRequest = CaptureRequest(
-                                Credentials = settings.merchantCredentials,
-                                Capture = capture)
-                            if (creditTransaction.voidTotal == null && creditTransaction.refundTotal == null && creditTransaction.captureTotal == null){
-                                val res: TransactionResponse45 = captureTicket.capture(captureRequest)
-                                if (res.ApprovalStatus == "APPROVED"){
-                                    println("Captured: ${res.Amount}")
-                                    creditTransaction.captureTotal = res.Amount
-                                    creditTransaction.captureTransaction = adjustResponse(res)
+                                        if (creditTransaction != null) {
+                                            val capture = Capture(
+                                                Token = creditTransaction.creditTransaction?.Token!!,
+                                                Amount = payment.ticketPaymentAmount,
+                                                InvoiceNumber = "",
+                                                RegisterNumber = "",
+                                                MerchantTransactionId = item.payment!!.id + "_" + item.ticket!!.id,
+                                                CardAcceptorTerminalId = null
+                                            )
+                                            val captureRequest = CaptureRequest(
+                                                Credentials = settings.merchantCredentials,
+                                                Capture = capture)
+                                            if (creditTransaction.voidTotal == null && creditTransaction.refundTotal == null && creditTransaction.captureTotal == null){
+                                                val res: TransactionResponse45 = captureTicket.capture(captureRequest)
+                                                if (res.ApprovalStatus == "APPROVED"){
+                                                    creditTransaction.captureTotal = res.Amount
+                                                    creditTransaction.captureTransaction = adjustResponse(res)
 
-//                                    val ticket = item.payment!!.tickets!!.find{ t -> t.id == item.ticket!!.id}
-//                                    var ctNew = payment.creditCardTransactions?.find{ it -> it.creditTotal == creditTransaction.creditTotal}
-//                                    ctNew = creditTransaction
-                                    saveCapturedPaymentToCloud(item.payment!!)
+                                                    saveCapturedPaymentToCloud(item.payment!!)
+                                                }
+                                            }
+                                        }
+                                    }
                                 }
                             }
                         }
                     }
 
-
+                    updateUserClock(checkout.checkoutDate)
+                    _checkoutComplete.postValue("Your checkout is complete.")
+                }else{
+                    _checkoutComplete.postValue("You must close all open orders before checking out.")
                 }
-                updateUserClock()
-                _checkoutComplete.postValue("Your checkout is complete.")
-            }else{
-                _checkoutComplete.postValue("You must close all open orders before checking out.")
             }
+
 
         }
     }
 
-    private fun updateUserClock(){
+    private fun updateUserClock(day: Long){
         viewModelScope.launch {
             val user = loginRepository.getOpsUser()
             if (user != null) {
@@ -402,7 +407,7 @@ class CheckoutViewModel @Inject constructor (
                     companyId = settings.companyId,
                     locationId = settings.locationId,
                     checkout = true,
-                    midnight = GlobalUtils().getMidnight()
+                    midnight = day
                 )
                 checkoutUser.checkout(cc)
             }

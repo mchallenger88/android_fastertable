@@ -13,11 +13,12 @@ import android.view.*
 import android.widget.*
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.ViewCompat
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import by.kirich1409.viewbindingdelegate.viewBinding
 import com.fastertable.fastertable.MainActivity
 import com.fastertable.fastertable.R
 import com.fastertable.fastertable.adapters.FloorplanSidebarAdapter
+import com.fastertable.fastertable.common.base.BaseFragment
 import com.fastertable.fastertable.data.models.FloorplanWall
 import com.fastertable.fastertable.data.models.IdLocation
 import com.fastertable.fastertable.data.models.RestaurantTable
@@ -35,9 +36,8 @@ enum class ControllerType {
     Top, Left, Right, Bottom, Property
 }
 
-class FloorplanManagementFragment: Fragment() {
-    private var _binding: FloorplanManagementFragmentBinding? = null
-    private val binding get() = _binding!!
+class FloorplanManagementFragment: BaseFragment(R.layout.floorplan_management_fragment) {
+    private val binding: FloorplanManagementFragmentBinding by viewBinding()
 
     private val viewModel: FloorplanManageViewModel by activityViewModels()
     private lateinit var tableListener: FloorplanTableListener
@@ -49,22 +49,15 @@ class FloorplanManagementFragment: Fragment() {
     private var viewX = 0.0f
     private var viewY = 0.0f
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        _binding = FloorplanManagementFragmentBinding.inflate(inflater, container, false)
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         binding.lifecycleOwner = viewLifecycleOwner
         binding.viewModel = viewModel
         loadFloorplans(binding)
         createObservers()
         loadSidebar(binding)
         handleDrop(binding)
-        return binding.root
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
         view.setOnClickListener {
             selectedTable=null
             selectedWall=null
@@ -594,8 +587,4 @@ class FloorplanManagementFragment: Fragment() {
         }
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        binding.unbind()
-    }
 }

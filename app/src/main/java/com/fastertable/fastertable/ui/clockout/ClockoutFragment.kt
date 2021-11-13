@@ -1,25 +1,21 @@
 package com.fastertable.fastertable.ui.clockout
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
+import by.kirich1409.viewbindingdelegate.viewBinding
+import com.fastertable.fastertable.R
 import com.fastertable.fastertable.common.base.BaseFragment
 import com.fastertable.fastertable.databinding.ClockoutFragmentBinding
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class ClockoutFragment : BaseFragment(){
+class ClockoutFragment : BaseFragment(R.layout.clockout_fragment) {
     private val viewModel: ClockoutViewModel by activityViewModels()
-    private lateinit var binding: ClockoutFragmentBinding
+    private val binding: ClockoutFragmentBinding by viewBinding()
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        binding = ClockoutFragmentBinding.inflate(inflater)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         binding.lifecycleOwner = viewLifecycleOwner
         binding.viewModel = viewModel
 
@@ -28,11 +24,6 @@ class ClockoutFragment : BaseFragment(){
                 binding.txtClockoutError.text = it
             }
         })
-        return binding.root
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        binding.unbind()
-    }
 }

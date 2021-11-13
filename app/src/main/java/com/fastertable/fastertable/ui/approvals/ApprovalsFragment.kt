@@ -1,12 +1,11 @@
 package com.fastertable.fastertable.ui.approvals
 
 import android.os.Bundle
-import android.util.Log
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.ConcatAdapter
+import by.kirich1409.viewbindingdelegate.viewBinding
+import com.fastertable.fastertable.R
 import com.fastertable.fastertable.adapters.ApprovalAdapter
 import com.fastertable.fastertable.adapters.ApprovalHeaderAdapter
 import com.fastertable.fastertable.adapters.ApprovalsSideBarAdapter
@@ -16,20 +15,20 @@ import com.fastertable.fastertable.databinding.ApprovalsFragmentBinding
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class ApprovalsFragment : BaseFragment() {
+class ApprovalsFragment : BaseFragment(R.layout.approvals_fragment) {
     private val viewModel: ApprovalsViewModel by activityViewModels()
-    private lateinit var binding: ApprovalsFragmentBinding
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        binding = ApprovalsFragmentBinding.inflate(inflater)
+    private val binding: ApprovalsFragmentBinding by viewBinding()
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
         binding.lifecycleOwner = viewLifecycleOwner
         binding.viewModel = viewModel
         createAdapters(binding)
 
-        return binding.root
+        binding.btnSaveApproval.setOnClickListener {
+            binding.btnSaveApproval.isEnabled = false
+        }
     }
 
     private fun createAdapters(binding: ApprovalsFragmentBinding){
@@ -53,6 +52,8 @@ class ApprovalsFragment : BaseFragment() {
 
         binding.approvalItemsRecycler.adapter = concatAdapter
 
+
+
         viewModel.approvalTicket.observe(viewLifecycleOwner, {
             if (it != null){
                 ticketsAdapter.submitList(it.ticket.ticketItems)
@@ -61,6 +62,7 @@ class ApprovalsFragment : BaseFragment() {
             }
             ticketsAdapter.notifyDataSetChanged()
         })
+
 
         viewModel.activeApproval.observe(viewLifecycleOwner, {
             if (it != null){
@@ -72,16 +74,20 @@ class ApprovalsFragment : BaseFragment() {
 
         })
 
-        viewModel.approvalsShown.observe(viewLifecycleOwner, {
-            approvalsSideBarAdapter.submitList(it)
-            approvalsSideBarAdapter.notifyDataSetChanged()
-            viewModel.findFirstApproval()
+        viewModel.approvals.observe(viewLifecycleOwner, {
+            if (it != null){
+                if (viewModel.showPending.value == true){
+                    approvalsSideBarAdapter.submitList(it)
+                    approvalsSideBarAdapter.notifyDataSetChanged()
+                    viewModel.setActiveApproval()
+                }else{
+                    approvalsSideBarAdapter.submitList(null)
+                    approvalsSideBarAdapter.notifyDataSetChanged()
+                }
+            }
+
         })
 
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        binding.unbind()
-    }
 }

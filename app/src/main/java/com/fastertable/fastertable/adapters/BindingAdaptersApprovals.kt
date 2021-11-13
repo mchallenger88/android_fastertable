@@ -7,6 +7,7 @@ import android.view.View
 import android.widget.Switch
 import android.widget.TextView
 import androidx.cardview.widget.CardView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.fastertable.fastertable.R
@@ -134,9 +135,9 @@ fun getApprovalExplanation(textView: TextView, approval: Approval?){
 }
 
 @BindingAdapter("approvalEmployee")
-fun getApprovalEmployee(textView: TextView, item: Payment?){
+fun getApprovalEmployee(textView: TextView, item: Approval?){
     if (item != null){
-        textView.text = textView.context.getString(R.string.requested_by, item.userName)
+        textView.text = textView.context.getString(R.string.requested_by, item.whoRequested)
     }
 }
 
@@ -146,8 +147,8 @@ fun disableApprovalSave(button: FloatingActionButton, item: Approval?){
 }
 
 @BindingAdapter("approvalCard")
-fun showApprovalCard(cardView: CardView, approval: Approval?){
-    if (approval != null){
+fun approvalCard(cardView: CardView, approval: Approval?){
+    if (approval != null) {
         cardView.visibility = View.VISIBLE
     }else{
         cardView.visibility = View.GONE
@@ -175,4 +176,40 @@ fun showApprovedRejected(textView: TextView, approval: Approval?){
     }else{
         textView.visibility = View.GONE
     }
+}
+
+@BindingAdapter("showApprovalCard")
+fun showApprovalCard(recylcer: RecyclerView, b: Boolean){
+    if (b){
+        recylcer.visibility = View.VISIBLE
+    }else{
+        recylcer.visibility = View.GONE
+    }
+}
+
+@BindingAdapter("showClosedLayout")
+fun showClosedLayout(layout: ConstraintLayout, b: Boolean){
+    if (!b){
+        layout.visibility = View.VISIBLE
+    }else{
+        layout.visibility = View.GONE
+    }
+}
+
+@BindingAdapter("showApprovalSideCard")
+fun showApprovalSideCard(card: CardView, approval: Approval?){
+    if (approval != null) {
+        if (approval.timeHandled == null){
+            card.visibility = View.VISIBLE
+        }else{
+            card.visibility = View.GONE
+        }
+    }else{
+        card.visibility = View.GONE
+    }
+}
+
+@BindingAdapter("enableApprove")
+fun enableApprove(btn: FloatingActionButton, b: Boolean){
+    btn.isEnabled = b
 }

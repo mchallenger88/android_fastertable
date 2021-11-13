@@ -87,7 +87,7 @@
         <TextView
             android:id="@+id/txt_price_mod"
             style="@style/error_style_extra_small"
-            android:layout_width="wrap_content"
+            android:layout_width="350dp"
             android:layout_height="wrap_content"
             app:showPriceModified="@{ticketItem}"
             app:layout_constraintStart_toStartOf="@+id/txt_item"

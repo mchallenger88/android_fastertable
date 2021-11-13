@@ -11,6 +11,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.ConcatAdapter
+import by.kirich1409.viewbindingdelegate.viewBinding
 import com.fastertable.fastertable.R
 import com.fastertable.fastertable.adapters.GuestSideBarAdapter
 import com.fastertable.fastertable.adapters.IngredientsAdapter
@@ -26,15 +27,12 @@ import com.google.android.material.tabs.TabLayout
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class OrderFragment : BaseFragment() {
+class OrderFragment : BaseFragment(R.layout.order_fragment) {
     private val viewModel: OrderViewModel by activityViewModels()
-    private lateinit var binding: OrderFragmentBinding
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        binding = OrderFragmentBinding.inflate(inflater)
+    private val binding: OrderFragmentBinding by viewBinding()
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         binding.lifecycleOwner = viewLifecycleOwner
         binding.viewModel = viewModel
         viewModel.initOrder()
@@ -48,12 +46,10 @@ class OrderFragment : BaseFragment() {
                     createCategoryButtons(menu, binding)
                     viewModel.setMenusNavigation(MenusNavigation.CATEGORIES)
                 }
-
             }
             override fun onTabUnselected(tab: TabLayout.Tab?) {}
             override fun onTabReselected(tab: TabLayout.Tab?) {}
         })
-            return binding.root
     }
 
     private fun createObservers(binding: OrderFragmentBinding){
@@ -247,10 +243,4 @@ class OrderFragment : BaseFragment() {
 
         })
     }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        binding.unbind()
-    }
-
 }

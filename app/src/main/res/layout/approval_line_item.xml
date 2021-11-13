@@ -80,11 +80,11 @@
         <TextView
             android:id="@+id/txt_approval_type"
             style="@style/error_style_extra_small"
-            android:layout_width="wrap_content"
+            android:layout_width="350dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            app:layout_constraintTop_toBottomOf="@+id/txt_item_discount"
-            app:layout_constraintStart_toEndOf="@+id/txt_approval_item_quantity"/>
+            app:layout_constraintStart_toEndOf="@+id/txt_approval_item_quantity"
+            app:layout_constraintTop_toBottomOf="@+id/txt_item_discount" />
 
 
 
