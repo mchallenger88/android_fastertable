@@ -10,6 +10,7 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.databinding.BindingAdapter
 import com.fastertable.fastertable.R
+import com.fastertable.fastertable.data.models.MenuItem
 import com.fastertable.fastertable.data.models.Order
 import com.fastertable.fastertable.data.models.OrderItem
 import com.fastertable.fastertable.data.models.PayTicket
@@ -120,9 +121,10 @@ fun fullOrderType(textView: TextView, order: Order?){
 @BindingAdapter("orderLineMods")
 fun addOrderLineMods(textView: TextView, item: OrderItem?){
     if (item != null) {
-        if (item.orderMods?.size!! > 0){
+        val list = item.activeModItems()
+        if (list.isNotEmpty()){
             var mods: String = String()
-            item.orderMods!!.forEach { mod ->
+            list.forEach { mod ->
                 mods += mod.itemName + ", "
             }
             mods = "- $mods"
@@ -138,23 +140,25 @@ fun addOrderLineMods(textView: TextView, item: OrderItem?){
 @SuppressLint("SetTextI18n")
 @BindingAdapter("orderLineIngredients")
 fun addOrderLineIngredients(textView: TextView, item: OrderItem?){
-    val flat = item?.ingredients?.filter { it -> it.orderValue != 1 }
-    if (flat?.size!! > 0){
-        var ingredients: String = String()
-        item.ingredients?.forEach{ ing ->
-            if (ing.orderValue == 0){
-                ingredients += "No ${ing.name.trim()}, "
+    if (item != null){
+        val list = item.activeIngredients()
+        if (list.isNotEmpty()){
+            var ingredients: String = String()
+            item.ingredients?.forEach{ ing ->
+                if (ing.orderValue == 0){
+                    ingredients += "No ${ing.name.trim()}, "
+                }
+                if (ing.orderValue == 2){
+                    ingredients += "Extra ${ing.name.trim()}, "
+                }
             }
-            if (ing.orderValue == 2){
-                ingredients += "Extra ${ing.name.trim()}, "
-            }
+            ingredients = "- $ingredients"
+            ingredients = ingredients.dropLast(2)
+            textView.text = ingredients
+            textView.visibility = View.VISIBLE
+        }else{
+            textView.visibility = View.GONE
         }
-        ingredients = "- $ingredients"
-        ingredients = ingredients.dropLast(2)
-        textView.text = ingredients
-        textView.visibility = View.VISIBLE
-    }else{
-        textView.visibility = View.GONE
     }
 }
 
@@ -226,5 +230,13 @@ fun toggleSendToKitchen(button: Button, order: Order?){
         btn.setTextColor(ColorStateList.valueOf(offWhite))
         btn.strokeColor = ColorStateList.valueOf(offWhite)
     }
+}
 
+@BindingAdapter("setEditQuantity")
+fun setEditQuantity(textView: TextView, menuItem: MenuItem?){
+    if (menuItem != null){
+        textView.text = "${menuItem.prices[0].quantity}"
+    }else{
+        textView.text = ""
+    }
 }

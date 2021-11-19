@@ -6,14 +6,18 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
+import by.kirich1409.viewbindingdelegate.viewBinding
+import com.fastertable.fastertable.R
 import com.fastertable.fastertable.databinding.BottomSheetOrderMoreBinding
 import com.fastertable.fastertable.ui.order.OrderViewModel
 
-class OrderMoreDialog: BaseDialog() {
+class OrderMoreDialog: BaseDialog(R.layout.bottom_sheet_order_more) {
     private lateinit var dialogListener: DialogListener
     private val viewModel: OrderViewModel by activityViewModels()
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        val binding = BottomSheetOrderMoreBinding.inflate(inflater)
+    private val binding: BottomSheetOrderMoreBinding by viewBinding()
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         binding.viewModel = viewModel
 
         binding.btnTransferOrder.setOnClickListener {
@@ -30,9 +34,13 @@ class OrderMoreDialog: BaseDialog() {
             dialogListener.returnValue("Misc Menu Item")
             dismiss()
         }
-
-        return binding.root
     }
+
+//    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+//        val binding = BottomSheetOrderMoreBinding.inflate(inflater)
+//
+//        return binding.root
+//    }
 
     override fun onStart() {
         super.onStart()

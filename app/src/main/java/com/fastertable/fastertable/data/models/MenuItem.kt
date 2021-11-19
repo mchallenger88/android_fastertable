@@ -1,47 +1,102 @@
 package com.fastertable.fastertable.data.models
 
 import android.os.Parcelable
+import android.util.Log
+import com.fastertable.fastertable.utils.round
 import com.google.gson.Gson
 import kotlinx.parcelize.Parcelize
 
 
 @Parcelize
 data class MenuItem(
-        val id: String,
-        val itemName: String,
-        val itemDescription: String,
-        val prices: ArrayList<ItemPrice>,
-        val modifiers: ArrayList<Modifier>,
-        val ingredients: ArrayList<ItemIngredient>,
-        val active: Boolean,
-        val printer: Printer,
-        val prepStation: PrepStation,
-        val salesCategory: String,
-        val kiosk: Boolean,
-        val imageName: String,
-        val categories: ArrayList<String>,
-        val soldOut: Boolean,
-        val alias: String,
-        val avatar: String,
-        val type: String,
-        val _rid: String?,
-        val _self: String?,
-        val _etag: String?,
-        val _attachments: String?,
-        val _ts: Long?
+    val id: String,
+    val itemName: String,
+    val itemDescription: String,
+    val prices: MutableList<ItemPrice>,
+    var modifiers: ArrayList<Modifier>,
+    var ingredients: MutableList<ItemIngredient>,
+    val active: Boolean,
+    val printer: Printer,
+    val prepStation: PrepStation,
+    val salesCategory: String,
+    val kiosk: Boolean,
+    val imageName: String,
+    val categories: ArrayList<String>,
+    val soldOut: Boolean,
+    val alias: String,
+    val avatar: String,
+    val type: String,
+    val _rid: String?,
+    val _self: String?,
+    val _etag: String?,
+    val _attachments: String?,
+    val _ts: Long?
 ): Parcelable{
     fun clone(): MenuItem{
         val menuItem: String = Gson().toJson(this, MenuItem::class.java)
         return Gson().fromJson(menuItem, MenuItem::class.java)
     }
+    fun addOrderMod(modifierItem: ModifierItem){
+        modifiers.forEach { mod ->
+            mod.modifierItems.forEach{ item ->
+                if (item.itemName == modifierItem.itemName){
+                    item.quantity = modifierItem.quantity
+                }
+            }
+        }
+    }
+
+    private fun allModifierItems(): List<ModifierItem>{
+        val list = mutableListOf<ModifierItem>()
+        modifiers.forEach { mod ->
+            mod.modifierItems.forEach {
+                list.add(it)
+            }
+        }
+        return list
+    }
+
+    private fun ingredientSurchargeList(): List<ItemIngredient>{
+        return ingredients.filter{ it.orderValue == 2}
+    }
+
+
+    fun sumSurcharges(){
+        val modSum = allModifierItems().sumOf { it.quantity.times(it.surcharge) }
+        val ingSum = ingredientSurchargeList().sumOf{ it.surcharge }
+        val total = modSum.plus(ingSum).round(2)
+        prices.forEach {
+            it.modifiedPrice = total
+        }
+    }
+
+    fun requirementsMet(): Boolean{
+        var requireMet = true
+        modifiers.forEach { mod ->
+            var count = 0
+            mod.modifierItems.forEach { mi ->
+                if (mi.quantity > 0){
+                    count = count.plus(mi.quantity)
+                }
+            }
+            if (count < mod.selectionLimitMin){
+                requireMet = false
+            }
+        }
+        return requireMet
+    }
+
 }
 
 @Parcelize
 data class ItemPrice(
-    val size: String,
-    var price: Double,
-    val discountPrice: Double?,
-    val tax: String
+        var isSelected: Boolean = false,
+        var quantity: Int = 1,
+        val size: String,
+        var price: Double,
+        val discountPrice: Double?,
+        var modifiedPrice: Double = price,
+        val tax: String
 ): Parcelable
 
 @Parcelize
@@ -49,7 +104,19 @@ data class ItemIngredient(
         val name: String,
         val surcharge: Double,
         var orderValue: Int,
-): Parcelable
+): Parcelable{
+    fun add(){
+        if (orderValue < 2){
+            orderValue = orderValue.plus(1)
+        }
+    }
+
+    fun subtract(){
+        if (orderValue > 0){
+            orderValue = orderValue.minus(1)
+        }
+    }
+}
 
 @Parcelize
 data class MenuCategory(
@@ -64,20 +131,6 @@ data class MenuCategory(
           return menuItems.sortBy { it.itemName }
      }
 }
-
-@Parcelize
-data class MenuItemSummary(
-        val id: String,
-        val name: String,
-        val modifiers: ArrayList<String>,
-): Parcelable
-
-@Parcelize
-data class MenuItemMenus
-(
-        val id: String,
-        val name: String,
-): Parcelable
 
 @Parcelize
 data class IngredientList(
@@ -103,7 +156,29 @@ data class Modifier(
         val _attachments: String?,
         val _ts: Long?,
         var arrayId: Double?
-): Parcelable
+): Parcelable{
+        private fun sumQuantity(): Int{
+            return modifierItems.sumOf { it.quantity }
+        }
+
+        private fun maxReached(): Boolean{
+            return if (selectionLimitMax != 0){
+                sumQuantity() >= selectionLimitMax
+            }else{
+                false
+            }
+        }
+
+        fun addQuantity(item: ModifierItem){
+            if (maxReached() || item.quantity == 3){
+                item.quantity = 0
+                return
+            }
+            if (!maxReached()){
+                item.quantity = item.quantity.plus(1)
+            }
+        }
+}
 
 @Parcelize
 data class ModifierItem(

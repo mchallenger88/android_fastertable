@@ -8,7 +8,7 @@ import dagger.hilt.android.AndroidEntryPoint
 
 
 @AndroidEntryPoint
-class KitchenWarningDialogFragment : BaseDialog() {
+class KitchenWarningDialogFragment : BaseDialog(R.layout.dialog_error) {
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         return MaterialAlertDialogBuilder(requireContext()).let {

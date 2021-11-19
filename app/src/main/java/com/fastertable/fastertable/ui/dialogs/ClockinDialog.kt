@@ -6,22 +6,30 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
+import by.kirich1409.viewbindingdelegate.viewBinding
+import com.fastertable.fastertable.R
 import com.fastertable.fastertable.databinding.BottomSheetErrorDialogBinding
 import com.fastertable.fastertable.ui.error.ErrorViewModel
 
-class ClockinDialog: BaseDialog() {
+class ClockinDialog: BaseDialog(R.layout.bottom_sheet_error_dialog) {
     private val viewModel: ErrorViewModel by activityViewModels()
+    private val binding: BottomSheetErrorDialogBinding by viewBinding()
     private lateinit var callBack: DialogListener
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        val binding = BottomSheetErrorDialogBinding.inflate(inflater)
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         binding.viewModel = viewModel
 
         binding.btnErrorClose.setOnClickListener{
             callBack.returnValue("Done")
             dismiss()
         }
-        return binding.root
     }
+//    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+//        val binding = BottomSheetErrorDialogBinding.inflate(inflater)
+//
+//        return binding.root
+//    }
 
     override fun onStart() {
         super.onStart()

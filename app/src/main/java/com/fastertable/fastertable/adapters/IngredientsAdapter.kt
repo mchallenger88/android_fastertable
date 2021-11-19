@@ -35,7 +35,7 @@ class IngredientsAdapter(private val clickListener: IngredientListener) : ListAd
     class IngredientViewHolder(private var binding: IngredientLineItemBinding,
                                private val parent: ViewGroup): RecyclerView.ViewHolder(binding.root) {
 
-        @SuppressLint("SetTextI18n")
+        @SuppressLint("TeSetTextI18n")
         fun bind(item: ItemIngredient, clickListener: IngredientListener, position: Int) {
             binding.layoutIngredient.removeAllViews()
             binding.ingredients = item

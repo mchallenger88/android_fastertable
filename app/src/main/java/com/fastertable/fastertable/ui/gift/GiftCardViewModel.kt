@@ -547,18 +547,17 @@ class GiftCardViewModel @Inject constructor (
         val terminal = loginRepository.getTerminal()!!
         val orderItem = OrderItem(
             id = 1,
-            quantity = 1,
             menuItemId = "giftCard",
             menuItemName = "Gift Card",
             menuItemPrice = ItemPrice(
+                quantity = 1,
                 size = "Regular",
                 price = amount,
                 discountPrice = null,
                 tax = "Tax Exempt"
             ),
-            orderMods = listOf<ModifierItem>(),
+            modifiers = null,
             salesCategory = "Gift",
-            ingredientList = null,
             ingredients = null,
             prepStation = null,
             printer = terminal.defaultPrinter,

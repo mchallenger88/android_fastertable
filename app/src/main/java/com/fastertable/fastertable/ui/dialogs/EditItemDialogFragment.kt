@@ -1,46 +1,54 @@
 package com.fastertable.fastertable.ui.dialogs
 
+import android.annotation.SuppressLint
 import android.os.Bundle
-import android.view.LayoutInflater
+import android.util.Log
 import android.view.View
-import android.view.ViewGroup
+import android.widget.RadioButton
+import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.ConcatAdapter
+import by.kirich1409.viewbindingdelegate.viewBinding
+import com.fastertable.fastertable.R
 import com.fastertable.fastertable.adapters.IngredientsAdapter
 import com.fastertable.fastertable.adapters.ModifierAdapter
+import com.fastertable.fastertable.data.models.*
 import com.fastertable.fastertable.databinding.DialogEditItemBinding
+import com.fastertable.fastertable.ui.order.AddSubtract
 import com.fastertable.fastertable.ui.order.OrderViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class EditItemDialogFragment: BaseDialog() {
-    private val viewModel: OrderViewModel by activityViewModels()
+class EditItemDialogFragment: BaseDialog(R.layout.dialog_edit_item) {
+    private val orderViewModel: OrderViewModel by activityViewModels()
+    private val viewModel: EditItemDialogViewModel by activityViewModels()
+    private val binding: DialogEditItemBinding by viewBinding()
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        val binding = DialogEditItemBinding.inflate(inflater)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         binding.lifecycleOwner = viewLifecycleOwner
         binding.viewModel = viewModel
+        viewModel.setMenuItem(orderViewModel.editItem.value!!.clone())
+        viewModel.setOrderItem(orderViewModel.editOrderItem.value!!)
 
         createAdapters(binding)
 
         binding.btnEditSaveItem.setOnClickListener {
-            viewModel.saveModifiedItem()
+            orderViewModel.saveEditedItem()
             dismiss()
         }
 
-//        binding.btnEditAddQuantity.setOnClickListener {
-//            viewModel.increaseItemQuantity()
-//        }
-//
-//        binding.btnEditMinusQuantity.setOnClickListener {
-//            viewModel.decreaseItemQuantity()
-//        }
+        binding.btnEditMinusQuantity.setOnClickListener {
+            viewModel.decreaseQuantity()
+        }
 
-        return binding.root
+        binding.btnEditAddQuantity.setOnClickListener {
+            viewModel.increaseQuantity()
+        }
     }
 
-    private fun createAdapters(binding: DialogEditItemBinding){
+    private fun createAdapters(binding: DialogEditItemBinding) {
         val modAdapter = ModifierAdapter(ModifierAdapter.ModifierListener { item ->
             viewModel.onModItemClicked(item)
         })
@@ -52,16 +60,21 @@ class EditItemDialogFragment: BaseDialog() {
         val concatAdapter = ConcatAdapter(modAdapter, ingAdapter)
         binding.editModRecyclerView.adapter = concatAdapter
 
-        viewModel.activeItem.observe(viewLifecycleOwner, { item ->
-            modAdapter.submitList(item?.modifiers)
-            modAdapter.notifyDataSetChanged()
+        viewModel.menuItem.observe(viewLifecycleOwner, { item ->
+            if (item != null){
+                modAdapter.submitList(item.modifiers)
+                modAdapter.notifyDataSetChanged()
+
+                ingAdapter.submitList(item.ingredients)
+                ingAdapter.notifyDataSetChanged()
+
+                populatePriceGroup(item)
+            }
         })
 
-        viewModel.changedIngredients.observe(viewLifecycleOwner, {
-            ingAdapter.submitList(viewModel.changedIngredients.value)
-            ingAdapter.notifyDataSetChanged()
-        })
     }
+
+
 
     override fun onStart() {
         super.onStart()
@@ -78,4 +91,22 @@ class EditItemDialogFragment: BaseDialog() {
 
         const val TAG = "EditItemDialogFragment"
     }
+
+    @SuppressLint("SetTextI18n")
+    fun populatePriceGroup(menuItem: MenuItem) {
+        binding.itemPriceRadioGroup.removeAllViews()
+        for (price in menuItem.prices){
+            val button = RadioButton(activity)
+            val typeface = ResourcesCompat.getFont(button.context, R.font.open_sans_semibold)
+            button.typeface = typeface
+            button.textSize = 24f
+            val workingPrice = price.price.plus(price.modifiedPrice).times(price.quantity)
+            val x = button.context.getString(R.string.item_price, "%.${2}f".format(workingPrice))
+            button.text = "${price.size}: $x"
+            button.isChecked = price.isSelected
+            button.setOnClickListener { viewModel.changeSelectedPrice(price) }
+            binding.itemPriceRadioGroup.addView(button)
+        }
+    }
+
 }

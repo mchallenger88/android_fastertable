@@ -1,22 +1,23 @@
 package com.fastertable.fastertable.ui.order
 
+import android.annotation.SuppressLint
 import android.content.res.ColorStateList
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import android.widget.Button
 import android.widget.LinearLayout
+import android.widget.RadioButton
 import androidx.constraintlayout.helper.widget.Flow
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
+import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.ViewCompat
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.ConcatAdapter
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.fastertable.fastertable.R
-import com.fastertable.fastertable.adapters.GuestSideBarAdapter
-import com.fastertable.fastertable.adapters.IngredientsAdapter
-import com.fastertable.fastertable.adapters.ModifierAdapter
-import com.fastertable.fastertable.adapters.OrderItemAdapter
+import com.fastertable.fastertable.adapters.*
 import com.fastertable.fastertable.common.base.BaseFragment
 import com.fastertable.fastertable.data.models.Menu
 import com.fastertable.fastertable.data.models.MenuCategory
@@ -209,17 +210,24 @@ class OrderFragment : BaseFragment(R.layout.order_fragment) {
         binding.orderItems.adapter = orderItemsAdapter
         binding.modRecyclerView.adapter = concatAdapter
 
+
         binding.guestRecycler.adapter = guestAdapter
 
         viewModel.activeItem.observe(viewLifecycleOwner, { item ->
-            modAdapter.submitList(item?.modifiers)
-            modAdapter.notifyDataSetChanged()
+            if (item != null){
+                populatePriceGroup(item)
+
+                modAdapter.submitList(item?.modifiers)
+                modAdapter.notifyDataSetChanged()
+            }
+
         })
 
         viewModel.changedIngredients.observe(viewLifecycleOwner, {
             ingAdapter.submitList(viewModel.changedIngredients.value)
             ingAdapter.notifyDataSetChanged()
         })
+
 
         viewModel.activeOrder.observe(viewLifecycleOwner, { item ->
             val list = mutableListOf<newGuest>()
@@ -242,5 +250,24 @@ class OrderFragment : BaseFragment(R.layout.order_fragment) {
             }
 
         })
+    }
+
+    @SuppressLint("SetTextI18n")
+    fun populatePriceGroup(item: MenuItem){
+        binding.itemPriceRadioGroup.removeAllViews()
+        for (price in item.prices){
+            val button = RadioButton(activity)
+            val typeface = ResourcesCompat.getFont(button.context, R.font.open_sans_semibold)
+            button.typeface = typeface
+            button.textSize = 24f
+            val workingPrice = price.price.plus(price.modifiedPrice).times(price.quantity)
+            val x = button.context.getString(R.string.item_price, "%.${2}f".format(workingPrice))
+            button.text = "${price.size}: $x"
+            button.isChecked = price.isSelected
+            button.setOnClickListener { viewModel.changeSelectedPrice(price) }
+            binding.itemPriceRadioGroup.addView(button)
+        }
+
+
     }
 }

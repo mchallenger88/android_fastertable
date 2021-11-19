@@ -5,6 +5,7 @@ import com.beust.klaxon.internal.firstNotNullResult
 import com.fastertable.fastertable.api.KitchenPrintUseCase
 import com.fastertable.fastertable.api.ReceiptPrintUseCase
 import com.fastertable.fastertable.data.models.*
+import com.fastertable.fastertable.utils.round
 import technology.master.kotlinprint.printer.*
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -90,8 +91,8 @@ class PrintTicketService {
                     addMenuItemLine(document, item, order.orderType)
 
                     var ing: String
-                    if (item.orderMods != null){
-                        item.orderMods!!.forEach{ m ->
+                    if (item.activeModItems().isNotEmpty()){
+                        item.activeModItems().forEach{ m ->
                             document
                                 .color(PrinterDriver.COLOR.RED)
                                 .text("  " + m.itemName.uppercase(Locale.getDefault()), TextSettings(bold = true))
@@ -133,8 +134,8 @@ class PrintTicketService {
 
     private fun addMenuItemLine(document: Document, item: OrderItem, orderType: String) {
         var line = ""
-        if (item.quantity > 1){
-            line += "Qty " + item.quantity + "x "
+        if (item.menuItemPrice.quantity > 1){
+            line += "Qty " + item.menuItemPrice.quantity + "x "
         }
 
         if (item.menuItemPrice.size != "Regular"){
@@ -247,8 +248,8 @@ class PrintTicketService {
 
 
                             var ing: String
-                            if (item.orderMods != null){
-                                item.orderMods!!.forEach{ m ->
+                            if (item.activeModItems().isNotEmpty()){
+                                item.activeModItems().forEach{ m ->
                                     document
                                         .color(PrinterDriver.COLOR.RED)
                                         .text("  " + m.itemName, TextSettings(bold = true))
@@ -812,7 +813,7 @@ class PrintTicketService {
             .newLine()
 
         var price: Double
-        var padding: Int = 0
+        var padding = 0
         var concat: String
 
         ticket.ticketItems.forEachIndexed{index, item ->
@@ -834,14 +835,14 @@ class PrintTicketService {
                     concat = padStr.repeat(padding)
                     document
                         .alignment("right")
-                        .text(item.itemName + concat + "$" + price)
+                        .text(item.itemName + concat + String.format("%.2f", price))
                         .newLine()
                 }else{
                     padding = (38 - itemName.length - price.toString().length)
                     concat = padStr.repeat(padding)
                     document
                         .alignment("right")
-                        .text("${item.quantity}x $itemName $concat $${price}")
+                        .text("${item.quantity}x $itemName $concat" + String.format("%.2f", price))
                         .newLine()
                 }
             }
@@ -894,6 +895,10 @@ class PrintTicketService {
         var itemPrice: Double
         var subtotal: Double = 0.00
         var itemName: String
+        var price: Double
+        var padding = 0
+        var concat: String
+
         document
             .triggerPeripheral(PrinterDriver.PERIPHERAL.DEVICE1)
             .alignment("center")
@@ -924,36 +929,37 @@ class PrintTicketService {
         ticket.ticketItems.forEachIndexed{index, item ->
             if (item.ticketItemPrice != 0.00){
                 itemPrice = item.ticketItemPrice
-                val g: String = (index + 1).toString()
-                document
-                    .newLine()
-                    .alignment("left").text("GUEST $g")
-                    .newLine()
+//                val g: String = (index + 1).toString()
+//                document
+//                    .newLine()
+//                    .alignment("left").text("GUEST $g")
+//                    .newLine()
 
                 subtotal += itemPrice
-                val price = itemPrice
+                price = itemPrice
 
-                if (item.itemName.length > 25){
-                    itemName = item.itemName.substring(0, 25)
+                itemName = if (item.itemName.length > 25){
+                    item.itemName.substring(0, 25).trim()
                 }else{
-                    itemName = item.itemName
+                    item.itemName.trim()
                 }
 
                 if (item.quantity == 1){
-                    val padding: Int = (41 - itemName.length - price.toString().length)
-                    val concat: String = padStr.repeat(padding)
+                    padding = (41 - itemName.length - price.toString().length)
+                    concat = padStr.repeat(padding)
                     document
                         .alignment("right")
-                        .text(item.itemName + concat + "$" + price)
+                        .text(item.itemName + concat + String.format("%.2f", price))
                         .newLine()
                 }else{
-                    val padding: Int = (38 - itemName.length - price.toString().length)
-                    val concat: String = padStr.repeat(padding)
+                    padding = (38 - itemName.length - price.toString().length)
+                    concat = padStr.repeat(padding)
                     document
                         .alignment("right")
-                        .text("${item.quantity}x $itemName $concat $${price}")
+                        .text("${item.quantity}x $itemName $concat" + String.format("%.2f", price))
                         .newLine()
                 }
+
             }
         }
 

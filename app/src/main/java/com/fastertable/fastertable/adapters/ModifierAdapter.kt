@@ -2,6 +2,7 @@ package com.fastertable.fastertable.adapters
 
 import android.annotation.SuppressLint
 import android.content.res.ColorStateList
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -66,6 +67,7 @@ class ModifierAdapter(private val clickListener: ModifierListener) : ListAdapter
             flow.setHorizontalBias(0.0F)
 
             modifier.modifierItems.forEachIndexed{int, item ->
+                Log.d("Testing", "ModAdpater: ${item.quantity}")
                 val btn = MaterialButton(parent.context, null, R.attr.materialButtonOutlinedStyle)
                 btn.id = ViewCompat.generateViewId()
                 btn.tag = int

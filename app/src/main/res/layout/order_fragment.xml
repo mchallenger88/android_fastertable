@@ -408,7 +408,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
-                    app:intToString="@{viewModel.itemQuantity}"
+                    app:intToString="@{viewModel.activeItem.prices[0].quantity}"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/txt_menu_item_description" />
@@ -463,33 +463,47 @@
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 
-                    <TextView
-                        android:id="@+id/txt_item_price"
-                        style="@style/large_title_bold"
-                        android:layout_width="wrap_content"
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/layout_prices"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="16dp"
+                        android:layout_marginTop="10dp"
                         app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.0"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="@+id/price_divider"
-                        app:priceDouble="@{viewModel.workingItemPrice}" />
+                        app:layout_constraintTop_toTopOf="@+id/price_divider">
+
+                        <RadioGroup
+                            android:id="@+id/item_price_radio_group"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="@+id/layout_prices">
+
+                        </RadioGroup>
+
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
 
                     <Button
                         android:id="@+id/btn_add_item"
                         style="@style/primary_button_large"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="16dp"
                         android:background="@drawable/rounded_button"
                         android:drawableLeft="@drawable/ic_baseline_add_24_white"
+                        android:layout_marginTop="10dp"
                         android:enabled="@{ viewModel.enableAddButton }"
                         android:onClick="@{() -> viewModel.addItemToOrder()}"
                         android:text="@string/add_item_to_order"
-                        app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/txt_item_price"
+                        app:layout_constraintTop_toBottomOf="@+id/layout_prices"
                         tools:ignore="RtlHardcoded" />
+
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
             </androidx.constraintlayout.widget.ConstraintLayout>

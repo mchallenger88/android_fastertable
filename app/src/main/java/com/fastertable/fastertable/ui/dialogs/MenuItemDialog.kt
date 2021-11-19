@@ -1,20 +1,27 @@
 package com.fastertable.fastertable.ui.dialogs
 
+import android.annotation.SuppressLint
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.RadioButton
+import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.activityViewModels
+import by.kirich1409.viewbindingdelegate.viewBinding
+import com.fastertable.fastertable.R
 import com.fastertable.fastertable.data.models.*
 import com.fastertable.fastertable.databinding.AddMiscMenuItemBinding
 import com.fastertable.fastertable.ui.order.OrderViewModel
 
-class MenuItemDialog: BaseDialog() {
+class MenuItemDialog: BaseDialog(R.layout.add_misc_menu_item) {
     private val viewModel: OrderViewModel by activityViewModels()
+    private val binding: AddMiscMenuItemBinding by viewBinding()
     private var salesCategory: String = "Food"
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        val binding = AddMiscMenuItemBinding.inflate(inflater)
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         binding.radioFood.setOnClickListener{
             salesCategory = "Food"
         }
@@ -45,15 +52,21 @@ class MenuItemDialog: BaseDialog() {
                 }
             }
         }
-
-        return binding.root
     }
+//    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+//        val binding = AddMiscMenuItemBinding.inflate(inflater)
+//
+//
+//
+//        return binding.root
+//    }
 
     private fun createOrderItem(qty: Int, name: String, price: Double){
         val order = viewModel.activeOrder.value
         val id = order?.orderItems?.last()?.id?.plus(1)!!
 
         val p = ItemPrice(
+            quantity = qty,
             price = price,
             size = "Regular",
             discountPrice = null,
@@ -64,13 +77,11 @@ class MenuItemDialog: BaseDialog() {
 
         val item = OrderItem(
             id = id,
-            quantity = qty,
             menuItemId = "Adhoc_Menu_Item",
             menuItemName = name,
             menuItemPrice = p,
-            orderMods = arrayListOf<ModifierItem>(),
+            modifiers = viewModel.activeItem.value?.modifiers,
             salesCategory = salesCategory,
-            ingredientList = null,
             ingredients = arrayListOf<ItemIngredient>(),
             prepStation = findPrepStation(printer!!),
             printer = printer,
@@ -116,4 +127,6 @@ class MenuItemDialog: BaseDialog() {
 
         const val TAG = "MenuItemDialog"
     }
+
+
 }

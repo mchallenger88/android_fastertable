@@ -150,15 +150,15 @@ data class Order(
             id = index,
             orderGuestNo = orderItem.guestId,
             orderItemId = orderItem.id,
-            quantity = orderItem.quantity,
+            quantity = orderItem.menuItemPrice.quantity,
             itemName = orderItem.menuItemName,
-            itemSize = orderItem.menuItemPrice.size,
+//            itemSize = orderItem.menuItemPrice.size,
             itemPrice = orderItem.menuItemPrice.price,
             discountPrice = null,
             priceModified = orderItem.priceAdjusted,
             approvalType = null,
             approvalId = null,
-            itemMods = ArrayList(orderItem.orderMods),
+            itemMods = ArrayList(orderItem.activeModItems()),
             salesCategory = orderItem.salesCategory,
             ticketItemPrice = orderItem.getTicketExtendedPrice(this.taxRate).round(2),
             tax = orderItem.getSalesTax(orderItem.tax, this.taxRate).round(2)
@@ -171,15 +171,14 @@ data class Order(
             id = index,
             orderGuestNo = index,
             orderItemId = orderItem.id,
-            quantity = orderItem.quantity,
+            quantity = orderItem.menuItemPrice.quantity,
             itemName = orderItem.menuItemName,
-            itemSize = orderItem.menuItemPrice.size,
             itemPrice = orderItem.menuItemPrice.price,
             discountPrice = null,
             priceModified = orderItem.priceAdjusted,
             approvalType = null,
             approvalId = null,
-            itemMods = ArrayList(orderItem.orderMods),
+            itemMods = ArrayList(orderItem.activeModItems()),
             salesCategory = orderItem.salesCategory,
             ticketItemPrice = orderItem.getTicketExtendedPrice(this.taxRate).div(split).round(2),
             tax = orderItem.getSalesTax(orderItem.tax, this.taxRate).div(split).round(2)
@@ -348,13 +347,12 @@ data class Guest(
 data class OrderItem(
     var id: Int,
     var guestId: Int = 1,
-    var quantity: Int,
+//    var quantity: Int,
     val menuItemId: String,
     val menuItemName: String,
-    val menuItemPrice: ItemPrice,
-    var orderMods: List<ModifierItem>?,
+    var menuItemPrice: ItemPrice,
+    var modifiers: MutableList<Modifier>?,
     val salesCategory: String,
-    val ingredientList: List<ItemIngredient>?,
     var ingredients: List<ItemIngredient>?,
     val prepStation: PrepStation?,
     val printer: Printer,
@@ -369,18 +367,7 @@ data class OrderItem(
     var status: String,
 ): Parcelable {
     fun getExtendedPrice(): Double{
-        var price: Double = this.quantity * this.menuItemPrice.price
-        this.orderMods?.forEach{x ->
-            if (x.surcharge > 0){
-                price += x.surcharge
-            }}
-
-        this.ingredients?.forEach{x ->
-            if (x.surcharge > 0){
-                price += x.surcharge
-            }}
-
-        return price
+        return menuItemPrice.price.plus(menuItemPrice.modifiedPrice).times(menuItemPrice.quantity)
     }
 
     fun getTicketExtendedPrice(taxRate: Double): Double{
@@ -400,9 +387,32 @@ data class OrderItem(
         }
         return tax
     }
-        fun deepCopy() : OrderItem {
-            return Gson().fromJson(Gson().toJson(this), this.javaClass)
+
+    fun activeModItems(): List<ModifierItem>{
+        val list = mutableListOf<ModifierItem>()
+        modifiers?.forEach { mod ->
+            mod.modifierItems.forEach {
+                if (it.quantity > 0){
+                    list.add(it)
+                }
+            }
         }
+        return list
+    }
+
+    fun activeIngredients(): List<ItemIngredient>{
+        val list = mutableListOf<ItemIngredient>()
+        ingredients?.forEach {
+            if (it.orderValue != 1){
+                list.add(it)
+            }
+        }
+        return list
+    }
+
+    fun clone() : OrderItem {
+        return Gson().fromJson(Gson().toJson(this), this.javaClass)
+    }
 }
 
 enum class TaxTypes{

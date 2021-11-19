@@ -83,6 +83,7 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
     private val floorplanManageViewModel: FloorplanManageViewModel by viewModels()
     private val approvalsViewModel: ApprovalsViewModel by viewModels()
     private val completedApprovalsViewModel: CompletedApprovalsViewModel by viewModels()
+    private val editItemViewModel: EditItemDialogViewModel by viewModels()
     private var progressDialog: ProgressDialog? = null
     private lateinit var user: OpsAuth
 

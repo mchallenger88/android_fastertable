@@ -59,21 +59,17 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
     val activeItem: LiveData<MenuItem?>
         get() = _activeItem
 
-    private val _editItem = MutableLiveData<OrderItem?>()
-    val editItem: LiveData<OrderItem?>
+    private val _editItem = MutableLiveData<MenuItem>()
+    val editItem: LiveData<MenuItem>
         get() = _editItem
 
-    private val _itemQuantity = MutableLiveData<Int>()
-    val itemQuantity: LiveData<Int>
-        get() = _itemQuantity
+    private val _editOrderItem = MutableLiveData<OrderItem>()
+    val editOrderItem: LiveData<OrderItem>
+        get() = _editOrderItem
 
-    private val _modifiers = MutableLiveData<List<Modifier>?>()
-    val modifiers: LiveData<List<Modifier>?>
-        get() = _modifiers
-
-    private val _changedIngredients = MutableLiveData<ArrayList<ItemIngredient>>()
-    val changedIngredients: LiveData<ArrayList<ItemIngredient>?>
-        get() = _changedIngredients
+    private val _selectedPrice = MutableLiveData<ItemPrice>()
+    val selectedPrice: LiveData<ItemPrice>
+        get() = _selectedPrice
 
     private val _pageLoaded = MutableLiveData<Boolean>()
     val pageLoaded: LiveData<Boolean>
@@ -113,10 +109,6 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
     private val _orderItem = MutableLiveData<OrderItem?>()
     val orderItem: LiveData<OrderItem?>
         get() = _orderItem
-
-    private val _workingItemPrice = MutableLiveData<Double>()
-    val workingItemPrice: LiveData<Double>
-        get() = _workingItemPrice
 
     private val _showOrderNote = MutableLiveData<Boolean>()
     val showOrderNote: LiveData<Boolean>
@@ -202,8 +194,6 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
             }else{
                 _activeOrder.postValue(orderRepository.getNewOrder())
             }
-
-            _itemQuantity.postValue(1)
             _pageLoaded.postValue(true)
         }
     }
@@ -231,207 +221,95 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
     // region Modifier Functions
 
     fun onModItemClicked(item: OrderMod) {
-        val flat = listOf(item.mod.modifierItems).flatten()
-        val sum = flat.sumOf{x -> x.quantity}
-
-        if (item.mod.selectionLimitMax == 1){
-            radioMod(sum, item)
-        }
-
-        if (item.mod.selectionLimitMax == 0 || item.mod.selectionLimitMax > 1){
-            checkboxMod(sum, item)
-        }
-
-        val index = _activeItem.value?.modifiers!!.indexOfFirst { x -> x.id == item.mod.id }
-        _activeItem.value!!.modifiers[index] = item.mod
-        _activeItem.value = _activeItem.value
-        checkModifierValidation()
-    }
-
-    private fun checkboxMod(sum: Int, item: OrderMod){
-        val max = item.mod.selectionLimitMax
-
-        if (max == 0){
-            val it = item.mod.modifierItems.find{x -> x.itemName == item.item.itemName}
-            it?.quantity = 1
-            if (it?.surcharge!! > 0){
-                AddSubtract.ADD.updateWorkingPrice(it.surcharge)
-            }
-        }
-
-        if (max > 1){
-            if (sum < max){
-                val it = item.mod.modifierItems.find{x -> x.itemName == item.item.itemName}
-                it?.quantity = it?.quantity!!.plus(1)
-                if (it.surcharge > 0){
-                    AddSubtract.ADD.updateWorkingPrice(it.surcharge)
-                }
-
-            }else{
-                val it = item.mod.modifierItems.find{x -> x.itemName == item.item.itemName}
-                val qty = it?.quantity
-                it?.quantity = 0
-                if (it?.surcharge!! > 0){
-                    AddSubtract.SUBTRACT.updateWorkingPrice(it.surcharge.times(qty!!))
-                }
-
-            }
-        }
-    }
-
-    private fun radioMod(sum: Int, item: OrderMod){
-        if (sum == 0){
-            val it = item.mod.modifierItems.find{x -> x.itemName == item.item.itemName}
-            it?.quantity = 1
-            if (it?.surcharge!! > 0){
-                AddSubtract.ADD.updateWorkingPrice(it.surcharge)
-            }
-        }else{
-            val it = item.mod.modifierItems.find{x -> x.itemName == item.item.itemName}
-            if (it?.quantity == 0) {
-                it.quantity = 1
-                if (it.surcharge > 0){
-                    AddSubtract.ADD.updateWorkingPrice(it.surcharge)
-                }
-            }
-            if (it?.quantity == 1){
-                it.quantity = 0
-                if (it.surcharge > 0){
-                    AddSubtract.SUBTRACT.updateWorkingPrice(it.surcharge)
-                }
-            }
-
-        }
+        val menuItem = _activeItem.value
+        item.mod.addQuantity(item.item)
+        menuItem?.sumSurcharges()
+        _activeItem.value = menuItem
+        _enableAddButton.value = menuItem?.requirementsMet() == true
     }
 
 
-    private fun checkModifierValidation(){
-        var requireMet = true
-        activeItem.value!!.modifiers.forEach { mod ->
-            var count = 0
-            mod.modifierItems.forEach { mi ->
-                if (mi.quantity > 0){
-                    count = count.plus(mi.quantity)
-                }
-            }
-            if (count < mod.selectionLimitMin){
-                requireMet = false
-            }
-        }
-        _enableAddButton.value = requireMet
-    }
 
     //endregion
 
     //region Ingredient Functions
 
-    private fun AddSubtract.updateWorkingPrice(surcharge: Double){
-        when (this){
-            AddSubtract.ADD -> _workingItemPrice.value = workingItemPrice.value!!.plus(surcharge.times(itemQuantity.value!!))
-            AddSubtract.SUBTRACT -> _workingItemPrice.value = workingItemPrice.value!!.minus(surcharge.times(itemQuantity.value!!))
-        }
-    }
-
-    private fun onIngredientLoad(item: IngredientChange){
-        val ings = _activeItem.value?.ingredients
-        if (ings != null){
-            val ing = ings.find{it.name == item.item.name}
-            if (ing != null){
-                ing.orderValue = item.item.orderValue
-            }
-            _changedIngredients.value = ings!!
-        }
-    }
 
     fun onIngredientClicked(item: IngredientChange){
-        val it = changedIngredients.value?.indexOf(item.item)
-        val found = changedIngredients.value?.get(it!!)
-        if (item.value == 1){
-            if (found?.orderValue!! < 2){
-                found.orderValue = found.orderValue.plus(1)
-                _changedIngredients.value?.set(it!!, found)
-                if (found.orderValue == 2 && found.surcharge > 0.0){
-                    AddSubtract.ADD.updateWorkingPrice(found.surcharge)
-                }
-            }
+        val menuItem = _activeItem.value
 
+        if (item.value == 1){
+            item.item.add()
         }
 
         if (item.value == -1){
-            if (found?.orderValue!! > 0){
-                found.orderValue = found.orderValue.minus(1)
-                _changedIngredients.value?.set(it!!, found)
-                if (found.orderValue == 1 && found.surcharge > 0.0){
-                    AddSubtract.SUBTRACT.updateWorkingPrice(found.surcharge)
-                }
-            }
+            item.item.subtract()
         }
-        _changedIngredients.value = _changedIngredients.value
+        menuItem?.sumSurcharges()
+        _activeItem.value = menuItem
     }
     //endregion
 
     //region MenuItem Functions
 
+    fun changeSelectedPrice(price: ItemPrice){
+        val item = _activeItem.value
+        if (item != null){
+            for (p in item.prices){
+                p.isSelected = p.size == price.size
+            }
+        }
+        _activeItem.value = item
+    }
+
     fun addItemToOrder(){
-        if (activeOrder.value!!.closeTime == null) {
-            val mods = arrayListOf<ModifierItem>()
-            activeItem.value!!.modifiers.forEach { mod ->
-                mod.modifierItems.forEach { mi ->
-                    if (mi.quantity > 0) {
-                        mods.add(mi)
-                    }
+        val order = _activeOrder.value
+        val item = _activeItem.value
+        if (order != null && item != null){
+            if (order.closeTime ==  null){
+                val mods = arrayListOf<ModifierItem>()
+                item.modifiers.forEach { mod ->
+                    mod.modifierItems.forEach { mi ->
+                        if (mi.quantity > 0) {
+                            mods.add(mi)
+                }}}
+
+                val price = item.prices.find { it.size == _selectedPrice.value?.size }
+                if (price != null) {
+                    val orderItem = OrderItem(
+                        id = order.orderItems?.size?.plus(1) ?: 1,
+                        guestId = order.activeGuest ?: 1,
+                        menuItemId = item.id,
+                        menuItemName = item.itemName,
+                        menuItemPrice = price,
+                        modifiers = item.modifiers,
+                        salesCategory = item.salesCategory,
+                        ingredients = item.ingredients,
+                        prepStation = findPrepStation()!!,
+                        printer = item.printer,
+                        priceAdjusted = false,
+                        menuItemDiscount = null,
+                        takeOutFlag = false,
+                        dontMake = false,
+                        rush = false,
+                        tax = price.tax,
+                        note = itemNote,
+                        employeeId = user.employeeId,
+                        status = "Started",
+                    )
+                    order.orderItems?.add(orderItem)
+                    _activeOrder.value = order
+                    _kitchenButtonEnabled.value = true
+                    _menusNavigation.value = MenusNavigation.CATEGORIES
+                    clearItemSettings()
                 }
+            }else{
+                setError("Order Closed", Constants.ORDER_CLOSED)
             }
-
-            val ois = _activeOrder.value?.getAllOrderItems()
-            var oi_id = 0
-            if (ois != null){
-                oi_id = ois.size.plus(1)
-            }
-
-            val item = OrderItem(
-                id = oi_id,
-                guestId = _activeOrder.value?.activeGuest!!,
-                quantity = itemQuantity.value!!,
-                menuItemId = activeItem.value!!.id,
-                menuItemName = activeItem.value!!.itemName,
-                menuItemPrice = activeItem.value!!.prices[0],
-                orderMods = mods,
-                salesCategory = activeItem.value!!.salesCategory,
-                ingredientList = null,
-                ingredients = changedIngredients.value,
-                prepStation = findPrepStation()!!,
-                printer = activeItem.value!!.printer,
-                priceAdjusted = false,
-                menuItemDiscount = null,
-                takeOutFlag = false,
-                dontMake = false,
-                rush = false,
-                tax = activeItem.value!!.prices[0].tax,
-                note = itemNote,
-                employeeId = user.employeeId,
-                status = "Started",
-            )
-
-            _activeOrder.value!!.orderItems?.add(item)
-
-            _activeOrder.value = _activeOrder.value
-            _kitchenButtonEnabled.value = true
-            _menusNavigation.value = MenusNavigation.CATEGORIES
-            clearItemSettings()
-        }else{
-            setError("Order Closed", Constants.ORDER_CLOSED)
         }
     }
 
-    fun addAdHocItem(item: OrderItem){
-        item.guestId = _activeOrder.value?.activeGuest!!
-        _activeOrder.value?.orderItems?.add(item)
-        _activeOrder.value = _activeOrder.value
-        _menusNavigation.value = MenusNavigation.CATEGORIES
-    }
-
-    fun saveModifiedItem(){
+    fun saveEditedItem(){
         val mods = arrayListOf<ModifierItem>()
         activeItem.value!!.modifiers.forEach { mod ->
             mod.modifierItems.forEach { mi ->
@@ -441,22 +319,19 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
             }
         }
 
-        _editItem.value?.orderMods = mods
-        _editItem.value?.quantity = itemQuantity.value!!
-        _editItem.value?.ingredients = changedIngredients.value
-
         if (_activeOrder.value != null){
-            val item = _activeOrder.value!!.orderItems?.find { it.id == _editItem.value?.id }
-            if (item != null){
-                item.orderMods = mods
-                item.quantity = itemQuantity.value!!
-                item.ingredients = changedIngredients.value
-            }
-
+            val item = _activeOrder.value!!.orderItems?.find { it.id == _editOrderItem.value?.id }
         }
 
         _activeOrder.value = _activeOrder.value
         clearItemSettings()
+    }
+
+    fun addAdHocItem(item: OrderItem){
+        item.guestId = _activeOrder.value?.activeGuest!!
+        _activeOrder.value?.orderItems?.add(item)
+        _activeOrder.value = _activeOrder.value
+        _menusNavigation.value = MenusNavigation.CATEGORIES
     }
 
     private fun findPrepStation(): PrepStation?{
@@ -466,16 +341,23 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
 
 
     fun increaseItemQuantity(){
-        val unitPrice = _workingItemPrice.value!!.div(itemQuantity.value!!)
-        _itemQuantity.value = _itemQuantity.value?.plus(1)
-        _workingItemPrice.value = unitPrice.times(itemQuantity.value!!)
+        if (_activeItem.value?.prices != null){
+            for (price in _activeItem.value?.prices!!){
+                price.quantity = price.quantity.plus(1)
+            }
+            _activeItem.value = _activeItem.value
+        }
     }
 
     fun decreaseItemQuantity(){
-        if (itemQuantity.value!! > 1){
-            val unitPrice = _workingItemPrice.value!!.div(itemQuantity.value!!)
-            _itemQuantity.value = _itemQuantity.value?.minus(1)
-            _workingItemPrice.value = unitPrice.times(itemQuantity.value!!)
+        if (_activeItem.value?.prices != null){
+            for (price in _activeItem.value?.prices!!){
+                if (price.quantity > 1){
+                    price.quantity = price.quantity.minus(1)
+                }
+            }
+
+            _activeItem.value = _activeItem.value
         }
     }
 
@@ -491,22 +373,22 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
 
     private suspend fun modifyOrderItem(item: OrderItem){
         val out = viewModelScope.launch {
-            _editItem.value = item
-            _itemQuantity.value = item.quantity
+            val menuItem = findMenuItem(item.menuItemId)
+            menuItem?.prices?.forEach{
+                it.modifiedPrice = item.menuItemPrice.modifiedPrice
+                it.quantity = item.menuItemPrice.quantity
+                it.isSelected = it.size == item.menuItemPrice.size
+            }
+            menuItem?.modifiers = item.modifiers as ArrayList<Modifier>
+            menuItem?.ingredients = item.ingredients as ArrayList<ItemIngredient>
+            if (menuItem != null){
+                _editItem.value = menuItem!!
+            }
+
+            _editOrderItem.value = item
+
         }
 
-        out.join()
-        setActiveItem(findMenuItem(item.menuItemId)!!)
-        if (item.ingredients != null){
-            for (ing in item.ingredients!!){
-                val ig = IngredientChange(
-                    item = ing,
-                    value = 1
-                )
-                onIngredientLoad(ig)
-                _workingItemPrice.value = item.getExtendedPrice()
-            }
-        }
     }
 
     //endregion
@@ -518,37 +400,9 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
     }
 
     fun setActiveItem(menuItem: MenuItem) {
-        _modifiers.value = null
-        modList.clear()
         _activeItem.value = menuItem.clone()
+        _selectedPrice.value = menuItem.prices[0]
         enableAddItemButton()
-        if (_editItem.value == null){
-            activeItem.value?.modifiers?.forEachIndexed { int, mod ->
-                mod.arrayId = int.toDouble()
-                modList.add(mod)
-            }
-        }else{
-            for (modItem in editItem.value?.orderMods!!){
-                activeItem.value?.modifiers?.forEachIndexed { int, mod ->
-                    mod.arrayId = int.toDouble()
-                    val found = mod.modifierItems.find{it.itemName == modItem.itemName}
-                    if (found != null){
-                        val om = OrderMod(
-                            item = modItem,
-                            mod = mod
-                        )
-                        onModItemClicked(om)
-                    }
-                    modList.add(mod)
-                }
-            }
-        }
-
-
-        _modifiers.value = modList
-        _changedIngredients.value = activeItem.value?.ingredients
-        _workingItemPrice.value = activeItem.value!!.prices[0].price
-
     }
 
     fun setMenusNavigation(it: MenusNavigation){
@@ -567,8 +421,7 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
 
     private fun clearItemSettings(){
         _activeItem.value = null
-        _workingItemPrice.value = 0.0
-        _itemQuantity.value = 1
+//        _workingItemPrice.value = 0.0
     }
 
     private fun findMenuItem(id: String): MenuItem? {
@@ -704,7 +557,7 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
     fun addDrinksToOrder(drinksList: MutableList<ReorderDrink>){
         if (activeOrder.value!!.closeTime == null){
             for (drink in drinksList){
-                val newOrderItem = drink.drink.deepCopy()
+                val newOrderItem = drink.drink.clone()
                 newOrderItem.id = _activeOrder.value?.orderItems?.last()?.id!!.plus(1)
                 newOrderItem.status = "Started"
                 _activeOrder.value?.orderItems?.add(newOrderItem)
@@ -835,6 +688,8 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
         _error.value = false
     }
 
+    //region Transfer Order
+
     fun transferAddItem(item: OrderItem){
         val found = transferList.find { it.id == item.id }
         if (found == null){
@@ -883,5 +738,8 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
     fun setTransferComplete(b: Boolean){
         _transferComplete.value = b
     }
+
+    //endregion
+
 }
 

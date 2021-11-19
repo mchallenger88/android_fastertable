@@ -5,26 +5,34 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
+import by.kirich1409.viewbindingdelegate.viewBinding
+import com.fastertable.fastertable.R
 import com.fastertable.fastertable.databinding.DialogCashBackBinding
 import com.fastertable.fastertable.ui.payment.PaymentViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class CashBackDialogFragment: BaseDialog()  {
+class CashBackDialogFragment: BaseDialog(R.layout.dialog_cash_back)  {
     private val viewModel: PaymentViewModel by activityViewModels()
+    private val binding: DialogCashBackBinding by viewBinding()
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        val binding = DialogCashBackBinding.inflate(inflater)
-
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         binding.lifecycleOwner = viewLifecycleOwner
         binding.viewModel = viewModel
 
         binding.btnCloseCashBack.setOnClickListener {
             dismiss()
         }
-
-        return binding.root
     }
+
+//    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+//        val binding = DialogCashBackBinding.inflate(inflater)
+//
+//
+//
+//        return binding.root
+//    }
 
     override fun onStart() {
         super.onStart()

@@ -501,7 +501,7 @@ data class TicketItem(
     val orderItemId: Int,
     val quantity: Int,
     val itemName: String,
-    val itemSize: String,
+//    val itemSize: String,
     var itemPrice: Double,
     var discountPrice: Double?,
     var priceModified: Boolean,
@@ -527,6 +527,17 @@ data class TicketItem(
 
 
 }
+
+//@Parcelize
+//data class ItemPrice(
+//    var isSelected: Boolean = false,
+//    var quantity: Int = 1,
+//    val size: String,
+//    var price: Double,
+//    val discountPrice: Double?,
+//    var modifiedPrice: Double = price,
+//    val tax: String
+//): Parcelable
 
 @Parcelize
 data class PaymentTransaction(

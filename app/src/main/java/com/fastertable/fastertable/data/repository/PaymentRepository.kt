@@ -161,14 +161,6 @@ class PaymentRepository @Inject constructor(private val app: Application) {
             }
 
         }
-//        for (guest in order.guests!!){
-//            for (item in guest.orderItems!!){
-//                if (item.status == "Started"){
-//                    val ticket = payment.tickets?.get(0)
-//                    createTicketItem(ticket!!, guest, item)
-//                }
-//            }
-//        }
         payment.recalculateTotals()
         return payment
     }
@@ -179,15 +171,15 @@ class PaymentRepository @Inject constructor(private val app: Application) {
             id = i + 1,
             orderGuestNo = guest,
             orderItemId = orderItem.id,
-            quantity = orderItem.quantity,
+            quantity = orderItem.menuItemPrice.quantity,
             itemName = orderItem.menuItemName,
-            itemSize = orderItem.menuItemPrice.size,
+//            itemSize = orderItem.menuItemPrice.size,
             itemPrice = orderItem.menuItemPrice.price,
             discountPrice = null,
             priceModified = orderItem.priceAdjusted,
             approvalType = null,
             approvalId = null,
-            itemMods = ArrayList(orderItem.orderMods),
+            itemMods = ArrayList(orderItem.activeModItems()),
             salesCategory = orderItem.salesCategory,
             ticketItemPrice = orderItem.getTicketExtendedPrice(ticket.taxRate).round(2),
             tax = orderItem.getSalesTax(orderItem.tax, ticket.taxRate).round(2)

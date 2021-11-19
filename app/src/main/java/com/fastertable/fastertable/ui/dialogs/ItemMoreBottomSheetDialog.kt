@@ -5,15 +5,18 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import by.kirich1409.viewbindingdelegate.viewBinding
+import com.fastertable.fastertable.R
 import com.fastertable.fastertable.databinding.BottomSheetOrderLineItemBinding
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class ItemMoreBottomSheetDialog: BaseDialog() {
+class ItemMoreBottomSheetDialog: BaseDialog(R.layout.bottom_sheet_order_line_item) {
     private lateinit var dialogListener: DialogListener
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        val binding = BottomSheetOrderLineItemBinding.inflate(inflater)
+    private val binding: BottomSheetOrderLineItemBinding by viewBinding()
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         binding.btnItemDelete.setOnClickListener {
             dialogListener.returnValue("Delete")
             dismiss()
@@ -37,8 +40,13 @@ class ItemMoreBottomSheetDialog: BaseDialog() {
             dialogListener.returnValue("Modify Order Item")
             dismiss()
         }
-        return binding.root
     }
+//    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+//        val binding = BottomSheetOrderLineItemBinding.inflate(inflater)
+//
+//
+//        return binding.root
+//    }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)

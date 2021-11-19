@@ -5,23 +5,31 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
+import by.kirich1409.viewbindingdelegate.viewBinding
+import com.fastertable.fastertable.R
 import com.fastertable.fastertable.databinding.BottomSheetCheckoutBinding
 import com.fastertable.fastertable.ui.checkout.CheckoutViewModel
 
-class CheckoutDialogBottomSheet: BaseDialog() {
+class CheckoutDialogBottomSheet: BaseDialog(R.layout.bottom_sheet_checkout) {
     private val viewModel: CheckoutViewModel by activityViewModels()
+    private val binding: BottomSheetCheckoutBinding by viewBinding()
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        val binding = BottomSheetCheckoutBinding.inflate(inflater)
-        binding.viewModel = viewModel
-
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         binding.txtDialogCheckoutMessage.text = viewModel.checkoutComplete.value
 
         binding.btnDialogCheckoutClose.setOnClickListener{
             dismiss()
         }
-        return binding.root
     }
+
+//    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+//        val binding = BottomSheetCheckoutBinding.inflate(inflater)
+//        binding.viewModel = viewModel
+//
+//
+//        return binding.root
+//    }
 
     override fun onStart() {
         super.onStart()

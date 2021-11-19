@@ -3,7 +3,7 @@ package com.fastertable.fastertable.ui.dialogs
 import androidx.fragment.app.DialogFragment
 import com.fastertable.fastertable.data.models.DateDialog
 
-open class BaseDialog: DialogFragment() {
+open class BaseDialog(fragment: Int): DialogFragment(fragment) {
 
 }
 
