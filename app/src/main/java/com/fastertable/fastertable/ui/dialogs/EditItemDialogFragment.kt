@@ -29,13 +29,40 @@ class EditItemDialogFragment: BaseDialog(R.layout.dialog_edit_item) {
 
         binding.lifecycleOwner = viewLifecycleOwner
         binding.viewModel = viewModel
-        viewModel.setMenuItem(orderViewModel.editItem.value!!.clone())
-        viewModel.setOrderItem(orderViewModel.editOrderItem.value!!)
+        var mi: MenuItem
+        orderViewModel.editItem.value?.let {
+            mi = it.clone()
+            viewModel.setMenuItem(mi)
+        }
 
-        createAdapters(binding)
+        orderViewModel.editOrderItem.value?.let {
+            viewModel.setOrderItem(it)
+        }
+
+        viewModel.saveChanges.observe(viewLifecycleOwner, {
+            it?.let {
+                it.note = binding.txtEditOrderNote.text.toString()
+                orderViewModel.saveEditedItem(it)
+                viewModel.setSaveChanges(null)
+            }
+        })
+
+        createAdapters()
+
+        binding.btnEditOrderNote.setOnClickListener {
+            if (viewModel.showNotes.value == true){
+                viewModel.setShowNotes(false)
+            }else{
+                viewModel.setShowNotes(true)
+            }
+        }
 
         binding.btnEditSaveItem.setOnClickListener {
-            orderViewModel.saveEditedItem()
+            viewModel.saveChanges()
+            dismiss()
+        }
+
+        binding.btnEditCancelItem.setOnClickListener {
             dismiss()
         }
 
@@ -48,7 +75,7 @@ class EditItemDialogFragment: BaseDialog(R.layout.dialog_edit_item) {
         }
     }
 
-    private fun createAdapters(binding: DialogEditItemBinding) {
+    private fun createAdapters() {
         val modAdapter = ModifierAdapter(ModifierAdapter.ModifierListener { item ->
             viewModel.onModItemClicked(item)
         })

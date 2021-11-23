@@ -139,7 +139,7 @@ class PrintTicketService {
         }
 
         if (item.menuItemPrice.size != "Regular"){
-            line += item.menuItemPrice.size + " "
+            line += item.menuItemPrice.size.toUpperCase() + " "
         }
 
         line += item.menuItemName.uppercase(Locale.getDefault())

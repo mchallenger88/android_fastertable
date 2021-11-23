@@ -115,7 +115,7 @@ class IngredientsAdapter(private val clickListener: IngredientListener) : ListAd
             params.leftMargin = 35
             btn.layoutParams = params
             btn.contentDescription = "add"
-            btn.background = ContextCompat.getDrawable(parent.context, R.drawable.customborder)
+            btn.background = ContextCompat.getDrawable(parent.context, R.drawable.custom_border)
             btn.scaleType = ImageView.ScaleType.CENTER
             if (type == PlusMinus.PLUS){
                 btn.setImageResource(R.drawable.ic_baseline_add_24)
@@ -154,38 +154,3 @@ class IngredientsAdapter(private val clickListener: IngredientListener) : ListAd
         }
     }
 }
-
-
-
-//class IngredientHeaderAdapter: ListAdapter<ItemIngredient, IngredientHeaderAdapter.HeaderViewHolder>(DiffCallback) {
-//
-//    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HeaderViewHolder {
-//        return HeaderViewHolder(IngredientLineItemHeaderBinding.inflate(LayoutInflater.from(parent.context)))
-//    }
-//
-//    override fun onBindViewHolder(holder: HeaderViewHolder, position: Int) {
-//        holder.bind()
-//    }
-//
-//    class HeaderViewHolder(private var binding: IngredientLineItemHeaderBinding):
-//            RecyclerView.ViewHolder(binding.root) {
-//        fun bind(){
-//            binding.executePendingBindings()
-//        }
-//    }
-//
-//    override fun getItemCount(): Int {
-//        return 1
-//    }
-//
-//    companion object DiffCallback : DiffUtil.ItemCallback<ItemIngredient>() {
-//        override fun areItemsTheSame(oldItem: ItemIngredient, newItem: ItemIngredient): Boolean {
-//            return oldItem === newItem
-//        }
-//
-//        override fun areContentsTheSame(oldItem: ItemIngredient, newItem: ItemIngredient): Boolean {
-//            return oldItem == newItem
-//        }
-//    }
-//
-//}

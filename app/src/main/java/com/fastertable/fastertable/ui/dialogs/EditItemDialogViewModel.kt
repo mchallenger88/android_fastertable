@@ -22,16 +22,29 @@ class EditItemDialogViewModel @Inject constructor (
     val orderItem: LiveData<OrderItem?>
         get() = _orderItem
 
+    private val _saveChanges = MutableLiveData<OrderItem?>()
+    val saveChanges: LiveData<OrderItem?>
+        get() = _saveChanges
+
+    private val _showNotes = MutableLiveData(false)
+    val showNotes: LiveData<Boolean>
+        get() = _showNotes
+
     fun setMenuItem(menuItem: MenuItem){
         _menuItem.value = menuItem
     }
 
     fun setOrderItem(orderItem: OrderItem){
         _orderItem.value = orderItem
-        val menuItem = _menuItem.value!!
-//        menuItem.modifiers.forEach { mod ->
-//            if (mod.modifierItems.)
-//         }
+        orderItem.note?.let{
+            if (it.isNotEmpty()){
+                setShowNotes(true)
+            }
+        }
+    }
+
+    fun setShowNotes(b: Boolean){
+        _showNotes.value = b
     }
 
     fun decreaseQuantity() {
@@ -58,18 +71,12 @@ class EditItemDialogViewModel @Inject constructor (
         _menuItem.value = _menuItem.value
     }
 
-    // region Modifier Functions
-
     fun onModItemClicked(item: OrderMod) {
         val menuItem = _menuItem.value
         item.mod.addQuantity(item.item)
         menuItem?.sumSurcharges()
         _menuItem.value = menuItem
     }
-
-    //endregion
-
-    //region Ingredient Functions
 
     fun onIngredientClicked(item: IngredientChange){
         val menuItem = _menuItem.value
@@ -84,5 +91,23 @@ class EditItemDialogViewModel @Inject constructor (
         menuItem?.sumSurcharges()
         _menuItem.value = menuItem
     }
-    //endregion
+
+    fun saveChanges(){
+        val menuItem = _menuItem.value
+        val orderItem = _orderItem.value
+        orderItem?.let{ oi ->
+            oi.ingredients = menuItem?.ingredients
+            oi.modifiers = menuItem?.modifiers
+            val price = menuItem?.prices?.find { x -> x.isSelected }
+            price?.let {
+                oi.menuItemPrice = price
+            }
+            setSaveChanges(oi)
+        }
+    }
+
+    fun setSaveChanges(orderItem: OrderItem?){
+        _saveChanges.value = orderItem
+    }
+
 }

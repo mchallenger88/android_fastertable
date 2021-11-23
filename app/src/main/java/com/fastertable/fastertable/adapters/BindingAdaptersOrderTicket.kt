@@ -15,6 +15,7 @@ import com.fastertable.fastertable.data.models.Order
 import com.fastertable.fastertable.data.models.OrderItem
 import com.fastertable.fastertable.data.models.PayTicket
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.textfield.TextInputLayout
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
@@ -238,5 +239,14 @@ fun setEditQuantity(textView: TextView, menuItem: MenuItem?){
         textView.text = "${menuItem.prices[0].quantity}"
     }else{
         textView.text = ""
+    }
+}
+
+@BindingAdapter("showEditOrderNote")
+fun showEditOrderNote(textView: TextInputLayout, b: Boolean){
+    if (b){
+        textView.visibility = View.VISIBLE
+    }else{
+        textView.visibility = View.GONE
     }
 }

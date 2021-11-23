@@ -279,9 +279,9 @@
                 android:backgroundTint="#FFFFFF"
                 android:contentDescription="@string/button_order_note"
                 android:onClick="@{() -> viewModel.openNoteDialog()}"
-                app:menuItemNoteVisibility="@{viewModel.menusNavigation}"
                 app:layout_constraintEnd_toEndOf="@+id/menus_tab_bar"
                 app:layout_constraintTop_toBottomOf="@+id/menus_tab_bar"
+                app:menuItemNoteVisibility="@{viewModel.menusNavigation}"
                 app:srcCompat="@drawable/ic_outline_text_snippet_24" />
 
             <ImageButton
@@ -319,10 +319,11 @@
                 android:layout_height="60dp"
                 android:layout_marginTop="24dp"
                 android:text="@{viewModel.activeItem.itemName}"
-                app:menuItemTvVisibility="@{viewModel.menusNavigation}"
+                android:textSize="34sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="@+id/btn_menu_back"
-                app:layout_constraintTop_toBottomOf="@+id/menus_tab_bar" />
+                app:layout_constraintTop_toBottomOf="@+id/menus_tab_bar"
+                app:menuItemTvVisibility="@{viewModel.menusNavigation}" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/layout_menu_categories"
@@ -377,7 +378,7 @@
                 <TextView
                     android:id="@+id/txt_menu_item_description"
                     style="@style/item_description"
-                    android:layout_width="0dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
                     android:layout_marginEnd="16dp"
@@ -394,7 +395,7 @@
                     android:layout_height="42dp"
                     android:layout_marginTop="11dp"
                     android:layout_marginEnd="24dp"
-                    android:background="@drawable/customborder"
+                    android:background="@drawable/custom_border"
                     android:contentDescription="@string/subtract"
                     android:onClick="@{() -> viewModel.decreaseItemQuantity()}"
                     app:layout_constraintEnd_toStartOf="@+id/txt_item_quantity"
@@ -419,7 +420,7 @@
                     android:layout_height="42dp"
                     android:layout_marginStart="24dp"
                     android:layout_marginTop="11dp"
-                    android:background="@drawable/customborder"
+                    android:background="@drawable/custom_border"
                     android:contentDescription="@string/add"
                     android:onClick="@{() -> viewModel.increaseItemQuantity()}"
                     app:layout_constraintStart_toEndOf="@+id/txt_item_quantity"

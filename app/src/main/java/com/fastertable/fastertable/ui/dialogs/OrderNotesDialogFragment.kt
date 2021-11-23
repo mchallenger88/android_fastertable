@@ -24,18 +24,15 @@ class OrderNotesDialogFragment : BaseDialog(R.layout.order_note_dialog) {
         binding.viewModel = viewModel
 
         binding.btnSaveOrderNote.setOnClickListener {
-            itemNoteListener.returnNote(binding.editOrderNote.editText?.text.toString())
+            itemNoteListener.returnNote(binding.txtOrderNote.text.toString())
             hideKeyboardFrom(requireContext(), requireView())
             dismiss()
         }
+        binding.btnCancelOrderNote.setOnClickListener {
+            dismiss()
+        }
     }
-//    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-//        val binding = OrderNoteDialogBinding.inflate(inflater)
-//
-//
-//
-//        return binding.root
-//    }
+
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -48,7 +45,7 @@ class OrderNotesDialogFragment : BaseDialog(R.layout.order_note_dialog) {
 
     override fun onStart() {
         super.onStart()
-        val width = 800
+        val width = 1200
         dialog!!.window?.setLayout(width, ViewGroup.LayoutParams.WRAP_CONTENT)
     }
 

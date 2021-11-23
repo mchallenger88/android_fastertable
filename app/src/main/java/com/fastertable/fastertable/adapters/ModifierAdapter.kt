@@ -45,6 +45,8 @@ class ModifierAdapter(private val clickListener: ModifierListener) : ListAdapter
                 binding.txtModRequired.visibility = View.GONE
             }
 
+            binding.txtModifierTitle.setTextAppearance(R.style.large_title_bold)
+
             createButtons(modifier, clickListener)
 
         }
@@ -67,7 +69,6 @@ class ModifierAdapter(private val clickListener: ModifierListener) : ListAdapter
             flow.setHorizontalBias(0.0F)
 
             modifier.modifierItems.forEachIndexed{int, item ->
-                Log.d("Testing", "ModAdpater: ${item.quantity}")
                 val btn = MaterialButton(parent.context, null, R.attr.materialButtonOutlinedStyle)
                 btn.id = ViewCompat.generateViewId()
                 btn.tag = int

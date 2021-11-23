@@ -7,6 +7,7 @@
         <entry key="..\:/androidprojects/fastertable/app/src/main/res/drawable-anydpi/ic_check.xml" value="0.1" />
         <entry key="..\:/androidprojects/fastertable/app/src/main/res/drawable-anydpi/ic_times.xml" value="0.1" />
         <entry key="..\:/androidprojects/fastertable/app/src/main/res/drawable-anydpi/ic_wall.xml" value="0.1" />
+        <entry key="..\:/androidprojects/fastertable/app/src/main/res/drawable/customborder.xml" value="0.30375" />
         <entry key="..\:/androidprojects/fastertable/app/src/main/res/drawable/ic_arrow_bottom.xml" value="0.1" />
         <entry key="..\:/androidprojects/fastertable/app/src/main/res/drawable/ic_arrow_left.xml" value="0.1" />
         <entry key="..\:/androidprojects/fastertable/app/src/main/res/drawable/ic_arrow_right.xml" value="0.1" />
@@ -15,6 +16,7 @@
         <entry key="..\:/androidprojects/fastertable/app/src/main/res/drawable/ic_baseline_add_primary.xml" value="0.1" />
         <entry key="..\:/androidprojects/fastertable/app/src/main/res/drawable/ic_baseline_change_circle_24.xml" value="0.1" />
         <entry key="..\:/androidprojects/fastertable/app/src/main/res/drawable/ic_outline_airline_stops_24.xml" value="0.1" />
+        <entry key="..\:/androidprojects/fastertable/app/src/main/res/drawable/ic_outline_text_snippet_24.xml" value="0.3115830115830116" />
         <entry key="..\:/androidprojects/fastertable/app/src/main/res/drawable/ic_rect_horz_eight.xml" value="0.1" />
         <entry key="..\:/androidprojects/fastertable/app/src/main/res/drawable/ic_rotate_left.xml" value="0.1" />
         <entry key="..\:/androidprojects/fastertable/app/src/main/res/drawable/ic_rotate_right.xml" value="0.1" />
@@ -62,6 +64,7 @@
         <entry key="..\:/androidprojects/fastertable/app/src/main/res/layout/order_fragment.xml" value="0.303125" />
         <entry key="..\:/androidprojects/fastertable/app/src/main/res/layout/order_line_item.xml" value="0.303125" />
         <entry key="..\:/androidprojects/fastertable/app/src/main/res/layout/order_list_line_item.xml" value="0.303125" />
+        <entry key="..\:/androidprojects/fastertable/app/src/main/res/layout/order_note_dialog.xml" value="0.303125" />
         <entry key="..\:/androidprojects/fastertable/app/src/main/res/layout/payment_fragment.xml" value="0.303125" />
         <entry key="..\:/androidprojects/fastertable/app/src/main/res/layout/progress_dialog.xml" value="0.303125" />
         <entry key="..\:/androidprojects/fastertable/app/src/main/res/layout/table_property_dialog.xml" value="0.303125" />
@@ -87,5 +90,12 @@
   </component>
   <component name="ProjectType">
     <option name="id" value="Android" />
+  </component>
+  <component name="VisualizationToolProject">
+    <option name="state">
+      <ProjectState>
+        <option name="scale" value="0.303125" />
+      </ProjectState>
+    </option>
   </component>
 </project>

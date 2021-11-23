@@ -217,15 +217,13 @@ class OrderFragment : BaseFragment(R.layout.order_fragment) {
             if (item != null){
                 populatePriceGroup(item)
 
-                modAdapter.submitList(item?.modifiers)
+                ingAdapter.submitList(item.ingredients)
+                ingAdapter.notifyDataSetChanged()
+
+                modAdapter.submitList(item.modifiers)
                 modAdapter.notifyDataSetChanged()
             }
 
-        })
-
-        viewModel.changedIngredients.observe(viewLifecycleOwner, {
-            ingAdapter.submitList(viewModel.changedIngredients.value)
-            ingAdapter.notifyDataSetChanged()
         })
 
 

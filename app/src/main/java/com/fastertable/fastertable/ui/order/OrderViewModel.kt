@@ -218,7 +218,7 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
 
     //endregion
 
-    // region Modifier Functions
+    // region Modifier Ingredient Functions
 
     fun onModItemClicked(item: OrderMod) {
         val menuItem = _activeItem.value
@@ -227,12 +227,6 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
         _activeItem.value = menuItem
         _enableAddButton.value = menuItem?.requirementsMet() == true
     }
-
-
-
-    //endregion
-
-    //region Ingredient Functions
 
 
     fun onIngredientClicked(item: IngredientChange){
@@ -309,21 +303,15 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
         }
     }
 
-    fun saveEditedItem(){
-        val mods = arrayListOf<ModifierItem>()
-        activeItem.value!!.modifiers.forEach { mod ->
-            mod.modifierItems.forEach { mi ->
-                if (mi.quantity > 0){
-                    mods.add(mi)
-                }
+    fun saveEditedItem(orderItem: OrderItem){
+        _activeOrder.value?.let { order ->
+            val index = order.orderItems?.indexOfFirst { it.id == orderItem.id }
+            if (index != null) {
+                order.orderItems[index] = orderItem
             }
         }
-
-        if (_activeOrder.value != null){
-            val item = _activeOrder.value!!.orderItems?.find { it.id == _editOrderItem.value?.id }
-        }
-
         _activeOrder.value = _activeOrder.value
+
         clearItemSettings()
     }
 

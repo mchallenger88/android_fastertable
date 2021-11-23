@@ -42,21 +42,6 @@ fun checkoutNotNull(constraintLayout: ConstraintLayout, ce: Boolean) {
     }
 }
 
-
-//@BindingAdapter("orderClosed")
-//fun orderClosed(textView: TextView, order: Order) {
-//    val white = ContextCompat.getColor(textView.context, R.color.white)
-//    val red = ContextCompat.getColor(textView.context, R.color.secondaryLightColor)
-//    val black = ContextCompat.getColor(textView.context, R.color.default_text_color)
-//    if (order.closeTime != null){
-//        textView.setTextColor(ColorStateList.valueOf(black))
-//        textView.setBackgroundColor(white)
-//    }else{
-//        textView.setTextColor(ColorStateList.valueOf(white))
-//        textView.setBackgroundColor(red)
-//    }
-//}
-
 @BindingAdapter("tipCaptureDisabled")
 fun tipCaptureDisabled(button: Button, payment: Payment?) {
     button.isEnabled = true

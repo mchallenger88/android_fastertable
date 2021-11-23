@@ -28,12 +28,25 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageButton
+        android:id="@+id/btn_edit_order_note"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:layout_marginEnd="16dp"
+        android:backgroundTint="#FFFFFF"
+        android:contentDescription="@string/button_order_note"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_outline_text_snippet_24"
+        tools:ignore="RedundantDescriptionCheck" />
+
+    <ImageButton
         android:id="@+id/btn_edit_minus_quantity"
-        android:layout_width="42dp"
-        android:layout_height="42dp"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
         android:layout_marginTop="11dp"
         android:layout_marginEnd="24dp"
-        android:background="@drawable/customborder"
+        android:background="@drawable/custom_border"
         android:contentDescription="@string/subtract"
         app:layout_constraintEnd_toStartOf="@+id/txt_edit_item_quantity"
         app:layout_constraintTop_toBottomOf="@+id/txt_edit_item_name"
@@ -53,39 +66,74 @@
 
     <ImageButton
         android:id="@+id/btn_edit_add_quantity"
-        android:layout_width="42dp"
-        android:layout_height="42dp"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
         android:layout_marginStart="24dp"
         android:layout_marginTop="11dp"
-        android:background="@drawable/customborder"
+        android:background="@drawable/custom_border"
         android:contentDescription="@string/add"
         app:layout_constraintStart_toEndOf="@+id/txt_edit_item_quantity"
         app:layout_constraintTop_toBottomOf="@+id/txt_edit_item_name"
         app:srcCompat="@drawable/ic_baseline_add_24" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/edit_mod_recycler_view"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_marginStart="50dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="50dp"
-            android:scrollbarAlwaysDrawVerticalTrack="false"
-            android:scrollbarStyle="outsideInset"
-            android:scrollbars="vertical"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            app:layout_constraintBottom_toTopOf="@+id/layout_edit_item_pricing"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/btn_edit_minus_quantity"
-            tools:listitem="@layout/modifier_line_item">
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:id="@+id/layout_text_box"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btn_edit_add_quantity">
 
-        </androidx.recyclerview.widget.RecyclerView>
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/layout_edit_note"
+            style="@style/CreditCardInputLayoutBoxes"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="50dp"
+            android:layout_marginEnd="50dp"
+            android:ems="10"
+            app:showEditOrderNote="@{viewModel.showNotes}"
+            android:hint="@string/add_your_notes">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/txt_edit_order_note"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@{viewModel.orderItem.note}"
+                android:inputType="textMultiLine|textCapSentences"
+                android:textSize="@dimen/d21" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/edit_mod_recycler_view"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="50dp"
+        android:layout_marginEnd="50dp"
+        android:scrollbarAlwaysDrawVerticalTrack="false"
+        android:scrollbarStyle="outsideInset"
+        android:scrollbars="vertical"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintBottom_toTopOf="@+id/layout_edit_item_pricing"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/layout_text_box"
+        tools:listitem="@layout/modifier_line_item">
+
+    </androidx.recyclerview.widget.RecyclerView>
+
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/layout_edit_item_pricing"
         android:layout_width="match_parent"
         android:layout_height="125dp"
+        android:layout_marginTop="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
@@ -124,17 +172,31 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <Button
-            android:id="@+id/btn_edit_save_item"
-            style="@style/primary_button_large"
+            android:id="@+id/btn_edit_cancel_item"
+            style="@style/Widget.MaterialComponents.Button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
             android:layout_marginBottom="16dp"
-            android:background="@drawable/rounded_button"
-            android:drawableLeft="@drawable/ic_baseline_add_24_white"
+            android:backgroundTint="@color/secondaryColor"
+            android:text="@string/cancel"
+            android:textSize="20sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/layout_prices"
+            tools:ignore="RtlHardcoded" />
+
+        <Button
+            android:id="@+id/btn_edit_save_item"
+            style="@style/Widget.MaterialComponents.Button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="16dp"
             android:text="@string/save"
+            android:textSize="20sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/layout_prices"
             tools:ignore="RtlHardcoded" />
     </androidx.constraintlayout.widget.ConstraintLayout>
