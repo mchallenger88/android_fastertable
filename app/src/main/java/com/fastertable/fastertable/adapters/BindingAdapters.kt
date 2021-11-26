@@ -81,8 +81,8 @@ fun booleanToYesNo(textView: TextView, value: Boolean){
 }
 
 
-@BindingAdapter("bindTableNumber")
-fun bindTableNumber(textView: TextView, value: Int){
+@BindingAdapter("bindInt")
+fun bindInt(textView: TextView, value: Int){
     textView.text = value.toString()
 }
 

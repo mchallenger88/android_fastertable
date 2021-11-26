@@ -84,6 +84,7 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
     private val approvalsViewModel: ApprovalsViewModel by viewModels()
     private val completedApprovalsViewModel: CompletedApprovalsViewModel by viewModels()
     private val editItemViewModel: EditItemDialogViewModel by viewModels()
+    private val splitPaymentViewModel: SplitPaymentViewModel by viewModels()
     private var progressDialog: ProgressDialog? = null
     private lateinit var user: OpsAuth
 
@@ -427,7 +428,28 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
                 lifecycleScope.launch{
                     approvalsViewModel.loadApprovals()
                 }
+            }
+        })
 
+        paymentViewModel.splitEvenlyDialog.observe(this, {
+            if (it){
+                AddGuestEvenSplitDialogFragment().show(supportFragmentManager, AddGuestEvenSplitDialogFragment.TAG)
+                paymentViewModel.setSplitEvenlyDialog(false)
+            }
+        })
+
+        paymentViewModel.splitAdhocDialog.observe(this, {
+            if (it){
+                navController.navigate(SplitPaymentFragmentDirections.actionPaymentSplitFragmentToAdhocPaymentFragment())
+                AddGuestAdhocSplitDialogFragment().show(supportFragmentManager, AddGuestAdhocSplitDialogFragment.TAG)
+                paymentViewModel.setAdhocSplitDialog(false)
+            }
+        })
+
+        splitPaymentViewModel.navigatePayment.observe(this, {
+            if (it){
+                navController.navigate(AdhocPaymentFragmentDirections.actionAdhocPaymentFragmentToPaymentFragment())
+                splitPaymentViewModel.setNavigatePayment(false)
             }
         })
     }

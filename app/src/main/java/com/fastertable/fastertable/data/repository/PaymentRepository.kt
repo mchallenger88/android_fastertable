@@ -173,7 +173,6 @@ class PaymentRepository @Inject constructor(private val app: Application) {
             orderItemId = orderItem.id,
             quantity = orderItem.menuItemPrice.quantity,
             itemName = orderItem.menuItemName,
-//            itemSize = orderItem.menuItemPrice.size,
             itemPrice = orderItem.menuItemPrice.price,
             discountPrice = null,
             priceModified = orderItem.priceAdjusted,
@@ -188,4 +187,37 @@ class PaymentRepository @Inject constructor(private val app: Application) {
     }
 
 
+    fun createEmptyTicket(payment: Payment, guest: Int, fees: List<AdditionalFees>): Ticket{
+        val extraFees = calcExtraFees(0.00, fees)
+        return Ticket(
+            orderId = payment.orderId,
+            id = guest,
+            ticketItems = mutableListOf<TicketItem>(),
+            subTotal = 0.00,
+            tax = 0.00,
+            total = 0.00,
+            gratuity = 0.00,
+            deliveryFee = 0.00,
+            extraFees = extraFees,
+            paymentTotal = 0.00,
+            paymentList = null,
+            partialPayment = false,
+            uiActive = false,
+            taxRate = payment.taxRate,
+            paymentType = ""
+        )
+    }
+
+    private fun calcExtraFees(subTotal: Double, fees: List<AdditionalFees>?): List<AdditionalFees>?{
+        if (fees != null){
+            for (fee in fees){
+                if (fee.feeType.name == "Flat Amount"){
+                    fee.checkAmount = fee.amount.round(2)
+                }else{
+                    fee.checkAmount = subTotal.times(fee.amount.div(100)).round(2)
+                }
+            }
+        }
+        return fees
+    }
 }

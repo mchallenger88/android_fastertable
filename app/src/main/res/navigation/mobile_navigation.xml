@@ -92,6 +92,9 @@
         <action
             android:id="@+id/action_paymentSplitFragment_to_paymentFragment"
             app:destination="@id/paymentFragment" />
+        <action
+            android:id="@+id/action_paymentSplitFragment_to_adhocPaymentFragment"
+            app:destination="@id/adhocPaymentFragment" />
     </fragment>
     <fragment
         android:id="@+id/approvalsFragment"
@@ -200,6 +203,14 @@
         <action
             android:id="@+id/action_completedApprovalsFragment_to_approvalsFragment"
             app:destination="@id/approvalsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/adhocPaymentFragment"
+        android:name="com.fastertable.fastertable.ui.payment.AdhocPaymentFragment"
+        android:label="AdhocPaymentFragment" >
+        <action
+            android:id="@+id/action_adhocPaymentFragment_to_paymentFragment"
+            app:destination="@id/paymentFragment" />
     </fragment>
 
 

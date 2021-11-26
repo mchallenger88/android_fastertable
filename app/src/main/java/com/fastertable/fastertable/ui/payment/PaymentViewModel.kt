@@ -109,6 +109,14 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
     val error: LiveData<Boolean>
         get() = _error
 
+    private val _splitEvenlyDialog = MutableLiveData(false)
+    val splitEvenlyDialog: LiveData<Boolean>
+        get() = _splitEvenlyDialog
+
+    private val _splitAdhocDialog = MutableLiveData(false)
+    val splitAdhocDialog: LiveData<Boolean>
+        get() = _splitAdhocDialog
+
     private val _errorTitle = MutableLiveData<String>()
     val errorTitle: LiveData<String>
         get() = _errorTitle
@@ -462,8 +470,13 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
 
 
         fun splitByGuest(order: Order){
-            _activePayment.value?.splitByGuest(order, settings.additionalFees)
-            _activePayment.value = _activePayment.value
+            if (order.guestCount == 1){
+                setAdhocSplitDialog(true)
+            }else{
+                _activePayment.value?.splitByGuest(order, settings.additionalFees)
+                _activePayment.value = _activePayment.value
+            }
+
         }
 
         fun noSplit(order: Order){
@@ -471,11 +484,35 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
             _activePayment.value = _activePayment.value
         }
 
-        fun evenSplit(order: Order){
-            _activePayment.value?.splitEvenly(order,
-                settings.additionalFees)
-            _activePayment.value = _activePayment.value
+        fun setSplitEvenlyDialog(b: Boolean){
+            _splitEvenlyDialog.value = b
         }
+
+        fun setAdhocSplitDialog(b: Boolean){
+            _splitAdhocDialog.value = b
+        }
+
+        fun evenSplit(order: Order){
+            if (order.guestCount == 1 ){
+                setSplitEvenlyDialog(true)
+            }else{
+                _activePayment.value?.splitEvenly(order,
+                    settings.additionalFees)
+                _activePayment.value = _activePayment.value
+            }
+        }
+
+        fun setEvenSplitTicketCount(ticketCount: Int){
+            val order = _activeOrder.value
+            order?.let{
+                _activePayment.value?.splitEvenlyXTickets(ticketCount, order,
+                    settings.additionalFees)
+
+                _activePayment.value = _activePayment.value
+
+            }
+        }
+
 
         fun toggleTicketMore(){
             _showTicketMore.value = !_showTicketMore.value!!
@@ -1151,13 +1188,14 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
         return x
     }
 
-    fun setApprovalSaved(b: Boolean){
+    private fun setApprovalSaved(b: Boolean){
         _approvalSaved.value = b
     }
 
     fun setVoidSpinner(b: Boolean){
         _showVoidSpinner.value = b
     }
+
 
 }
 

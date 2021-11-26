@@ -366,3 +366,16 @@ fun showTicketCard(card: CardView, payment: Payment?){
         card.visibility = View.GONE
     }
 }
+
+@BindingAdapter("selectedTicketItem")
+fun selectedTicketItem(constraintLayout: ConstraintLayout, ticketItem: TicketItem?){
+    val yellow = ContextCompat.getColor(constraintLayout.context, R.color.mod2)
+    val white = ContextCompat.getColor(constraintLayout.context, R.color.white)
+    if (ticketItem != null){
+        if (ticketItem.selected){
+            constraintLayout.setBackgroundColor(yellow)
+        }else{
+            constraintLayout.setBackgroundColor(white)
+        }
+    }
+}

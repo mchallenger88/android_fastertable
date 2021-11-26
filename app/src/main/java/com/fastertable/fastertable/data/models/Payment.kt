@@ -5,6 +5,7 @@ import android.util.Log
 import com.fastertable.fastertable.services.PrintTicketService
 import com.fastertable.fastertable.utils.GlobalUtils
 import com.fastertable.fastertable.utils.round
+import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
 import kotlinx.parcelize.Parcelize
 import technology.master.kotlinprint.printer.Document
@@ -27,7 +28,7 @@ data class Payment(
     var splitTicket: Int?,
     val employeeId: String,
     val userName: String,
-    var tickets: ArrayList<Ticket>?,
+    var tickets: MutableList<Ticket>?,
     val terminalId: String,
     var statusApproval: String?,
     val newApproval: Approval?,
@@ -112,14 +113,14 @@ data class Payment(
     }
 
     fun recalculateTotals(){
-        if (tickets != null){
+        tickets?.let {
             for (ticket in tickets!!){
+                Log.d("Testing", ticket.taxRate.toString())
                 ticket.subTotal = ticket.ticketItems.sumOf { it -> it.ticketItemPrice }.round(2)
-                ticket.tax = ticket.ticketItems.sumOf { it -> it.tax }.round(2)
-                ticket.total = ticket.ticketItems.sumOf { it -> it.ticketItemPrice }.plus(ticket.tax)
+                ticket.tax = ticket.subTotal.times(ticket.taxRate).round(2)
+                ticket.total = ticket.subTotal.plus(ticket.tax)
             }
         }
-
     }
 
     fun createSingleTicket(order: Order, fees: List<AdditionalFees>?){
@@ -138,7 +139,7 @@ data class Payment(
             this.tickets = tickets
         }else{
             if (!anyTicketsPaid()){
-                var ticketItems = arrayListOf<TicketItem>()
+                var ticketItems = mutableListOf<TicketItem>()
                 if (splitType == "Evenly"){
                     ticketItems = tickets!![0].ticketItems
                 }else{
@@ -182,10 +183,10 @@ data class Payment(
                     ticket.uiActive = ticket.id == 1
                     ts.add(ticket)
                 }
+                tickets = ts
                 recalculateTotals()
                 splitTicket = order.guestCount
                 splitType = "Guest"
-                this.tickets = ts
             }
 
     }
@@ -199,18 +200,38 @@ data class Payment(
             for (item in ticketItems){
                 item.ticketItemPrice = item.ticketItemPrice.div(guestCount).round(2)
             }
-            for (i in 1..order.guestCount){
+            for (i in 1..guestCount){
                 val ticket = order.createTicket(i, ticketItems.toCollection(ArrayList()), fees)
-                ticket.uiActive = ticket.id == 0
+                ticket.uiActive = ticket.id == 1
+                ts.add(ticket)
+            }
+            tickets = ts
+            recalculateTotals()
+            splitTicket = guestCount
+            splitType = "Evenly"
+        }
+    }
+
+    fun splitEvenlyXTickets(ticketCount: Int, order: Order, fees: List<AdditionalFees>?){
+        if (!anyTicketsPaid()) {
+            val ticketItems = allTicketItems()
+            val ts = arrayListOf<Ticket>()
+
+            for (item in ticketItems){
+                item.ticketItemPrice = item.ticketItemPrice.div(ticketCount).round(2)
+            }
+            for (i in 1..ticketCount){
+                val ticket = order.createTicket(i, ticketItems.toCollection(ArrayList()), fees)
+                ticket.uiActive = ticket.id == 1
                 ts.add(ticket)
             }
 
-            recalculateTotals()
-            splitTicket = order.guestCount
-            splitType = "Evenly"
-            this.tickets = ts
-        }
+            tickets = ts
 
+            recalculateTotals()
+            splitTicket = ticketCount
+            splitType = "Evenly"
+        }
     }
 
     fun voidTicket(approvalId: String){
@@ -353,13 +374,18 @@ data class Payment(
 
         return document
     }
+
+    fun clone(): Payment{
+        val payment: String = Gson().toJson(this, Payment::class.java)
+        return Gson().fromJson(payment, Payment::class.java)
+    }
 }
 
 @Parcelize
 data class Ticket(
     val orderId: String,
     val id: Int,
-    var ticketItems: ArrayList<TicketItem>,
+    var ticketItems: MutableList<TicketItem>,
     var subTotal: Double,
     var tax: Double,
     var total: Double,
@@ -501,7 +527,6 @@ data class TicketItem(
     val orderItemId: Int,
     val quantity: Int,
     val itemName: String,
-//    val itemSize: String,
     var itemPrice: Double,
     var discountPrice: Double?,
     var priceModified: Boolean,
@@ -512,6 +537,7 @@ data class TicketItem(
     val salesCategory: String,
     var ticketItemPrice: Double,
     var tax: Double,
+    var selected: Boolean = false
 ): Parcelable{
     fun approve(){
         ticketItemPrice = discountPrice!!

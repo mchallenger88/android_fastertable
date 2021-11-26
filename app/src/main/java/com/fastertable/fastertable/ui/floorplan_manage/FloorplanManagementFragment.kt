@@ -57,7 +57,7 @@ class FloorplanManagementFragment: BaseFragment(R.layout.floorplan_management_fr
         loadFloorplans(binding)
         createObservers()
         loadSidebar(binding)
-        handleDrop(binding)
+        handleDrop()
         view.setOnClickListener {
             selectedTable=null
             selectedWall=null
@@ -146,7 +146,7 @@ class FloorplanManagementFragment: BaseFragment(R.layout.floorplan_management_fr
 
     }
 
-    private fun handleDrop(binding: FloorplanManagementFragmentBinding) {
+    private fun handleDrop() {
 
         val dragListener = View.OnDragListener { v, event ->
             // Handles each of the expected events

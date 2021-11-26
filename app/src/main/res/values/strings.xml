@@ -335,6 +335,11 @@
     <string name="transfer_item_instructions">Tap on the order to which you wish to transfer this item</string>
     <string name="tap_the_order">Tap the Order To Which Items Should be Transferred</string>
     <string name="approval_all">Approval All</string>
+    <string name="split_check_evenly">Split Check Evenly</string>
+    <string name="how_many_checks_do_you_need">How many checks do you need?</string>
+    <string name="split_check">Split Check</string>
+    <string name="move_ticket_items">Move Ticket Items</string>
+    <string name="move_item_instructions">Select items by tapping an item. To move the item to another ticket, tap the  ticket number on the left sidebar. To commit your changes, tap Save.</string>
 
     //Floorplan
     <string-array name="table_types">
