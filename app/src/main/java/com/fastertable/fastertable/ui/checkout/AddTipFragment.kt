@@ -51,11 +51,14 @@ class AddTipFragment: BaseFragment(R.layout.checkout_add_tip_fragment) {
         viewModel.activePayment.observe(viewLifecycleOwner, { payment ->
             if (payment != null){
                 val list = mutableListOf<TicketPayment>()
-                for (ticket in payment.tickets!!){
-                    for (ticketPayment in ticket.paymentList!!){
-                        list.add(ticketPayment)
+                payment.tickets?.forEach { ticket ->
+                    ticket.paymentList?.forEach {
+                        if (!it.canceled){
+                            list.add(it)
+                        }
                     }
                 }
+
                 paymentAdapter.submitList(list)
                 paymentAdapter.notifyDataSetChanged()
             }

@@ -132,6 +132,125 @@ class PrintTicketService {
             .cutPaper(PrinterDriver.CUTPAPER.PARTIALCUTWITHFEED)
     }
 
+    fun resendMasterTicket(document: Document, order: Order){
+        val date: String = DateTimeFormatter.ofPattern("MM/dd/yyyy").withZone(ZoneId.systemDefault())
+            .format(java.time.Instant.ofEpochSecond(order.startTime))
+        val time: String =  DateTimeFormatter.ofPattern("h:mm a").withZone(ZoneId.systemDefault())
+            .format(java.time.Instant.ofEpochSecond(order.startTime))
+
+        document.alignment("center")
+            .text("MASTER TICKET", TextSettings(bold = true))
+            .newLine()
+            .newLine()
+            .text("--- " + order.orderType.uppercase(Locale.getDefault()) + " ORDER ---", TextSettings(bold = true))
+            .newLine()
+
+        if(order.orderType == "Delivery"){
+            val telephone = order.outsideDelivery?.telephone!!
+            document
+                .text(order.outsideDelivery?.deliveryService?.uppercase(Locale.getDefault()), TextSettings(bold = true))
+                .text("Customer: " + order.outsideDelivery?.name)
+                .text("Telephone: " + formatPhone(telephone))
+                .text("Order No.: " + order.outsideDelivery!!.orderNumber)
+        }
+
+
+        if(order.orderType == "Takeout"){
+            document
+                .alignment("center").text("Name: " + order.takeOutCustomer?.name?.uppercase(Locale.getDefault()), TextSettings(bold = true))
+
+            if(order.takeOutCustomer?.telephone != ""){
+                document.newLine()
+                    .alignment("center").text(formatPhone(order.takeOutCustomer?.telephone!!))
+            }
+
+            if (order.takeOutCustomer?.notes != ""){
+                document.newLine()
+                    .alignment("center").text(order.takeOutCustomer?.notes.toString())
+            }
+
+            document
+                .newLine()
+        }
+
+        document
+            .newLine()
+            .alignment("right").text(date)
+            .newLine()
+            .alignment("right").text(time)
+            .newLine()
+            .alignment("left").text("Order: " + order.orderNumber.toString(), TextSettings(bold = true))
+            .newLine()
+            .text("Server: " + order.userName)
+
+        if (order.tableNumber != null){
+            document
+                .text("Table: " + order.tableNumber.toString())
+                .newLine()
+        }else{
+            document
+                .newLine()
+        }
+        document
+            .newLine()
+
+        var g: String
+        for (i in 1..order.guestCount){
+            document
+                .color(PrinterDriver.COLOR.BLACK)
+                .alignment("center")
+                .text("GUEST $i")
+                .newLine()
+            val list = order.orderItems!!.filter { it.guestId == i }
+            for (item in list){
+                if (item.salesCategory == "Food"){
+                    document
+                        .alignment("left")
+
+                    addMenuItemLine(document, item, order.orderType)
+
+                    var ing: String
+                    if (item.activeModItems().isNotEmpty()){
+                        item.activeModItems().forEach{ m ->
+                            document
+                                .color(PrinterDriver.COLOR.RED)
+                                .text("  " + m.itemName.uppercase(Locale.getDefault()), TextSettings(bold = true))
+                                .color(PrinterDriver.COLOR.BLACK)
+                                .newLine()
+                        }
+                    }
+                    if (item.ingredients != null){
+                        item.ingredients!!.forEach{ i ->
+                            ing =
+                                when (i.orderValue){
+                                    0 -> "NO " + i.name.uppercase(Locale.getDefault())
+                                    2 -> "EXTRA " + i.name.uppercase(Locale.getDefault())
+                                    else -> ""
+                                }
+                            if (ing != ""){
+                                document
+                                    .color(PrinterDriver.COLOR.RED)
+                                    .text("  $ing", TextSettings(bold = true))
+                                    .color(PrinterDriver.COLOR.BLACK)
+                                    .newLine()
+                            }
+                        }
+                    }
+                    if (item.note?.isNotEmpty() == true){
+                        document
+                            .text("  Notes: " + item.note)
+                            .newLine()
+                    }
+                    document.newLine()
+                }}
+        }
+
+        document
+            .newLine()
+            .newLine()
+            .cutPaper(PrinterDriver.CUTPAPER.PARTIALCUTWITHFEED)
+    }
+
     private fun addMenuItemLine(document: Document, item: OrderItem, orderType: String) {
         var line = ""
         if (item.menuItemPrice.quantity > 1){
@@ -301,6 +420,141 @@ class PrintTicketService {
                     .newLine()
                     .text(order.note)
             }
+        document
+            .newLine()
+            .newLine()
+            .cutPaper(PrinterDriver.CUTPAPER.PARTIALCUTWITHFEED)
+        return document
+    }
+
+    fun resendKitchenTicket(document: Document, order: Order, printer: Printer): Document {
+        val date: String = DateTimeFormatter.ofPattern("MM/dd/yyyy").withZone(ZoneId.systemDefault())
+            .format(java.time.Instant.ofEpochSecond(order.startTime))
+        val time: String =  DateTimeFormatter.ofPattern("h:mm a").withZone(ZoneId.systemDefault())
+            .format(java.time.Instant.ofEpochSecond(order.startTime))
+
+        document
+            .alignment("center")
+            .text("*** " + printer.printerName.uppercase(Locale.getDefault()) + " ***", TextSettings(bold = true))
+            .newLine()
+            .text("--- " + order.orderType.uppercase(Locale.getDefault()) + " ORDER ---", TextSettings(bold = true))
+            .newLine()
+
+        if(order.orderType == "Delivery"){
+            document
+                .text(order.outsideDelivery?.deliveryService?.uppercase(Locale.getDefault()), TextSettings(bold = true))
+                .text("Customer: " + order.outsideDelivery?.name)
+                .text("Telephone: " + formatPhone(order.outsideDelivery?.telephone!!))
+                .text("Order No.: " + order.outsideDelivery?.orderNumber)
+                .newLine()
+        }
+
+
+        if(order.orderType == "Takeout"){
+            document
+                .alignment("center").text("Name: " + order.takeOutCustomer?.name?.uppercase(Locale.getDefault()), TextSettings(bold = true))
+
+            if(order.takeOutCustomer?.telephone != null){
+                document
+                    .alignment("center").text(this.formatPhone(order.takeOutCustomer!!.telephone))
+            }
+
+            document
+                .newLine()
+        }
+
+
+        document
+            .newLine()
+            .alignment("right").text(date)
+            .newLine()
+            .alignment("right").text(time)
+            .newLine()
+            .alignment("left").text("Order: " + order.orderNumber.toString(), TextSettings(bold = true))
+            .newLine()
+            .text("Server: " + order.userName)
+            .newLine()
+
+        if (order.tableNumber != null){
+            document
+                .text("Table: " + order.tableNumber.toString())
+                .newLine()
+        }else{
+            document
+                .newLine()
+        }
+        document
+            .newLine()
+
+        for (i in 1..order.guestCount){
+            val list = order.orderItems!!.filter { it.guestId == i && it.printer.printerName == printer.printerName }
+
+            if (list.isNotEmpty()){
+                document
+                    .color(PrinterDriver.COLOR.BLACK)
+                    .alignment("center").text("GUEST $i")
+                    .newLine()
+                for (item in list){
+                        if (item.printer.id == printer.id){
+                            document
+                                .alignment("left")
+                            this.addMenuItemLine(document, item, order.orderType)
+
+
+                            var ing: String
+                            if (item.activeModItems().isNotEmpty()){
+                                item.activeModItems().forEach{ m ->
+                                    document
+                                        .color(PrinterDriver.COLOR.RED)
+                                        .text("  " + m.itemName, TextSettings(bold = true))
+                                        .color(PrinterDriver.COLOR.BLACK)
+                                        .newLine()
+                                }
+                            }
+                            if (item.ingredients != null){
+                                item.ingredients!!.forEach{ i ->
+                                    ing =
+                                        when (i.orderValue){
+                                            0 -> "NO " + i.name.uppercase(Locale.getDefault())
+                                            2 -> "EXTRA " + i.name.uppercase(Locale.getDefault())
+                                            else -> ""
+                                        }
+                                    if (ing != ""){
+                                        document
+                                            .color(PrinterDriver.COLOR.RED)
+                                            .text("  $ing", TextSettings(bold = true))
+                                            .color(PrinterDriver.COLOR.BLACK)
+                                            .newLine()
+                                    }
+                                }
+                            }
+                            if (item.note?.isNotEmpty() == true){
+                                document
+                                    .text("  Notes: " + item.note)
+                                    .newLine()
+                            }
+                            document.newLine()
+                        }
+                }
+            }}
+//        order.guests?.forEachIndexed{index, guest ->
+//            val kCount = guest.orderItems?.filter{printer.printerName == printer.printerName}
+//                if (kCount?.isNotEmpty() == true){
+//                    g = (index + 1).toString()
+//                    document
+//                        .alignment("center").text("GUEST $g")
+//                        .newLine()
+//                    guest.orderItems!!.forEach{ o ->
+//
+//                }
+//            }}
+
+
+        if (order.note?.isNotEmpty() == true){
+            document.text("NOTES:")
+                .newLine()
+                .text(order.note)
+        }
         document
             .newLine()
             .newLine()
@@ -929,11 +1183,6 @@ class PrintTicketService {
         ticket.ticketItems.forEachIndexed{index, item ->
             if (item.ticketItemPrice != 0.00){
                 itemPrice = item.ticketItemPrice
-//                val g: String = (index + 1).toString()
-//                document
-//                    .newLine()
-//                    .alignment("left").text("GUEST $g")
-//                    .newLine()
 
                 subtotal += itemPrice
                 price = itemPrice
@@ -976,11 +1225,18 @@ class PrintTicketService {
             .text(formatDouble("Tax:", ticket.tax))
             .newLine()
 
+        val p = ticket.paymentList?.find { it.uiActive }
+        val tendered = p?.ticketPaymentAmount
+
         addAdditionalFees(document, ticket)
         document
             .text(formatDoublePrice("Total:", ticket.total), TextSettings(bold = true))
             .newLine()
-            .text(formatDoublePrice("Cash Tendered:", ticket.paymentTotal))
+            if (tendered != null){
+                document.text(formatDoublePrice("Cash Tendered:", tendered))
+            }else{
+                document.text(formatDoublePrice("Cash Tendered:", ticket.paymentTotal))
+            }
             .newLine()
             .newLine()
             .text(formatDoublePrice("Change:", change))

@@ -7,6 +7,7 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.setupWithNavController
 import com.fastertable.fastertable.common.base.BaseActivity
+import com.fastertable.fastertable.common.base.BaseLoginActivity
 import com.fastertable.fastertable.ui.dialogs.ClockinDialog
 import com.fastertable.fastertable.ui.dialogs.DialogListener
 import com.fastertable.fastertable.ui.dialogs.ErrorAlertBottomSheet
@@ -24,7 +25,7 @@ import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
 @AndroidEntryPoint
-class LoginActivity : BaseActivity(), DialogListener {
+class LoginActivity : BaseLoginActivity(), DialogListener {
     private val userViewModel: UserLoginViewModel by viewModels()
     private val errorViewModel: ErrorViewModel by viewModels()
     private val terminalSelectViewModel: TerminalSelectViewModel by viewModels()

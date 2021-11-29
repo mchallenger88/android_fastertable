@@ -23,6 +23,7 @@ import androidx.navigation.ui.*
 import com.fastertable.fastertable.common.base.BaseActivity
 import com.fastertable.fastertable.common.base.BaseContinueDialog
 import com.fastertable.fastertable.common.base.DismissListener
+import com.fastertable.fastertable.common.base.LogoutListener
 import com.fastertable.fastertable.data.models.*
 import com.fastertable.fastertable.data.repository.GetPayment
 import com.fastertable.fastertable.data.repository.LoginRepository
@@ -59,8 +60,7 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteListener, DateListener,
-    FloorplanTableListener,
-    BaseContinueDialog.ContinueListener {
+    FloorplanTableListener, BaseContinueDialog.ContinueListener {
     @Inject lateinit var loginRepository: LoginRepository
     @Inject lateinit var orderRepository: OrderRepository
     @Inject lateinit var paymentRepository: PaymentRepository

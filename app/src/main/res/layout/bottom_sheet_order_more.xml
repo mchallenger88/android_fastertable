@@ -77,17 +77,17 @@
             tools:ignore="RtlHardcoded" />
 
         <Button
-            android:id="@+id/btn_placeholder2"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:id="@+id/btn_resend_to_kitchen"
+            style="@style/bottom_sheet_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:backgroundTint="@color/white"
-            android:drawableLeft="@drawable/ic_baseline_add_24"
-            android:text="@string/transfer_order"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="10dp"
+            android:drawableLeft="@drawable/ic_outline_print_24"
+            android:text="@string/resend_kitchen_ticket"
             android:textAlignment="textStart"
             android:textColor="@color/default_text_color"
             android:textSize="@dimen/toolbar_button"
-            android:visibility="gone"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/btn_adhoc_menu_item"
             app:strokeColor="@color/white"

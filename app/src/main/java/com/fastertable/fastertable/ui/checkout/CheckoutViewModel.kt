@@ -192,9 +192,18 @@ class CheckoutViewModel @Inject constructor (
         val payments = mutableListOf<Double>()
         val paymentsList = mutableListOf<TicketPayment>()
         for (ticket in list){
+//            ticket.paymentList?.let { list ->
+//                for (p in list){
+//                    if (p.paymentType == "Cash" && !p.canceled){
+//                        paymentsList.add(p)
+//                        payments.add(p.ticketPaymentAmount)
+//                    }
+//                }
+//            }
+
             if (ticket.paymentList != null){
                 for (p in ticket.paymentList!!){
-                    if (p.paymentType == "Cash"){
+                    if (p.paymentType == "Cash" && !p.canceled){
                         paymentsList.add(p)
                         payments.add(p.ticketPaymentAmount)
                     }
@@ -206,7 +215,7 @@ class CheckoutViewModel @Inject constructor (
             }
 
         }
-//            return paymentsList.sumOf{it.ticketPaymentAmount}
+
         return payments.sumOf{it}
     }
 
@@ -216,7 +225,7 @@ class CheckoutViewModel @Inject constructor (
         for (ticket in list){
             if (ticket.paymentList != null){
                 for (p in ticket.paymentList!!){
-                    if (p.paymentType == "Credit" || p.paymentType == "Manual Credit"){
+                    if (p.paymentType == "Credit" || p.paymentType == "Manual Credit" && !p.canceled){
                         paymentsList.add(p)
                         payments.add(p.ticketPaymentAmount)
                     }

@@ -106,7 +106,7 @@ class ConfirmListAdapter(private val clickListener: ConfirmListListener, private
             for (ticket in list){
                 if (ticket.paymentList != null){
                     for (p in ticket.paymentList!!){
-                        if (p.paymentType == "Cash"){
+                        if (p.paymentType == "Cash" && !p.canceled){
                             paymentsList.add(p)
                             payments.add(p.ticketPaymentAmount)
                         }
@@ -128,7 +128,7 @@ class ConfirmListAdapter(private val clickListener: ConfirmListListener, private
             for (ticket in list){
                 if (ticket.paymentList != null){
                     for (p in ticket.paymentList!!){
-                        if (p.paymentType == "Credit" || p.paymentType == "Manual Credit"){
+                        if (p.paymentType == "Credit" || p.paymentType == "Manual Credit"  && !p.canceled){
                             paymentsList.add(p)
                             payments.add(p.ticketPaymentAmount)
                         }

@@ -295,15 +295,51 @@ data class Order(
                 DocumentSettings(), "TM_U220"
             )
             if (printer.master){
+                //creates the document
                 PrintTicketService().masterTicket(doc, this)
                 documents.add(doc)
             }else{
+                //creates the document
                 PrintTicketService().kitchenTicket(doc, this, printer)
                 documents.add(doc)
             }
         }
         return documents
     }
+
+
+    fun reprintKitchenTickets(): List<Document>{
+        val printers = mutableListOf<Printer>()
+        val documents = mutableListOf<Document>()
+
+        if (orderItems != null){
+            for (item in orderItems){
+                val p = printers.find{it.id == item.printer.id}
+                if (p == null){
+                    printers.add(item.printer)
+                }}
+        }
+
+        for (printer in printers){
+            Epson.use()
+
+            val doc = PrinterDriver.createDocument(
+                DocumentSettings(), "TM_U220"
+            )
+            if (printer.master){
+                //creates the document
+                PrintTicketService().resendMasterTicket(doc, this)
+                documents.add(doc)
+            }else{
+                //creates the document
+                PrintTicketService().resendKitchenTicket(doc, this, printer)
+                documents.add(doc)
+            }
+        }
+        return documents
+    }
+
+
 }
 
 @JsonClass(generateAdapter = true)

@@ -2,6 +2,7 @@ package com.fastertable.fastertable.ui.dialogs
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -34,13 +35,12 @@ class OrderMoreDialog: BaseDialog(R.layout.bottom_sheet_order_more) {
             dialogListener.returnValue("Misc Menu Item")
             dismiss()
         }
-    }
 
-//    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-//        val binding = BottomSheetOrderMoreBinding.inflate(inflater)
-//
-//        return binding.root
-//    }
+        binding.btnResendToKitchen.setOnClickListener {
+            viewModel.resendKitchenTicket()
+            dismiss()
+        }
+    }
 
     override fun onStart() {
         super.onStart()

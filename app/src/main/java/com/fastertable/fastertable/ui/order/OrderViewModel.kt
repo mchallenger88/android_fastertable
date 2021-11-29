@@ -558,6 +558,7 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
     private suspend fun saveOrderToCloud(){
         var o: Order? = null
         val job = viewModelScope.launch {
+
             if (_activeOrder.value?.orderNumber!! == 99){
                 o = saveOrder.saveOrder(_activeOrder.value!!)
                 val list = o!!.getKitchenTickets()
@@ -655,10 +656,6 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
         _orderMore.value = b
     }
 
-    fun showTransferOrder(b: Boolean){
-        _showTransfer.value = b
-    }
-
     fun reOpenCheckoutSendOrder(){
         viewModelScope.launch {
             sendToKitchen()
@@ -676,7 +673,20 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
         _error.value = false
     }
 
+    fun resendKitchenTicket(){
+        viewModelScope.launch {
+            _activeOrder.value?.let {
+                val list = it.reprintKitchenTickets()
+                printerService.printKitchenTickets(list, settings)
+            }
+        }
+    }
+
     //region Transfer Order
+
+    fun showTransferOrder(b: Boolean){
+        _showTransfer.value = b
+    }
 
     fun transferAddItem(item: OrderItem){
         val found = transferList.find { it.id == item.id }

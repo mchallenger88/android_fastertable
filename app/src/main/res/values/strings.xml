@@ -340,6 +340,7 @@
     <string name="split_check">Split Check</string>
     <string name="move_ticket_items">Move Ticket Items</string>
     <string name="move_item_instructions">Select items by tapping an item. To move the item to another ticket, tap the  ticket number on the left sidebar. To commit your changes, tap Save.</string>
+    <string name="resend_kitchen_ticket">Resend Kitchen Ticket</string>
 
     //Floorplan
     <string-array name="table_types">
