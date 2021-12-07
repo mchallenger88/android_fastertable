@@ -42,11 +42,14 @@ class OrderFragment : BaseFragment(R.layout.order_fragment) {
 
         binding.menusTabBar.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab?) {
-                val menu = viewModel.menus.value?.find{it -> it.name == tab?.text!!}
-                if (menu != null){
-                    createCategoryButtons(menu, binding)
-                    viewModel.setMenusNavigation(MenusNavigation.CATEGORIES)
+                tab?.text?.let { tabText ->
+                    val menu = viewModel.menus.value?.find{it -> it.name == tabText}
+                    if (menu != null){
+                        createCategoryButtons(menu, binding)
+                        viewModel.setMenusNavigation(MenusNavigation.CATEGORIES)
+                    }
                 }
+
             }
             override fun onTabUnselected(tab: TabLayout.Tab?) {}
             override fun onTabReselected(tab: TabLayout.Tab?) {}
@@ -56,14 +59,20 @@ class OrderFragment : BaseFragment(R.layout.order_fragment) {
     private fun createObservers(binding: OrderFragmentBinding){
         viewModel.pageLoaded.observe(viewLifecycleOwner, {
             if (it){
-                createMenuButtons(viewModel.menus.value!!, binding)
-                viewModel.setPageLoaded(false)
+                viewModel.menus.value?.let { list ->
+                    createMenuButtons(list, binding)
+                    viewModel.setPageLoaded(false)
+                }
+
             }
         })
 
         viewModel.ticketsPrinted.observe(viewLifecycleOwner, {
             if (it != null){
-                viewModel.updateOrderStatus(viewModel.activeOrder.value!!)
+                viewModel.activeOrder.value?.let { order ->
+                    viewModel.updateOrderStatus(order)
+                }
+
             }
         })
     }

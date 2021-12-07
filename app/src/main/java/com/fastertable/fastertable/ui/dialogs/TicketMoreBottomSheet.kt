@@ -46,7 +46,9 @@ class TicketMoreBottomSheet: BottomSheetDialogFragment() {
         super.onStart()
         val width = 800
         val height = 500
-        dialog!!.window?.setLayout(width, ViewGroup.LayoutParams.WRAP_CONTENT)
+        dialog?.let {
+            it.window?.setLayout(width, ViewGroup.LayoutParams.WRAP_CONTENT)
+        }
     }
 
     companion object {

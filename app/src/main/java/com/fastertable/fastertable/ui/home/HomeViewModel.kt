@@ -16,9 +16,9 @@ class HomeViewModel @Inject constructor (private val loginRepository: LoginRepos
                                          private val getOrders: GetOrders,
                                          private val orderRepository: OrderRepository) : ViewModel() {
 
-    val user: OpsAuth = loginRepository.getOpsUser()!!
-    val settings: Settings = loginRepository.getSettings()!!
-    val terminal: Terminal = loginRepository.getTerminal()!!
+    val user: OpsAuth? = loginRepository.getOpsUser()
+    val settings: Settings? = loginRepository.getSettings()
+    val terminal: Terminal? = loginRepository.getTerminal()
 
     private val _showProgressBar = MutableLiveData<Boolean>()
     val showProgressBar: LiveData<Boolean>
@@ -36,7 +36,7 @@ class HomeViewModel @Inject constructor (private val loginRepository: LoginRepos
     val filteredOrders: LiveData<List<Order>>
         get() = _filteredOrders
 
-    private val _orderFilter = MutableLiveData<String>()
+    private val _orderFilter = MutableLiveData("Open")
     val orderFilter: LiveData<String>
         get() = _orderFilter
 
@@ -60,17 +60,12 @@ class HomeViewModel @Inject constructor (private val loginRepository: LoginRepos
     val navigateToTakeout: LiveData<Boolean>
         get() = _navigateToTakeout
 
-    private val _viewLoaded = MutableLiveData<Boolean>()
-    val viewLoaded: LiveData<Boolean>
-        get() = _viewLoaded
-
     init{
         _showProgressBar.value = false
-        _viewLoaded.value = false
 
         viewModelScope.launch {
             _orders.postValue(orderRepository.getOrdersFromFile())
-            _viewLoaded.postValue(true)
+            setOrderFilter("Open")
         }
     }
 
@@ -82,32 +77,27 @@ class HomeViewModel @Inject constructor (private val loginRepository: LoginRepos
 
     fun getOrdersFromFile(){
         _orders.postValue(orderRepository.getOrdersFromFile())
-        _viewLoaded.postValue(true)
+        setOrderFilter("Open")
     }
 
     private suspend fun getWebOrders(){
         val job = viewModelScope.launch {
             val midnight = GlobalUtils().getMidnight()
             val rid = loginRepository.getStringSharedPreferences("rid")
-            getOrders.getOrders(midnight, rid!!)
+            rid?.let {
+                getOrders.getOrders(midnight, it)
+            }
+
         }
 
         job.join()
         _orders.postValue(orderRepository.getOrdersFromFile())
-        _viewLoaded.postValue(true)
+        setOrderFilter("Open")
     }
 
     fun getCompany(){
         viewModelScope.launch{
             _company.postValue(loginRepository.getCompany())
-        }
-    }
-
-    fun filterOrders(filter: String){
-        when (filter) {
-            "Open" -> _filteredOrders.value = orders.value?.filter { it -> it.closeTime == null }
-            "Closed" -> _filteredOrders.value = orders.value?.filter { it -> it.closeTime != null }
-            "All" -> _filteredOrders.value = orders.value
         }
     }
 
@@ -131,28 +121,25 @@ class HomeViewModel @Inject constructor (private val loginRepository: LoginRepos
 
     }
 
-    fun onOpenClicked(){
-        _orderFilter.value = "Open"
-        filterOrders(orderFilter.value!!)
-    }
-
-    fun onAllClicked(){
-        _orderFilter.value = "All"
-        filterOrders(orderFilter.value!!)
-    }
-
-    fun onClosedClicked(){
-        _orderFilter.value = "Closed"
-        filterOrders(orderFilter.value!!)
-    }
-
     fun startCounterOrder(){
-        orderRepository.createNewOrder("Counter", settings, user, null,  null)
-        _navigateToOrder.value = "Counter"
+        if (settings != null && user != null){
+            orderRepository.createNewOrder("Counter", settings, user, null,  null)
+            _navigateToOrder.value = "Counter"
+        }
+
     }
 
     fun navigationEnd(){
         _navigateToOrder.value = ""
+    }
+
+    fun setOrderFilter(filter: String){
+        _orderFilter.value = filter
+        when (filter) {
+            "Open" -> _filteredOrders.value = orders.value?.filter { it -> it.closeTime == null }
+            "Closed" -> _filteredOrders.value = orders.value?.filter { it -> it.closeTime != null }
+            "All" -> _filteredOrders.value = orders.value
+        }
     }
 
 

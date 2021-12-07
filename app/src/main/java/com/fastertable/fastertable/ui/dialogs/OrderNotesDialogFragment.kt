@@ -46,7 +46,9 @@ class OrderNotesDialogFragment : BaseDialog(R.layout.order_note_dialog) {
     override fun onStart() {
         super.onStart()
         val width = 1200
-        dialog!!.window?.setLayout(width, ViewGroup.LayoutParams.WRAP_CONTENT)
+        dialog?.let {
+            it.window?.setLayout(width, ViewGroup.LayoutParams.WRAP_CONTENT)
+        }
     }
 
 

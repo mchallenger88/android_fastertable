@@ -22,7 +22,9 @@ class ContinueCancelFragment : BaseContinueDialog(){
         binding.viewModel = viewModel
 
         binding.btnContinue.setOnClickListener {
-            callBack.returnContinue(viewModel.title.value!!)
+            viewModel.title.value?.let {
+                callBack.returnContinue(it)
+            }
             dismiss()
         }
 

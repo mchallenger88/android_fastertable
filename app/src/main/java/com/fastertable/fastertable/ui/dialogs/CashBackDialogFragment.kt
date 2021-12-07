@@ -26,14 +26,6 @@ class CashBackDialogFragment: BaseDialog(R.layout.dialog_cash_back)  {
         }
     }
 
-//    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-//        val binding = DialogCashBackBinding.inflate(inflater)
-//
-//
-//
-//        return binding.root
-//    }
-
     override fun onStart() {
         super.onStart()
         val width = 800

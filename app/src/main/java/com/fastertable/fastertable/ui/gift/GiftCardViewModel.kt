@@ -40,10 +40,10 @@ class GiftCardViewModel @Inject constructor (
     private val receiptPrintingService: ReceiptPrintingService,
     private val initiateCreditTransaction: InitiateCreditTransaction,) : BaseViewModel() {
 
-    val user: OpsAuth = loginRepository.getOpsUser()!!
-    val settings: Settings = loginRepository.getSettings()!!
-    val terminal: Terminal = loginRepository.getTerminal()!!
-    val company: Company = loginRepository.getCompany()!!
+    val user: OpsAuth? = loginRepository.getOpsUser()
+    val settings: Settings? = loginRepository.getSettings()
+    val terminal: Terminal? = loginRepository.getTerminal()
+    val company: Company? = loginRepository.getCompany()
 
     private val _giftScreen = MutableLiveData(ShowGift.ADD_CASH)
     val giftScreen: LiveData<ShowGift>
@@ -101,8 +101,8 @@ class GiftCardViewModel @Inject constructor (
         if (_activeOrder.value == null) {
             createGiftOrder(amount)
         }else{
-            _activeOrder.value!!.changeGiftItemAmount(amount)
-            _activePayment.value!!.changeGiftItemAmount(amount)
+            _activeOrder.value?.changeGiftItemAmount(amount)
+            _activePayment.value?.changeGiftItemAmount(amount)
             _activePayment.value = _activePayment.value
         }
     }
@@ -111,13 +111,15 @@ class GiftCardViewModel @Inject constructor (
 
     fun setCashAmount(number: Int) {
         _calculatingCash.value = _calculatingCash.value + number.toString()
-        _cashAmount.value = _calculatingCash.value!!.toDouble()
+        _cashAmount.value = _calculatingCash.value?.toDouble()
     }
 
     fun addDecimal() {
-        if (!calculatingCash.value!!.contains(".")) {
-            _calculatingCash.value = _calculatingCash.value + "."
-            _cashAmount.value = _calculatingCash.value!!.toDouble()
+        calculatingCash.value?.let {
+            if (!it.contains(".")) {
+                _calculatingCash.value = "$it."
+                _cashAmount.value = it.toDouble()
+            }
         }
     }
 
@@ -143,47 +145,40 @@ class GiftCardViewModel @Inject constructor (
     }
 
     fun payNow() {
-//        val payment = _activePayment.value
-//        val ticket = payment?.tickets?.get(0)
-//        if (ticket != null){
-//            ticket.paymentTotal = ticket.total
-//            val amountOwed = ticket.total.round(2)
-//            createCashTicketPayment(ticket, amountOwed)
-//            Log.d("Testing", ticket.paymentList.toString())
-//        }
-
-
         _activePayment.value?.tickets?.forEach { t ->
-            if (t.uiActive && cashAmount.value != null){
-                val paidAmount = cashAmount.value!!.round(2)
-                createCashTicketPayment(t, paidAmount)
+            cashAmount.value?.let { ca ->
+                if (t.uiActive){
+                    val paidAmount = ca.round(2)
+                    createCashTicketPayment(t, paidAmount)
 
-                val owed = t.total.minus(t.paymentTotal)
-                val amountOwed = (owed.minus(paidAmount)).round(2)
-                if (amountOwed < 0){
-                    _amountOwed.value = amountOwed.absoluteValue
+                    val owed = t.total.minus(t.paymentTotal)
+                    val amountOwed = (owed.minus(paidAmount)).round(2)
+                    if (amountOwed < 0){
+                        _amountOwed.value = amountOwed.absoluteValue
 
-                    t.paymentTotal = paidAmount
-                    t.partialPayment = false
-                }
+                        t.paymentTotal = paidAmount
+                        t.partialPayment = false
+                    }
 
-                if (amountOwed == 0.00){
-                    t.paymentTotal = paidAmount
-                    t.partialPayment = false
-                }
+                    if (amountOwed == 0.00){
+                        t.paymentTotal = paidAmount
+                        t.partialPayment = false
+                    }
 
-                if (amountOwed > 0){
-                    t.paymentTotal = paidAmount
-                    t.partialPayment = true
-                }
-                _activePayment.value = _activePayment.value
-
-                if (activePayment.value!!.allTicketsPaid()){
-                    _activePayment.value!!.close()
+                    if (amountOwed > 0){
+                        t.paymentTotal = paidAmount
+                        t.partialPayment = true
+                    }
                     _activePayment.value = _activePayment.value
+
+                    if (activePayment.value?.allTicketsPaid() == true){
+                        _activePayment.value?.close()
+                        _activePayment.value = _activePayment.value
+                    }
+                    savePaymentToCloud()
                 }
-                savePaymentToCloud()
             }
+
         }
     }
 
@@ -191,9 +186,10 @@ class GiftCardViewModel @Inject constructor (
     private fun createCashTicketPayment(ticket: Ticket, amount: Double){
         val list = mutableListOf<TicketPayment>()
         var id = 0
-        if (!ticket.paymentList.isNullOrEmpty()){
-            id = ticket.paymentList!!.size
+        ticket.paymentList?.let {
+            id = it.size
         }
+
         val ticketPayment = TicketPayment (
             id = id,
             paymentType = "Cash",
@@ -207,10 +203,10 @@ class GiftCardViewModel @Inject constructor (
             list.add(ticketPayment)
             ticket.paymentList = list
         }else{
-            for (payment in ticket.paymentList!!){
+            ticket.paymentList?.forEach { payment ->
                 payment.uiActive = false
             }
-            ticket.paymentList!!.add(ticketPayment)
+            ticket.paymentList?.add(ticketPayment)
         }
     }
 
@@ -225,16 +221,18 @@ class GiftCardViewModel @Inject constructor (
 
     fun swipeCard(){
         viewModelScope.launch {
-            val terminal = loginRepository.getTerminal()!!
+            _showSpinner.value = true
             try {
-                val url =
-                    "http://" + terminal.ccEquipment.ipAddress + ":8080/pos?Action=StartOrder&Order=100&Format=JSON"
-                val response: TerminalResponse = startCredit.startCreditProcess(url)
-                if (response.Status == "Success") {
-                    addValueStaging()
-                } else {
-                    cancelCredit()
-                    setError("Error Notification", Constants.TERMINAL_ERROR)
+                terminal?.let {
+                    val url =
+                        "http://" + terminal.ccEquipment.ipAddress + ":8080/pos?Action=StartOrder&Order=100&Format=JSON"
+                    val response: TerminalResponse = startCredit.startCreditProcess(url)
+                    if (response.Status == "Success") {
+                        addValueStaging()
+                    } else {
+                        cancelCredit()
+                        setError("Error Notification", Constants.TERMINAL_ERROR)
+                    }
                 }
             } catch (ex: Exception) {
                 setError("Error Notification", Constants.TIMEOUT_ERROR)
@@ -246,13 +244,18 @@ class GiftCardViewModel @Inject constructor (
         viewModelScope.launch {
             _showSpinner.value = true
             try{
-                val url = "http://" + terminal.ccEquipment.ipAddress + ":8080/pos?Action=StartOrder&Order=" + activeOrder.value?.orderNumber.toString() + "&Format=JSON"
-                val response: TerminalResponse = startCredit.startCreditProcess(url)
-                if (response.Status == "Success"){
-                    creditStaging(activeOrder.value!!, settings, terminal)
-                }else{
-                    setError("Error Notification", Constants.TERMINAL_ERROR)
+                if (terminal != null && settings != null){
+                    val url = "http://" + terminal.ccEquipment.ipAddress + ":8080/pos?Action=StartOrder&Order=" + activeOrder.value?.orderNumber.toString() + "&Format=JSON"
+                    val response: TerminalResponse = startCredit.startCreditProcess(url)
+                    if (response.Status == "Success"){
+                        _activeOrder.value?.let {
+                            creditStaging(it, settings, terminal)
+                        }
+                    }else{
+                        setError("Error Notification", Constants.TERMINAL_ERROR)
+                    }
                 }
+
             }catch(ex: Exception){
                 setError("Error Notification", Constants.TIMEOUT_ERROR)
             }
@@ -264,18 +267,21 @@ class GiftCardViewModel @Inject constructor (
         viewModelScope.launch {
             //TODO: Handle partial payments
             try{
-                val transaction: CayanCardTransaction = creditCardRepository.createCayanTransaction(order, activePayment.value?.activeTicket()!!, settings, terminal, activePayment.value?.activeTicket()!!.total)
-                val stageResponse: Any = stageTransaction.stageTransaction(transaction)
+                _activePayment.value?.activeTicket()?.let {
+                    val transaction: CayanCardTransaction = creditCardRepository.createCayanTransaction(order,
+                        it, settings, terminal, it.total)
+                    val stageResponse: Any = stageTransaction.stageTransaction(transaction)
 
-                if (stageResponse is String){
-                    cancelCredit()
-                    setError("Error Notification", Constants.STAGING_ERROR)
+                    if (stageResponse is String){
+                        cancelCredit()
+                        setError("Error Notification", Constants.STAGING_ERROR)
+                    }
+
+                    if (stageResponse is StageResponse){
+                        initiateTransaction(stageResponse, terminal)
+                    }
                 }
 
-                if (stageResponse is StageResponse){
-//                    _activePayment.value?.activeTicket()?.stageResponse?.add(stageResponse)
-                    initiateTransaction(stageResponse, terminal)
-                }
             }catch(ex: Exception){
                 setError("Error Notification", "Did not Suspend")
             }
@@ -294,7 +300,10 @@ class GiftCardViewModel @Inject constructor (
 
             if (cayanTransaction is CayanTransaction){
                 if (cayanTransaction.Status.uppercase(Locale.getDefault()) == "APPROVED"){
-                    processApproval(activePayment.value!!.activeTicket()!!, cayanTransaction)
+                    _activePayment.value?.activeTicket()?.let {
+                        processApproval(it, cayanTransaction)
+                    }
+
                 }else{
                     processDecline(cayanTransaction)
                 }
@@ -327,17 +336,20 @@ class GiftCardViewModel @Inject constructor (
 
         if (ticket.paymentTotal < ticket.total){
             _amountOwed.value = ticket.total.minus(ticket.paymentTotal).round(2)
-            ticket.paymentTotal = amountOwed.value!!
+            ticket.paymentTotal = amountOwed.value ?: 0.00
             ticket.partialPayment = true
             setError("Credit Card Process","The credit was approved.")
         }
 
-        if (activePayment.value!!.allTicketsPaid()){
-            _activePayment.value!!.close()
-            _activePayment.value = _activePayment.value
-        }else{
-            _activePayment.value = _activePayment.value
+        _activePayment.value?.let {
+            if (it.allTicketsPaid()){
+               it.close()
+                _activePayment.value = it
+            }else{
+                _activePayment.value = it
+            }
         }
+
         savePaymentToCloud()
     }
 
@@ -346,8 +358,8 @@ class GiftCardViewModel @Inject constructor (
                                           amount: Double, creditCardTransaction: CreditCardTransaction){
         val list = mutableListOf<TicketPayment>()
         var id = 0
-        if (!ticket.paymentList.isNullOrEmpty()){
-            id = ticket.paymentList!!.size
+        ticket.paymentList?.let {
+            id = it.size
         }
 
         val ccList = arrayListOf<CreditCardTransaction>()
@@ -378,15 +390,15 @@ class GiftCardViewModel @Inject constructor (
             }
 
         }else{
-            for (p in ticket.paymentList!!){
-                p.uiActive = false
+            ticket.paymentList?.forEach {
+                it.uiActive = false
             }
+
             if (!ticketPayment.canceled){
-                ticket.paymentList!!.add(ticketPayment)
+                ticket.paymentList?.add(ticketPayment)
             }
 
         }
-
     }
 
     @SuppressLint("DefaultLocale")
@@ -437,16 +449,14 @@ class GiftCardViewModel @Inject constructor (
 
     fun balanceInquiry(){
         viewModelScope.launch {
-            val terminal = loginRepository.getTerminal()!!
             try{
                 _showSpinner.value = true
-                val url = "http://" + terminal.ccEquipment.ipAddress + ":8080/pos?Action=StartOrder&Order=100&Format=JSON"
+                val url = "http://" + terminal?.ccEquipment?.ipAddress + ":8080/pos?Action=StartOrder&Order=100&Format=JSON"
                 val response: TerminalResponse = startCredit.startCreditProcess(url)
                 if (response.Status == "Success"){
                     balanceStaging()
                 }else{
                     cancelCredit()
-//                    setError("Error Notification", Constants.TERMINAL_ERROR)
                 }
             }catch(ex: Exception){
                 setError("Error Notification", Constants.TIMEOUT_ERROR)
@@ -459,7 +469,7 @@ class GiftCardViewModel @Inject constructor (
             val transaction = createCayanTransaction("BALANCEINQUIRY", 1.00)
                 val stageResponse: Any = stageTransaction.stageTransaction(transaction)
                 if (stageResponse is StageResponse){
-                    val transportURL: String = "http://" + terminal.ccEquipment.ipAddress + ":8080/v2/pos?TransportKey=" + stageResponse.transportKey + "&Format=JSON"
+                    val transportURL: String = "http://" + terminal?.ccEquipment?.ipAddress + ":8080/v2/pos?TransportKey=" + stageResponse.transportKey + "&Format=JSON"
                     val response: CayanTransaction = initiateCreditTransaction.initiateTransaction(transportURL)
                     if (response.Status.uppercase(Locale.ROOT) == "APPROVED"){
                         _balanceResponse.value = response.AdditionalParameters?.Loyalty?.Balances?.AmountBalance.toString()
@@ -471,31 +481,33 @@ class GiftCardViewModel @Inject constructor (
 
     private suspend fun addValueStaging(){
         viewModelScope.launch {
-            val transaction = createCayanTransaction("ADDVALUE", _activePayment.value?.tickets?.get(0)?.paymentTotal!!)
-            val stageResponse: Any = stageTransaction.stageTransaction(transaction)
-            if (stageResponse is StageResponse){
-//                _activePayment.value?.tickets?.get(0)?.stageResponse?.add(stageResponse)
-                val transportURL: String = "http://" + terminal.ccEquipment.ipAddress + ":8080/v2/pos?TransportKey=" + stageResponse.transportKey + "&Format=JSON"
-                val response: CayanTransaction = initiateCreditTransaction.initiateTransaction(transportURL)
-                if (response.Status.uppercase(Locale.ROOT) == "APPROVED"){
-                    clearActiveOrderPayment()
-                    _giftScreen.postValue(ShowGift.ADD_CASH)
-                    val list = mutableListOf<String>()
-                    list.add(response.AmountApproved)
-                    list.add(response.AdditionalParameters?.Loyalty?.Balances?.AmountBalance.toString())
-                    _swipeResponse.value = list
+            _activePayment.value?.tickets?.get(0)?.paymentTotal?.let {
+                val transaction = createCayanTransaction("ADDVALUE", it)
+                val stageResponse: Any = stageTransaction.stageTransaction(transaction)
+                if (stageResponse is StageResponse){
+                    val transportURL: String = "http://" + terminal?.ccEquipment?.ipAddress + ":8080/v2/pos?TransportKey=" + stageResponse.transportKey + "&Format=JSON"
+                    val response: CayanTransaction = initiateCreditTransaction.initiateTransaction(transportURL)
+                    if (response.Status.uppercase(Locale.ROOT) == "APPROVED"){
+                        clearActiveOrderPayment()
+                        _giftScreen.postValue(ShowGift.ADD_CASH)
+                        val list = mutableListOf<String>()
+                        list.add(response.AmountApproved)
+                        list.add(response.AdditionalParameters?.Loyalty?.Balances?.AmountBalance.toString())
+                        _swipeResponse.value = list
 
+                    }
                 }
             }
+            _showSpinner.value = false
         }
     }
 
 
     private fun createCayanTransaction(type: String, amount: Double): CayanCardTransaction {
         return CayanCardTransaction(
-            merchantName = settings.merchantCredentials.MerchantName,
-            merchantSiteId = settings.merchantCredentials.MerchantSiteId,
-            merchantKey = settings.merchantCredentials.MerchantKey,
+            merchantName = settings?.merchantCredentials?.MerchantName ?: "",
+            merchantSiteId = settings?.merchantCredentials?.MerchantSiteId ?: "",
+            merchantKey = settings?.merchantCredentials?.MerchantKey ?: "",
             request = CayanRequest(
                 transactionType = type,
                 amount = amount,
@@ -507,7 +519,7 @@ class GiftCardViewModel @Inject constructor (
                 transactionId = "",
                 forceDuplicate = true,
                 taxAmount = 0.00,
-                terminalId = terminal.terminalId.toString(),
+                terminalId = terminal?.terminalId.toString(),
                 ticketItems = null,
                 enablePartialAuthorization = false
             ),
@@ -542,127 +554,132 @@ class GiftCardViewModel @Inject constructor (
     }
 
     private fun createGiftOrder(amount: Double) {
-        val orderItems = mutableListOf<OrderItem>()
-        val guests = mutableListOf<Guest>()
-        val terminal = loginRepository.getTerminal()!!
-        val orderItem = OrderItem(
-            id = 1,
-            menuItemId = "giftCard",
-            menuItemName = "Gift Card",
-            menuItemPrice = ItemPrice(
-                quantity = 1,
-                size = "Regular",
-                price = amount,
-                discountPrice = null,
-                tax = "Tax Exempt"
-            ),
-            modifiers = null,
-            salesCategory = "Gift",
-            ingredients = null,
-            prepStation = null,
-            printer = terminal.defaultPrinter,
-            priceAdjusted = false,
-            menuItemDiscount = null,
-            takeOutFlag = false,
-            dontMake = false,
-            rush = false,
-            tax = "Tax Exempt",
-            note = null,
-            employeeId = user.employeeId,
-            status = "Paid")
+        terminal?.let {
+            val orderItems = mutableListOf<OrderItem>()
+            val guests = mutableListOf<Guest>()
+            val orderItem = OrderItem(
+                id = 1,
+                menuItemId = "giftCard",
+                menuItemName = "Gift Card",
+                menuItemPrice = ItemPrice(
+                    quantity = 1,
+                    size = "Regular",
+                    price = amount,
+                    discountPrice = null,
+                    modifiedPrice = 0.00,
+                    tax = "Tax Exempt"
+                ),
+                modifiers = null,
+                salesCategory = "Gift",
+                ingredients = null,
+                prepStation = null,
+                printer = terminal.defaultPrinter,
+                priceAdjusted = false,
+                menuItemDiscount = null,
+                takeOutFlag = false,
+                dontMake = false,
+                rush = false,
+                tax = "Tax Exempt",
+                note = null,
+                employeeId = user?.employeeId ?: "",
+                status = "Paid")
 
-        orderItems.add(orderItem)
-        val guest = Guest(
-            id = 0,
-            startTime = GlobalUtils().getNowEpoch(),
-            orderItems = orderItems,
-            subTotal = null,
-            tax = null,
-            gratuity = 0.00,
-            total = null)
-        guests.add(guest)
+            orderItems.add(orderItem)
 
-        val order = Order (
-            id = "O_" + randomUUID(),
-            orderType = "Gift Card",
-            orderNumber = 99,
-            tableNumber = null,
-            employeeId = user.employeeId,
-            userName = user.userName,
-            startTime = GlobalUtils().getNowEpoch(),
-            closeTime = GlobalUtils().getNowEpoch(),
-            midnight = GlobalUtils().getMidnight(),
-            orderStatus = "Paid",
-            kitchenStatus = false,
-            rush = false,
-//            guests = guests,
-            orderItems = orderItems,
-            splitChecks = null,
-            note = "",
-            customer = null,
-            takeOutCustomer = null,
-            outsideDelivery = null,
-            orderFees = null,
-            orderDiscount = null,
-            pendingApproval = false,
-            gratuity = 0.00,
-            subTotal = 0.00,
-            tax = 0.00,
-            total = 0.00,
-            locationId = settings.locationId,
-            taxRate = 0.00,
-            accepted = null,
-            estReadyTime = null,
-            estDeliveryTime = null,
-            transfer = null,
-            archived = false,
-            type = "Order",
-            _rid = "",
-            _self = "",
-            _etag = "",
-            _attachments = "",
-            _ts = null
-        )
-        _activeOrder.value = order
-        _activePayment.value = paymentRepository.createNewPayment(order, terminal, settings.additionalFees)
 
+            val order = Order (
+                id = "O_" + randomUUID(),
+                orderType = "Gift Card",
+                orderNumber = 99,
+                tableNumber = null,
+                employeeId = user?.employeeId ?: "",
+                userName = user?.userName ?: "",
+                startTime = GlobalUtils().getNowEpoch(),
+                closeTime = GlobalUtils().getNowEpoch(),
+                midnight = GlobalUtils().getMidnight(),
+                orderStatus = "Paid",
+                kitchenStatus = false,
+                rush = false,
+                orderItems = orderItems,
+                splitChecks = null,
+                note = "",
+                customer = null,
+                takeOutCustomer = null,
+                outsideDelivery = null,
+                orderFees = null,
+                orderDiscount = null,
+                pendingApproval = false,
+                gratuity = 0.00,
+                subTotal = 0.00,
+                tax = 0.00,
+                total = 0.00,
+                locationId = settings?.locationId ?: "",
+                taxRate = 0.00,
+                accepted = null,
+                estReadyTime = null,
+                estDeliveryTime = null,
+                transfer = null,
+                archived = false,
+                type = "Order",
+                _rid = "",
+                _self = "",
+                _etag = "",
+                _attachments = "",
+                _ts = null
+            )
+            _activeOrder.value = order
+            _activePayment.value = paymentRepository.createNewPayment(order, terminal, settings?.additionalFees)
+        }
     }
 
-    fun savePaymentToCloud(){
+    private fun savePaymentToCloud(){
         viewModelScope.launch {
             val p: Payment
-            if (activePayment.value?._rid == ""){
-                p = savePayment.savePayment(activePayment.value!!)
-                _activePayment.postValue(p)
-                printPaymentReceipt()
-            }else{
-                p = updatePayment.savePayment(activePayment.value!!)
-                _activePayment.postValue(p)
-                printPaymentReceipt()
+            _activePayment.value?.let {
+                if (activePayment.value?._rid == ""){
+                    p = savePayment.savePayment(it)
+                    _activePayment.postValue(p)
+                    printPaymentReceipt()
+                }else{
+                    p = updatePayment.savePayment(it)
+                    _activePayment.postValue(p)
+                    printPaymentReceipt()
+                }
+                _ticketPaid.value = false
             }
-            _ticketPaid.value = false
+
         }
     }
 
     private fun printPaymentReceipt(){
         viewModelScope.launch {
             val ticket = _activePayment.value?.activeTicket()
-            val printer = settings.printers.find { it.printerName == terminal.defaultPrinter.printerName }
-            val location = company.getLocation(settings.locationId)
-            if (ticket?.activePayment()!!.paymentType == "Cash"){
-                if (printer != null){
-                    val ticketDocument = _activePayment.value?.getCashReceipt(printer, location!!)
-                    receiptPrintingService.printTicketReceipt(ticketDocument!!, printer, settings)
+            val printer = settings?.printers?.find { it.printerName == terminal?.defaultPrinter?.printerName }
+            val location = company?.getLocation(settings?.locationId ?: "")
+            settings?.let {
+                location?.let { location ->
+                    ticket?.activePayment()?.let { tp ->
+                        if (tp.paymentType == "Cash"){
+                            if (printer != null){
+                                val ticketDocument = _activePayment.value?.getCashReceipt(printer, location)
+                                ticketDocument?.let { doc ->
+                                    receiptPrintingService.printTicketReceipt(doc, printer, settings)
+                                }
+
+                            }
+                        }
+
+                        if (tp.paymentType == "Credit"){
+                            if (printer != null){
+                                val ticketDocument = _activePayment.value?.getCreditReceipt(printer, location)
+                                ticketDocument?.let { doc ->
+                                    receiptPrintingService.printTicketReceipt(doc, printer, settings)
+                                }
+                            }
+                        }
+                    }
                 }
             }
-
-            if (ticket.activePayment()!!.paymentType == "Credit"){
-                if (printer != null){
-                    val ticketDocument = _activePayment.value?.getCreditReceipt(printer, location!!)
-                    receiptPrintingService.printTicketReceipt(ticketDocument!!, printer, settings)
-                }
-            }
-
         }
     }
 
@@ -676,9 +693,13 @@ class GiftCardViewModel @Inject constructor (
 
     private fun saveOrderToCloud(){
         viewModelScope.launch {
-            if (_activeOrder.value?.orderNumber!! == 99){
-                _activeOrder.postValue(saveGiftOrder.saveOrder(_activeOrder.value!!))
-                _giftScreen.postValue(ShowGift.SWIPE_CARD)
+            _activeOrder.value?.let { order ->
+                _activeOrder.value?.orderNumber?.let {
+                    if (it == 99){
+                        _activeOrder.postValue(saveGiftOrder.saveOrder(order))
+                        _giftScreen.postValue(ShowGift.SWIPE_CARD)
+                    }
+                }
             }
         }
     }

@@ -44,6 +44,7 @@ data class Payment(
     val _attachments: String?,
     val _ts: Long?
 ): Parcelable{
+
     fun close(){
         this.orderCloseTime = GlobalUtils().getNowEpoch()
         this.closed = true
@@ -115,10 +116,9 @@ data class Payment(
     fun recalculateTotals(){
         tickets?.let {
             for (ticket in tickets!!){
-                Log.d("Testing", ticket.taxRate.toString())
                 ticket.subTotal = ticket.ticketItems.sumOf { it -> it.ticketItemPrice }.round(2)
                 ticket.tax = ticket.subTotal.times(ticket.taxRate).round(2)
-                ticket.total = ticket.subTotal.plus(ticket.tax)
+                ticket.total = ticket.subTotal.plus(ticket.tax).round(2)
             }
         }
     }
@@ -153,7 +153,7 @@ data class Payment(
                         item.ticketItemPrice = item.discountPrice!!
                     }else{
                         println("not discount")
-                        item.ticketItemPrice = item.itemPrice.times(item.quantity)
+                        item.ticketItemPrice = item.itemPrice.times(item.quantity).round(2)
                     }
                 }
                 val ts = arrayListOf<Ticket>()
@@ -270,13 +270,13 @@ data class Payment(
                 ticketItem.tax = (ticketItem.discountPrice!! * taxRate).round(2)
                 ticketItem.priceModified = true
                 ticketItem.approvalType = "Discount Item: ${discount.discountName}"
-                disTotal = discount.discountAmount
+                disTotal = discount.discountAmount.round(2)
             }else{
                 ticketItem.discountPrice = 0.00
                 ticketItem.tax = 0.00
                 ticketItem.priceModified = true
                 ticketItem.approvalType = "Discount Item: ${discount.discountName}"
-                disTotal = ticketItem.ticketItemPrice
+                disTotal = ticketItem.ticketItemPrice.round(2)
             }
         }
 
@@ -295,8 +295,8 @@ data class Payment(
     fun discountTicket(discount: Discount, approvalId: String): Double{
         var disTotal = 0.00
         if (discount.discountType == "Flat Amount"){
-            disTotal = discount.discountAmount
-            var discountLeft = discount.discountAmount
+            disTotal = discount.discountAmount.round(2)
+            var discountLeft = discount.discountAmount.round(2)
             activeTicket()?.ticketItems?.forEach { ticketItem ->
                 if (discountLeft > 0.00){
                     if (ticketItem.ticketItemPrice <= discountLeft){
@@ -324,8 +324,8 @@ data class Payment(
 
             activeTicket()?.ticketItems?.forEach { ti ->
                 val dis = ti.ticketItemPrice * (discount.discountAmount.div(100)).round(2)
-                disTotal = disTotal.plus(ti.ticketItemPrice.minus(dis))
-                ti.discountPrice = ti.ticketItemPrice.minus(dis)
+                disTotal = disTotal.plus(ti.ticketItemPrice.minus(dis)).round(2)
+                ti.discountPrice = ti.ticketItemPrice.minus(dis).round(2)
                 ti.tax = ti.discountPrice!!.times(taxRate).round(2)
                 ti.priceModified = true
                 ti.approvalType = "Discount Ticket: ${discount.discountName}"
@@ -404,7 +404,7 @@ data class Ticket(
         fun getTicketSubTotal(): Double{
             var price: Double = 0.00
             ticketItems.forEach{ticketItem ->
-                price += price.plus(ticketItem.ticketItemPrice)
+                price += price.plus(ticketItem.ticketItemPrice).round(2)
             }
             return price
         }
@@ -426,7 +426,7 @@ data class Ticket(
 //            this.gratuity = tip
             recalculateAfterApproval()
             this.total = this.total.plus(tip).round(2)
-            this.paymentTotal = this.total;
+            this.paymentTotal = this.total.round(2);
         }
 
         fun activePayment(): TicketPayment?{
@@ -440,7 +440,7 @@ data class Ticket(
             return if (allGratuities() != null){
                 total.plus(allGratuities()!!).round(2)
             }else{
-                total
+                total.round(2)
             }
         }
 
@@ -476,7 +476,7 @@ data class Ticket(
                     total = total.plus(itemTotal.minus(ticketItem.ticketItemPrice))
                 }
             }
-            return total
+            return total.round(2)
         }
     }
 

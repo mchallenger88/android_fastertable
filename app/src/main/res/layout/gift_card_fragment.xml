@@ -752,6 +752,17 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/text_balance_inquiry_subtitle" />
 
+            <com.google.android.material.progressindicator.CircularProgressIndicator
+                android:id="@+id/gift_card_spinner1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:indeterminate="true"
+                android:layout_marginBottom="20dp"
+                app:showCreditSpinner="@{viewModel.showSpinner}"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/btn_start_balance"/>
+
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -797,6 +808,17 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/text_gift_swipe_info" />
+
+            <com.google.android.material.progressindicator.CircularProgressIndicator
+                android:id="@+id/gift_card_spinner2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:indeterminate="true"
+                android:layout_marginBottom="20dp"
+                app:showCreditSpinner="@{viewModel.showSpinner}"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/btn_start_swipe"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

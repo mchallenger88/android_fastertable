@@ -1,5 +1,6 @@
 package com.fastertable.fastertable.ui.confirm
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -24,7 +25,7 @@ class ConfirmViewModel @Inject constructor (
     private val confirmCheckout: ConfirmCheckout
         ): BaseViewModel() {
 
-    val settings: Settings = loginRepository.getSettings()!!
+    val settings: Settings? = loginRepository.getSettings()
     private val midnight: Long = GlobalUtils().getMidnight()
 
     private val _confirmList = MutableLiveData<List<ConfirmEmployee>>()
@@ -48,26 +49,39 @@ class ConfirmViewModel @Inject constructor (
     fun getConfirmList(){
         viewModelScope.launch {
             _progressVisibility.value = true
-            val rollingMidnight = GlobalUtils().unixMidnight(_activeDate.value!!)
+            var rollingMidnight = midnight
+            _activeDate.value?.let {
+                rollingMidnight = GlobalUtils().unixMidnight(it)
+            }
 
             val request: CompanyTimeBasedRequest = if (midnight == rollingMidnight){
                 CompanyTimeBasedRequest(
                     midnight = midnight,
-                    locationId = settings.locationId,
-                    companyId = settings.companyId
+                    locationId = settings?.locationId ?: "",
+                    companyId = settings?.companyId ?: ""
                 )
             } else{
                 CompanyTimeBasedRequest(
                     midnight = rollingMidnight,
-                    locationId = settings.locationId,
-                    companyId = settings.companyId
+                    locationId = settings?.locationId ?: "",
+                    companyId = settings?.companyId ?: ""
                 )
             }
             var list = getConfirmList.getList(request)
-            list = list.filter { it.orders?.size!! > 0 }
+            list = filterListByOrders(list)
             _confirmList.postValue(list)
             _progressVisibility.value = false
         }
+    }
+
+    private fun filterListByOrders(list: List<ConfirmEmployee>): List<ConfirmEmployee>{
+        val newList = mutableListOf<ConfirmEmployee>()
+        for (emp in list){
+            if (emp.orders?.isNullOrEmpty() == false){
+                newList.add(emp)
+            }
+        }
+        return newList
     }
 
     fun setDate(date: Date){
@@ -80,18 +94,21 @@ class ConfirmViewModel @Inject constructor (
     fun confirm(confirmEmployee: ConfirmEmployee) {
         viewModelScope.launch {
             val user = loginRepository.getOpsUser()
-            val date = GlobalUtils().unixMidnight(_activeDate.value!!)
-            if (user != null) {
-                val cc = CheckoutCredentials(
-                    employeeId = user.employeeId,
-                    companyId = settings.companyId,
-                    locationId = settings.locationId,
-                    checkout = true,
-                    midnight = date
-                )
-                confirmCheckout.confirm(cc)
-                getConfirmList()
+            _activeDate.value?.let {
+                val date = GlobalUtils().unixMidnight(it)
+                if (user != null) {
+                    val cc = CheckoutCredentials(
+                        employeeId = user.employeeId,
+                        companyId = settings?.companyId ?: "",
+                        locationId = settings?.locationId ?: "",
+                        checkout = true,
+                        midnight = date
+                    )
+                    confirmCheckout.confirm(cc)
+                    getConfirmList()
+                }
             }
+
         }
     }
 

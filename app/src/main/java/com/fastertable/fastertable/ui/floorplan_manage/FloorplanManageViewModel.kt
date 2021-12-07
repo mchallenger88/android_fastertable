@@ -19,8 +19,8 @@ class FloorplanManageViewModel @Inject constructor(
     private val floorplanRepository: FloorplanRepository,
     private val loginRepository: LoginRepository
 ): BaseViewModel(){
-    val user: OpsAuth = loginRepository.getOpsUser()!!
-    val settings: Settings = loginRepository.getSettings()!!
+    val user: OpsAuth? = loginRepository.getOpsUser()
+    val settings: Settings? = loginRepository.getSettings()
     private var tableList = arrayListOf<RestaurantTable>()
     var wallList = arrayListOf<FloorplanWall>()
 
@@ -59,13 +59,16 @@ class FloorplanManageViewModel @Inject constructor(
 
     fun getFloorplans() {
         viewModelScope.launch {
-            val floorplans = floorplanQueries.getFloorplans(settings.locationId, settings.companyId)
+            settings?.let {
+                val floorplans =
+                    floorplanQueries.getFloorplans(settings.locationId, settings.companyId)
 
-            if (floorplans.isNotEmpty()){
-                _floorplans.postValue(floorplans.toMutableList())
-                setActiveFloorplan(floorplans[0])
-            }else{
-                createFloorplan()
+                if (floorplans.isNotEmpty()) {
+                    _floorplans.postValue(floorplans.toMutableList())
+                    setActiveFloorplan(floorplans[0])
+                } else {
+                    createFloorplan()
+                }
             }
         }
     }
@@ -77,12 +80,17 @@ class FloorplanManageViewModel @Inject constructor(
     }
 
     fun setFloorplanName(name: String){
-        _activeFloorplan.value!!.name = name
+        _activeFloorplan.value?.let {
+            it.name = name
+        }
+
     }
 
     fun getCurrentIndex(): Int{
-        return _selectedFloorplanIndex.value!!
-
+        _selectedFloorplanIndex.value?.let {
+            return it
+        }
+        return 0
     }
 
     fun selectFloorplan(floorplan: RestaurantFloorplan) {
@@ -91,12 +99,12 @@ class FloorplanManageViewModel @Inject constructor(
 
     fun saveFloorplanToCloud(){
         viewModelScope.launch {
-            if (_activeFloorplan.value != null){
-                if (_activeFloorplan.value!!.id.isBlank()){
-                    floorplanQueries.saveFloorplan(activeFloorplan.value!!)
+            _activeFloorplan.value?.let{
+                if (it.id.isBlank()){
+                    floorplanQueries.saveFloorplan(it)
                     _saveReturn.postValue(1)
                 }else{
-                    floorplanQueries.updateFloorplan(activeFloorplan.value!!)
+                    floorplanQueries.updateFloorplan(it)
                     _saveReturn.postValue(2)
                 }
             }
@@ -109,22 +117,22 @@ class FloorplanManageViewModel @Inject constructor(
 
     fun deleteFloorplan(){
         viewModelScope.launch {
-            if (_activeFloorplan.value != null){
-                if (_activeFloorplan.value!!.id.isBlank()){
-                    _floorplans.value!!.remove(_activeFloorplan.value!!)
-                    if (_floorplans.value!!.isNotEmpty()){
-                        _activeFloorplan.postValue(_floorplans.value!![0])
+            _activeFloorplan.value?.let{
+                if (it.id.isBlank()){
+                    _floorplans.value?.remove(it)
+                    if (_floorplans.value?.isNotEmpty() == true){
+                        _activeFloorplan.postValue(_floorplans.value?.get(0))
                     }else{
                         _activeFloorplan.postValue(null)
                     }
 
                     _deleteReturn.postValue(1)
                 }else{
-                    val b = floorplanQueries.deleteFloorplan(activeFloorplan.value!!)
+                    val b = floorplanQueries.deleteFloorplan(it)
                     if (b){
-                        _floorplans.value!!.remove(_activeFloorplan.value!!)
-                        if (_floorplans.value!!.isNotEmpty()){
-                            _activeFloorplan.postValue(_floorplans.value!![0])
+                        _floorplans.value?.remove(it)
+                        if (_floorplans.value?.isNotEmpty() == true){
+                            _activeFloorplan.postValue(_floorplans.value?.get(0))
                         }else{
                             _activeFloorplan.postValue(null)
                         }
@@ -142,10 +150,10 @@ class FloorplanManageViewModel @Inject constructor(
         val newFloorplan = RestaurantFloorplan(
             tables = arrayListOf(),
             walls = arrayListOf(),
-            companyId = settings.companyId,
+            companyId = settings?.companyId ?: "",
             name = "Untitled floorplan",
             id = "",
-            locationId = settings.locationId,
+            locationId = settings?.locationId ?: "",
             archived = false,
             type = "floorplan",
             _rid = null,
@@ -160,8 +168,11 @@ class FloorplanManageViewModel @Inject constructor(
         _floorplans.value = list
 
         _selectedFloorplanIndex.value = -1
-        wallList = _activeFloorplan.value!!.walls
-        tableList = _activeFloorplan.value!!.tables
+        _activeFloorplan.value?.let {
+            wallList = it.walls
+            tableList = it.tables
+        }
+
     }
 
     fun setReloadTables(b: Boolean){
@@ -231,7 +242,10 @@ class FloorplanManageViewModel @Inject constructor(
             return id + 1
         } else { // Wall
             wallList.forEach {
-                if (it.id!! > id) id = it.id!!
+                it.id?.let { wallId ->
+                    if (wallId > id) id = wallId
+                }
+
             }
             return id + 1
         }

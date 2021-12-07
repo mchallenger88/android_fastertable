@@ -119,18 +119,21 @@
                 android:id="@+id/chip_open_orders"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                app:btnOpenOrders="@{viewModel.orderFilter}"
                 android:text="@string/open_orders" />
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chip_closed_orders"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                app:btnClosedOrders="@{viewModel.orderFilter}"
                 android:text="@string/closed_orders" />
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chip_all_orders"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                app:btnAllOrders="@{viewModel.orderFilter}"
                 android:text="@string/all_orders" />
 
         </com.google.android.material.chip.ChipGroup>

@@ -23,11 +23,6 @@ enum class MenusNavigation{
     EDIT_MENU_ITEM
 }
 
-enum class AddSubtract{
-    ADD,
-    SUBTRACT
-}
-
 @HiltViewModel
 class OrderViewModel @Inject constructor (private val menusRepository: MenusRepository,
                                           private val loginRepository: LoginRepository,
@@ -42,8 +37,8 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
 
     //region Model Variables
     private var itemNote = ""
-    val user: OpsAuth = loginRepository.getOpsUser()!!
-    val settings: Settings = loginRepository.getSettings()!!
+    val user: OpsAuth? = loginRepository.getOpsUser()
+    val settings: Settings? = loginRepository.getSettings()
     var reorderList = mutableListOf<ReorderDrink>()
     var transferList = mutableListOf<OrderItem>()
 
@@ -91,8 +86,6 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
     val paymentClicked: LiveData<Boolean>
         get() = _paymentClicked
 
-    private var modList = ArrayList<Modifier>()
-
     //Live Data for Order Info
     private val _currentOrderId = MutableLiveData<String?>()
     val currentOrderId: LiveData<String?>
@@ -113,10 +106,6 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
     private val _showOrderNote = MutableLiveData<Boolean>()
     val showOrderNote: LiveData<Boolean>
         get() = _showOrderNote
-
-    private val _orderNotes = MutableLiveData<String?>()
-    val orderNotes: LiveData<String?>
-        get() = _orderNotes
 
     private val _sendKitchen = MutableLiveData<Boolean>()
     val sendKitchen: LiveData<Boolean>
@@ -170,9 +159,9 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
     val transferComplete: LiveData<Boolean>
         get() = _transferComplete
 
-    private val _guestId = MutableLiveData(1)
-    val guestId: LiveData<Int>
-        get() = _guestId
+    private val _navHome = MutableLiveData(false)
+    val navHome: LiveData<Boolean>
+        get() = _navHome
 
     //endregion
 
@@ -188,9 +177,10 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
     fun initOrder(){
         viewModelScope.launch {
             if (currentOrderId.value != null){
-                val id = currentOrderId.value!!
-                _activeOrder.postValue(orderRepository.getOrderById(id))
-                getPayment.getPayment(id.replace("O_", "P_"), settings.locationId)
+                currentOrderId.value?.let { id ->
+                    _activeOrder.postValue(orderRepository.getOrderById(id))
+                    getPayment.getPayment(id.replace("O_", "P_"), settings?.locationId ?: "")
+                }
             }else{
                 _activeOrder.postValue(orderRepository.getNewOrder())
             }
@@ -272,14 +262,14 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
                 if (price != null) {
                     val orderItem = OrderItem(
                         id = order.orderItems?.size?.plus(1) ?: 1,
-                        guestId = order.activeGuest ?: 1,
+                        guestId = order.activeGuest,
                         menuItemId = item.id,
                         menuItemName = item.itemName,
                         menuItemPrice = price,
                         modifiers = item.modifiers,
                         salesCategory = item.salesCategory,
                         ingredients = item.ingredients,
-                        prepStation = findPrepStation()!!,
+                        prepStation = findPrepStation(),
                         printer = item.printer,
                         priceAdjusted = false,
                         menuItemDiscount = null,
@@ -288,7 +278,7 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
                         rush = false,
                         tax = price.tax,
                         note = itemNote,
-                        employeeId = user.employeeId,
+                        employeeId = user?.employeeId ?: "",
                         status = "Started",
                     )
                     order.orderItems?.add(orderItem)
@@ -311,26 +301,31 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
             }
         }
         _activeOrder.value = _activeOrder.value
-
         clearItemSettings()
     }
 
     fun addAdHocItem(item: OrderItem){
-        item.guestId = _activeOrder.value?.activeGuest!!
+        item.guestId = _activeOrder.value?.activeGuest ?: 1
         _activeOrder.value?.orderItems?.add(item)
         _activeOrder.value = _activeOrder.value
         _menusNavigation.value = MenusNavigation.CATEGORIES
     }
 
     private fun findPrepStation(): PrepStation?{
-        val printerName = activeItem.value!!.printer.printerName
-        return settings.getPrepStation(printerName)
+        settings?.prepStations?.let { stations ->
+            var prep = stations[0]
+            _activeItem.value?.let {
+                prep = settings.getPrepStation(it.printer.printerName)
+            }
+            return  prep
+        }
+        return null
     }
 
 
     fun increaseItemQuantity(){
-        if (_activeItem.value?.prices != null){
-            for (price in _activeItem.value?.prices!!){
+        _activeItem.value?.prices?.let { list ->
+            for (price in list){
                 price.quantity = price.quantity.plus(1)
             }
             _activeItem.value = _activeItem.value
@@ -338,13 +333,12 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
     }
 
     fun decreaseItemQuantity(){
-        if (_activeItem.value?.prices != null){
-            for (price in _activeItem.value?.prices!!){
+        _activeItem.value?.prices?.let { list ->
+            for (price in list){
                 if (price.quantity > 1){
                     price.quantity = price.quantity.minus(1)
                 }
             }
-
             _activeItem.value = _activeItem.value
         }
     }
@@ -359,8 +353,8 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
         _enableAddButton.value = enable
     }
 
-    private suspend fun modifyOrderItem(item: OrderItem){
-        val out = viewModelScope.launch {
+    private fun modifyOrderItem(item: OrderItem){
+        viewModelScope.launch {
             val menuItem = findMenuItem(item.menuItemId)
             menuItem?.prices?.forEach{
                 it.modifiedPrice = item.menuItemPrice.modifiedPrice
@@ -369,14 +363,13 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
             }
             menuItem?.modifiers = item.modifiers as ArrayList<Modifier>
             menuItem?.ingredients = item.ingredients as ArrayList<ItemIngredient>
-            if (menuItem != null){
-                _editItem.value = menuItem!!
+            menuItem?.let{
+                _editItem.value = it
             }
 
             _editOrderItem.value = item
 
         }
-
     }
 
     //endregion
@@ -414,7 +407,7 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
 
     private fun findMenuItem(id: String): MenuItem? {
         val list = mutableListOf<MenuItem>()
-        for (menu in menus.value!!){
+        menus.value?.forEach { menu ->
             list.addAll(menu.getMenuItems())
         }
         return list.find{it.id == id}
@@ -439,28 +432,32 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
     private suspend fun sendToKitchen(){
         viewModelScope.launch {
             var started = false
-            val order = activeOrder.value!!
-
-
-            if (order.orderItems!!.any { it.status == "Started" }){
-                started = true
-            }
-
-            if (started){
-                if (settings.restaurantType == "Counter Service"){
-                    if (order.orderNumber == 99 && order.tableNumber == null && order.orderType == "Counter"){
-                        _showTableDialog.postValue(true)
-
-                    }else{
-                        saveOrderToCloud()
+            activeOrder.value?.let { order ->
+                order.orderItems?.let { items ->
+                    if (items.any{ it.status == "Started"}){
+                        started = true
                     }
                 }
-                if (settings.restaurantType == "Full Service"){
-                    saveOrderToCloud()
-                    orderRepository.clearNewOrder()
+
+                if (started){
+                    settings?.let {
+                        if (settings.restaurantType == "Counter Service"){
+                            if (order.orderNumber == 99 && order.tableNumber == null && order.orderType == "Counter"){
+                                _showTableDialog.postValue(true)
+
+                            }else{
+                                saveOrderToCloud()
+                            }
+                        }
+                        if (settings.restaurantType == "Full Service"){
+                            saveOrderToCloud()
+                            orderRepository.clearNewOrder()
+                        }
+                    }
+
+                }else{
+                    _noOrderItems.postValue(true)
                 }
-            }else{
-                _noOrderItems.postValue(true)
             }
         }
 
@@ -495,33 +492,43 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
         }
     }
 
-    fun actionOnItemClicked(action: String){
-        when (action) {
-            "Delete" -> {
-                _activeOrder.value?.orderItemRemove(orderItemClicked.value!!)
-            }
-            "Toggle Rush" -> {
-                _activeOrder.value?.toggleItemRush(orderItemClicked.value!!)
-            }
-            "Toggle Takeout"-> {
-                _activeOrder.value?.toggleItemTakeout(orderItemClicked.value!!)
-            }
-            "Toggle No Make"-> {
-                _activeOrder.value?.toggleItemNoMake(orderItemClicked.value!!)
-            }
-            "Modify Order Item" -> {
-                viewModelScope.launch {
-                    modifyOrderItem(orderItemClicked.value!!)
-                }
-            }
-            else -> {
-            }
+    fun removeOrderItem(){
+        _orderItemClicked.value?.let {
+            _activeOrder.value?.orderItemRemove(it)
+            _activeOrder.value = _activeOrder.value
         }
-        _activeOrder.value = _activeOrder.value
+    }
+
+    fun toggleRush(){
+        _orderItemClicked.value?.let {
+            _activeOrder.value?.toggleItemRush(it)
+            _activeOrder.value = _activeOrder.value
+        }
+    }
+
+    fun toggleTakeout(){
+        _orderItemClicked.value?.let {
+            _activeOrder.value?.toggleItemTakeout(it)
+            _activeOrder.value = _activeOrder.value
+        }
+    }
+
+    fun toggleNoMake(){
+        orderItemClicked.value?.let {
+            _activeOrder.value?.toggleItemNoMake(it)
+            _activeOrder.value = _activeOrder.value
+        }
+    }
+
+    fun modifyOrderItem(){
+        viewModelScope.launch {
+            modifyOrderItem(_orderItemClicked.value!!)
+            _activeOrder.value = _activeOrder.value
+        }
     }
 
     fun reorderDrinks(){
-        if (activeOrder.value!!.closeTime == null) {
+        if (activeOrder.value?.closeTime == null) {
             viewModelScope.launch {
                 reorderList = mutableListOf<ReorderDrink>()
                 val oi = _activeOrder.value?.orderItems?.filter { it.salesCategory == "Bar" }
@@ -543,10 +550,12 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
     }
 
     fun addDrinksToOrder(drinksList: MutableList<ReorderDrink>){
-        if (activeOrder.value!!.closeTime == null){
+        if (activeOrder.value?.closeTime == null){
             for (drink in drinksList){
                 val newOrderItem = drink.drink.clone()
-                newOrderItem.id = _activeOrder.value?.orderItems?.last()?.id!!.plus(1)
+                _activeOrder.value?.orderItems?.last()?.id?.let {
+                    newOrderItem.id = it.plus (1)
+                }
                 newOrderItem.status = "Started"
                 _activeOrder.value?.orderItems?.add(newOrderItem)
                 _kitchenButtonEnabled.value = true
@@ -558,27 +567,35 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
     private suspend fun saveOrderToCloud(){
         var o: Order? = null
         val job = viewModelScope.launch {
-
-            if (_activeOrder.value?.orderNumber!! == 99){
-                o = saveOrder.saveOrder(_activeOrder.value!!)
-                val list = o!!.getKitchenTickets()
-                printerService.printKitchenTickets(list, settings)
-                getOrders()
-            }else{
-                val list = _activeOrder.value!!.getKitchenTickets()
-                printerService.printKitchenTickets(list, settings)
-                updatePayment()
-                getOrders()
+            settings?.let{
+                _activeOrder.value?.let { order ->
+                    if (order.orderNumber == 99){
+                        o = saveOrder.saveOrder(order)
+                        o?.let {
+                            val list = it.getKitchenTickets()
+                            printerService.printKitchenTickets(list, settings)
+                            getOrders()
+                        }
+                    }else{
+                        val list = order.getKitchenTickets()
+                        printerService.printKitchenTickets(list, settings)
+                        updatePayment()
+                        getOrders()
+                    }
+                }
             }
+
         }
 
         job.join()
-        if (o != null){
-            updateOrderStatus(o!!)
-        }else{
-            updateOrderStatus(_activeOrder.value!!)
+        o?.let {
+            updateOrderStatus(it)
         }
-
+        if (o == null){
+            _activeOrder.value?.let {
+                updateOrderStatus(it)
+            }
+        }
     }
 
     fun updateOrder(order: Order){
@@ -596,20 +613,23 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
 
     fun updatePayment(){
         viewModelScope.launch {
-            val order = _activeOrder.value!!
-            val p = getPayment.getPayment(order.id.replace("O", "P"), order.locationId)
-            if (p != null){
-                val payment = paymentRepository.updatePaymentNewOrderItems(p, order)
-                updatePayment.savePayment(payment)
+            _activeOrder.value?.let { order ->
+                val p = getPayment.getPayment(order.id.replace("O", "P"), order.locationId)
+                if (p != null){
+                    val payment = paymentRepository.updatePaymentNewOrderItems(p, order)
+                    updatePayment.savePayment(payment)
 
+                }
             }
         }
     }
 
     fun updateOrderStatus(order: Order){
         viewModelScope.launch {
-            for (item in order.orderItems!!){
-                item.status = "Kitchen"
+            order.orderItems?.let { items ->
+                for (item in items){
+                    item.status = "Kitchen"
+                }
             }
             val o = updateOrder.saveOrder(order)
             _activeOrder.postValue(o)
@@ -621,7 +641,7 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
         withContext(Dispatchers.IO){
             val midnight = GlobalUtils().getMidnight()
             val rid = loginRepository.getStringSharedPreferences("rid")
-            getOrders.getOrders(midnight, rid!!)
+            getOrders.getOrders(midnight, rid ?: "")
         }
     }
 
@@ -631,6 +651,10 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
 
     fun navToPayment(b: Boolean){
         _paymentClicked.value = b
+    }
+
+    fun setNavHome(b: Boolean){
+        _navHome.value = b
     }
 
     fun setCurrentOrderId(id: String){
@@ -675,9 +699,11 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
 
     fun resendKitchenTicket(){
         viewModelScope.launch {
-            _activeOrder.value?.let {
-                val list = it.reprintKitchenTickets()
-                printerService.printKitchenTickets(list, settings)
+            settings?.let {
+                _activeOrder.value?.let {
+                    val list = it.reprintKitchenTickets()
+                    printerService.printKitchenTickets(list, settings)
+                }
             }
         }
     }
@@ -713,15 +739,15 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
                     updateOrder(orderFrom)
                 }
 
-                if (payment?.tickets != null){
-                    for (ticket in payment.tickets!!){
-                        ticket.removeTicketItem(item)
-                    }
+                payment?.tickets?.forEach {
+                    it.removeTicketItem(item)
                 }
-                val id = orderTo.orderItems?.last()?.id!!.plus(1)
 
-                item.id = id
-                orderTo.orderItems.add(item)
+                orderTo.orderItems?.last()?.id?.let {
+                    item.id = it.plus(1)
+                    orderTo.orderItems.add(item)
+                }
+                }
             }
 
             updateOrder(orderTo)
@@ -730,7 +756,6 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
                 updatePayment(payment)
             }
             setTransferComplete(true)
-        }
     }
 
     fun setTransferComplete(b: Boolean){

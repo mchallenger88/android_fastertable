@@ -33,13 +33,6 @@ class ReorderDrinksDialogFragment  : BaseDialog(R.layout.dialog_reorder_drinks) 
             dismiss()
         }
     }
-//    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-//        val binding = DialogReorderDrinksBinding.inflate(inflater)
-//
-//
-//
-//        return binding.root
-//    }
 
     private fun createAdapter(binding: DialogReorderDrinksBinding){
         val adapter = DrinkListAdapter(DrinkListAdapter.AddDrinkListener {
@@ -58,7 +51,9 @@ class ReorderDrinksDialogFragment  : BaseDialog(R.layout.dialog_reorder_drinks) 
     override fun onStart() {
         super.onStart()
         val width = 1000
-        dialog!!.window?.setLayout(width, ViewGroup.LayoutParams.WRAP_CONTENT)
+        dialog?.let {
+            it.window?.setLayout(width, ViewGroup.LayoutParams.WRAP_CONTENT)
+        }
     }
 
 

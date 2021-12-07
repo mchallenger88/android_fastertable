@@ -121,14 +121,13 @@ fun drinkListData(recyclerView: RecyclerView?, data: List<ReorderDrink>?){
     }
 }
 
-@BindingAdapter("itemModifiers")
-fun bindModifierRecycler(recyclerView: RecyclerView?, data: List<Modifier>?){
-    if (data != null){
-        val adapter = recyclerView?.adapter as ModifierAdapter
-        adapter.submitList(data)
-        adapter.notifyDataSetChanged()
+@BindingAdapter("showClosedOrderMessage")
+fun showClosedOrderMessage(textView: TextView, order: Order?){
+    if (order?.closeTime != null){
+        textView.visibility = View.VISIBLE
+    }else{
+        textView.visibility = View.GONE
     }
-
 }
 
 @BindingAdapter("setOrderNotes")

@@ -53,13 +53,6 @@ class MenuItemDialog: BaseDialog(R.layout.add_misc_menu_item) {
             }
         }
     }
-//    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-//        val binding = AddMiscMenuItemBinding.inflate(inflater)
-//
-//
-//
-//        return binding.root
-//    }
 
     private fun createOrderItem(qty: Int, name: String, price: Double){
         val order = viewModel.activeOrder.value
@@ -92,7 +85,7 @@ class MenuItemDialog: BaseDialog(R.layout.add_misc_menu_item) {
             rush = false,
             tax = p.tax,
             note = "",
-            employeeId = viewModel.user.employeeId,
+            employeeId = viewModel.user?.employeeId ?: "",
             status = "Started",
         )
 
@@ -103,20 +96,28 @@ class MenuItemDialog: BaseDialog(R.layout.add_misc_menu_item) {
         super.onStart()
         val width = 1000
         val height= 500
-        dialog!!.window?.setLayout(width, ViewGroup.LayoutParams.WRAP_CONTENT)
+        dialog?.let {
+            it.window?.setLayout(width, ViewGroup.LayoutParams.WRAP_CONTENT)
+        }
     }
 
-    private fun findPrepStation(printer: Printer): PrepStation {
-        return viewModel.settings.getPrepStation(printer.printerName)
+    private fun findPrepStation(printer: Printer): PrepStation? {
+        viewModel.settings?.let {
+            return it.getPrepStation(printer.printerName)
+        }
+        return null
     }
 
     private fun findPrinter(salesCat: String): Printer? {
-        return when (salesCat) {
-            "Food" -> {viewModel.settings.printers.find{it.master}}
-            "Bar" -> {viewModel.settings.printers.find{it.printerName.contains("Bar")}}
-            "Inventory" -> {viewModel.settings.printers.find{it.master}}
-            else -> {viewModel.settings.printers.find{it.master}}
+        viewModel.settings?.let { settings ->
+            return when (salesCat) {
+                "Food" -> {settings.printers.find{it.master}}
+                "Bar" -> {settings.printers.find{it.printerName.contains("Bar")}}
+                "Inventory" -> {settings.printers.find{it.master}}
+                else -> {settings.printers.find{it.master}}
+            }
         }
+        return null
     }
 
 

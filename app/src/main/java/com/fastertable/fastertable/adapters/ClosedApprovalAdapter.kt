@@ -38,11 +38,10 @@ class ClosedApprovalAdapter() : ListAdapter<ApprovalOrderPayment, ClosedApproval
 
             binding.executePendingBindings()
             val typeface = ResourcesCompat.getFont(parent.context, R.font.open_sans_semibold)
-            var status: String
-            if (aop.approval.approved != null && aop.approval.approved == true){
-                status = "Approved"
+            val status: String = if (aop.approval.approved != null && aop.approval.approved == true){
+                "Approved"
             }else{
-                status = "Rejected"
+                "Rejected"
             }
             binding.txtClosedApprovalOrderNumber.text = "$status: Order #${aop.order.orderNumber} - ${aop.approval.whoRequested}"
             binding.txtClosedApprovalOrderNumber.typeface = typeface
@@ -76,7 +75,7 @@ class ClosedApprovalAdapter() : ListAdapter<ApprovalOrderPayment, ClosedApproval
                 }
                 binding.txtClosedItemQuantity.text = ticketItem.quantity.toString()
                 binding.txtClosedItem.text = ticketItem.itemName
-                binding.txtClosedItemPrice.text = "$txtApproved " + binding.txtClosedItemPrice.context.getString(R.string.item_price, "%.${2}f".format(ticketItem.ticketItemPrice))
+                binding.txtClosedItemPrice.text = "$txtApproved " + binding.txtClosedItemPrice.context.getString(R.string.item_price, "%.${2}f".format(aop.approval.newItemPrice))
 
                 val typeface = ResourcesCompat.getFont(parent.context, R.font.open_sans_semibold)
                 binding.txtClosedItemQuantity.typeface = typeface

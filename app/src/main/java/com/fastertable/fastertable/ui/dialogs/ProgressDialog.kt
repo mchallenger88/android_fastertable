@@ -30,6 +30,8 @@ class ProgressDialog: DialogFragment() {
         if (width > 1500) {
             width = 1500
         }
-        dialog!!.window?.setLayout(width, ViewGroup.LayoutParams.WRAP_CONTENT)
+        dialog?.let {
+            it.window?.setLayout(width, ViewGroup.LayoutParams.WRAP_CONTENT)
+        }
     }
 }

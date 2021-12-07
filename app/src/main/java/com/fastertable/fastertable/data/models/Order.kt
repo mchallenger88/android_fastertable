@@ -1,6 +1,7 @@
 package com.fastertable.fastertable.data.models
 
 import android.os.Parcelable
+import android.util.Log
 import com.fastertable.fastertable.services.PrintTicketService
 import com.fastertable.fastertable.utils.GlobalUtils
 import com.fastertable.fastertable.utils.round
@@ -152,7 +153,6 @@ data class Order(
             orderItemId = orderItem.id,
             quantity = orderItem.menuItemPrice.quantity,
             itemName = orderItem.menuItemName,
-//            itemSize = orderItem.menuItemPrice.size,
             itemPrice = orderItem.menuItemPrice.price,
             discountPrice = null,
             priceModified = orderItem.priceAdjusted,
@@ -163,6 +163,7 @@ data class Order(
             ticketItemPrice = orderItem.getTicketExtendedPrice(this.taxRate).round(2),
             tax = orderItem.getSalesTax(orderItem.tax, this.taxRate).round(2)
         )
+
     }
 
     //Used when there is splitting tickets by guest
@@ -250,7 +251,7 @@ data class Order(
 
     fun changeGiftItemAmount(amount: Double){
         if (orderItems != null){
-            orderItems?.get(0)?.menuItemPrice?.price = amount
+            orderItems[0].menuItemPrice.price = amount
         }
 //        this.guests?.get(0)?.orderItems?.get(0)?.menuItemPrice?.price = amount
     }
@@ -258,6 +259,11 @@ data class Order(
     fun close(){
         this.closeTime = GlobalUtils().getNowEpoch()
         this.orderStatus = "Paid"
+    }
+
+    fun forceClose(){
+        this.closeTime = GlobalUtils().getNowEpoch()
+        this.orderStatus = "Manually Closed"
     }
 
     fun reopen(){
@@ -408,9 +414,11 @@ data class OrderItem(
 
     fun getTicketExtendedPrice(taxRate: Double): Double{
         var price = this.getExtendedPrice()
+
         if (this.tax === "Tax Included"){
             price = price.minus(this.getSalesTax(this.tax, taxRate))
         }
+
         return price
     }
 

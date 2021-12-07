@@ -25,11 +25,6 @@ class ClockinDialog: BaseDialog(R.layout.bottom_sheet_error_dialog) {
             dismiss()
         }
     }
-//    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-//        val binding = BottomSheetErrorDialogBinding.inflate(inflater)
-//
-//        return binding.root
-//    }
 
     override fun onStart() {
         super.onStart()

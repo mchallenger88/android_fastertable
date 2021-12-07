@@ -1,5 +1,6 @@
 package com.fastertable.fastertable.ui.approvals
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -27,7 +28,7 @@ class CompletedApprovalsViewModel @Inject constructor(private val approvalReposi
         }
     }
 
-    fun loadApprovals(){
+    private fun loadApprovals(){
         var list = approvalRepository.getApprovalOrderPaymentsFromFile()
         if (list != null){
             list = list.filter { it.approval.timeHandled != null }

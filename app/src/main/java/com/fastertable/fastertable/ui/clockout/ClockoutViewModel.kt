@@ -19,8 +19,8 @@ class ClockoutViewModel @Inject constructor (
     private val orderRepository: OrderRepository,
     private val clockoutUser: ClockoutUser) : BaseViewModel(){
 
-    val settings: Settings = loginRepository.getSettings()!!
-    val user: OpsAuth = loginRepository.getOpsUser()!!
+    val settings: Settings? = loginRepository.getSettings()
+    val user: OpsAuth? = loginRepository.getOpsUser()
 
     private val _errorMessage = MutableLiveData<String>()
     val errorMessage: LiveData<String>
@@ -51,50 +51,55 @@ class ClockoutViewModel @Inject constructor (
     }
 
     fun clockout(){
-        if (settings.requireCheckoutConfirm){
-            if (user.userClock.checkoutApproved){
-                if (userClockout.value?.clockOutTime == null){
-                    performClockout()
-                    _errorMessage.value = "You have been clocked out."
-                }
-            }else{
-                val empOrders = orders?.filter { it.employeeId == user.employeeId }
-                if (empOrders != null) {
-                    if (empOrders.isEmpty()){
+        if (settings != null && user !=  null) {
+            if (settings.requireCheckoutConfirm) {
+                if (user.userClock.checkoutApproved) {
+                    if (userClockout.value?.clockOutTime == null) {
                         performClockout()
                         _errorMessage.value = "You have been clocked out."
-                    }else{
-                        _errorMessage.value = "Your checkout has not yet been approved. Once your checkout is approved, you may clock out."
                     }
-                }else{
-                    _errorMessage.value = "Your checkout has not yet been approved. Once your checkout is approved, you may clock out."
+                } else {
+                    val empOrders = orders?.filter { it.employeeId == user.employeeId }
+                    if (empOrders != null) {
+                        if (empOrders.isEmpty()) {
+                            performClockout()
+                            _errorMessage.value = "You have been clocked out."
+                        } else {
+                            _errorMessage.value =
+                                "Your checkout has not yet been approved. Once your checkout is approved, you may clock out."
+                        }
+                    } else {
+                        _errorMessage.value =
+                            "Your checkout has not yet been approved. Once your checkout is approved, you may clock out."
+                    }
+                }
+            } else {
+                if (user.userClock.checkout == true) {
+                    if (userClockout.value?.clockOutTime == null) {
+                        performClockout()
+                        _errorMessage.value = "You have been clocked out."
+                    }
+                } else {
+                    _errorMessage.value = "You must checkout before clocking out."
                 }
             }
-        }else{
-            if (user.userClock.checkout == true){
-                if (userClockout.value?.clockOutTime == null){
-                    performClockout()
-                    _errorMessage.value = "You have been clocked out."
-                }
-            }else{
-                _errorMessage.value = "You must checkout before clocking out."
-            }
-
         }
     }
 
     private fun performClockout(){
         viewModelScope.launch {
-            val clockoutCredentials = ClockOutCredentials(
-                employeeId = user.employeeId,
-                companyId = settings.companyId,
-                locationId = settings.locationId,
-                time = GlobalUtils().getNowEpoch(),
-                midnight = GlobalUtils().getMidnight()
-            )
-//            println(clockoutCredentials)
-            clockoutUser.clockout(clockoutCredentials)
-            _clockedOut.postValue(true)
+            if (user != null && settings != null){
+                val clockoutCredentials = ClockOutCredentials(
+                    employeeId = user.employeeId,
+                    companyId = settings.companyId,
+                    locationId = settings.locationId,
+                    time = GlobalUtils().getNowEpoch(),
+                    midnight = GlobalUtils().getMidnight()
+                )
+                clockoutUser.clockout(clockoutCredentials)
+                _clockedOut.postValue(true)
+            }
+
         }
     }
 }

@@ -14,7 +14,6 @@ import com.fastertable.fastertable.adapters.IngredientsAdapter
 import com.fastertable.fastertable.adapters.ModifierAdapter
 import com.fastertable.fastertable.data.models.*
 import com.fastertable.fastertable.databinding.DialogEditItemBinding
-import com.fastertable.fastertable.ui.order.AddSubtract
 import com.fastertable.fastertable.ui.order.OrderViewModel
 import dagger.hilt.android.AndroidEntryPoint
 

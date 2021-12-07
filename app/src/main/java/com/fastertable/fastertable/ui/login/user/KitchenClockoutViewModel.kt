@@ -21,8 +21,8 @@ class KitchenClockoutViewModel @Inject constructor (
     private val clockoutUser: ClockoutUser
 ) : BaseViewModel(){
 
-    val settings: Settings = loginRepository.getSettings()!!
-    val user: OpsAuth = loginRepository.getOpsUser()!!
+    val settings: Settings? = loginRepository.getSettings()
+    val user: OpsAuth? = loginRepository.getOpsUser()
 
     private val _errorMessage = MutableLiveData<String>()
     val errorMessage: LiveData<String>
@@ -51,9 +51,9 @@ class KitchenClockoutViewModel @Inject constructor (
     private fun performClockout(){
         viewModelScope.launch {
             val clockoutCredentials = ClockOutCredentials(
-                employeeId = user.employeeId,
-                companyId = settings.companyId,
-                locationId = settings.locationId,
+                employeeId = user?.employeeId ?: "",
+                companyId = settings?.companyId ?: "",
+                locationId = settings?.locationId ?: "",
                 time = GlobalUtils().getNowEpoch(),
                 midnight = GlobalUtils().getMidnight()
             )

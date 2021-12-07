@@ -67,7 +67,10 @@ class RestaurantLoginViewModel @Inject constructor(
         viewModelScope.launch {
             val rid: String? = loginRepository.getStringSharedPreferences("rid")
             val company: Company? = loginRepository.getCompany()
-            _restaurant.postValue(company?.getLocation(rid!!))
+            if (rid != null && company != null){
+                _restaurant.postValue(company.getLocation(rid))
+            }
+
         }
     }
 
@@ -81,7 +84,7 @@ class RestaurantLoginViewModel @Inject constructor(
 
     fun restLogin(){
         if (restaurant.value?.loginPin == pin.value?.toInt()){
-            setPin(restaurant.value!!.loginPin.toString())
+            setPin(restaurant.value?.loginPin.toString())
             viewModelScope.launch {
                 saveRestaurantData()
             }
@@ -111,22 +114,25 @@ class RestaurantLoginViewModel @Inject constructor(
             _showProgressBar.postValue(true)
             _status.postValue(ApiStatus.LOADING)
             try {
-//                getRestaurantSettings.getRestaurantSettings(restaurant.value!!.id)
-                val settings: Settings = getRestaurantSettings.getRestaurantSettings(restaurant.value!!.id)
-                _settings.postValue(settings)
+                _restaurant.value?.let { restaurant ->
+                    val settings: Settings = getRestaurantSettings.getRestaurantSettings(restaurant.id)
+                    _settings.postValue(settings)
 
-                var terminal = loginRepository.getTerminal()
-                if (terminal != null){
-                    loginRepository.saveTerminal(settings.terminals.find{ it.terminalId == terminal!!.terminalId}!!)
-                    terminal = loginRepository.getTerminal()
-                }else{
-                    _navigateToTerminals.postValue(true)
+                    var terminal = loginRepository.getTerminal()
+                    if (terminal != null){
+                        settings.terminals.find{ it.terminalId == terminal?.terminalId}
+                            ?.let { loginRepository.saveTerminal(it) }
+                        terminal = loginRepository.getTerminal()
+                    }else{
+                        _navigateToTerminals.postValue(true)
+                    }
+                    saveTaxRate(settings)
+
+                    getMenus.getAllMenus(restaurant.id)
+                    checkTerminal()
+                    _showProgressBar.postValue(false)
                 }
-                saveTaxRate(settings)
 
-                getMenus.getAllMenus(restaurant.value!!.id)
-                checkTerminal()
-                _showProgressBar.postValue(false)
             }
             catch (e: Exception) {
                 _status.postValue(ApiStatus.ERROR)

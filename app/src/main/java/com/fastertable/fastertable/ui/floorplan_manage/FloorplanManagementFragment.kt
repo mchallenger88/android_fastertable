@@ -268,13 +268,13 @@ class FloorplanManagementFragment: BaseFragment(R.layout.floorplan_management_fr
         val handler = Handler(Looper.myLooper()!!)
         var counterClicks = 0
         var isBusy = false
-        if (viewModel.activeFloorplan.value !== null) {
-            viewModel.activeFloorplan.value!!.tables.forEach { table ->
+        viewModel.activeFloorplan.value?.let { restaurantFloorplan ->
+            restaurantFloorplan.tables.forEach { table ->
                 val btnTable = FloorplanTable(activity?.applicationContext!!)
                 btnTable.id = ViewCompat.generateViewId()
                 btnTable.loadTable(table)
-                if (selectedTable != null) {
-                    if (table.id == selectedTable!!.id) {
+                selectedTable?.let { t ->
+                    if (table.id == t.id) {
                         btnTable.setTableColorFilter(Color.GREEN)
                     }
                 }
@@ -346,11 +346,12 @@ class FloorplanManagementFragment: BaseFragment(R.layout.floorplan_management_fr
                     true
                 }
             }
-            viewModel.activeFloorplan.value!!.walls.forEach { wall ->
+
+            restaurantFloorplan.walls.forEach { wall ->
                 val floorWall = FloorWall(activity?.applicationContext!!)
                 floorWall.loadWall(wall)
-                if (selectedWall != null) {
-                    if (wall.id == selectedWall!!.id) {
+                selectedWall?.let { w ->
+                    if (wall.id == w.id) {
                         floorWall.getWallImage().setBackgroundColor(Color.GREEN)
                     }
                 }
@@ -455,23 +456,23 @@ class FloorplanManagementFragment: BaseFragment(R.layout.floorplan_management_fr
         val self = this
         when (controllerType) {
             ControllerType.Left -> {
-                selectedWall?.let { selectedWall?.id?.let { it1 -> viewModel.updateWall(it1, selectedWall!!.left.minus(2), selectedWall!!.top) } }
-                selectedTable?.let { selectedTable?.id?.let { it1 -> viewModel.updateTable(it1, selectedTable!!.left.minus(2), selectedTable!!.top) } }
+                selectedWall?.let { w -> w.id?.let { it1 -> viewModel.updateWall(it1, w.left.minus(2), w.top) } }
+                selectedTable?.let { t -> t.id.let { it1 -> viewModel.updateTable(it1, t.left.minus(2), t.top) } }
                 loadTables(binding)
             }
             ControllerType.Right -> {
-                selectedWall?.let { selectedWall?.id?.let { it1 -> viewModel.updateWall(it1, selectedWall!!.left.plus(2), selectedWall!!.top) } }
-                selectedTable?.let { selectedTable?.id?.let { it1 -> viewModel.updateTable(it1, selectedTable!!.left.plus(2), selectedTable!!.top) } }
+                selectedWall?.let { w -> w.id?.let { it1 -> viewModel.updateWall(it1, w.left.plus(2), w.top) } }
+                selectedTable?.let { t -> t.id.let { it1 -> viewModel.updateTable(it1, t.left.plus(2), t.top) } }
                 loadTables(binding)
             }
             ControllerType.Top -> {
-                selectedWall?.let { selectedWall?.id?.let { it1 -> viewModel.updateWall(it1, selectedWall!!.left, selectedWall!!.top.minus(2)) } }
-                selectedTable?.let { selectedTable?.id?.let { it1 -> viewModel.updateTable(it1, selectedTable!!.left, selectedTable!!.top.minus(2)) } }
+                selectedWall?.let { w -> w.id?.let { it1 -> viewModel.updateWall(it1, w.left, w.top.minus(2)) } }
+                selectedTable?.let { t -> t.id.let { it1 -> viewModel.updateTable(it1, t.left, t.top.minus(2)) } }
                 loadTables(binding)
             }
             ControllerType.Bottom -> {
-                selectedWall?.let { selectedWall?.id?.let { it1 -> viewModel.updateWall(it1, selectedWall!!.left, selectedWall!!.top.plus(2)) } }
-                selectedTable?.let { selectedTable?.id?.let { it1 -> viewModel.updateTable(it1, selectedTable!!.left, selectedTable!!.top.plus(2)) } }
+                selectedWall?.let { w -> w.id?.let { it1 -> viewModel.updateWall(it1, w.left, w.top.plus(2)) } }
+                selectedTable?.let { t -> t.id.let { it1 -> viewModel.updateTable(it1, t.left, t.top.plus(2)) } }
                 loadTables(binding)
             }
             ControllerType.Property -> {
@@ -502,10 +503,10 @@ class FloorplanManagementFragment: BaseFragment(R.layout.floorplan_management_fr
     private fun rotateController(rotateDirection: Int) {
         when (rotateDirection) {
             1 -> {
-                selectedTable?.let { selectedTable!!.rotate = selectedTable!!.rotate - 10 }
+                selectedTable?.let { t -> t.rotate = t.rotate - 10 }
             }
             -1 -> {
-                selectedTable?.let { selectedTable!!.rotate = selectedTable!!.rotate + 10 }
+                selectedTable?.let { t -> t.rotate = t.rotate + 10 }
             }
         }
 
@@ -541,12 +542,11 @@ class FloorplanManagementFragment: BaseFragment(R.layout.floorplan_management_fr
             )
         }
         floorPlansAdapter?.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        floorplanSpinner!!.adapter = floorPlansAdapter
+        floorplanSpinner?.adapter = floorPlansAdapter
     }
 
     private fun initFloorplanSpinner() {
         val floorPlanNames = arrayListOf<String>()
-//        var isDisplayModal = true
 
         viewModel.floorplans.value?.forEach {
             if (it.name.isNotEmpty()) {
@@ -564,12 +564,12 @@ class FloorplanManagementFragment: BaseFragment(R.layout.floorplan_management_fr
             )
         }
         floorPlansAdapter?.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        floorplanSpinner!!.adapter = floorPlansAdapter
+        floorplanSpinner?.adapter = floorPlansAdapter
 
         if (viewModel.getCurrentIndex() > -1) {
-            floorplanSpinner!!.setSelection(viewModel.getCurrentIndex())
+            floorplanSpinner?.setSelection(viewModel.getCurrentIndex())
         }
-        floorplanSpinner!!.onItemSelectedListener = object: AdapterView.OnItemSelectedListener {
+        floorplanSpinner?.onItemSelectedListener = object: AdapterView.OnItemSelectedListener {
             override fun onItemSelected(
                 parent: AdapterView<*>?,
                 view: View?,

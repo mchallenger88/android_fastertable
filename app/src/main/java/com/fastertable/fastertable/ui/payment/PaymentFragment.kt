@@ -38,47 +38,25 @@ class PaymentFragment: BaseFragment(R.layout.payment_fragment) {
         binding.lifecycleOwner = viewLifecycleOwner
         binding.viewModel = viewModel
         binding.orderViewModel = orderViewModel
-        binding.btnModifyPrice.setOnClickListener {
-            modifyPrice(binding)
-        }
-        binding.manualExpirationDate.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable?) {
 
-            }
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-            }
+        binding.txtModifyPrice.addTextChangedListener(object: TextWatcher {
+            override fun afterTextChanged(s: Editable?) {}
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                var txt = s.toString()
-                if (s?.length == 4 && !txt.contains("/")){
-                    txt = txt.substring(0,2) + "/" + txt.substring(2, 4)
-                    binding.manualExpirationDate.setText(txt)
-                }
-                if (s?.length == 6){
-                    binding.manualExpirationDate.setText("")
-                }
+                viewModel.setModifyPrice(s.toString())
             }
         })
-        binding.btnPayManualCredit.setOnClickListener {
-            getManualCreditData()
+
+        binding.btnModifyPrice.setOnClickListener {
+            modifyPrice()
         }
+        manualCreditCardInputs()
+
         viewModel.showNone()
         createAdapters(binding)
         createObservers(binding)
     }
 
-    private fun getManualCreditData(){
-        val manualCredit = ManualCredit (
-            cardHolder = binding.manualCardholder.text.toString(),
-            cardNumber = binding.manualCreditCardNumber.text.toString(),
-            expirationDate = binding.manualExpirationDate.text.toString(),
-            cvv = binding.etCvv.text.toString(),
-            postalCode = binding.etZipcode.text.toString()
-                )
-
-
-
-        viewModel.startManualCredit(manualCredit, viewModel.activeOrder.value!!)
-    }
 
     private fun createObservers(binding: PaymentFragmentBinding){
         viewModel.paymentScreen.observe(viewLifecycleOwner, {
@@ -205,9 +183,8 @@ class PaymentFragment: BaseFragment(R.layout.payment_fragment) {
 
     }
 
-    private fun modifyPrice(binding: PaymentFragmentBinding){
+    private fun modifyPrice(){
         hideKeyboardFrom(requireContext(), requireView())
-        viewModel.initialModifyPrice(binding.editModifyPrice.editText?.text.toString())
     }
 
     private val expirationWatcher = object : TextWatcher {
@@ -239,4 +216,48 @@ class PaymentFragment: BaseFragment(R.layout.payment_fragment) {
         imm.hideSoftInputFromWindow(view.windowToken, 0)
     }
 
+    private fun manualCreditCardInputs(){
+        binding.manualExpirationDate.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {}
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                var txt = s.toString()
+                if (s?.length == 4 && !txt.contains("/")){
+                    txt = txt.substring(0,2) + "/" + txt.substring(2, 4)
+                    viewModel.setExpirationDate(txt)
+                }
+                if (s?.length == 6){
+                    viewModel.setExpirationDate("")
+                }
+            }
+        })
+        binding.manualCardholder.addTextChangedListener(object: TextWatcher {
+            override fun afterTextChanged(s: Editable?) {}
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                viewModel.setCardHolder(s.toString())
+            }
+        })
+        binding.manualCreditCardNumber.addTextChangedListener(object: TextWatcher {
+            override fun afterTextChanged(s: Editable?) {}
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                viewModel.setCardNumber(s.toString())
+            }
+        })
+        binding.etCvv.addTextChangedListener(object: TextWatcher {
+            override fun afterTextChanged(s: Editable?) {}
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                viewModel.setCVV(s.toString())
+            }
+        })
+        binding.etZipcode.addTextChangedListener(object: TextWatcher {
+            override fun afterTextChanged(s: Editable?) {}
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                viewModel.setZipcode(s.toString())
+            }
+        })
+    }
 }

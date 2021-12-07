@@ -21,8 +21,13 @@ class CompanyLoginViewModel @Inject constructor(
     val company: LiveData<Company>
         get() = _company
 
-    val loginName = ObservableField<String>()
-    val password = ObservableField<String>()
+    private val _loginName = MutableLiveData<String>()
+    val loginName: LiveData<String>
+        get() = _loginName
+
+    private val _password = MutableLiveData<String>()
+    val password: LiveData<String>
+        get() = _password
 
     private val _locations = MutableLiveData<List<Location>>()
     val locations: LiveData<List<Location>>
@@ -60,10 +65,12 @@ class CompanyLoginViewModel @Inject constructor(
             try {
                 loginCompany.loginCompany(loginName, password)
                 val comp = loginRepository.getCompany()
-                _company.postValue(comp!!)
-                _locations.postValue(comp.locations)
-                _error.postValue(false)
-                saveLogin(loginName, password, comp.id)
+                comp?.let {
+                    _company.postValue(it)
+                    _locations.postValue(it.locations)
+                    _error.postValue(false)
+                    saveLogin(loginName, password, it.id)
+                }
             }catch (e: Exception) {
                 _loginEnabled.postValue(true)
                 _error.postValue(true)
@@ -75,8 +82,8 @@ class CompanyLoginViewModel @Inject constructor(
     @SuppressLint("CommitPrefEdits")
     private fun checkCompany(){
         viewModelScope.launch {
-            loginName.set(loginRepository.getStringSharedPreferences("loginName"))
-            password.set(loginRepository.getStringSharedPreferences("password"))
+            _loginName.value = loginRepository.getStringSharedPreferences("loginName")
+            _password.value = loginRepository.getStringSharedPreferences("password")
         }
     }
 
@@ -84,10 +91,13 @@ class CompanyLoginViewModel @Inject constructor(
         _showProgressBar.value = true
         _loginEnabled.value = false
         viewModelScope.launch {
-            if (loginName.get() != null && password.get() != null){
-                loginCompany(loginName.get()!!, password.get()!!)
-                _showProgressBar.value = false
-            }else{
+            _loginName.value?.let { name ->
+                _password.value?.let { password ->
+                    loginCompany(name, password)
+                    _showProgressBar.value = false
+                }
+            }
+            if(_loginName.value == null || _password.value == null){
                 //TODO: Add error message
                 _showProgressBar.value = false
                 _loginEnabled.value = true
@@ -110,6 +120,14 @@ class CompanyLoginViewModel @Inject constructor(
             loginRepository.setSharedPreferences("cid", cid)
 
         }
+    }
+
+    fun setLoginText(text: String){
+        _loginName.value = text
+    }
+
+    fun setPasswordText(text: String){
+        _password.value = text
     }
 
 }

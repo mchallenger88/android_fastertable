@@ -24,10 +24,9 @@ class FloorplanSettingDialog: DialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         floorplan = viewModel.activeFloorplan.value
-        if (floorplan != null){
-            binding.txtFloorplanName.setText(floorplan!!.name)
+        floorplan?.let {
+            binding.txtFloorplanName.setText(it.name)
         }
-
 
         binding.btnFloorplanSave.setOnClickListener {
             saveChanges()
@@ -42,7 +41,10 @@ class FloorplanSettingDialog: DialogFragment() {
         if (width > 1500) {
             width = 1500
         }
-        dialog!!.window?.setLayout(width, ViewGroup.LayoutParams.WRAP_CONTENT)
+        dialog?.let {
+            it.window?.setLayout(width, ViewGroup.LayoutParams.WRAP_CONTENT)
+        }
+
     }
 
     private fun saveChanges() {

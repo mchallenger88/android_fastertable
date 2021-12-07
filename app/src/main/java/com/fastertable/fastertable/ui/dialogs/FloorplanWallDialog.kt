@@ -39,11 +39,14 @@ class FloorplanWallDialog: DialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         wall = arguments?.getParcelable("wall")
-        binding.txtWallWidthValue.setText(wall!!.width.toString())
-        binding.txtWallThicknessValue.setText(wall!!.thickness.toString())
-        binding.txtWallLeftValue.setText(wall!!.left.toString())
-        binding.txtWallTopValue.setText(wall!!.top.toString())
-        binding.actWallDirection.setText(wall!!.direction, false)
+        wall?.let {
+            binding.txtWallWidthValue.setText(it.width.toString())
+            binding.txtWallThicknessValue.setText(it.thickness.toString())
+            binding.txtWallLeftValue.setText(it.left.toString())
+            binding.txtWallTopValue.setText(it.top.toString())
+            binding.actWallDirection.setText(it.direction, false)
+        }
+
 
         binding.actWallDirection.onItemSelectedListener = object: AdapterView.OnItemSelectedListener {
             override fun onItemSelected(
@@ -148,7 +151,10 @@ class FloorplanWallDialog: DialogFragment() {
         if (width > 1500) {
             width = 1500
         }
-        dialog!!.window?.setLayout(width, ViewGroup.LayoutParams.WRAP_CONTENT)
+        dialog?.let {
+            it.window?.setLayout(width, ViewGroup.LayoutParams.WRAP_CONTENT)
+        }
+
     }
 
     private fun hideKeyboardFrom(context: Context, view: View) {

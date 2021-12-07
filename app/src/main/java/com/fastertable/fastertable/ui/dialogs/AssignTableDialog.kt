@@ -30,14 +30,6 @@ class AssignTableDialog : BaseDialog(R.layout.dialog_assign_table)  {
         }
     }
 
-//    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-//        val binding = DialogAssignTableBinding.inflate(inflater)
-//
-//
-//
-//        return binding.root
-//    }
-
     override fun onAttach(context: Context) {
         super.onAttach(context)
         if (context is DismissListener) {

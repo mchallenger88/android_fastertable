@@ -189,6 +189,11 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
     val approvalSaved: LiveData<Boolean>
         get() = _approvalSaved
 
+    private val _newModifyPrice = MutableLiveData<String>()
+    val newModifyPrice : LiveData<String>
+        get() = _newModifyPrice
+
+
     //endregion
 
     //region Pay Cash
@@ -452,7 +457,7 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
             _error.value = false
         }
 
-        private fun setError(title: String, message: String){
+        fun setError(title: String, message: String){
             _showCreditSpinner.value = false
             _errorTitle.value = title
             _errorMessage.value = message
@@ -569,10 +574,29 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
             val printer = settings.printers.find { it.printerName == terminal.defaultPrinter.printerName }
             val location = company.getLocation(settings.locationId)
             if (printer != null){
-                val ticketDocument = _activePayment.value?.getTicketReceipt(_activeOrder.value!!, printer, location!!)
-                receiptPrintingService.printTicketReceipt(ticketDocument!!, printer, settings)
-            }
+                val payment = _activePayment.value?.activeTicket()?.paymentList?.find{ !it.canceled }
+                payment?.let {
+                    if (it.paymentType == "Cash" || it.paymentType == "Gift"){
+                        _activeOrder.value?.let { order ->
+                            _activePayment.value?.let { pay ->
+                                val ticketDocument = pay.getTicketReceipt(order, printer, location!!)
+                                ticketDocument.let { doc ->
+                                    receiptPrintingService.printTicketReceipt(doc, printer, settings)
+                                }
+                            }
+                        }
+                    }
 
+                    if (it.paymentType == "Credit" || it.paymentType == "Manual Credit"){
+                        _activePayment.value?.let { pay ->
+                            val ticketDocument = pay.getCreditReceipt(printer, location!!)
+                            ticketDocument.let { doc ->
+                                receiptPrintingService.printTicketReceipt(doc, printer, settings)
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -586,7 +610,6 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
             val ticket = payment?.tickets?.find{ it.uiActive}
             if (ticket != null && ticket.paymentTotal < ticket.total){
                 _showCreditSpinner.value = true
-                Log.d("Testing", "In the credit process")
                 if (_creditAmount.value!! <= _activePayment.value!!.amountOwed()){
                     try{
                         val url = "http://" + terminal.ccEquipment.ipAddress + ":8080/pos?Action=StartOrder&Order=" + order.orderNumber.toString() + "&Format=JSON"
@@ -608,7 +631,7 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
         }
     }
 
-    fun startManualCredit(manualCredit: ManualCredit, order: Order){
+    fun startManualCredit(){
         val credentials = MerchantCredentials (
             MerchantKey = settings.merchantCredentials.MerchantKey,
             MerchantName = settings.merchantCredentials.MerchantName,
@@ -620,17 +643,17 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
 
         val paymentData = AuthPaymentData (
             source = "Manual",
-            cardNumber = manualCredit.cardNumber,
-            expirationDate = manualCredit.expirationDate.replace("/", ""),
-            cardHolder = manualCredit.cardHolder,
+            cardNumber = cardNumber.value ?: "",
+            expirationDate = expirationDate.value?.replace("/", "") ?: "",
+            cardHolder = cardHolderName.value ?: "",
             avsStreetAddress = "",
-            avsZipCode = manualCredit.postalCode,
-            cardVerificationValue = manualCredit.cvv
+            avsZipCode = zipcode.value ?: "",
+            cardVerificationValue = cvv.value ?: ""
         )
 
         val request = AuthRequestData(
             amount = creditAmount.value!!,
-            invoiceNumber = order.orderNumber.toString(),
+            invoiceNumber = activeOrder.value?.orderNumber.toString() ?: "",
             registerNumber = terminal.terminalId.toString(),
             merchantTransactionId = "",
             cardAcceptorTerminalId = terminal.terminalId.toString()
@@ -645,9 +668,19 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
             if (response45.ApprovalStatus == "APPROVED"){
                 val cayanTransaction = creditCardRepository.createManualCreditTransaction(response45, activePayment.value!!.activeTicket()!!)
                 processApproval(activePayment.value!!.activeTicket()!!, cayanTransaction)
+                setCardHolder("")
+                setCardNumber("")
+                setExpirationDate("")
+                setCVV("")
+                setZipcode("")
             }else{
                 val cayanTransaction = creditCardRepository.createManualCreditTransaction(response45, activePayment.value!!.activeTicket()!!)
                 processDecline(cayanTransaction)
+                setCardHolder("")
+                setCardNumber("")
+                setExpirationDate("")
+                setCVV("")
+                setZipcode("")
             }
         }
 
@@ -899,7 +932,7 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
                 val ticket = _activePayment.value?.activeTicket()!!
                 var disTotal = 0.00
                 if (discount.discountType == "Flat Amount"){
-                    disTotal = discount.discountAmount
+                    disTotal = discount.discountAmount.round(2)
                 }
                 if (discount.discountType == "Percentage"){
                     disTotal = ticket.subTotal.times(discount.discountAmount.div(100)).round(2)
@@ -998,19 +1031,20 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
         _showProgress.value = false
     }
 
-    fun initialModifyPrice(price: String){
+    fun initiateModifyPrice(){
         viewModelScope.launch {
-            modifyPrice(price)
+            modifyPrice()
         }
     }
 
-    private suspend fun modifyPrice(price: String){
+    private suspend fun modifyPrice(){
+        val price = _newModifyPrice.value
+        price?.let {
         _showProgress.value = true
         val ticket = _activePayment.value!!.activeTicket()!!
         val id = liveTicketItem.value!!.id
 
-        val error = checkForPriceChanges(false, true)
-        when (error){
+            when (checkForPriceChanges(false, true)){
             0 -> {
                 _activePayment.value?.modifyItemPrice(liveTicketItem.value!!,  price.toDouble())!!
                 _paymentScreen.value = ShowPayment.NONE
@@ -1034,6 +1068,7 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
             }
         }
         _showProgress.value = false
+        }
     }
 
 
@@ -1123,7 +1158,7 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
 
         val total = ticket.paymentTotal.minus(ticketPayment.ticketPaymentAmount.plus(ticketPayment.gratuity)).round(2)
 
-        ticket.paymentTotal = total
+        ticket.paymentTotal = total.round(2)
         payment.reopen()
         _activePayment.postValue(payment)
         order.reopen()
@@ -1196,7 +1231,54 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
         _showVoidSpinner.value = b
     }
 
+    fun setModifyPrice(text: String){
+        _newModifyPrice.value = text
+    }
 
+
+    //region Manual Credit Card
+    private val _cardHolderName = MutableLiveData<String>()
+    val cardHolderName: LiveData<String>
+        get() = _cardHolderName
+
+    private val _cardNumber = MutableLiveData<String>()
+    val cardNumber: LiveData<String>
+        get() = _cardNumber
+
+    private val _expirationDate = MutableLiveData<String>()
+    val expirationDate: LiveData<String>
+        get() = _expirationDate
+
+    private val _cvv = MutableLiveData<String>()
+    val cvv: LiveData<String>
+        get() = _cvv
+
+    private val _zipcode = MutableLiveData<String>()
+    val zipcode: LiveData<String>
+        get() = _zipcode
+
+    fun setCardHolder(text: String){
+        _cardHolderName.value = text
+    }
+
+    fun setCardNumber(text: String){
+        _cardNumber.value = text
+    }
+
+    fun setExpirationDate(text: String){
+        _expirationDate.value = text
+    }
+
+    fun setCVV(text: String){
+        _cvv.value = text
+    }
+
+    fun setZipcode(text: String){
+        _zipcode.value = text
+    }
+
+
+    //endregion
 }
 
 

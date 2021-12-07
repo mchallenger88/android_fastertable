@@ -853,6 +853,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="textCapWords"
+                    android:text="@{viewModel.cardHolderName}"
                     android:textSize="@dimen/d21" />
 
             </com.google.android.material.textfield.TextInputLayout>
@@ -867,6 +868,7 @@
                 android:layout_marginEnd="20dp"
                 android:hint="@string/card_number"
                 app:errorEnabled="true"
+                android:nextFocusForward="@+id/manual_expiration_date"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/manual_cardholder_layout">
@@ -878,6 +880,7 @@
                     android:layout_height="wrap_content"
                     android:inputType="number"
                     android:textSize="@dimen/d21"
+                    android:text="@{viewModel.cardNumber}"
                     android:nextFocusForward="@+id/manual_expiration_date" />
 
             </com.google.android.material.textfield.TextInputLayout>
@@ -903,6 +906,7 @@
                     android:textSize="@dimen/d21"
                     android:inputType="number"
                     android:imeOptions="actionNext"
+                    android:text="@{viewModel.expirationDate}"
                     android:nextFocusForward="@+id/et_cvv" />
 
             </com.google.android.material.textfield.TextInputLayout>
@@ -924,6 +928,7 @@
                     android:textSize="@dimen/d21"
                     android:inputType="number"
                     android:imeOptions="actionNext"
+                    android:text="@{viewModel.cvv}"
                     android:nextFocusForward="@+id/til_zipcode" />
 
             </com.google.android.material.textfield.TextInputLayout>
@@ -943,6 +948,7 @@
                     android:id="@+id/et_zipcode"
                     android:maxLength="6"
                     android:textSize="@dimen/d21"
+                    android:text="@{viewModel.zipcode}"
                     android:inputType="number"/>
 
             </com.google.android.material.textfield.TextInputLayout>
@@ -955,6 +961,7 @@
                 android:layout_marginTop="10dp"
                 android:textSize="@dimen/d24"
                 android:text="@string/submit_payment"
+                android:onClick="@{() -> viewModel.startManualCredit()}"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/til_zipcode"
@@ -1228,7 +1235,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/text_price_title" />
 
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/edit_modify_price"
+                android:id="@+id/til_modify_price"
                 android:layout_width="200dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
@@ -1238,10 +1245,12 @@
                 app:layout_constraintTop_toBottomOf="@+id/txt_price_explain">
 
                 <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/txt_modify_price"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="numberDecimal"
                     android:textAlignment="center"
+                    android:text="@{viewModel.newModifyPrice}"
                     android:textSize="@dimen/d26" />
 
             </com.google.android.material.textfield.TextInputLayout>
@@ -1253,9 +1262,10 @@
                 android:layout_marginTop="16dp"
                 android:text="@string/save"
                 android:textSize="@dimen/d21"
+                android:onClick="@{() -> viewModel.initiateModifyPrice()}"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/edit_modify_price" />
+                app:layout_constraintTop_toBottomOf="@+id/til_modify_price" />
 
 
             <Button

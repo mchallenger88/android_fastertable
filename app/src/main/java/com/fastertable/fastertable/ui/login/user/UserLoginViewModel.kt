@@ -102,8 +102,13 @@ class UserLoginViewModel @Inject constructor(private val loginRepository: LoginR
     fun userLogin(){
        viewModelScope.launch {
            _showProgressBar.postValue(true)
-           cid = loginRepository.getStringSharedPreferences("cid")!!
-           lid = loginRepository.getStringSharedPreferences("rid")!!
+           loginRepository.getStringSharedPreferences("cid")?.let {
+               cid = it
+           }
+           loginRepository.getStringSharedPreferences("rid")?.let {
+               lid = it
+           }
+
            val now = GlobalUtils().getNowEpoch()
            val midnight = GlobalUtils().getMidnight()
            getUserLogin(pin.value.toString(), cid, lid, now, midnight)
@@ -121,7 +126,10 @@ class UserLoginViewModel @Inject constructor(private val loginRepository: LoginR
                 getOrders()
                 val eids = GetEmployee(cid = cid, eid =opsAuth.employeeId)
                 emp = getEmployeeById.getEmployee(eids)
-                _employee.postValue(emp!!)
+                emp?.let {
+                    _employee.postValue(it)
+                }
+
                 _showProgressBar.postValue(false)
                 _pin.value = ""
                 if (isClockIn(opsAuth, now)){
@@ -140,7 +148,7 @@ class UserLoginViewModel @Inject constructor(private val loginRepository: LoginR
     }
 
     private fun departmentNavigation(){
-        when(emp!!.employeeDetails.department){
+        when(emp?.employeeDetails?.department){
             "Admin" -> _navigate.postValue(true)
             "Waitstaff" -> _navigate.postValue(true)
             "Support" -> _kitchen.postValue(true)
@@ -168,8 +176,10 @@ class UserLoginViewModel @Inject constructor(private val loginRepository: LoginR
         withContext(IO){
             val midnight = GlobalUtils().getMidnight()
             //    - 86400
-            val rid = loginRepository.getStringSharedPreferences("rid")
-            getOrders.getOrders(midnight, rid!!)
+            loginRepository.getStringSharedPreferences("rid")?.let {
+                getOrders.getOrders(midnight, it)
+            }
+
         }
     }
 

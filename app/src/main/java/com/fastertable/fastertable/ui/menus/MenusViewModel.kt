@@ -95,7 +95,7 @@ class MenusViewModel @Inject constructor(private val menusRepository: MenusRepos
         _ingList.value = createIngredientList(menuItem)
     }
 
-    fun createIngredientList(menuItem: MenuItem): ArrayList<IngredientList>{
+    private fun createIngredientList(menuItem: MenuItem): ArrayList<IngredientList>{
         val list = IngredientList(
             id = "0",
             locationId = menuItem.id,
@@ -113,8 +113,11 @@ class MenusViewModel @Inject constructor(private val menusRepository: MenusRepos
 
     fun decreaseItemQuantity(){
         println(itemQuantity.value)
-        if (itemQuantity.value!! > 1){
-            _itemQuantity.value = _itemQuantity.value?.minus(1)
+        _itemQuantity.value?.let {
+            if (it > 1){
+                _itemQuantity.value = _itemQuantity.value?.minus(1)
+            }
         }
+
     }
 }

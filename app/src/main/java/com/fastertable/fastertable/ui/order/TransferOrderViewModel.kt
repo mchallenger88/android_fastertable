@@ -1,5 +1,6 @@
 package com.fastertable.fastertable.ui.order
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -100,6 +101,7 @@ class TransferOrderViewModel @Inject constructor (
 
     fun employeeClicked(employee: Employee){
         viewModelScope.launch {
+            Log.d("Testing", employee.id)
             if (_selectedOrders.value != null){
                 selectedOrders.value?.forEach {
                     it.employeeId = employee.id

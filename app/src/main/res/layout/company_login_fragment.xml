@@ -39,7 +39,7 @@
         tools:visibility="invisible" />
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/edit_company_login"
+        android:id="@+id/til_company_login"
         android:layout_width="@dimen/company_login_widths"
         android:layout_height="wrap_content"
         android:hint="@string/company_login_edit"
@@ -48,28 +48,30 @@
         app:layout_constraintTop_toBottomOf="@+id/txt_comp_login_title">
 
         <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/txt_company_login"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@={viewModel.loginName}"
+            android:text="@{viewModel.loginName}"
             android:textSize="@dimen/d21" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/edit_company_password"
+        android:id="@+id/til_company_password"
         android:layout_width="@dimen/company_login_widths"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:hint="@string/company_password_edit"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/edit_company_login">
+        app:layout_constraintTop_toBottomOf="@+id/til_company_login">
 
         <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/txt_company_password"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="textPassword"
-            android:text="@={viewModel.password}"
+            android:text="@{viewModel.password}"
             android:textSize="@dimen/d21" />
 
     </com.google.android.material.textfield.TextInputLayout>
@@ -98,7 +100,7 @@
         android:enabled="@{viewModel.loginEnabled}"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/edit_company_password"
+        app:layout_constraintTop_toBottomOf="@+id/til_company_password"
  />
 
     <TextView

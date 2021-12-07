@@ -61,12 +61,17 @@ class FloorplanTableDialog: DialogFragment() {
 
         table = arguments?.getParcelable("table")
 
-        binding.txtTableIdValue.setText(table!!.id.toString())
-        binding.txtMaxSeatsValue.setText(table!!.maxSeats.toString())
-        binding.txtMinSeatsValue.setText(table!!.minSeats.toString())
-        binding.txtRotateValue.setText(table!!.rotate.toString())
-        binding.txtLeftValue.setText(table!!.left.toString())
-        binding.txtTopValue.setText(table!!.top.toString())
+        table?.let {
+            binding.txtTableIdValue.setText(it.id.toString())
+            binding.txtMaxSeatsValue.setText(it.maxSeats.toString())
+            binding.txtMinSeatsValue.setText(it.minSeats.toString())
+            binding.txtRotateValue.setText(it.rotate.toString())
+            binding.txtLeftValue.setText(it.left.toString())
+            binding.txtTopValue.setText(it.top.toString())
+
+            binding.actIdLocations.setText(it.id_location, false)
+            binding.actTableTypesAuto.setText(it.type, false)
+        }
 
         binding.btnCancel.setOnClickListener{
             dialog?.dismiss()
@@ -82,9 +87,6 @@ class FloorplanTableDialog: DialogFragment() {
         binding.btnCopy.setOnClickListener {
             copyTable()
         }
-
-        binding.actIdLocations.setText(table!!.id_location, false)
-        binding.actTableTypesAuto.setText(table!!.type, false)
 
         binding.actTableTypesAuto.onItemSelectedListener = object: AdapterView.OnItemSelectedListener {
             override fun onItemSelected(

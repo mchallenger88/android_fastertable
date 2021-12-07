@@ -25,11 +25,13 @@ class DatePickerDialogFragment: BaseDialog(R.layout.date_picker_dialog) {
         binding.viewModel = viewModel
 
         binding.btnDateOk.setOnClickListener {
-            val rd = DateDialog (
-                source = viewModel.source.value!!,
-                date = binding.datePickerFt.getDate()
-            )
-            returnDate.returnDate(rd)
+            viewModel.source.value?.let {
+                val rd = DateDialog (
+                    source = it,
+                    date = binding.datePickerFt.getDate()
+                )
+                returnDate.returnDate(rd)
+            }
             dismiss()
         }
 
@@ -38,12 +40,6 @@ class DatePickerDialogFragment: BaseDialog(R.layout.date_picker_dialog) {
         }
 
     }
-
-//    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-//        val binding = DatePickerDialogBinding.inflate(inflater)
-//
-//        return binding.root
-//    }
 
     override fun onStart() {
         super.onStart()

@@ -51,9 +51,9 @@ constructor(private val ctx: Context, private val attributeSet: AttributeSet? = 
         val idWidth = (idWidthUnit * idLength * scale + 0.5f).toInt()
         val idHeight = (20.0f * scale + 0.5f).toInt()
         var tableCnt = 1
-        if (table.combinationTables != null){
-            if (table.combinationTables?.size!! > 0) {
-                tableCnt = table.combinationTables!!.size
+        table.combinationTables?.let {
+            if (it.size > 0){
+                tableCnt = it.size
             }
         }
 

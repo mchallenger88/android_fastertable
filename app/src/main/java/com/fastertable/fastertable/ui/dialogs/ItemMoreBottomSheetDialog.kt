@@ -2,51 +2,49 @@ package com.fastertable.fastertable.ui.dialogs
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.activityViewModels
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.fastertable.fastertable.R
 import com.fastertable.fastertable.databinding.BottomSheetOrderLineItemBinding
+import com.fastertable.fastertable.ui.order.OrderViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class ItemMoreBottomSheetDialog: BaseDialog(R.layout.bottom_sheet_order_line_item) {
     private lateinit var dialogListener: DialogListener
+    private val viewModel: OrderViewModel by activityViewModels()
     private val binding: BottomSheetOrderLineItemBinding by viewBinding()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.btnItemDelete.setOnClickListener {
-            dialogListener.returnValue("Delete")
+            viewModel.removeOrderItem()
             dismiss()
         }
         binding.btnItemRush.setOnClickListener {
-            dialogListener.returnValue("Toggle Rush")
+            viewModel.toggleRush()
             dismiss()
         }
         binding.btnItemClose.setOnClickListener {
             dismiss()
         }
         binding.btnItemNoMake.setOnClickListener {
-            dialogListener.returnValue("Toggle No Make")
+            viewModel.toggleNoMake()
             dismiss()
         }
         binding.btnItemTakeout.setOnClickListener {
-            dialogListener.returnValue("Toggle Takeout")
+            viewModel.toggleTakeout()
             dismiss()
         }
         binding.btnModifyItem.setOnClickListener {
-            dialogListener.returnValue("Modify Order Item")
+            viewModel.modifyOrderItem()
             dismiss()
         }
     }
-//    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-//        val binding = BottomSheetOrderLineItemBinding.inflate(inflater)
-//
-//
-//        return binding.root
-//    }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -71,5 +69,4 @@ class ItemMoreBottomSheetDialog: BaseDialog(R.layout.bottom_sheet_order_line_ite
 
         const val TAG = "ItemMoreBottomSheetDialog"
     }
-
 }

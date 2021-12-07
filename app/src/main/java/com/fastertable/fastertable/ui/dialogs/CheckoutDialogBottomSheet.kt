@@ -23,14 +23,6 @@ class CheckoutDialogBottomSheet: BaseDialog(R.layout.bottom_sheet_checkout) {
         }
     }
 
-//    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-//        val binding = BottomSheetCheckoutBinding.inflate(inflater)
-//        binding.viewModel = viewModel
-//
-//
-//        return binding.root
-//    }
-
     override fun onStart() {
         super.onStart()
         val width = 800

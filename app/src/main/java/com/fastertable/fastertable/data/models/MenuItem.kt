@@ -95,7 +95,7 @@ data class ItemPrice(
         val size: String,
         var price: Double,
         val discountPrice: Double?,
-        var modifiedPrice: Double = price,
+        var modifiedPrice: Double = 0.00,
         val tax: String
 ): Parcelable
 

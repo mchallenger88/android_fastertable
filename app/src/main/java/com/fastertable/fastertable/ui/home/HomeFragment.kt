@@ -18,11 +18,8 @@ class HomeFragment : BaseFragment(R.layout.home_fragment) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        binding.lifecycleOwner = viewLifecycleOwner
         binding.viewModel = viewModel
-
-        setChipDefaults(binding)
+        binding.lifecycleOwner = viewLifecycleOwner
 
         viewModel.showProgressBar.observe(viewLifecycleOwner, {
             if (it){
@@ -32,34 +29,22 @@ class HomeFragment : BaseFragment(R.layout.home_fragment) {
             }
         })
 
-        viewModel.viewLoaded.observe(viewLifecycleOwner, {
-            if (it){
-                viewModel.filterOrders("Open")
-            }
+        binding.chipAllOrders.setOnClickListener{
+            viewModel.setOrderFilter("All")
+        }
+
+        binding.chipOpenOrders.setOnClickListener{
+            viewModel.setOrderFilter("Open")
+        }
+
+        binding.chipClosedOrders.setOnClickListener{
+            viewModel.setOrderFilter("Closed")
+        }
+
+        viewModel.orders.observe(viewLifecycleOwner, {
+            viewModel.setOrderFilter("Open")
         })
 
-
-        viewModel.orderFilter.observe(viewLifecycleOwner, {
-
-            if (it == "All"){
-                binding.chipAllOrders.setChipBackgroundColorResource(R.color.secondaryColor)
-                binding.chipClosedOrders.setChipBackgroundColorResource(R.color.primaryColor)
-                binding.chipOpenOrders.setChipBackgroundColorResource(R.color.primaryColor)
-            }
-
-            if (it == "Open"){
-                binding.chipOpenOrders.setChipBackgroundColorResource(R.color.secondaryColor)
-                binding.chipAllOrders.setChipBackgroundColorResource(R.color.primaryColor)
-                binding.chipClosedOrders.setChipBackgroundColorResource(R.color.primaryColor)
-            }
-
-            if (it == "Closed"){
-                binding.chipClosedOrders.setChipBackgroundColorResource(R.color.secondaryColor)
-                binding.chipAllOrders.setChipBackgroundColorResource(R.color.primaryColor)
-                binding.chipOpenOrders.setChipBackgroundColorResource(R.color.primaryColor)
-            }
-
-        })
 
         val orderAdapter = OrderListAdapter(OrderListListener {
                 orderId ->  viewModel.onOrderClicked(orderId)
@@ -68,6 +53,7 @@ class HomeFragment : BaseFragment(R.layout.home_fragment) {
         viewModel.filteredOrders.observe(viewLifecycleOwner, {
             it?.let{
                 orderAdapter.submitList(it)
+                orderAdapter.notifyDataSetChanged()
             }
         })
 
@@ -78,21 +64,6 @@ class HomeFragment : BaseFragment(R.layout.home_fragment) {
 
         val manager = LinearLayoutManager(activity)
         binding.orderRecycler.layoutManager = manager
-    }
-
-
-    private fun setChipDefaults(binding: HomeFragmentBinding){
-        binding.chipAllOrders.setChipBackgroundColorResource(R.color.primaryColor)
-        binding.chipAllOrders.setTextAppearance(R.style.ChipTextAppearance)
-        binding.chipAllOrders.setOnClickListener{ viewModel.onAllClicked()}
-
-        binding.chipClosedOrders.setChipBackgroundColorResource(R.color.primaryColor)
-        binding.chipClosedOrders.setTextAppearance(R.style.ChipTextAppearance)
-        binding.chipClosedOrders.setOnClickListener{ viewModel.onClosedClicked()}
-
-        binding.chipOpenOrders.setChipBackgroundColorResource(R.color.secondaryColor)
-        binding.chipOpenOrders.setTextAppearance(R.style.ChipTextAppearance)
-        binding.chipOpenOrders.setOnClickListener{ viewModel.onOpenClicked()}
     }
 
 }

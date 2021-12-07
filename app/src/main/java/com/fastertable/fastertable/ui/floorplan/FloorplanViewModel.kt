@@ -20,9 +20,9 @@ class FloorplanViewModel @Inject constructor
      private val floorplanQueries: FloorplanQueries
     ) : BaseViewModel() {
 
-    val user: OpsAuth = loginRepository.getOpsUser()!!
-    val settings: Settings = loginRepository.getSettings()!!
-    val terminal: Terminal = loginRepository.getTerminal()!!
+    val user: OpsAuth? = loginRepository.getOpsUser()
+    val settings: Settings? = loginRepository.getSettings()
+    val terminal: Terminal? = loginRepository.getTerminal()
 
     private val _tables = MutableLiveData<List<RestaurantTable>>()
     val tables: LiveData<List<RestaurantTable>>
@@ -55,9 +55,11 @@ class FloorplanViewModel @Inject constructor
 
     private suspend fun reallyGetFloorplans(){
         val job = viewModelScope.launch {
-            prelimFloorplan = floorplanQueries.getFloorplans(settings.locationId, settings.companyId)
-            if (prelimFloorplan!!.isNotEmpty()){
-                _floorplans.postValue(prelimFloorplan)
+            settings?.let {
+                prelimFloorplan = floorplanQueries.getFloorplans(settings.locationId, settings.companyId)
+                prelimFloorplan?.let {
+                    _floorplans.postValue(prelimFloorplan)
+                }
             }
         }
         job.join()
@@ -77,19 +79,21 @@ class FloorplanViewModel @Inject constructor
         viewModelScope.launch {
             val orderTables = prelimOrders?.filter { it.tableNumber != null && it.closeTime == null }
             if (orderTables != null && prelimFloorplan != null ){
-                for (floorplan in prelimFloorplan!!){
-                    for (table in floorplan.tables){
-                        for (order in orderTables){
-                            if (table.id == order.tableNumber){
-                                table.locked = true
-                                var manager: Boolean? = user.claims.find { it.permission.name == "viewOrders" }?.permission?.value
-                                if (manager == null){
-                                    manager = false
-                                }
+                prelimFloorplan?.let { floorplan ->
+                    for (floorplan in floorplan){
+                        for (table in floorplan.tables){
+                            for (order in orderTables){
+                                if (table.id == order.tableNumber){
+                                    table.locked = true
+                                    var manager: Boolean? = user?.claims?.find { it.permission.name == "viewOrders" }?.permission?.value
+                                    if (manager == null){
+                                        manager = false
+                                    }
 
-                                if (order.employeeId == user.employeeId || manager){
-                                    table.locked = false
-                                    table.active = true
+                                    if (order.employeeId == user?.employeeId || manager){
+                                        table.locked = false
+                                        table.active = true
+                                    }
                                 }
                             }
                         }
@@ -112,7 +116,10 @@ class FloorplanViewModel @Inject constructor
     }
 
     private fun startTableOrder(table: RestaurantTable){
-        orderRepository.createNewOrder("Table", settings, user, table.id, null)
-        _navigateToOrder.value = "Table"
+        if (settings != null && user != null){
+            orderRepository.createNewOrder("Table", settings, user, table.id, null)
+            _navigateToOrder.value = "Table"
+        }
+
     }
 }

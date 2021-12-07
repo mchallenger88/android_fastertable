@@ -1,27 +1,53 @@
 package com.fastertable.fastertable.common.base
 
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
-import android.os.PersistableBundle
+import android.os.Handler
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import com.fastertable.fastertable.LoginActivity
-import com.fastertable.fastertable.MainApplication
 
 open class BaseActivity() : AppCompatActivity(), LogoutListener{
-
+    private var timeoutHandler: Handler? = null
+    private var interactionTimeoutRunnable: Runnable? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        MainApplication().startUserSession(this)
+        timeoutHandler =  Handler();
+        interactionTimeoutRunnable =  Runnable {
+            onSessionLogout()
+        }
+        //start countdown
+        startHandler()
     }
 
+    //TODO: remove this api call
+    @RequiresApi(Build.VERSION_CODES.Q)
     override fun onUserInteraction() {
         super.onUserInteraction()
-        MainApplication().onUserInteracted(this)
+        resetHandler()
+    }
+
+    //restart countdown
+    @RequiresApi(Build.VERSION_CODES.Q)
+    private fun resetHandler() {
+
+        interactionTimeoutRunnable?.let { timeoutHandler?.removeCallbacks(it) }
+        interactionTimeoutRunnable?.let { timeoutHandler?.postDelayed(it, 60*1000) }; //for 10 second
+
+    }
+
+    // start countdown
+    private fun startHandler() {
+        interactionTimeoutRunnable?.let { timeoutHandler?.postDelayed(it, 60*1000) }; //for 10 second
     }
 
     override fun onSessionLogout() {
         super.onSessionLogout()
+        interactionTimeoutRunnable?.let { timeoutHandler?.removeCallbacks(it) }
+        timeoutHandler = null
+        interactionTimeoutRunnable = null
         finish()
         val intent = Intent(this, LoginActivity::class.java)
         intent.putExtra("fragmentToLoad", "User")

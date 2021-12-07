@@ -187,12 +187,30 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
             if (it.contains("O_")) {
                 orderViewModel.clearOrder()
                 paymentViewModel.clearPayment()
-                orderViewModel.setCurrentOrderId(it)
-                paymentViewModel.setCurrentPayment(it.replace("O", "P"))
-                navController.navigate(HomeFragmentDirections.actionNavHomeToVoidStartFragment())
-                homeViewModel.navigationEnd()
+                lifecycleScope.launch{
+                    checkActivePayment(it, navController)
+                }
+
             }
         })
+    }
+
+    private suspend fun checkActivePayment(orderId: String, navController: NavController){
+        var payment: Payment? = null
+        orderViewModel.setCurrentOrderId(orderId)
+        val job = lifecycleScope.launch{
+            payment = paymentRepository.getPayment()
+        }
+
+        job.join()
+        if (payment != null){
+            paymentViewModel.setCurrentPayment(orderId.replace("O", "P"))
+            navController.navigate(HomeFragmentDirections.actionNavHomeToVoidStartFragment())
+        }else{
+            navController.navigate(HomeFragmentDirections.actionNavHomeToOrderFragment())
+        }
+
+        homeViewModel.navigationEnd()
     }
 
     private fun floorplanObservables(navController: NavController){
@@ -332,6 +350,14 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
 
         orderViewModel.activeOrder.observe(this, {
             homeViewModel.getOrdersFromFile()
+        })
+
+        orderViewModel.navHome.observe(this, {
+            if (it){
+                navController.navigate(OrderFragmentDirections.actionOrderFragmentToNavHome())
+                orderViewModel.setNavHome(false)
+            }
+
         })
     }
 
@@ -509,8 +535,12 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
 
         approvalsViewModel.navigateToCompleted.observe(this, {
             if (it){
-                navController.navigate(ApprovalsFragmentDirections.actionApprovalsFragmentToCompletedApprovalsFragment())
-                approvalsViewModel.setPending(false)
+                lifecycleScope.launch {
+                    approvalsViewModel.loadApprovals()
+                    navController.navigate(ApprovalsFragmentDirections.actionApprovalsFragmentToCompletedApprovalsFragment())
+                    approvalsViewModel.setPending(false)
+                }
+
             }
         })
 
@@ -584,6 +614,7 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
     private fun transferOrderObservables(navController: NavController){
         transferOrderViewModel.transferComplete.observe(this, {
             if (it){
+                homeViewModel.getOrdersFromFile()
                 navController.navigate(TransferOrderFragmentDirections.actionTransferOrderFragmentToNavHome())
             }
         })
@@ -592,7 +623,6 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
     override fun onSupportNavigateUp(): Boolean {
         val navController = findNavController(R.id.nav_host_fragment)
         hideKeyboard()
-//        homeViewModel.getOrdersFromFile()
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
     }
 
@@ -716,26 +746,11 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
             "Modify Price" -> {
                 return paymentViewModel.setPaymentScreen(ShowPayment.MODIFY_PRICE, null)
             }
-            "Delete" -> {
-                return orderViewModel.actionOnItemClicked(value)
-            }
-            "Toggle Rush" -> {
-                return orderViewModel.actionOnItemClicked(value)
-            }
-            "Toggle No Make" -> {
-                return orderViewModel.actionOnItemClicked(value)
-            }
-            "Toggle Takeout" -> {
-                return orderViewModel.actionOnItemClicked(value)
-            }
             "Transfer Order" -> {
                 return orderViewModel.showTransferOrder(true)
             }
             "Transfer Order Item" -> {
                 openOrderItemTransfer()
-            }
-            "Modify Order Item" -> {
-                return orderViewModel.actionOnItemClicked(value)
             }
             "Misc Menu Item" -> {
                 MenuItemDialog().show(supportFragmentManager, MenuItemDialog.TAG)
@@ -757,10 +772,7 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
 
     fun exitUser(){
         loginRepository.clearUser()
-        val intent = Intent(this, LoginActivity::class.java)
-        intent.putExtra("fragmentToLoad", "User")
-        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-        startActivity(intent)
+        this.onSessionLogout()
     }
 
 

@@ -153,7 +153,7 @@ class CreditCardRepository @Inject constructor(private val app: Application){
         return CreditCardTransaction(
                 ticketId = ticket.id,
                 captureTotal = null,
-                creditTotal = ticket.total,
+                creditTotal = ticket.total.round(2),
                 refundTotal = null,
                 voidTotal = null,
                 captureTransaction = null,

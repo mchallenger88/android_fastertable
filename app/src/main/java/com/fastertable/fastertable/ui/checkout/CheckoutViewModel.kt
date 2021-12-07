@@ -30,8 +30,8 @@ class CheckoutViewModel @Inject constructor (
         ): BaseViewModel() {
 
 
-    val settings: Settings = loginRepository.getSettings()!!
-    val user: OpsAuth = loginRepository.getOpsUser()!!
+    val settings: Settings? = loginRepository.getSettings()
+    val user: OpsAuth? = loginRepository.getOpsUser()
 
     private val _activeDate = MutableLiveData<LocalDate>()
     val activeDate: LiveData<LocalDate>
@@ -71,34 +71,41 @@ class CheckoutViewModel @Inject constructor (
     }
 
     fun activated(){
-        if (user.userClock.checkout == true){
-            _checkoutComplete.postValue("You have completed your checkout.")
+        user?.let {
+            if (user.userClock.checkout == true){
+                _checkoutComplete.postValue("You have completed your checkout.")
+            }
         }
     }
 
     fun getEmployeeCheckout(){
         viewModelScope.launch {
-            val user = loginRepository.getOpsUser()
-            val rollingMidnight = GlobalUtils().unixMidnight(_activeDate.value!!)
-            if (midnight == rollingMidnight){
-                val request = CheckoutRequest(
-                    companyId = settings.companyId,
-                    locationId = settings.locationId,
-                    userId = user?.employeeId!!,
-                    midnight = midnight,
-                    clockInTime = user.userClock.clockInTime
-                )
+            _activeDate.value?.let { date ->
+                val rollingMidnight = GlobalUtils().unixMidnight(date)
+                settings?.let { s ->
+                    user?.let { u ->
+                        if (midnight == rollingMidnight){
+                            val request = CheckoutRequest(
+                                companyId = s.companyId,
+                                locationId = s.locationId,
+                                userId = u.employeeId,
+                                midnight = midnight,
+                                clockInTime = u.userClock.clockInTime
+                            )
 
-                _checkout.postValue(getCheckout.getCheckout(request))
-            }else{
-                val request = CheckoutRequest(
-                    companyId = settings.companyId,
-                    locationId = settings.locationId,
-                    userId = user?.employeeId!!,
-                    midnight = rollingMidnight,
-                    clockInTime = null
-                )
-                _checkout.postValue(getCheckout.getCheckout(request))
+                            _checkout.postValue(getCheckout.getCheckout(request))
+                        }else{
+                            val request = CheckoutRequest(
+                                companyId = s.companyId,
+                                locationId = s.locationId,
+                                userId = u.employeeId,
+                                midnight = rollingMidnight,
+                                clockInTime = null
+                            )
+                            _checkout.postValue(getCheckout.getCheckout(request))
+                        }
+                    }
+                }
             }
         }
     }
@@ -134,7 +141,9 @@ class CheckoutViewModel @Inject constructor (
             ce.cashSalesTotal = getCashSales(ce.allTickets)
             ce.creditSalesTotal = getCreditSales(ce.allTickets)
             ce.creditTips = getCreditGratuity(ce.allTickets)
-            ce.creditTips = ce.creditTips.minus(ce.tipDiscount?.div(100)!!).round(2)
+            ce.tipDiscount?.let{ tp ->
+                ce.creditTips = ce.creditTips.minus(tp.div(100)).round(2)
+            }
 
             if (ce.tipSettlementPeriod == "Daily"){
                 ce.totalOwed = ce.cashSalesTotal.minus(ce.creditTips)
@@ -155,11 +164,14 @@ class CheckoutViewModel @Inject constructor (
             val listApprovalPayment = mutableListOf<ApprovalTicket>()
             for (approval in ce.approvals){
                 val payment = ce.payments?.find{it.id == approval.id.replace("A", "P")}
-                val at = ApprovalTicket(
-                    approval = approval,
-                    ticket = payment?.tickets?.find{it.id == approval.ticketId}!!
-                )
-                listApprovalPayment.add(at)
+                payment?.tickets?.find{it.id == approval.ticketId}?.let { ticket ->
+                    val at = ApprovalTicket(
+                        approval = approval,
+                        ticket = ticket
+                    )
+                    listApprovalPayment.add(at)
+                }
+
             }
 
             val voidTickets = listApprovalPayment.filter{ it.approval.approvalType == "Void Ticket" && it.approval.approved == true}
@@ -168,52 +180,66 @@ class CheckoutViewModel @Inject constructor (
             val discountItems = listApprovalPayment.filter{ it.approval.approvalType == "Discount Item" && it.approval.approved == true}
 
             val voidTicketTotal = voidTickets.sumOf { it.ticket.getTicketSubTotal() }
-            val voidItemTotal = voidItems.sumOf { it.approval.newItemPrice!! }
-            val discountItemTotal = discountItems.sumOf { it.approval.newItemPrice!! }
+            val voidItemTotal = returnSum(voidItems)
+            val discountItemTotal = returnSum(discountItems)
             val discountTicketTotal = discountTickets.sumOf { it.ticket.getTicketSubTotal() }
 
             ce.voidTotal = voidTicketTotal.plus(voidItemTotal)
             ce.discountTotal = discountItemTotal.plus(discountTicketTotal)
 
-            val orderItems = ce.orders.flatMap { it.orderItems!! }
+            val orderItems = returnAllOrderItems(ce.orders)
             //TODO: Not precise because an item might be discounted in the Payment
             val barItems = orderItems.filter{it.salesCategory == "Bar"}
             val barSales = barItems.sumOf { it.menuItemPrice.price }
+            settings?.let {
+                ce.busShare = ce.orderTotal.times(settings.tipShare.busboy.div(100))
+                ce.barShare = barSales.times(settings.tipShare.bartender.div(100))
+            }
 
-            ce.busShare = ce.orderTotal.times(settings.tipShare.busboy.div(100))
-            ce.barShare = barSales.times(settings.tipShare.bartender.div(100))
         }else{
             _checkoutNull.value = true
         }
+    }
 
+    private fun returnSum(list: List<ApprovalTicket>): Double{
+        var sum = 0.00
+        if (list.isNotEmpty()){
+            for (item in list){
+                item.approval.newItemPrice?.let {
+                    sum = sum.plus(it)
+                }
+            }
+        }
+        return sum.round(2)
+    }
+
+    private fun returnAllOrderItems(list: List<Order>): List<OrderItem>{
+       val oiList = mutableListOf<OrderItem>()
+        for (order in list){
+            order.getAllOrderItems()?.let { oiList.addAll(it) }
+        }
+        return oiList as List<OrderItem>
     }
 
     private fun getCashSales(list: List<Ticket>): Double{
         val payments = mutableListOf<Double>()
         val paymentsList = mutableListOf<TicketPayment>()
-        for (ticket in list){
-//            ticket.paymentList?.let { list ->
-//                for (p in list){
-//                    if (p.paymentType == "Cash" && !p.canceled){
-//                        paymentsList.add(p)
-//                        payments.add(p.ticketPaymentAmount)
-//                    }
-//                }
-//            }
-
-            if (ticket.paymentList != null){
-                for (p in ticket.paymentList!!){
-                    if (p.paymentType == "Cash" && !p.canceled){
-                        paymentsList.add(p)
-                        payments.add(p.ticketPaymentAmount)
+        for (ticket in list) {
+            if (ticket.paymentList != null) {
+                ticket.paymentList?.let { it ->
+                    for (p in it) {
+                        if (p.paymentType == "Cash" && !p.canceled) {
+                            paymentsList.add(p)
+                            payments.add(p.ticketPaymentAmount)
+                        }
                     }
                 }
-            }else{
-                if (ticket.paymentType == "Cash"){
+
+            } else {
+                if (ticket.paymentType == "Cash") {
                     payments.add(ticket.paymentTotal)
                 }
             }
-
         }
 
         return payments.sumOf{it}
@@ -224,10 +250,12 @@ class CheckoutViewModel @Inject constructor (
         val paymentsList = mutableListOf<TicketPayment>()
         for (ticket in list){
             if (ticket.paymentList != null){
-                for (p in ticket.paymentList!!){
-                    if (p.paymentType == "Credit" || p.paymentType == "Manual Credit" && !p.canceled){
-                        paymentsList.add(p)
-                        payments.add(p.ticketPaymentAmount)
+                ticket.paymentList?.let {  it ->
+                    for (p in it){
+                        if (p.paymentType == "Credit" || p.paymentType == "Manual Credit" && !p.canceled){
+                            paymentsList.add(p)
+                            payments.add(p.ticketPaymentAmount)
+                        }
                     }
                 }
             }else{
@@ -239,7 +267,6 @@ class CheckoutViewModel @Inject constructor (
 
         }
         return payments.sumOf{it}
-//            return paymentsList.sumOf{it.ticketPaymentAmount}
     }
 
     private fun getCreditGratuity(list: List<Ticket>): Double{
@@ -247,12 +274,15 @@ class CheckoutViewModel @Inject constructor (
         val paymentsList = mutableListOf<TicketPayment>()
         for (ticket in list){
             if (ticket.paymentList != null){
-                for (p in ticket.paymentList!!){
-                    if (p.paymentType == "Credit" || p.paymentType == "Manual Credit" || p.paymentType == "Gift"){
-                        paymentsList.add(p)
-                        payments.add(p.gratuity)
+                ticket.paymentList?.let { it ->
+                    for (p in it){
+                        if (p.paymentType == "Credit" || p.paymentType == "Manual Credit" || p.paymentType == "Gift"){
+                            paymentsList.add(p)
+                            payments.add(p.gratuity)
+                        }
                     }
                 }
+
             }else{
                 if (ticket.paymentType == "Credit" || ticket.paymentType == "Manual Credit" || ticket.paymentType == "Gift"){
                     payments.add(ticket.gratuity)
@@ -261,7 +291,6 @@ class CheckoutViewModel @Inject constructor (
 
         }
         return payments.sumOf{it}
-//            return paymentsList.sumOf{it.gratuity}
     }
 
     fun setActiveTicket(ticket: Ticket){
@@ -272,26 +301,23 @@ class CheckoutViewModel @Inject constructor (
     }
 
     fun dateForward(){
-        if (_activeDate.value?.plusDays(1)?.atStartOfDay()!! <= LocalDate.now().atStartOfDay()){
-            _activeDate.value = _activeDate.value?.plusDays(1)
-            getEmployeeCheckout()
+        _activeDate.value?.let {
+            if (it.plusDays(1).atStartOfDay() <= LocalDate.now().atStartOfDay()){
+                _activeDate.value = _activeDate.value?.plusDays(1)
+                getEmployeeCheckout()
+            }
         }
     }
 
     fun dateBack(){
-        val epoch = GlobalUtils().unixMidnight(_activeDate.value!!.minusDays(1))
-        val lastChange = GlobalUtils().getPreviousAdjustmentDay(epoch)
-
-        _activeDate.value = _activeDate.value?.minusDays(1)
-
-        if (epoch == lastChange){
-
+        _activeDate.value?.let {
+            val epoch = GlobalUtils().unixMidnight(it.minusDays(1))
+            //If we were going to figure daylight savings time
+            val lastChange = GlobalUtils().getPreviousAdjustmentDay(epoch)
+            _activeDate.value = _activeDate.value?.minusDays(1)
+            getEmployeeCheckout()
         }
-        getEmployeeCheckout()
-    }
 
-    fun showOrders(){
-        _showOrders.value = true
     }
 
     fun setPaymentThenNav(orderId: String){
@@ -334,18 +360,22 @@ class CheckoutViewModel @Inject constructor (
 
     private fun processCreditTip(ticket: Ticket, ticketPayment: TicketPayment){
         viewModelScope.launch {
-            val ct = ticketPayment.creditCardTransactions!!.first()
-            val request = AdjustTipTest(
-                MerchantName = settings.merchantCredentials.MerchantName,
-                MerchantSiteId = settings.merchantCredentials.MerchantSiteId,
-                MerchantKey = settings.merchantCredentials.MerchantKey,
-                Token = ct.creditTransaction?.Token!!,
-                Amount = ticketPayment.gratuity.toString())
-            val transaction: TransactionResponse45 = adjustTip.adjustTip(request) as TransactionResponse45
-            ct.tipTransaction = transaction
+            ticketPayment.creditCardTransactions?.let {
+                val ct = it.first()
+                settings?.let {
+                    val request = AdjustTipTest(
+                        MerchantName = settings.merchantCredentials.MerchantName,
+                        MerchantSiteId = settings.merchantCredentials.MerchantSiteId,
+                        MerchantKey = settings.merchantCredentials.MerchantKey,
+                        Token = ct.creditTransaction?.Token ?: "",
+                        Amount = ticketPayment.gratuity.toString())
+                    val transaction: TransactionResponse45 = adjustTip.adjustTip(request) as TransactionResponse45
+                    ct.tipTransaction = transaction
 
-            if (transaction.ApprovalStatus == "APPROVED"){
-                savePaymentToCloud()
+                    if (transaction.ApprovalStatus == "APPROVED"){
+                        savePaymentToCloud()
+                    }
+                }
             }
         }
     }
@@ -357,60 +387,58 @@ class CheckoutViewModel @Inject constructor (
     fun captureTickets(){
         viewModelScope.launch {
             val checkout = _checkout.value
-            val epoch = GlobalUtils().unixMidnight(_activeDate.value!!)
-            if (checkout != null && checkout.checkoutDate == epoch){
-                if (!checkout.openOrders){
-                    if (checkout.payTickets.isNotEmpty()){
-                        for (item in checkout.payTickets) {
-                            if (item.ticket != null){
-                                if (item.ticket!!.paymentList != null){
-                                    for (payment in item.ticket!!.paymentList!!){
-                                        val creditTransaction = payment.creditCardTransactions?.find{ cc -> cc.creditTransaction?.AmountApproved?.toDouble() == payment.ticketPaymentAmount.minus(
-                                            payment.gratuity)}
+            val epoch = GlobalUtils().unixMidnight(_activeDate.value ?: LocalDate.now())
+            checkout?.let {
+               if (checkout.checkoutDate == epoch && settings != null){
+                   if (!checkout.openOrders){
+                       checkout.payTickets.forEach { item ->
+                           item.ticket?.let { ticket ->
+                               ticket.paymentList?.let{ payList ->
+                                   for (payment in payList){
+                                       val creditTransaction = payment.creditCardTransactions?.find{ cc -> cc.creditTransaction?.AmountApproved?.toDouble() ==
+                                           payment.ticketPaymentAmount}
+                                       if (creditTransaction != null) {
+                                           val capture = Capture(
+                                               Token = creditTransaction.creditTransaction?.Token ?: "",
+                                               Amount = payment.ticketPaymentAmount.plus(payment.gratuity),
+                                               InvoiceNumber = item.order.orderNumber.toString(),
+                                               RegisterNumber = "",
+                                               MerchantTransactionId = item.payment?.id + "_" + ticket.id,
+                                               CardAcceptorTerminalId = null
+                                           )
+                                           val captureRequest = CaptureRequest(
+                                               Credentials = settings.merchantCredentials,
+                                               Capture = capture)
+                                           if (creditTransaction.voidTotal == null && creditTransaction.refundTotal == null && creditTransaction.captureTotal == null){
+                                               val res: TransactionResponse45 = captureTicket.capture(captureRequest)
+                                               if (res.ApprovalStatus == "APPROVED"){
+                                                   creditTransaction.captureTotal = res.Amount
+                                                   creditTransaction.captureTransaction = adjustResponse(res)
+                                                   item.payment?.let { payment ->
+                                                       saveCapturedPaymentToCloud(payment)
+                                                   }
+                                               }
+                                           }
+                                       }
+                                   }
+                               }
+                           }
+                       }
 
-                                        if (creditTransaction != null) {
-                                            val capture = Capture(
-                                                Token = creditTransaction.creditTransaction?.Token!!,
-                                                Amount = payment.ticketPaymentAmount,
-                                                InvoiceNumber = "",
-                                                RegisterNumber = "",
-                                                MerchantTransactionId = item.payment!!.id + "_" + item.ticket!!.id,
-                                                CardAcceptorTerminalId = null
-                                            )
-                                            val captureRequest = CaptureRequest(
-                                                Credentials = settings.merchantCredentials,
-                                                Capture = capture)
-                                            if (creditTransaction.voidTotal == null && creditTransaction.refundTotal == null && creditTransaction.captureTotal == null){
-                                                val res: TransactionResponse45 = captureTicket.capture(captureRequest)
-                                                if (res.ApprovalStatus == "APPROVED"){
-                                                    creditTransaction.captureTotal = res.Amount
-                                                    creditTransaction.captureTransaction = adjustResponse(res)
-
-                                                    saveCapturedPaymentToCloud(item.payment!!)
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                    updateUserClock(checkout.checkoutDate)
-                    _checkoutComplete.postValue("Your checkout is complete.")
-                }else{
-                    _checkoutComplete.postValue("You must close all open orders before checking out.")
-                }
+                       updateUserClock(checkout.checkoutDate)
+                       _checkoutComplete.postValue("Your checkout is complete.")
+                   }else{
+                       _checkoutComplete.postValue("You must close all open orders before checking out.")
+                   }
+               }
             }
-
-
         }
     }
 
     private fun updateUserClock(day: Long){
         viewModelScope.launch {
             val user = loginRepository.getOpsUser()
-            if (user != null) {
+            if (user != null && settings != null) {
                 val cc = CheckoutCredentials(
                     employeeId = user.employeeId,
                     companyId = settings.companyId,
@@ -435,9 +463,11 @@ class CheckoutViewModel @Inject constructor (
 
     private fun savePaymentToCloud(){
         viewModelScope.launch {
-            val p: Payment = updatePayment.savePayment(activePayment.value!!)
+            _activePayment.value?.let {
+                val p: Payment = updatePayment.savePayment(it)
                 _activePayment.postValue(p)
             }
+        }
     }
 
     private fun saveCapturedPaymentToCloud(payment: Payment){
@@ -449,7 +479,7 @@ class CheckoutViewModel @Inject constructor (
     fun reopenCheckout(){
         viewModelScope.launch {
             val user = loginRepository.getOpsUser()
-            if (user != null){
+            if (user != null && settings != null){
                 val request = ReopenCheckoutRequest(
                     employeeId = user.employeeId,
                     companyId = settings.companyId,

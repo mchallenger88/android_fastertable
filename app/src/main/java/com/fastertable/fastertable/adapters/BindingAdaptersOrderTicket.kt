@@ -2,6 +2,7 @@ package com.fastertable.fastertable.adapters
 
 import android.annotation.SuppressLint
 import android.content.res.ColorStateList
+import android.util.Log
 import android.view.View
 import android.widget.ImageButton
 import android.widget.Button
@@ -248,5 +249,36 @@ fun showEditOrderNote(textView: TextInputLayout, b: Boolean){
         textView.visibility = View.VISIBLE
     }else{
         textView.visibility = View.GONE
+    }
+}
+
+@BindingAdapter("enablePayButton")
+fun enablePayButton(button: Button, order: Order?){
+    val btn: MaterialButton = button as MaterialButton
+    var b = false
+    if (order != null && (order.orderStatus == "Closed" || order.orderStatus == "Manually Closed")){
+        b = false
+    }else{
+        if (order != null){
+            if (order.orderItems != null){
+                val started = order.orderItems.find{it.status == "Started"}
+                if (started == null){
+                    b = true
+                }
+            }
+        }
+
+    }
+
+    val white = ContextCompat.getColor(button.context, R.color.white)
+    val offWhite = ContextCompat.getColor(button.context, R.color.offWhite)
+    if (b){
+        btn.isEnabled = true
+        btn.setTextColor(ColorStateList.valueOf(white))
+        btn.strokeColor = ColorStateList.valueOf(white)
+    }else{
+        btn.isEnabled = false
+        btn.setTextColor(ColorStateList.valueOf(offWhite))
+        btn.strokeColor = ColorStateList.valueOf(offWhite)
     }
 }
