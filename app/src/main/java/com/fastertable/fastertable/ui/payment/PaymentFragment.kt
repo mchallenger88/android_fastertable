@@ -140,11 +140,14 @@ class PaymentFragment: BaseFragment(R.layout.payment_fragment) {
         flow.setVerticalGap(2)
         flow.setVerticalStyle(Flow.CHAIN_SPREAD_INSIDE)
         flow.setHorizontalStyle(Flow.CHAIN_PACKED)
-        for (discount in viewModel.settings.discounts) {
-            val btn = createDiscountButton(discount)
-            binding.layoutDiscountButtons.addView(btn)
-            flow.addView(btn)
+        viewModel.settings?.let {
+            for (discount in it.discounts) {
+                val btn = createDiscountButton(discount)
+                binding.layoutDiscountButtons.addView(btn)
+                flow.addView(btn)
+            }
         }
+
         binding.layoutDiscountButtons.addView(flow)
     }
 
@@ -185,28 +188,6 @@ class PaymentFragment: BaseFragment(R.layout.payment_fragment) {
 
     private fun modifyPrice(){
         hideKeyboardFrom(requireContext(), requireView())
-    }
-
-    private val expirationWatcher = object : TextWatcher {
-
-        override fun afterTextChanged(s: Editable?) {
-
-        }
-        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-        }
-        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-
-
-            var txt = s.toString()
-
-            println(txt)
-            println(s!!.length)
-            if (s.length == 4){
-                txt = txt.substring(0,2) + "/" + txt.substring(2, 4)
-
-                println(txt)
-            }
-        }
     }
 
 

@@ -67,29 +67,31 @@ class MenuItemDialog: BaseDialog(R.layout.add_misc_menu_item) {
         )
 
         val printer = findPrinter(salesCategory)
+        printer?.let {
+            val item = OrderItem(
+                id = id,
+                menuItemId = "Adhoc_Menu_Item",
+                menuItemName = name,
+                menuItemPrice = p,
+                modifiers = viewModel.activeItem.value?.modifiers,
+                salesCategory = salesCategory,
+                ingredients = arrayListOf<ItemIngredient>(),
+                prepStation = findPrepStation(it),
+                printer = printer,
+                priceAdjusted = false,
+                menuItemDiscount = null,
+                takeOutFlag = false,
+                dontMake = false,
+                rush = false,
+                tax = p.tax,
+                note = "",
+                employeeId = viewModel.user?.employeeId ?: "",
+                status = "Started",
+            )
 
-        val item = OrderItem(
-            id = id,
-            menuItemId = "Adhoc_Menu_Item",
-            menuItemName = name,
-            menuItemPrice = p,
-            modifiers = viewModel.activeItem.value?.modifiers,
-            salesCategory = salesCategory,
-            ingredients = arrayListOf<ItemIngredient>(),
-            prepStation = findPrepStation(printer!!),
-            printer = printer,
-            priceAdjusted = false,
-            menuItemDiscount = null,
-            takeOutFlag = false,
-            dontMake = false,
-            rush = false,
-            tax = p.tax,
-            note = "",
-            employeeId = viewModel.user?.employeeId ?: "",
-            status = "Started",
-        )
+            viewModel.addAdHocItem(item)
+        }
 
-        viewModel.addAdHocItem(item)
     }
 
     override fun onStart() {

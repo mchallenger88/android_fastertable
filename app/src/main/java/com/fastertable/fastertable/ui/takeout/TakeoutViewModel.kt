@@ -17,9 +17,8 @@ class TakeoutViewModel @Inject constructor
      private val orderRepository: OrderRepository
 ): BaseViewModel(){
 
-    val user: OpsAuth = loginRepository.getOpsUser()!!
-    val settings: Settings = loginRepository.getSettings()!!
-    val terminal: Terminal = loginRepository.getTerminal()!!
+    val user: OpsAuth? = loginRepository.getOpsUser()
+    val settings: Settings? = loginRepository.getSettings()
 
     private val _orders = MutableLiveData<List<Order>>()
     val orders: LiveData<List<Order>>
@@ -42,8 +41,13 @@ class TakeoutViewModel @Inject constructor
     }
 
     fun startTakeoutOrder(takeOutCustomer: TakeOutCustomer){
-        orderRepository.createNewOrder("Takeout", settings, user, null, takeOutCustomer)
-        _navigateToOrder.value = "Takeout"
+        settings?.let { s ->
+            user?.let { u ->
+                orderRepository.createNewOrder("Takeout", s, u, null, takeOutCustomer)
+                _navigateToOrder.value = "Takeout"
+            }
+        }
+
     }
 
 }

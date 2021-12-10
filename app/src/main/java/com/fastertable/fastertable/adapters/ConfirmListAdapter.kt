@@ -79,7 +79,9 @@ class ConfirmListAdapter(private val clickListener: ConfirmListListener, private
                 ce.creditSalesTotal = getCreditSales(ce.allTickets)
                 ce.creditTips = getCreditGratuity(ce.allTickets)
                 if (ce.creditTips > 0){
-                    ce.creditTips = ce.creditTips.minus(ce.tipDiscount?.div(100)!!).round(2)
+                    ce.tipDiscount?.let {
+                        ce.creditTips = ce.creditTips.minus(ce.tipDiscount.div(100)).round(2)
+                    }
                 }
 
                 ce.totalOwed = ce.cashSalesTotal.minus(ce.creditTips)
@@ -104,21 +106,13 @@ class ConfirmListAdapter(private val clickListener: ConfirmListListener, private
             val payments = mutableListOf<Double>()
             val paymentsList = mutableListOf<TicketPayment>()
             for (ticket in list){
-                if (ticket.paymentList != null){
-                    for (p in ticket.paymentList!!){
-                        if (p.paymentType == "Cash" && !p.canceled){
-                            paymentsList.add(p)
-                            payments.add(p.ticketPaymentAmount)
-                        }
-                    }
-                }else{
-                    if (ticket.paymentType == "Cash"){
-                        payments.add(ticket.paymentTotal)
+                ticket.paymentList?.forEach{ p ->
+                    if (p.paymentType == "Cash" && !p.canceled){
+                        paymentsList.add(p)
+                        payments.add(p.ticketPaymentAmount)
                     }
                 }
-
             }
-//            return paymentsList.sumOf{it.ticketPaymentAmount}
             return payments.sumOf{it}
         }
 
@@ -127,7 +121,7 @@ class ConfirmListAdapter(private val clickListener: ConfirmListListener, private
             val paymentsList = mutableListOf<TicketPayment>()
             for (ticket in list){
                 if (ticket.paymentList != null){
-                    for (p in ticket.paymentList!!){
+                    ticket.paymentList?.forEach{ p ->
                         if (p.paymentType == "Credit" || p.paymentType == "Manual Credit"  && !p.canceled){
                             paymentsList.add(p)
                             payments.add(p.ticketPaymentAmount)
@@ -150,7 +144,7 @@ class ConfirmListAdapter(private val clickListener: ConfirmListListener, private
             val paymentsList = mutableListOf<TicketPayment>()
             for (ticket in list){
                 if (ticket.paymentList != null){
-                    for (p in ticket.paymentList!!){
+                    ticket.paymentList?.forEach{ p ->
                         if (p.paymentType == "Credit" || p.paymentType == "Manual Credit" || p.paymentType == "Gift"){
                             paymentsList.add(p)
                             payments.add(p.gratuity)

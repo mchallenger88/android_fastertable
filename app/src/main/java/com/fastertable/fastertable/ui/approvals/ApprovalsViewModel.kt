@@ -120,14 +120,18 @@ class ApprovalsViewModel @Inject constructor(
         val aop = _approvals.value?.find{it.approval.id == id}
         aop?.let {
             _activeApproval.value = it
-            val at = ApprovalTicket(
-                approval = it.approval,
-                ticket = it.payment.tickets?.find{a -> a.id == it.approval.ticketId}!!
-            )
-            _approvalTicket.value = at
-            if (aop.approval.timeHandled != null){
-                calculateApprovedAmount()
+            val ticket = it.payment.tickets?.find{a -> a.id == it.approval.ticketId}
+            ticket?.let { ticket ->
+                val at = ApprovalTicket(
+                    approval = it.approval,
+                    ticket = ticket
+                )
+                _approvalTicket.value = at
+                if (aop.approval.timeHandled != null){
+                    calculateApprovedAmount()
+                }
             }
+
         }
 
     }
@@ -206,7 +210,9 @@ class ApprovalsViewModel @Inject constructor(
                     val ticket = tickets.find { it.id == approval.approval.ticketId }
                     ticket?.let {
                         for (item in list){
-                            item.approve()
+                            item.discountPrice?.let {
+                                item.approve(it)
+                            }
                             approval.approval.approved = true
                             approval.approval.timeHandled = GlobalUtils().getNowEpoch()
                             approval.approval.managerId = loginRepository.getOpsUser()?.employeeId

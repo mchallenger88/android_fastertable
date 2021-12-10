@@ -7,6 +7,7 @@
         <entry key="..\:/androidprojects/fastertable/app/src/main/res/drawable-anydpi/ic_check.xml" value="0.1" />
         <entry key="..\:/androidprojects/fastertable/app/src/main/res/drawable-anydpi/ic_times.xml" value="0.1" />
         <entry key="..\:/androidprojects/fastertable/app/src/main/res/drawable-anydpi/ic_wall.xml" value="0.1" />
+        <entry key="..\:/androidprojects/fastertable/app/src/main/res/drawable/cell_grid.xml" value="0.315234375" />
         <entry key="..\:/androidprojects/fastertable/app/src/main/res/drawable/customborder.xml" value="0.30375" />
         <entry key="..\:/androidprojects/fastertable/app/src/main/res/drawable/ic_arrow_bottom.xml" value="0.1" />
         <entry key="..\:/androidprojects/fastertable/app/src/main/res/drawable/ic_arrow_left.xml" value="0.1" />
@@ -78,8 +79,10 @@
         <entry key="..\:/androidprojects/fastertable/app/src/main/res/layout/terminal_select_fragment.xml" value="0.303125" />
         <entry key="..\:/androidprojects/fastertable/app/src/main/res/layout/ticket_line_item.xml" value="0.303125" />
         <entry key="..\:/androidprojects/fastertable/app/src/main/res/layout/ticket_line_item_move.xml" value="0.303125" />
+        <entry key="..\:/androidprojects/fastertable/app/src/main/res/layout/transfer_employee_line_item.xml" value="0.303125" />
         <entry key="..\:/androidprojects/fastertable/app/src/main/res/layout/transfer_item_orders_header.xml" value="0.303125" />
         <entry key="..\:/androidprojects/fastertable/app/src/main/res/layout/transfer_item_orders_line_item.xml" value="0.303125" />
+        <entry key="..\:/androidprojects/fastertable/app/src/main/res/layout/transfer_order_fragment.xml" value="0.303125" />
         <entry key="..\:/androidprojects/fastertable/app/src/main/res/layout/transfer_order_item_fragment.xml" value="0.333984375" />
         <entry key="..\:/androidprojects/fastertable/app/src/main/res/layout/transfer_order_line_item.xml" value="0.192578125" />
         <entry key="..\:/androidprojects/fastertable/app/src/main/res/layout/user_login_fragment.xml" value="0.303125" />
@@ -90,7 +93,7 @@
       </map>
     </option>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_15" project-jdk-name="1.8" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_15_PREVIEW" project-jdk-name="1.8" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>
   <component name="ProjectType">

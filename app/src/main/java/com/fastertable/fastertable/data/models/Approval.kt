@@ -62,19 +62,22 @@ data class ApprovalItem(
     var uiActive: Boolean = false
 ): Parcelable {
     fun ticketSubtotal(): Double{
-        return ticket!!.subTotal
+        var st = 0.00
+        ticket?.let { it
+         st = it.subTotal
+        }
+        return st
     }
     fun ticketSalesTax(): Double{
-        var tax: Double = 0.00
+        var tax = 0.00
         ticket?.ticketItems?.forEach{ticketItem ->
             tax += tax.plus(ticketItem.tax)
         }
-        return ticket!!.tax
+        return tax
     }
-    fun ticketTotal(): Double{
-//        return this.ticketSubtotal().plus(this.ticketSalesTax())
-        return ticket!!.total
-    }
+//    fun ticketTotal(): Double{
+//        return ticket!!.total
+//    }
 
 
 }

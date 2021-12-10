@@ -22,7 +22,7 @@ class AddGuestEvenSplitDialogFragment : BaseDialog(R.layout.dialog_add_guests_ev
 
         binding.btnSplitEvenlySaveItem.setOnClickListener {
             viewModel.ticketCount.value?.let {
-                paymentViewModel.setEvenSplitTicketCount(viewModel.ticketCount.value!!)
+                paymentViewModel.setEvenSplitTicketCount(it)
                 dismiss()
             }
         }

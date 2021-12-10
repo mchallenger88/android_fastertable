@@ -223,6 +223,7 @@
                 android:textSize="@dimen/login_button_words"
                 android:layout_marginStart="6dp"
                 android:onClick="@{() -> viewModel.userLogin()}"
+                app:enableButton="@{viewModel.enterEnabled}"
                 app:layout_constraintStart_toEndOf="@id/btn_user_clear"
                 app:layout_constraintTop_toBottomOf="@id/btn_user_nine" />
 

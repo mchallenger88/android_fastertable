@@ -26,7 +26,7 @@ class AddGuestAdhocSplitDialogFragment : BaseDialog(R.layout.dialog_add_guests_a
 
         binding.btnAdhocSaveItem.setOnClickListener {
             viewModel.ticketCount.value?.let {
-                viewModel.setAdhocGuestCount(viewModel.ticketCount.value!!)
+                viewModel.setAdhocGuestCount(it)
                 dismiss()
             }
         }

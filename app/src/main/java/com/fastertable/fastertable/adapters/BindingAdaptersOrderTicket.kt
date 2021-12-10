@@ -168,8 +168,8 @@ fun addOrderLineIngredients(textView: TextView, item: OrderItem?){
 @SuppressLint("SetTextI18n")
 @BindingAdapter("orderLineNote")
 fun addOrderLineNote(textView: TextView, item: OrderItem?){
-    if (item != null) {
-        if (item.note!!.isNotEmpty()){
+    item?.let {
+        if (item.note?.isNotEmpty() == true){
             textView.text = "Notes: ${item.note}"
             textView.visibility = View.VISIBLE
         }else{

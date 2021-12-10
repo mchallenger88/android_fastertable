@@ -15,25 +15,19 @@
     android:layout_height="match_parent"
     android:onClick="@{() -> clickListener.onClick(employee)}">
 
-    <ImageView
-        android:id="@+id/img_select_arrow"
+    <Button
+        android:id="@+id/btn_transfer_employee"
+        style="@style/text_button_line"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:contentDescription="@string/select"
+        android:text="@{employee.fullName()}"
+        android:layout_marginStart="20dp"
+        app:icon="@drawable/ic_baseline_add_24"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_baseline_add_24" />
 
-    <TextView
-        android:id="@+id/txt_transfer_employee"
-        style="@style/order_grid"
-        android:layout_width="450dp"
-        android:layout_height="wrap_content"
-        android:width="80dp"
-        android:text="@{employee.fullName()}"
-        app:layout_constraintStart_toEndOf="@+id/img_select_arrow"
-        app:layout_constraintTop_toTopOf="parent" />
+        />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

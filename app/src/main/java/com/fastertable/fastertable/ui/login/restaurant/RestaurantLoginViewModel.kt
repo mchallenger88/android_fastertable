@@ -53,6 +53,10 @@ class RestaurantLoginViewModel @Inject constructor(
     val showProgressBar: LiveData<Boolean>
         get() = _showProgressBar
 
+    private val _enterEnabled = MutableLiveData(true)
+    val enterEnabled: LiveData<Boolean>
+        get() = _enterEnabled
+
     init{
         _error.value = false
         _showProgressBar.value = false
@@ -83,6 +87,7 @@ class RestaurantLoginViewModel @Inject constructor(
     }
 
     fun restLogin(){
+        _enterEnabled.value = false
         if (restaurant.value?.loginPin == pin.value?.toInt()){
             setPin(restaurant.value?.loginPin.toString())
             viewModelScope.launch {
@@ -90,6 +95,7 @@ class RestaurantLoginViewModel @Inject constructor(
             }
         }else{
             _error.value = true
+            _enterEnabled.value = true
         }
     }
 
@@ -130,6 +136,7 @@ class RestaurantLoginViewModel @Inject constructor(
 
                     getMenus.getAllMenus(restaurant.id)
                     checkTerminal()
+                    _enterEnabled.value = true
                     _showProgressBar.postValue(false)
                 }
 

@@ -36,7 +36,7 @@ class TransferOrderFragment : BaseFragment(R.layout.transfer_order_fragment) {
         val concatAdapter = ConcatAdapter(headerAdapter, orderAdapter)
 
         val employeeAdapter = TransferEmployeeAdapter(TransferEmployeeListListener {
-            viewModel.employeeClicked(it)
+            viewModel.initiateTransfer(it)
         })
 
         binding.transferOrderRecycler.adapter = concatAdapter

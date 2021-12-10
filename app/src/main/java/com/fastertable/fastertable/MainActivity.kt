@@ -66,7 +66,7 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
     @Inject lateinit var paymentRepository: PaymentRepository
     @Inject lateinit var getPayment: GetPayment
     private lateinit var appBarConfiguration: AppBarConfiguration
-    private lateinit var settings: Settings
+    private var settings: Settings? = null
     private val homeViewModel: HomeViewModel by viewModels()
     private val orderViewModel: OrderViewModel by viewModels()
     private val paymentViewModel: PaymentViewModel by viewModels()
@@ -86,14 +86,14 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
     private val editItemViewModel: EditItemDialogViewModel by viewModels()
     private val splitPaymentViewModel: SplitPaymentViewModel by viewModels()
     private var progressDialog: ProgressDialog? = null
-    private lateinit var user: OpsAuth
+    private var user: OpsAuth? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         val toolbar: Toolbar = findViewById(R.id.toolbar)
-        settings = loginRepository.getSettings()!!
-        user = loginRepository.getOpsUser()!!
+        settings = loginRepository.getSettings()
+        user = loginRepository.getOpsUser()
         setSupportActionBar(toolbar)
 
         val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
@@ -109,8 +109,10 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
 
         val floorplanMenu = navView.menu.findItem(R.id.floorplanManagementFragment)
         val permission = Permissions.viewOrders.toString()
-        val manager = user.claims.find { it.permission.name == permission && it.permission.value }
-        floorplanMenu.isVisible = user.claims.contains(manager)
+        val manager = user?.claims?.find { it.permission.name == permission && it.permission.value }
+        manager?.let {
+            floorplanMenu.isVisible = user?.claims?.contains(it) == true
+        }
 
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
@@ -296,8 +298,9 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
 
         orderViewModel.showTransfer.observe(this, {
             if (it){
-                val id = orderViewModel.activeOrder.value!!.id
-                navController.navigate(OrderFragmentDirections.actionOrderFragmentToTransferOrderFragment(id))
+                orderViewModel.activeOrder.value?.id?.let { id ->
+                    navController.navigate(OrderFragmentDirections.actionOrderFragmentToTransferOrderFragment(id))
+                }
             }
         })
 
@@ -315,8 +318,8 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
 
         orderViewModel.error.observe(this, {it ->
             if (it){
-                errorViewModel.setMessage(orderViewModel.errorMessage.value!!)
-                errorViewModel.setTitle(orderViewModel.errorTitle.value!!)
+                errorViewModel.setMessage(orderViewModel.errorMessage.value ?: "")
+                errorViewModel.setTitle(orderViewModel.errorTitle.value ?: "")
 
                 ErrorAlertBottomSheet().show(supportFragmentManager, ErrorAlertBottomSheet.TAG)
                 orderViewModel.clearError()
@@ -325,12 +328,13 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
 
         orderViewModel.activeOrderSet.observe(this, {
             if (it){
-                val o = orderViewModel.activeOrder.value!!
-                if (o.closeTime == null){
-                    navController.navigate(HomeFragmentDirections.actionNavHomeToOrderFragment())
-                    homeViewModel.navigationEnd()
-                }else if (o.closeTime != null){
-                    goToPayment(navController)
+                orderViewModel.activeOrder.value?.let { o ->
+                    if (o.closeTime == null){
+                        navController.navigate(HomeFragmentDirections.actionNavHomeToOrderFragment())
+                        homeViewModel.navigationEnd()
+                    }else if (o.closeTime != null){
+                        goToPayment(navController)
+                    }
                 }
             }
         })
@@ -357,7 +361,6 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
                 navController.navigate(OrderFragmentDirections.actionOrderFragmentToNavHome())
                 orderViewModel.setNavHome(false)
             }
-
         })
     }
 
@@ -365,8 +368,8 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
         paymentViewModel.amountOwed.observe(this, {
             paymentViewModel.activePayment.value?.tickets?.forEach { t ->
                 if (t.uiActive){
-                    val pt = t.paymentList!!.last()
-                    if (pt.paymentType == "Cash"){
+                    val pt = t.paymentList?.last()
+                    if (pt?.paymentType == "Cash"){
                         CashBackDialogFragment().show(supportFragmentManager, CashBackDialogFragment.TAG)
                     }
                 }
@@ -376,7 +379,7 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
         paymentViewModel.activePayment.observe(this, { it ->
             if (it != null) {
                 homeViewModel.getOrdersFromFile()
-                if (it.closed && orderViewModel.activeOrder.value != null && orderViewModel.activeOrder.value!!.closeTime == null){
+                if (it.closed && orderViewModel.activeOrder.value != null && orderViewModel.activeOrder.value?.closeTime == null){
                     orderViewModel.closeOrder()
                 }
             }
@@ -476,6 +479,13 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
             if (it){
                 navController.navigate(AdhocPaymentFragmentDirections.actionAdhocPaymentFragmentToPaymentFragment())
                 splitPaymentViewModel.setNavigatePayment(false)
+            }
+        })
+
+        paymentViewModel.homeOrderListUpdate.observe(this, {
+            if (it){
+                homeViewModel.getOrdersFromFile()
+                paymentViewModel.setHomeListUpdate(false)
             }
         })
     }
@@ -584,8 +594,8 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
         giftCardViewModel.amountOwed.observe(this, {
             giftCardViewModel.activePayment.value?.tickets?.forEach { t ->
                 if (t.uiActive){
-                    val pt = t.paymentList!!.last()
-                    if (pt.paymentType == "Cash"){
+                    val pt = t.paymentList?.last()
+                    if (pt?.paymentType == "Cash"){
                         CashBackDialogFragment().show(supportFragmentManager, CashBackDialogFragment.TAG)
                     }
                 }
@@ -602,8 +612,8 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
 
         giftCardViewModel.error.observe(this, {
             if (it){
-                errorViewModel.setMessage(giftCardViewModel.errorMessage.value!!)
-                errorViewModel.setTitle(giftCardViewModel.errorTitle.value!!)
+                errorViewModel.setMessage(giftCardViewModel.errorMessage.value ?: "")
+                errorViewModel.setTitle(giftCardViewModel.errorTitle.value ?: "")
 
                 ErrorAlertBottomSheet().show(supportFragmentManager, ErrorAlertBottomSheet.TAG)
                 giftCardViewModel.clearError()
@@ -615,7 +625,11 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
         transferOrderViewModel.transferComplete.observe(this, {
             if (it){
                 homeViewModel.getOrdersFromFile()
-                navController.navigate(TransferOrderFragmentDirections.actionTransferOrderFragmentToNavHome())
+                try {
+                    navController.navigate(TransferOrderFragmentDirections.actionTransferOrderFragmentToNavHome())
+                }catch (e: Throwable){
+//                    onSessionLogout()
+                }
             }
         })
     }
@@ -642,32 +656,44 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
 
     private fun goToPayment(navController: NavController){
         var okToPay = true
-        val terminal = loginRepository.getTerminal()!!
-        val order = orderViewModel.activeOrder.value!!
+        val terminal = loginRepository.getTerminal()
+        val order = orderViewModel.activeOrder.value
 
         lifecycleScope.launch{
             val p = paymentRepository.getPayment()
-            val pid = order.id.replace("O_", "P_")
+            val pid = order?.id?.replace("O_", "P_")
             if (p == null){
-                paymentViewModel.getCloudPayment(pid, order.locationId)
+                paymentViewModel.getCloudPayment(pid ?: "", order?.locationId ?: "")
             }else{
                 if (p.id != pid){
-                    paymentViewModel.getCloudPayment(pid, order.locationId)
+                    paymentViewModel.getCloudPayment(pid ?: "", order?.locationId ?: "")
                 }
             }
 
             if (paymentViewModel.activePayment.value == null){
-                val flatten = order.getAllOrderItems()
+                val flatten = order?.getAllOrderItems()
 
-                if (order.orderItems != null) {
+                if (order?.orderItems != null) {
                     okToPay = !order.orderItems.any { it.status == "Started" }
 
                         if (okToPay){
-                            paymentViewModel.getCloudPayment(order.id.replace("O_", "P_"), settings.locationId)
+                            settings?.let { s ->
+                                paymentViewModel.getCloudPayment(order.id.replace("O_", "P_"), s.locationId)
+                            }
+
                             if (paymentViewModel.activePayment.value == null){
-                                val payment = paymentRepository.createNewPayment(order, terminal, settings.additionalFees)
-                                paymentViewModel.setActiveOrder(orderViewModel.activeOrder.value!!)
-                                paymentViewModel.setLivePayment(payment)
+                                terminal?.let { t ->
+                                    settings?.let { s ->
+                                        val payment = paymentRepository.createNewPayment(order, t, s.additionalFees)
+                                        orderViewModel.activeOrder.value?.let {
+                                            paymentViewModel.setActiveOrder(it)
+                                        }
+
+                                        paymentViewModel.setLivePayment(payment)
+                                    }
+
+                                }
+
                             }
                             navController.navigate(OrderFragmentDirections.actionOrderFragmentToPaymentFragment())
                             orderViewModel.navToPayment(false)
@@ -795,10 +821,14 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
         if (type == 1) {
             val args = Bundle()
             args.putString("msg", msg)
-            progressDialog!!.arguments = args
-            progressDialog!!.show(supportFragmentManager, "Progress Dialog")
+            progressDialog?.let {
+                it.arguments = args
+                it.show(supportFragmentManager, "Progress Dialog")
+            }
         } else {
-            progressDialog!!.dismiss()
+            progressDialog?.let {
+                it.dismiss()
+            }
         }
     }
 

@@ -65,6 +65,10 @@ class UserLoginViewModel @Inject constructor(private val loginRepository: LoginR
     val employee: LiveData<Employee>
         get() = _employee
 
+    private val _enterEnabled = MutableLiveData(true)
+    val enterEnabled: LiveData<Boolean>
+        get() = _enterEnabled
+
     private var emp: Employee? = null
 
     private var user: OpsAuth? = null
@@ -100,6 +104,7 @@ class UserLoginViewModel @Inject constructor(private val loginRepository: LoginR
     }
 
     fun userLogin(){
+        _enterEnabled.value = false
        viewModelScope.launch {
            _showProgressBar.postValue(true)
            loginRepository.getStringSharedPreferences("cid")?.let {
@@ -137,12 +142,13 @@ class UserLoginViewModel @Inject constructor(private val loginRepository: LoginR
                 }else{
                     departmentNavigation()
                 }
-
+                _enterEnabled.postValue(true)
 
             }else{
                 _validUser.postValue(false)
                 _pin.value = ""
                 _showProgressBar.postValue(false)
+                _enterEnabled.postValue(true)
             }
         }
     }

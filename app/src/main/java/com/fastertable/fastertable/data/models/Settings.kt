@@ -43,9 +43,8 @@ data class Settings (
     val additionalFees: ArrayList<AdditionalFees>?
 ): Parcelable {
     fun getPrepStation(printerName: String): PrepStation{
-        return prepStations.find{
-            it.stationName == printerName
-        }!!
+        val newStation = prepStations.find{it.stationName == printerName}
+        return newStation ?: prepStations[0]
     }
 }
 

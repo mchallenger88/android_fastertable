@@ -144,8 +144,8 @@ class OrderRepository @Inject constructor(private val app: Application) {
     fun getOrderById(id: String): Order? {
         val orders = getOrdersFromFile()
         if (orders != null) {
-            val o = orders.find{it -> it.id == id}!!
-            o.setActiveGuestFirst()
+            val o = orders.find{it.id == id}
+            o?.setActiveGuestFirst()
             return o
         }
         return null

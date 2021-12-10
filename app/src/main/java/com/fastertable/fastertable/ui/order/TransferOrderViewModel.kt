@@ -23,21 +23,16 @@ class TransferOrderViewModel @Inject constructor (
     private val getOnShiftEmployees: GetOnShiftEmployees
         ) : BaseViewModel(){
 
-    val user: OpsAuth = loginRepository.getOpsUser()!!
-    val settings: Settings = loginRepository.getSettings()!!
-    var orders: List<Order> = orderRepository.getOrdersFromFile()!!
+    val user: OpsAuth? = loginRepository.getOpsUser()
+    val settings: Settings? = loginRepository.getSettings()
 
     private val _activeEmployees = MutableLiveData<List<Employee>>()
     val activeEmployees: LiveData<List<Employee>>
         get() = _activeEmployees
 
-    private val _activeOrders = MutableLiveData<List<Order>>()
-    val activeOrders: LiveData<List<Order>>
+    private val _activeOrders = MutableLiveData<MutableList<Order>>()
+    val activeOrders: LiveData<MutableList<Order>>
         get() = _activeOrders
-
-    private val _selectedOrders = MutableLiveData<MutableList<Order>>()
-    val selectedOrders: LiveData<MutableList<Order>>
-        get() = _selectedOrders
 
     private val _initialOrderId = MutableLiveData<String>()
     val initialOrderId: LiveData<String>
@@ -47,71 +42,92 @@ class TransferOrderViewModel @Inject constructor (
     val transferComplete: LiveData<Boolean>
         get() = _transferComplete
 
+    private val _showSpinner = MutableLiveData(false)
+    val showSpinner: LiveData<Boolean>
+        get() = _showSpinner
+
     init {
-        _selectedOrders.value = mutableListOf<Order>()
         getEmployees()
         filterOrders()
     }
 
     private fun getEmployees(){
         viewModelScope.launch {
-            val time = CompanyTimeBasedRequest(
-                midnight = GlobalUtils().getMidnight(),
-                locationId = settings.locationId,
-                companyId = settings.companyId
-            )
-            _activeEmployees.postValue(getOnShiftEmployees.getEmployees(time))
+            settings?.let {
+                val time = CompanyTimeBasedRequest(
+                    midnight = GlobalUtils().getMidnight(),
+                    locationId = settings.locationId,
+                    companyId = settings.companyId
+                )
+                _activeEmployees.postValue(getOnShiftEmployees.getEmployees(time))
+            }
+
         }
     }
 
     fun refreshOrders(){
-        orders = orderRepository.getOrdersFromFile()!!
+        orderRepository.getOrdersFromFile()?.let { orders ->
+            orders.forEach { it.transfer = false }
+            _activeOrders.value = orders as MutableList<Order>?
+        }
+
     }
 
     private fun filterOrders() {
         val permission = Permissions.viewOrders.toString()
-        val manager = user.claims.find { it.permission.name == permission && it.permission.value }
-        if (user.claims.contains(manager)){
-            _activeOrders.value = orders
-        }else{
-            _activeOrders.value = orders.filter { it.employeeId == user.employeeId }
-        }
-
-    }
-
-    fun setInitialOrderId(id: String){
-        if (id.isNotBlank()){
-            _initialOrderId.value = id
-            _activeOrders.value?.find{ it -> it.id == _initialOrderId.value!!}?.transfer = true
-            val o = _activeOrders.value?.find{ it -> it.id == id}
-            if (o != null){
-                orderClicked(o)
+        user?.let {
+            val manager = user.claims.find { it.permission.name == permission && it.permission.value }
+            if (!user.claims.contains(manager)){
+                _activeOrders.value?.let { orders ->
+                    _activeOrders.value = orders.filter { it.employeeId == user.employeeId } as MutableList<Order>?
+                }
+                _activeOrders.value = _activeOrders.value
             }
         }
     }
 
-    fun orderClicked(order: Order){
-        if (selectedOrders.value?.contains(order) == true){
-            _selectedOrders.value?.remove(order)
-        }else{
-            _selectedOrders.value?.add(order)
+    fun setInitialOrderId(id: String){
+        if (id.isNotBlank()){
+            _activeOrders.value?.forEach {
+                if (it.id == id){
+                    it.transfer = true
+                    _activeOrders.value = _activeOrders.value
+                }
+            }
+
         }
-        println(selectedOrders.value)
     }
 
-    fun employeeClicked(employee: Employee){
+    fun orderClicked(order: Order){
+        _activeOrders.value?.let { orders ->
+            val index = orders.indexOfFirst { it.id == order.id }
+            if (index != -1){
+                orders[index] = order
+            }
+        }
+    }
+
+    fun initiateTransfer(employee: Employee){
         viewModelScope.launch {
-            Log.d("Testing", employee.id)
-            if (_selectedOrders.value != null){
-                selectedOrders.value?.forEach {
+            employeeClicked(employee)
+        }
+    }
+
+    suspend fun employeeClicked(employee: Employee){
+        val job = viewModelScope.launch {
+            _showSpinner.postValue(true)
+            _activeOrders.value?.forEach {
+                if (it.transfer == true){
                     it.employeeId = employee.id
                     it.userName = employee.user.userName
                     it.transfer = true
                     updateOrder.saveOrder(it)
                 }
-                _transferComplete.postValue(true)
             }
         }
+        job.join()
+        _showSpinner.postValue(false)
+        _transferComplete.postValue(true)
 
     }
 }

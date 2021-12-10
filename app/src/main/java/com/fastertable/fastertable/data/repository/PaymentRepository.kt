@@ -123,7 +123,7 @@ class PaymentRepository @Inject constructor(private val app: Application) {
             guestCount = order.guestCount,
             splitType = "",
             splitTicket = null,
-            employeeId = order.employeeId!!,
+            employeeId = order.employeeId ?: "",
             userName = order.userName,
             terminalId =  terminal.terminalId.toString(),
             tickets = arrayListOf(order.createSingleTicket(fees)),
@@ -151,7 +151,7 @@ class PaymentRepository @Inject constructor(private val app: Application) {
     }
 
     fun updatePaymentNewOrderItems(payment: Payment, order: Order): Payment{
-        for (item in order.orderItems!!){
+        order.orderItems?.forEach{ item ->
             val ticket = payment.tickets?.get(0)
             if (ticket != null){
                 val found = ticket.ticketItems.findLast { it.orderItemId == item.id }

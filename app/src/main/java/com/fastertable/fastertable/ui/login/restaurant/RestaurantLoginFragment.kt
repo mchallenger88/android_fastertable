@@ -23,19 +23,6 @@ class RestaurantLoginFragment : BaseFragment(R.layout.restaurant_login_fragment)
         binding.lifecycleOwner = viewLifecycleOwner
         binding.viewModel = viewModel
 
-        binding.btnOne.setOnClickListener{numClick(1)}
-        binding.btnTwo.setOnClickListener{numClick(2)}
-        binding.btnThree.setOnClickListener{numClick(3)}
-        binding.btnFour.setOnClickListener{numClick(4)}
-        binding.btnFive.setOnClickListener{numClick(5)}
-        binding.btnSix.setOnClickListener{numClick(6)}
-        binding.btnSeven.setOnClickListener{numClick(7)}
-        binding.btnEight.setOnClickListener{numClick(8)}
-        binding.btnNine.setOnClickListener{numClick(9)}
-        binding.btnZero.setOnClickListener{numClick(0)}
-
-        binding.btnClear.setOnClickListener { pinClear() }
-        binding.btnEnter.setOnClickListener { loginEnter() }
 
         viewModel.navigateToTerminals.observe(viewLifecycleOwner, {
             if (it){
@@ -65,17 +52,5 @@ class RestaurantLoginFragment : BaseFragment(R.layout.restaurant_login_fragment)
                 binding.txtRestError.visibility = View.GONE
             }
         })
-    }
-
-    private fun numClick(num: Int){
-        viewModel.concatPin(num)
-    }
-
-    private fun pinClear(){
-        viewModel.pinClear()
-    }
-
-    private fun loginEnter(){
-        viewModel.restLogin()
     }
 }

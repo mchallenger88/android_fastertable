@@ -48,18 +48,21 @@ class LoginActivity : BaseLoginActivity(), DialogListener {
 
         userViewModel.clockin.observe(this, {
             if (it){
-                val clockin = DateTimeFormatter.ofPattern("h:mm a").withZone(ZoneId.systemDefault())
-                    .format(java.time.Instant.ofEpochSecond(userViewModel.loginTime.value!!))
-                errorViewModel.setTitle("User Clockin")
-                errorViewModel.setMessage("You are now clocked in. You were clocked in at $clockin")
-                ClockinDialog().show(supportFragmentManager, ClockinDialog.TAG)
+                userViewModel.loginTime.value?.let { time ->
+                    val clockin = DateTimeFormatter.ofPattern("h:mm a").withZone(ZoneId.systemDefault())
+                        .format(java.time.Instant.ofEpochSecond(time))
+                    errorViewModel.setTitle("User Clockin")
+                    errorViewModel.setMessage("You are now clocked in. You were clocked in at $clockin")
+                    ClockinDialog().show(supportFragmentManager, ClockinDialog.TAG)
 
-                kitchenClockoutViewModel.clockedOut.observe(this, { kit ->
-                    if (kit){
-                        Thread.sleep(1000)
-                        navController.navigate(KitchenClockoutFragmentDirections.actionKitchenClockoutFragmentToUserLoginFragment())
-                    }
-                })
+                    kitchenClockoutViewModel.clockedOut.observe(this, { kit ->
+                        if (kit){
+                            Thread.sleep(1000)
+                            navController.navigate(KitchenClockoutFragmentDirections.actionKitchenClockoutFragmentToUserLoginFragment())
+                        }
+                    })
+                }
+
             }
         })
 

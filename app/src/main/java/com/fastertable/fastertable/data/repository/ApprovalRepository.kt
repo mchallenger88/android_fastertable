@@ -27,7 +27,6 @@ class SaveApproval @Inject constructor(private val saveApprovalUseCase: SaveAppr
         }else{
             throw RuntimeException("fetch failure")
         }
-        return p
     }
 }
 
@@ -43,7 +42,6 @@ class UpdateApproval @Inject constructor(private val updateApprovalUseCase: Upda
         }else{
             throw RuntimeException("fetch failure")
         }
-        return p
     }
 }
 
@@ -222,106 +220,4 @@ class ApprovalRepository @Inject constructor(private val app: Application) {
         file.writeText(jsonString)
         return approval
     }
-
-
-//    fun createVoidTicketApproval(order: Order, payment: Payment, approval: Approval?): Approval{
-//        val app = approval ?: createApproval(order)
-//
-//        val ai = ApprovalItem(
-//            id = app.approvalItems.size,
-//            approvalType = "Void Ticket",
-//            discount = null,
-//            ticketItem = null,
-//            ticket = payment.activeTicket()!!,
-//            amount = payment.activeTicket()!!.total,
-//            timeRequested = GlobalUtils().getNowEpoch(),
-//            approved = null,
-//            timeHandled = null,
-//            managerId = null
-//        )
-//        app.approvalItems.add(ai)
-//
-//        return app
-//    }
-
-//    fun createVoidTicketItemApproval(order: Order, payment: Payment, ticketItem: TicketItem, approval: Approval?): Approval{
-//        val app = approval ?: createApproval(order)
-//
-//        val ai = ApprovalItem(
-//            id = app.approvalItems.size,
-//            approvalType = "Void Item",
-//            discount = null,
-//            ticketItem = ticketItem,
-//            ticket = payment.activeTicket()!!,
-//            amount = ticketItem.ticketItemPrice,
-//            timeRequested = GlobalUtils().getNowEpoch(),
-//            approved = null,
-//            timeHandled = null,
-//            managerId = null
-//        )
-//        app.approvalItems.add(ai)
-//
-//        return app
-//    }
-
-//    fun createDiscountTicketApproval(order: Order, payment: Payment, discount: Discount, disTotal: Double, approval: Approval?): Approval{
-//        val app = approval ?: createApproval(order)
-//
-//        val ai = ApprovalItem(
-//            id = app.approvalItems.size,
-//            approvalType = "Discount Ticket",
-//            discount = discount.discountName,
-//            ticketItem = null,
-//            ticket = payment.activeTicket()!!,
-//            amount = disTotal,
-//            timeRequested = GlobalUtils().getNowEpoch(),
-//            approved = null,
-//            timeHandled = null,
-//            managerId = null
-//        )
-//        app.approvalItems.add(ai)
-//
-//        return app
-//
-//    }
-
-//    fun createDiscountTicketItemApproval(order: Order, payment: Payment, ticketItem: TicketItem, discount: Discount, disTotal: Double, approval: Approval?): Approval{
-//        val app = approval ?: createApproval(order)
-//
-//        val ai = ApprovalItem(
-//            id = app.approvalItems.size,
-//            approvalType = "Discount Item",
-//            discount = discount.discountName,
-//            ticketItem = ticketItem,
-//            ticket = payment.activeTicket()!!,
-//            amount = disTotal,
-//            timeRequested = GlobalUtils().getNowEpoch(),
-//            approved = null,
-//            timeHandled = null,
-//            managerId = null
-//        )
-//        app.approvalItems.add(ai)
-//
-//        return app
-//    }
-
-//    fun createModifyItemPriceApproval(order: Order, payment: Payment, ticketItem: TicketItem, approval: Approval?): Approval{
-//        val app = approval ?: createApproval(order)
-//
-//        val ai = ApprovalItem(
-//            id = app.approvalItems.size,
-//            approvalType = "Modify Price",
-//            discount = null,
-//            ticketItem = ticketItem,
-//            ticket = payment.activeTicket()!!,
-//            amount = ticketItem.ticketItemPrice.minus(ticketItem.discountPrice!!).round(2),
-//            timeRequested = GlobalUtils().getNowEpoch(),
-//            approved = null,
-//            timeHandled = null,
-//            managerId = null
-//        )
-//        app.approvalItems.add(ai)
-//
-//        return app
-//    }
 }

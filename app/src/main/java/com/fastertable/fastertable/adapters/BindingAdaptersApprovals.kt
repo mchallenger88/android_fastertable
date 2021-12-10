@@ -84,7 +84,7 @@ fun getApprovalTax(textView: TextView, item: ApprovalTicket?){
                 "%.${2}f".format(item.ticket.tax)
             )
         } else {
-            val tax = item.approval.newItemPrice?.times(item.ticket.taxRate)!!.round(2)
+            val tax = item.approval.newItemPrice?.times(item.ticket.taxRate)?.round(2)
             textView.text = textView.context.getString(R.string.subtotal_price, "%.${2}f".format(tax))
         }
     }
@@ -101,15 +101,15 @@ fun getApprovalTotal(textView: TextView, item: ApprovalTicket?){
             )
         } else {
             val tax = item.approval.newItemPrice?.times(item.ticket.taxRate)
-            val total = item.approval.newItemPrice?.plus(tax!!)!!.round(2)
-            textView.text = textView.context.getString(
-                R.string.subtotal_price,
-                "%.${2}f".format(total))
+            tax?.let {
+                val total = item.approval.newItemPrice.plus(tax).round(2)
+                textView.text = textView.context.getString(
+                    R.string.subtotal_price,
+                    "%.${2}f".format(total))
+            }
         }
     }
-//    if (item != null){
-//        textView.text = textView.context.getString(R.string.subtotal_price, "%.${2}f".format(item.ticketTotal()))
-//    }
+
 }
 
 @BindingAdapter("approvalDiscount")

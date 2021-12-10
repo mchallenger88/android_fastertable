@@ -76,13 +76,14 @@ fun confirmedNotConfirmed(textView: TextView, ce: ConfirmEmployee?) {
         if (ce.shifts?.checkout == null){
             textView.text = textView.context.getString(R.string.checkout_open)
         }
+        ce.shifts?.checkoutApproved?.let {
+            if (!it && ce.shifts.checkout != null){
+                textView.visibility = View.GONE
+            }
 
-        if (!ce.shifts?.checkoutApproved!! && ce.shifts.checkout != null){
-            textView.visibility = View.GONE
-        }
-
-        if (ce.shifts.checkout != null && ce.shifts.checkoutApproved){
-            textView.text = textView.context.getString(R.string.confirmed)
+            if (it && ce.shifts.checkout != null){
+                textView.text = textView.context.getString(R.string.confirmed)
+            }
         }
     }
 }
@@ -94,12 +95,14 @@ fun confirmedNotConfirmedButton(button: Button, ce: ConfirmEmployee?) {
             button.visibility = View.GONE
         }
 
-        if (!ce.shifts?.checkoutApproved!! && ce.shifts.checkout != null){
-            button.text = button.context.getString(R.string.confirm)
-        }
+        ce.shifts?.checkoutApproved?.let {
+            if (!it && ce.shifts.checkout != null){
+                button.text = button.context.getString(R.string.confirm)
+            }
 
-        if (ce.shifts.checkout != null && ce.shifts.checkoutApproved){
-            button.visibility = View.GONE
+            if (it && ce.shifts.checkout != null){
+                button.visibility = View.GONE
+            }
         }
     }
 }

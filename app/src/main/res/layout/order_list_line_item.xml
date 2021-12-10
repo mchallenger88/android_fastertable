@@ -10,10 +10,18 @@
             name="clickListener"
             type="com.fastertable.fastertable.ui.home.OrderListListener" />
     </data>
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/cell_grid">
+
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/order_line_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/cell_grid"
+        android:background="?attr/selectableItemBackground"
+        android:clickable="true"
+        android:focusable="true"
         android:onClick="@{() -> clickListener.onClick(order)}">
 
         <TextView
@@ -75,4 +83,5 @@
             app:layout_constraintTop_toTopOf="parent"
             app:timeStamp="@{order.closeTime}" />
     </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.appcompat.widget.LinearLayoutCompat>
 </layout>

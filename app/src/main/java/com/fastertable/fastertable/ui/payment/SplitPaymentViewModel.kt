@@ -14,7 +14,7 @@ import javax.inject.Inject
 class SplitPaymentViewModel @Inject constructor (
     private val loginRepository: LoginRepository,
     private val paymentRepository: PaymentRepository): BaseViewModel() {
-    val settings: Settings = loginRepository.getSettings()!!
+    val settings: Settings? = loginRepository.getSettings()
     private val _activePayment = MutableLiveData<Payment?>()
     val activePayment: LiveData<Payment?>
         get() = _activePayment
@@ -61,7 +61,7 @@ class SplitPaymentViewModel @Inject constructor (
         for (i in 1..ticketCount.minus(1)){
             _activePayment.value?.let {
                 var fees = mutableListOf<AdditionalFees>()
-                settings.additionalFees?.let { af ->
+                settings?.additionalFees?.let { af ->
                     fees = af
                 }
                 val ticket = paymentRepository.createEmptyTicket(it, i.plus(1), fees)

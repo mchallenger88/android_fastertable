@@ -45,12 +45,13 @@ class TransferItemFragment: BaseFragment(R.layout.transfer_order_item_fragment) 
             }
         })
 
-        viewModel.orders.observe(viewLifecycleOwner, {
-            if (it != null){
-                val list = it.filter { it.closeTime ==  null } as MutableList<Order>
-                val o = viewModel.activeOrder.value!!
-                list.remove(o)
-                ordersAdapter.submitList(list)
+        viewModel.orders.observe(viewLifecycleOwner, { list ->
+            if (list != null){
+                val newList = list.filter { it.closeTime == null } as MutableList<Order>
+                viewModel.activeOrder.value?.let { o ->
+                    newList.remove(o)
+                }
+                ordersAdapter.submitList(newList)
                 ordersAdapter.notifyDataSetChanged()
             }
         })

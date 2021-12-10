@@ -56,9 +56,8 @@ data class Payment(
     }
 
     fun allTicketsPaid(): Boolean{
-        var paid: Boolean = true
-        this.tickets!!.forEach { ticket ->
-
+        var paid = true
+        this.tickets?.forEach { ticket ->
             if (ticket.paymentTotal < ticket.total){
                 paid = false
             }
@@ -67,8 +66,8 @@ data class Payment(
     }
 
     fun anyTicketsPaid(): Boolean{
-        var paid: Boolean = false
-        this.tickets!!.forEach { ticket ->
+        var paid = false
+        this.tickets?.forEach { ticket ->
             if (ticket.paymentTotal >= ticket.total && ticket.paymentList != null){
                 paid = true
             }
@@ -77,45 +76,47 @@ data class Payment(
     }
 
     private fun anyTicketsModified(): Boolean{
-        var modified: Boolean = false
-        if (tickets != null){
-            for (ticket in tickets!!){
-                for (item in ticket.ticketItems){
-                    if (item.priceModified){
-                        modified = true
-                    }
+        var modified = false
+        tickets?.forEach { ticket ->
+            for (item in ticket.ticketItems){
+                if (item.priceModified){
+                    modified = true
                 }
             }
         }
-
         return modified
     }
 
     fun activeTicket(): Ticket?{
-        return tickets!!.find{it -> it.uiActive}
+        tickets?.let { ticket ->
+            return ticket.find{it -> it.uiActive}
+        }
+        return null
     }
 
     fun amountOwed(): Double{
-        return if (activeTicket() != null){
-            activeTicket()!!.total.minus(activeTicket()!!.paymentTotal).round(2)
-        }else
-            0.00
+        var ao = 0.00
+        activeTicket()?.let { at ->
+            ao = at.total.minus(at.paymentTotal).round(2)
+        }
+        return ao
     }
 
     fun allTicketItems(): ArrayList<TicketItem>{
         val ticketItems = arrayListOf<TicketItem>()
-        if (tickets != null){
-            for (ticket in tickets!!){
-            for (item in ticket.ticketItems){
-                ticketItems.add(item)
+        tickets?.let { list ->
+            for (ticket in list){
+                for (item in ticket.ticketItems){
+                    ticketItems.add(item)
+                }
             }
-        }}
+        }
         return ticketItems
     }
 
     fun recalculateTotals(){
-        tickets?.let {
-            for (ticket in tickets!!){
+        tickets?.let { list ->
+            for (ticket in list){
                 ticket.subTotal = ticket.ticketItems.sumOf { it -> it.ticketItemPrice }.round(2)
                 ticket.tax = ticket.subTotal.times(ticket.taxRate).round(2)
                 ticket.total = ticket.subTotal.plus(ticket.tax).round(2)
@@ -128,7 +129,7 @@ data class Payment(
             val tickets = arrayListOf<Ticket>()
             val ticketItems = arrayListOf<TicketItem>()
             var i = 1
-            for (item in order.orderItems!!){
+            order.orderItems?.forEach { item ->
                 val ticketItem = order.createTicketItem(i, item)
                 ticketItems.add(ticketItem)
                 i += i
@@ -139,34 +140,34 @@ data class Payment(
             this.tickets = tickets
         }else{
             if (!anyTicketsPaid()){
-                var ticketItems = mutableListOf<TicketItem>()
-                if (splitType == "Evenly"){
-                    ticketItems = tickets!![0].ticketItems
-                }else{
-                    ticketItems = allTicketItems()
-                    println(ticketItems.size)
-                }
-
-                for (item in ticketItems){
-                    if (item.discountPrice != null){
-                        println("discount")
-                        item.ticketItemPrice = item.discountPrice!!
+                tickets?.let { list ->
+                    var ticketItems = mutableListOf<TicketItem>()
+                    if (splitType == "Evenly"){
+                        ticketItems = list[0].ticketItems
                     }else{
-                        println("not discount")
-                        item.ticketItemPrice = item.itemPrice.times(item.quantity).round(2)
+                        ticketItems = allTicketItems()
                     }
-                }
-                val ts = arrayListOf<Ticket>()
-                tickets!![0].ticketItems = ticketItems
-                tickets!![0].uiActive = true
-                recalculateTotals()
 
-                ts.add(tickets!![0])
-                splitTicket = null
-                splitType = "None"
-                this.tickets = ts
-            }else{
-                println("ticktes paid")
+                    for (item in ticketItems){
+                        if (item.discountPrice != null){
+                            item.discountPrice?.let {
+                                item.ticketItemPrice = it
+                            }
+                        }else{
+                            item.ticketItemPrice = item.itemPrice.times(item.quantity).round(2)
+                        }
+                    }
+                    val ts = arrayListOf<Ticket>()
+                    list[0].ticketItems = ticketItems
+                    list[0].uiActive = true
+                    recalculateTotals()
+
+                    ts.add(list[0])
+                    splitTicket = null
+                    splitType = "None"
+                    this.tickets = ts
+                }
+
             }
         }
 
@@ -256,7 +257,7 @@ data class Payment(
 
     fun modifyItemPrice(ticketItem: TicketItem, price: Double){
         ticketItem.discountPrice = price
-        ticketItem.tax = (ticketItem.discountPrice!! * taxRate).round(2)
+        ticketItem.tax = (price * taxRate).round(2)
         ticketItem.priceModified = true
         ticketItem.approvalType = "Modify Price"
         statusApproval = "Pending"
@@ -266,8 +267,9 @@ data class Payment(
         var disTotal: Double = 0.00
         if (discount.discountType == "Flat Amount"){
             if (ticketItem.ticketItemPrice > discount.discountAmount){
-                ticketItem.discountPrice = ticketItem.ticketItemPrice.minus(discount.discountAmount).round(2)
-                ticketItem.tax = (ticketItem.discountPrice!! * taxRate).round(2)
+                val dp = ticketItem.ticketItemPrice.minus(discount.discountAmount).round(2)
+                ticketItem.discountPrice = dp
+                ticketItem.tax = (dp * taxRate).round(2)
                 ticketItem.priceModified = true
                 ticketItem.approvalType = "Discount Item: ${discount.discountName}"
                 disTotal = discount.discountAmount.round(2)
@@ -282,8 +284,9 @@ data class Payment(
 
         if (discount.discountType == "Percentage"){
             disTotal = ticketItem.ticketItemPrice * (discount.discountAmount.div(100)).round(2)
-            ticketItem.discountPrice = ticketItem.ticketItemPrice.minus(disTotal).round(2)
-            ticketItem.tax = (ticketItem.discountPrice!! * taxRate).round(2)
+            val dp = ticketItem.ticketItemPrice.minus(disTotal).round(2)
+            ticketItem.discountPrice = dp
+            ticketItem.tax = (dp * taxRate).round(2)
             ticketItem.priceModified = true
             ticketItem.approvalType = "Discount Item"
         }
@@ -308,12 +311,13 @@ data class Payment(
                         ticketItem.tax = 0.00
 
                     }else{
-                        ticketItem.discountPrice = ticketItem.ticketItemPrice.minus(discountLeft).round(2)
+                        val dp = ticketItem.ticketItemPrice.minus(discountLeft).round(2)
+                        ticketItem.discountPrice = dp
                         discountLeft = 0.00
                         ticketItem.priceModified = true
                         ticketItem.approvalType = "Discount Ticket: ${discount.discountName}"
                         ticketItem.approvalId = approvalId
-                        ticketItem.tax = ticketItem.discountPrice!!.times(taxRate)
+                        ticketItem.tax = dp.times(taxRate)
                     }
                 }
                 statusApproval = "Pending"
@@ -325,8 +329,9 @@ data class Payment(
             activeTicket()?.ticketItems?.forEach { ti ->
                 val dis = ti.ticketItemPrice * (discount.discountAmount.div(100)).round(2)
                 disTotal = disTotal.plus(ti.ticketItemPrice.minus(dis)).round(2)
-                ti.discountPrice = ti.ticketItemPrice.minus(dis).round(2)
-                ti.tax = ti.discountPrice!!.times(taxRate).round(2)
+                val dp = ti.ticketItemPrice.minus(dis).round(2)
+                ti.discountPrice = dp
+                ti.tax = dp.times(taxRate).round(2)
                 ti.priceModified = true
                 ti.approvalType = "Discount Ticket: ${discount.discountName}"
                 ti.approvalId = approvalId
@@ -337,16 +342,21 @@ data class Payment(
     }
 
     fun changeGiftItemAmount(amount: Double){
-        this.tickets!!.get(0).ticketItems.get(0).itemPrice = amount
-        this.tickets!!.get(0).ticketItems.get(0).ticketItemPrice = amount
-        this.tickets!!.get(0).recalculateAfterApproval()
+        tickets?.let{ list ->
+            list[0].ticketItems[0].itemPrice = amount
+            list[0].ticketItems[0].ticketItemPrice = amount
+            list[0].recalculateAfterApproval()
+        }
     }
 
     fun getTicketReceipt(order: Order,printer: Printer, location: Location): Document{
         Epson.use()
         val document = PrinterDriver.createDocument(
             DocumentSettings(), printer.printerModel)
-        PrintTicketService().ticketReceipt(document, order, this, activeTicket()!!, location)
+        activeTicket()?.let { ticket ->
+            PrintTicketService().ticketReceipt(document, order, this, ticket, location)
+        }
+
 
         return document
     }
@@ -361,7 +371,9 @@ data class Payment(
         }
         val document = PrinterDriver.createDocument(
             DocumentSettings(), printerModel)
-        PrintTicketService().paidCashReceipt(document, this, activeTicket()!!, location)
+        activeTicket()?.let { ticket ->
+            PrintTicketService().paidCashReceipt(document, this, ticket, location)
+        }
 
         return document
     }
@@ -370,7 +382,9 @@ data class Payment(
         Epson.use()
         val document = PrinterDriver.createDocument(
             DocumentSettings(), printer.printerModel)
-        PrintTicketService().creditCardReceipt(document, this, activeTicket()!!, location)
+        activeTicket()?.let { ticket ->
+            PrintTicketService().creditCardReceipt(document, this, ticket, location)
+        }
 
         return document
     }
@@ -410,8 +424,10 @@ data class Ticket(
         }
 
         fun calculatePaymentTotal(partial: Boolean){
-            val list = paymentList!!.filter { !it.canceled }
-            paymentTotal = list.sumOf {it.ticketPaymentAmount}.round(2)
+            val list = paymentList?.filter { !it.canceled }
+            list?.let {
+                paymentTotal = list.sumOf {it.ticketPaymentAmount}.round(2)
+            }
             partialPayment = partial
         }
 
@@ -422,8 +438,7 @@ data class Ticket(
         }
 
         fun addTip(tip: Double, taxRate: Double){
-            activePayment()!!.gratuity = tip
-//            this.gratuity = tip
+            activePayment()?.gratuity = tip
             recalculateAfterApproval()
             this.total = this.total.plus(tip).round(2)
             this.paymentTotal = this.total.round(2);
@@ -431,30 +446,21 @@ data class Ticket(
 
         fun activePayment(): TicketPayment?{
             if (paymentList != null){
-                return paymentList!!.find { it.uiActive }
+                return paymentList?.find { it.uiActive }
             }
             return null
         }
 
         fun ticketTotal(): Double{
-            return if (allGratuities() != null){
-                total.plus(allGratuities()!!).round(2)
-            }else{
-                total.round(2)
-            }
+            return total.plus(allGratuities())
         }
 
-        fun allGratuities(): Double?{
-            if (paymentList != null){
-                val grats = paymentList!!.sumOf{ it.gratuity }.round(2)
-                return if (grats != 0.00){
-                    grats
-                }else{
-                    null
-                }
-            }else{
-                return null
+        fun allGratuities(): Double{
+            var grats = 0.00
+            paymentList?.forEach { pl ->
+                grats = grats.plus(pl.gratuity)
             }
+            return grats
         }
 
         fun removeTicketItem(item: OrderItem){
@@ -539,8 +545,8 @@ data class TicketItem(
     var tax: Double,
     var selected: Boolean = false
 ): Parcelable{
-    fun approve(){
-        ticketItemPrice = discountPrice!!
+    fun approve(newPrice: Double){
+        ticketItemPrice = newPrice
         discountPrice = null
         approvalType = null
     }

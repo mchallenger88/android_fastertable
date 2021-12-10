@@ -32,8 +32,10 @@ class FloorplanSidebarAdapter: BaseAdapter() {
         tableView.setImageResource(tables[position])
         val  param: RelativeLayout.LayoutParams = RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT,100)
         val scale = parent?.context?.resources?.displayMetrics?.density
-        param.width = (45.0f * scale!! + 0.5f).toInt()
-        param.height =(45.0f * scale + 0.5f).toInt()
+        scale?.let {
+            param.width = (45.0f * scale + 0.5f).toInt()
+            param.height =(45.0f * scale + 0.5f).toInt()
+        }
 
         tableView.layoutParams = param
         var viewX = 0.0f

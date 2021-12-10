@@ -196,12 +196,15 @@ class FloorplanTableDialog: DialogFragment() {
 
     private fun copyTable(){
         val newTable = table?.clone()
-        newTable?.id = getNextId(newTable!!)
-        newTable.left = 10
-        newTable.top = 10
-        newTable.let { viewModel.addTable(it) }
-        viewModel.setReloadTables(true)
-        dismiss()
+        newTable?.let { table ->
+            newTable.id = getNextId(table)
+            newTable.left = 10
+            newTable.top = 10
+            newTable.let { viewModel.addTable(it) }
+            viewModel.setReloadTables(true)
+            dismiss()
+        }
+
     }
 
     private fun getNextId(table: RestaurantTable): Int {

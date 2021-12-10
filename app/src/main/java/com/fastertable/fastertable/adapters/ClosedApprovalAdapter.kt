@@ -91,7 +91,7 @@ class ClosedApprovalAdapter() : ListAdapter<ApprovalOrderPayment, ClosedApproval
             }else{
                 binding.txtClosedApprovalType.text = aop.approval.approvalType
             }
-            val ticket = aop.payment.tickets!!.find { it.id == aop.approval.ticketId }
+            val ticket = aop.payment.tickets?.find { it.id == aop.approval.ticketId }
             if (ticket != null){
                 var txtApproved: String
                 if (aop.approval.approved != null && aop.approval.approved == true){

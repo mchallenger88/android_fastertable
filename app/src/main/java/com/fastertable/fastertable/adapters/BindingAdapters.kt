@@ -243,3 +243,17 @@ fun disableTransferText(textView: TextView, order: Order){
         textView.setTextColor(disabled)
     }
 }
+
+@BindingAdapter("spinnerVisibility")
+fun spinnerVisibility(progressBar: ProgressBar, b: Boolean){
+    if (b){
+        progressBar.visibility = View.VISIBLE
+    }else{
+        progressBar.visibility = View.INVISIBLE
+    }
+}
+
+@BindingAdapter("enableButton")
+fun enableButton(btn: Button, b: Boolean){
+    btn.isEnabled = b
+}

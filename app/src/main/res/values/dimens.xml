@@ -22,6 +22,7 @@
     <dimen name="s12">12dp</dimen>
     <dimen name="s13">13dp</dimen>
     <dimen name="s10">10dp</dimen>
+    <dimen name="border_line">0.5dp</dimen>
     //Text Sizes
     <dimen name="d48">48sp</dimen>
     <dimen name="d34">34sp</dimen>

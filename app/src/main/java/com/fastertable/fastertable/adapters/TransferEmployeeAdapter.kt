@@ -29,7 +29,7 @@ class TransferEmployeeViewHolder(private var binding: TransferEmployeeLineItemBi
         binding.clickListener = clickListener
         binding.executePendingBindings()
 
-        binding.root.setOnClickListener{
+        binding.btnTransferEmployee.setOnClickListener{
             clickListener.onClick(employee)
         }
     }

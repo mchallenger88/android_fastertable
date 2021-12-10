@@ -32,8 +32,8 @@ fun setMenuItemsTextViewVisibility(textView: TextView?, nav: MenusNavigation){
 @BindingAdapter("btnMenuBackVisibility")
 fun setBtnMenuBackVisibility(button: ImageButton?, nav: MenusNavigation){
     if (button != null){
-        val offWhite = ContextCompat.getColor(button.context!!, R.color.offWhite_background)
-        val white = ContextCompat.getColor(button.context!!, R.color.white)
+        val offWhite = ContextCompat.getColor(button.context, R.color.offWhite_background)
+        val white = ContextCompat.getColor(button.context, R.color.white)
         when (nav){
             MenusNavigation.CATEGORIES -> {
                 button.backgroundTintList = ColorStateList.valueOf(offWhite)
@@ -102,11 +102,14 @@ fun setMenuItemNoteVisibility(button: ImageButton?, nav: MenusNavigation){
 
 @BindingAdapter("backgroundLayoutMenus")
 fun backgroundLayoutMenus(layout: ConstraintLayout?, nav: MenusNavigation){
-    val offWhite = ContextCompat.getColor(layout?.context!!, R.color.offWhite_background)
-    val white = ContextCompat.getColor(layout?.context!!, R.color.white)
-    if (nav == MenusNavigation.MENU_ITEM){
-        layout?.backgroundTintList = ColorStateList.valueOf(white)
-    }else{
-        layout?.backgroundTintList = ColorStateList.valueOf(offWhite)
+    layout?.let {
+        val offWhite = ContextCompat.getColor(layout.context, R.color.offWhite_background)
+        val white = ContextCompat.getColor(layout.context, R.color.white)
+        if (nav == MenusNavigation.MENU_ITEM){
+            layout.backgroundTintList = ColorStateList.valueOf(white)
+        }else{
+            layout.backgroundTintList = ColorStateList.valueOf(offWhite)
+        }
     }
+
 }

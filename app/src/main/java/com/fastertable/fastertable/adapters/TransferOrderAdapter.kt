@@ -1,5 +1,6 @@
 package com.fastertable.fastertable.adapters
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -30,11 +31,14 @@ class TransferOrderAdapter(val clickListener: TransferOrderListListener): ListAd
             binding.clickListener = clickListener
             binding.executePendingBindings()
 
-            if (order.transfer != null){
-                binding.chkTransferOrder.isChecked = order.transfer!!
+            order.transfer?.let{
+                binding.chkTransferOrder.isChecked = it
             }
 
             binding.chkTransferOrder.setOnClickListener {
+                order.transfer?.let {
+                    order.transfer = !it
+                }
                 clickListener.onClick(order)
             }
         }

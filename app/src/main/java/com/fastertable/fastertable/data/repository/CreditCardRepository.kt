@@ -108,7 +108,7 @@ class CreditCardRepository @Inject constructor(private val app: Application){
                 request = CayanRequest(
                 transactionType = salesType,
                 amount = amountBeingPaid.round(2),
-                clerkId = order.employeeId!!,
+                clerkId = order.employeeId ?: "",
                 orderNumber = order.orderNumber.toString(),
                 dba = "fastertable",
                 softwareName = "fastertable",

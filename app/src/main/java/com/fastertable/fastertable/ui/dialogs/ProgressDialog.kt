@@ -21,7 +21,10 @@ class ProgressDialog: DialogFragment() {
         super.onViewCreated(view, savedInstanceState)
         val msg = requireArguments().getString("msg")
         statusText = view.findViewById(R.id.statusText)
-        statusText!!.text = msg
+        statusText?.let {
+            it.text = msg
+        }
+
     }
 
     override fun onStart() {

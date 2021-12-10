@@ -32,7 +32,6 @@ open class BaseActivity() : AppCompatActivity(), LogoutListener{
     //restart countdown
     @RequiresApi(Build.VERSION_CODES.Q)
     private fun resetHandler() {
-
         interactionTimeoutRunnable?.let { timeoutHandler?.removeCallbacks(it) }
         interactionTimeoutRunnable?.let { timeoutHandler?.postDelayed(it, 60*1000) }; //for 10 second
 
@@ -40,6 +39,7 @@ open class BaseActivity() : AppCompatActivity(), LogoutListener{
 
     // start countdown
     private fun startHandler() {
+        interactionTimeoutRunnable?.let { timeoutHandler?.removeCallbacks(it) }
         interactionTimeoutRunnable?.let { timeoutHandler?.postDelayed(it, 60*1000) }; //for 10 second
     }
 

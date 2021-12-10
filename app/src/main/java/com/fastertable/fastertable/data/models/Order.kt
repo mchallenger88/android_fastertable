@@ -191,9 +191,13 @@ data class Order(
 
         if (gift.isEmpty()){
             val xfees = calcExtraFees(items.sumOf { it -> it.ticketItemPrice }.round(2), fees)
-            val xfeesSum: Double
+            var xfeesSum = 0.00
             if (xfees != null){
-                xfeesSum = xfees.sumOf{it -> it.checkAmount!!}.round(2)
+                xfees.forEach{
+                    it.checkAmount?.let{ ca ->
+                        xfeesSum = xfeesSum.plus(ca).round(2)
+                    }
+                }
             }else{
                 xfeesSum = 0.00
             }
