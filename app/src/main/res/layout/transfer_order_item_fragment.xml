@@ -33,18 +33,19 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
-                <Button
-                    android:id="@+id/btn_transfer_order_item"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="6dp"
-                    android:text="Don't Know Yet"
-                    android:textColor="@color/white"
-                    android:textSize="@dimen/toolbar_button"
-                    app:layout_constraintStart_toStartOf="@+id/layout_transfer_iotem_buttons"
-                    app:layout_constraintTop_toTopOf="@+id/layout_transfer_iotem_buttons"
-                    app:strokeColor="@color/white" />
+<!--                <Button-->
+<!--                    android:id="@+id/btn_transfer_order_item"-->
+<!--                    style="?attr/materialButtonOutlinedStyle"-->
+<!--                    app:rippleColor="@color/ripple_main"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_marginTop="6dp"-->
+<!--                    android:text="Don't Know Yet"-->
+<!--                    android:textColor="@color/white"-->
+<!--                    android:textSize="@dimen/toolbar_button"-->
+<!--                    app:layout_constraintStart_toStartOf="@+id/layout_transfer_iotem_buttons"-->
+<!--                    app:layout_constraintTop_toTopOf="@+id/layout_transfer_iotem_buttons"-->
+<!--                    app:strokeColor="@color/white" />-->
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 

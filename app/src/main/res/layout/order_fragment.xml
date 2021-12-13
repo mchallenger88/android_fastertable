@@ -35,7 +35,8 @@
 
                 <Button
                     android:id="@+id/btn_reorder_drinks"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    style="?attr/materialButtonOutlinedStyle"
+                    app:rippleColor="@color/ripple_main"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="6dp"
@@ -49,7 +50,8 @@
 
                 <Button
                     android:id="@+id/btn_start_payment"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    style="?attr/materialButtonOutlinedStyle"
+                    app:rippleColor="@color/ripple_main"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="6dp"
@@ -65,7 +67,8 @@
 
                 <Button
                     android:id="@+id/btn_send_kitchen"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    style="?attr/materialButtonOutlinedStyle"
+                    app:rippleColor="@color/ripple_main"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="6dp"

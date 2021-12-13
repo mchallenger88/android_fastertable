@@ -25,8 +25,16 @@ class ReorderDrinksDialogFragment  : BaseDialog(R.layout.dialog_reorder_drinks) 
         createAdapter(binding)
 
         binding.btnDrinksOk.setOnClickListener {
-            viewModel.addDrinksToOrder(drinksList)
-            dismiss()
+            viewModel.activePayment.value?.let { payment ->
+                if (payment.anyTicketsPaid()){
+                    dismiss()
+                    viewModel.setError("Tickets Paid", "Payments have been made on this order. You will have to void the payments or begin a new order.")
+                }else{
+                    viewModel.addDrinksToOrder(drinksList)
+                    dismiss()
+                }
+            }
+
         }
 
         binding.btnDrinksClose.setOnClickListener {

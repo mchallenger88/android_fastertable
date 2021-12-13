@@ -232,7 +232,7 @@ fun disableTransfer(checkBox: CheckBox, order: Order){
 @BindingAdapter("drinkGuest")
 fun drinkGuest(textView: TextView, drink: ReorderDrink?){
     if (drink != null){
-        textView.text = "Guest ${drink.guestId.plus(1)}: "
+        textView.text = "Guest ${drink.guestId}: "
     }
 }
 

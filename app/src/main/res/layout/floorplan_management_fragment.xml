@@ -31,7 +31,8 @@
 
                 <Button
                     android:id="@+id/btn_new_floorplan"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    style="?attr/materialButtonOutlinedStyle"
+                    app:rippleColor="@color/ripple_main"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="6dp"
@@ -45,7 +46,8 @@
 
                 <Button
                     android:id="@+id/btn_save_floorplan"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    style="?attr/materialButtonOutlinedStyle"
+                    app:rippleColor="@color/ripple_main"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
@@ -59,7 +61,8 @@
 
                 <Button
                     android:id="@+id/btn_delete_floorplan"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    style="?attr/materialButtonOutlinedStyle"
+                    app:rippleColor="@color/ripple_main"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
@@ -73,7 +76,8 @@
 
                 <Button
                     android:id="@+id/btn_settings_floorplan"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    style="?attr/materialButtonOutlinedStyle"
+                    app:rippleColor="@color/ripple_main"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
@@ -106,17 +110,6 @@
                         android:padding="10dp" />
 
                 </LinearLayout>
-
-<!--                <ImageView-->
-<!--                    android:id="@+id/trashRange"-->
-<!--                    android:layout_width="0dp"-->
-<!--                    android:layout_height="40dp"-->
-<!--                    android:layout_marginEnd="20dp"-->
-<!--                    app:layout_constraintBottom_toBottomOf="parent"-->
-<!--                    app:layout_constraintEnd_toEndOf="parent"-->
-<!--                    app:layout_constraintTop_toTopOf="parent"-->
-<!--                    app:srcCompat="@drawable/ic_trash_white" />-->
-
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 

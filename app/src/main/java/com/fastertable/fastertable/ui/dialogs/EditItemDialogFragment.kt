@@ -120,7 +120,7 @@ class EditItemDialogFragment: BaseDialog(R.layout.dialog_edit_item) {
 
     @SuppressLint("SetTextI18n")
     fun populatePriceGroup(menuItem: MenuItem) {
-        binding.itemPriceRadioGroup.removeAllViews()
+        binding.itemPriceRadioGroupEdit.removeAllViews()
         for (price in menuItem.prices){
             val button = RadioButton(activity)
             val typeface = ResourcesCompat.getFont(button.context, R.font.open_sans_semibold)
@@ -131,7 +131,7 @@ class EditItemDialogFragment: BaseDialog(R.layout.dialog_edit_item) {
             button.text = "${price.size}: $x"
             button.isChecked = price.isSelected
             button.setOnClickListener { viewModel.changeSelectedPrice(price) }
-            binding.itemPriceRadioGroup.addView(button)
+            binding.itemPriceRadioGroupEdit.addView(button)
         }
     }
 

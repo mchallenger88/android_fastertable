@@ -28,11 +28,11 @@
 
             <Button
                 android:id="@+id/btn_confirm_date"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                style="?attr/materialButtonOutlinedStyle"
+                app:rippleColor="@color/ripple_main"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="6dp"
-
                 android:text="@string/change_date"
                 android:textColor="@color/white"
                 android:textSize="@dimen/toolbar_button"

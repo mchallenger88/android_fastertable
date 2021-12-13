@@ -117,9 +117,11 @@ class PrintTicketService {
                             }
                         }
                     item.note?.let {
-                        document
-                            .text("  Notes: " + item.note)
-                            .newLine()
+                        if (it != ""){
+                            document
+                                .text("  Notes: " + item.note)
+                                .newLine()
+                        }
                     }
                     document.newLine()
                 }}}
@@ -236,9 +238,11 @@ class PrintTicketService {
                     }
 
                     item.note?.let{
-                        document
-                            .text("  Notes: " + item.note)
-                            .newLine()
+                        if (it != "") {
+                            document
+                                .text("  Notes: " + item.note)
+                                .newLine()
+                        }
                     }
                     document.newLine()
                 }}}
@@ -395,9 +399,11 @@ class PrintTicketService {
                             }
 
                             item.note?.let{
-                                document
-                                    .text("  Notes: " + item.note)
-                                    .newLine()
+                                if (it != "") {
+                                    document
+                                        .text("  Notes: " + item.note)
+                                        .newLine()
+                                }
                             }
                             document.newLine()
                         }}
@@ -405,9 +411,11 @@ class PrintTicketService {
             }}
 
             order.note?.let{
-                document.text("NOTES:")
-                    .newLine()
-                    .text(order.note)
+                if (it != "") {
+                    document.text("NOTES:")
+                        .newLine()
+                        .text(order.note)
+                }
             }
         document
             .newLine()
@@ -518,9 +526,11 @@ class PrintTicketService {
                             }
 
                             item.note?.let{
-                                document
-                                    .text("  Notes: " + item.note)
-                                    .newLine()
+                                if (it != "") {
+                                    document
+                                        .text("  Notes: " + item.note)
+                                        .newLine()
+                                }
                             }
                             document.newLine()
                         }
@@ -528,9 +538,11 @@ class PrintTicketService {
             }}
 
         order.note?.let{
-            document.text("NOTES:")
-                .newLine()
-                .text(order.note)
+            if (it != "") {
+                document.text("NOTES:")
+                    .newLine()
+                    .text(order.note)
+            }
         }
         document
             .newLine()
@@ -737,8 +749,6 @@ class PrintTicketService {
             itemPrice = item.ticketItemPrice
 
             if (item.ticketItemPrice != 0.00){
-                subtotal += itemPrice
-                tax = item.tax
                 price = itemPrice
 
                 if (item.itemName.length > 25){
@@ -755,11 +765,12 @@ class PrintTicketService {
                         .text(item.itemName + concat + String.format("%.2f", price))
                         .newLine()
                 }else{
-                    padding = (38 - itemName.length - price.toString().length)
+                    itemName = "${item.quantity}x $itemName"
+                    padding = (41 - itemName.length - price.toString().length)
                     concat = padStr.repeat(padding)
                     document
                         .alignment("right")
-                        .text("${item.quantity}x $itemName $concat" + String.format("%.2f", price))
+                        .text("$itemName $concat" + String.format("%.2f", price))
                         .newLine()
                 }
             }
@@ -845,10 +856,10 @@ class PrintTicketService {
 
         ticket.ticketItems.forEachIndexed{index, item ->
             if (item.ticketItemPrice != 0.00){
-                itemPrice = item.ticketItemPrice
+                price = item.ticketItemPrice
 
-                subtotal += itemPrice
-                price = itemPrice
+//                subtotal += itemPrice
+//                price = itemPrice
 
                 itemName = if (item.itemName.length > 25){
                     item.itemName.substring(0, 25).trim()
@@ -875,7 +886,7 @@ class PrintTicketService {
             }
         }
 
-        var change: Double = 0.00
+        var change = 0.00
         if (ticket.paymentTotal >= ticket.total){
             change = (ticket.paymentTotal - ticket.total)
         }

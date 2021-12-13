@@ -30,6 +30,7 @@
         <entry key="..\:/androidprojects/fastertable/app/src/main/res/drawable/spinner_bg.xml" value="0.1" />
         <entry key="..\:/androidprojects/fastertable/app/src/main/res/drawable/spinner_sla.xml" value="0.1" />
         <entry key="..\:/androidprojects/fastertable/app/src/main/res/drawable/spinner_txtcolor.xml" value="0.1" />
+        <entry key="..\:/androidprojects/fastertable/app/src/main/res/drawable/top_border.xml" value="0.315234375" />
         <entry key="..\:/androidprojects/fastertable/app/src/main/res/layout/add_misc_menu_item.xml" value="0.303125" />
         <entry key="..\:/androidprojects/fastertable/app/src/main/res/layout/approval_button.xml" value="0.303125" />
         <entry key="..\:/androidprojects/fastertable/app/src/main/res/layout/approval_line_header.xml" value="0.303125" />
@@ -45,6 +46,7 @@
         <entry key="..\:/androidprojects/fastertable/app/src/main/res/layout/checkout_add_tip_line_item.xml" value="0.303125" />
         <entry key="..\:/androidprojects/fastertable/app/src/main/res/layout/clockout_fragment.xml" value="0.303125" />
         <entry key="..\:/androidprojects/fastertable/app/src/main/res/layout/closed_approval_line_item.xml" value="0.303125" />
+        <entry key="..\:/androidprojects/fastertable/app/src/main/res/layout/confirm_fragment.xml" value="0.303125" />
         <entry key="..\:/androidprojects/fastertable/app/src/main/res/layout/confirm_list_line_item.xml" value="0.303125" />
         <entry key="..\:/androidprojects/fastertable/app/src/main/res/layout/dialog_add_guests_adhoc_split.xml" value="0.303125" />
         <entry key="..\:/androidprojects/fastertable/app/src/main/res/layout/dialog_add_guests_even_split.xml" value="0.303125" />

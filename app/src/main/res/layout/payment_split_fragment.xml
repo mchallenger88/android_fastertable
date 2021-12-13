@@ -36,7 +36,8 @@
 
                 <Button
                     android:id="@+id/btn_single_ticket"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    style="?attr/materialButtonOutlinedStyle"
+                    app:rippleColor="@color/ripple_main"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="6dp"
@@ -50,7 +51,8 @@
 
                 <Button
                     android:id="@+id/btn_split_by_guest"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    style="?attr/materialButtonOutlinedStyle"
+                    app:rippleColor="@color/ripple_main"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="6dp"
@@ -66,7 +68,8 @@
 
                 <Button
                     android:id="@+id/btn_split_evenly"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    style="?attr/materialButtonOutlinedStyle"
+                    app:rippleColor="@color/ripple_main"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="6dp"
@@ -83,7 +86,8 @@
 
                 <Button
                     android:id="@+id/btn_payment"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    style="?attr/materialButtonOutlinedStyle"
+                    app:rippleColor="@color/ripple_main"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="6dp"
@@ -169,7 +173,7 @@
                     android:layout_marginBottom="16dp"
                     android:scrollbarStyle="outsideInset"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintBottom_toTopOf="@+id/constraint_manage_totals"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/txt_manage_ticket"

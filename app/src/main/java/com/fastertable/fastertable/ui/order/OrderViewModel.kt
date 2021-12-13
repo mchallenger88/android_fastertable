@@ -62,10 +62,6 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
     val editOrderItem: LiveData<OrderItem>
         get() = _editOrderItem
 
-    private val _selectedPrice = MutableLiveData<ItemPrice>()
-    val selectedPrice: LiveData<ItemPrice>
-        get() = _selectedPrice
-
     private val _pageLoaded = MutableLiveData<Boolean>()
     val pageLoaded: LiveData<Boolean>
         get() = _pageLoaded
@@ -94,6 +90,10 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
     private val _activeOrder = MutableLiveData<Order?>()
     val activeOrder: LiveData<Order?>
         get() = _activeOrder
+
+    private val _activePayment = MutableLiveData<Payment?>()
+    val activePayment: LiveData<Payment?>
+        get() = _activePayment
 
     private val _activeOrderSet = MutableLiveData(false)
     val activeOrderSet: LiveData<Boolean>
@@ -179,7 +179,7 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
             if (currentOrderId.value != null){
                 currentOrderId.value?.let { id ->
                     _activeOrder.postValue(orderRepository.getOrderById(id))
-                    getPayment.getPayment(id.replace("O_", "P_"), settings?.locationId ?: "")
+                    _activePayment.postValue(getPayment.getPayment(id.replace("O_", "P_"), settings?.locationId ?: ""))
                 }
             }else{
                 _activeOrder.postValue(orderRepository.getNewOrder())
@@ -237,59 +237,74 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
     //region MenuItem Functions
 
     fun changeSelectedPrice(price: ItemPrice){
-        val item = _activeItem.value
-        if (item != null){
+        _activeItem.value?.let { item ->
             for (p in item.prices){
                 p.isSelected = p.size == price.size
             }
         }
-        _activeItem.value = item
+        _activeItem.value = _activeItem.value
     }
 
     fun addItemToOrder(){
         val order = _activeOrder.value
         val item = _activeItem.value
-        if (order != null && item != null){
-            if (order.closeTime ==  null){
-                val mods = arrayListOf<ModifierItem>()
-                item.modifiers.forEach { mod ->
-                    mod.modifierItems.forEach { mi ->
-                        if (mi.quantity > 0) {
-                            mods.add(mi)
-                }}}
-
-                val price = item.prices.find { it.size == _selectedPrice.value?.size }
-                if (price != null) {
-                    val orderItem = OrderItem(
-                        id = order.orderItems?.size?.plus(1) ?: 1,
-                        guestId = order.activeGuest,
-                        menuItemId = item.id,
-                        menuItemName = item.itemName,
-                        menuItemPrice = price,
-                        modifiers = item.modifiers,
-                        salesCategory = item.salesCategory,
-                        ingredients = item.ingredients,
-                        prepStation = findPrepStation(),
-                        printer = item.printer,
-                        priceAdjusted = false,
-                        menuItemDiscount = null,
-                        takeOutFlag = false,
-                        dontMake = false,
-                        rush = false,
-                        tax = price.tax,
-                        note = itemNote,
-                        employeeId = user?.employeeId ?: "",
-                        status = "Started",
-                    )
-                    order.orderItems?.add(orderItem)
-                    _activeOrder.value = order
-                    _kitchenButtonEnabled.value = true
-                    _menusNavigation.value = MenusNavigation.CATEGORIES
-                    clearItemSettings()
-                }
+        val payment = _activePayment.value
+        //Check to see if there are any payments on the order and if yes then no more items can be added
+        if (payment != null){
+            if (payment.anyTicketsPaid()){
+                setError("Tickets Paid", "Payments have been made on this order. You will have to void the payments or begin a new order.")
             }else{
-                setError("Order Closed", Constants.ORDER_CLOSED)
+                if (order != null && item != null){
+                    createAndAddItem(order, item)
+                }
             }
+        }else{
+            if (order != null && item != null){
+                createAndAddItem(order, item)
+            }
+        }
+    }
+
+    fun createAndAddItem(order: Order, item: MenuItem){
+        if (order.closeTime ==  null){
+            val mods = arrayListOf<ModifierItem>()
+            item.modifiers.forEach { mod ->
+                mod.modifierItems.forEach { mi ->
+                    if (mi.quantity > 0) {
+                        mods.add(mi)
+                    }}}
+
+            val price = item.prices.find { it.isSelected }
+            if (price != null) {
+                val orderItem = OrderItem(
+                    id = order.orderItems?.size?.plus(1) ?: 1,
+                    guestId = order.activeGuest,
+                    menuItemId = item.id,
+                    menuItemName = item.itemName,
+                    menuItemPrice = price,
+                    modifiers = item.modifiers,
+                    salesCategory = item.salesCategory,
+                    ingredients = item.ingredients,
+                    prepStation = findPrepStation(),
+                    printer = item.printer,
+                    priceAdjusted = false,
+                    menuItemDiscount = null,
+                    takeOutFlag = false,
+                    dontMake = false,
+                    rush = false,
+                    tax = price.tax,
+                    note = itemNote,
+                    employeeId = user?.employeeId ?: "",
+                    status = "Started",
+                )
+                order.orderItems?.add(orderItem)
+                _activeOrder.value = order
+                _kitchenButtonEnabled.value = true
+                _menusNavigation.value = MenusNavigation.CATEGORIES
+                clearItemSettings()
+            }
+        }else{
+            setError("Order Closed", Constants.ORDER_CLOSED)
         }
     }
 
@@ -357,9 +372,13 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
         viewModelScope.launch {
             val menuItem = findMenuItem(item.menuItemId)
             menuItem?.prices?.forEach{
-                it.modifiedPrice = item.menuItemPrice.modifiedPrice
-                it.quantity = item.menuItemPrice.quantity
-                it.isSelected = it.size == item.menuItemPrice.size
+                if (it.size == item.menuItemPrice.size){
+                    it.modifiedPrice = item.menuItemPrice.modifiedPrice
+                    it.quantity = item.menuItemPrice.quantity
+                    it.isSelected = true
+                }else{
+                    it.isSelected = false
+                }
             }
             menuItem?.modifiers = item.modifiers as ArrayList<Modifier>
             menuItem?.ingredients = item.ingredients as ArrayList<ItemIngredient>
@@ -382,7 +401,6 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
 
     fun setActiveItem(menuItem: MenuItem) {
         _activeItem.value = menuItem.clone()
-        _selectedPrice.value = menuItem.prices[0]
         enableAddItemButton()
     }
 
@@ -686,7 +704,7 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
         }
     }
 
-    private fun setError(title: String, message: String){
+    fun setError(title: String, message: String){
         _errorTitle.value = title
         _errorMessage.value = message
         _error.value = true

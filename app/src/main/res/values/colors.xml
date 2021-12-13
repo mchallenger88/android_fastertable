@@ -26,6 +26,7 @@
     <color name="primary_payment_color">#009688</color>
     <color name="disabled_text">#BDBDBD</color>
     <color name="black">#FF000000</color>
+    <color name="ripple_main">#6969ff</color>
 
     //Mod Buttons
     <color name="mod1">#FFECB3</color>

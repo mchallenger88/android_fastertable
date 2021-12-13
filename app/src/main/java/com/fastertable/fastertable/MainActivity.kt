@@ -606,6 +606,7 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
             if (it != null) {
                 if (it.closed){
                     giftCardViewModel.closeOrder()
+                    homeViewModel.getOrdersFromFile()
                 }
             }
         })
@@ -649,7 +650,7 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
         return user?.userClock?.checkout == true || user?.userClock?.checkoutApproved == true
     }
 
-    fun hideKeyboard() {
+    private fun hideKeyboard() {
         WindowInsetsControllerCompat(window, window.decorView).hide(WindowInsetsCompat.Type.ime())
     }
 
@@ -671,8 +672,6 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
             }
 
             if (paymentViewModel.activePayment.value == null){
-                val flatten = order?.getAllOrderItems()
-
                 if (order?.orderItems != null) {
                     okToPay = !order.orderItems.any { it.status == "Started" }
 

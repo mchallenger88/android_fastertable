@@ -35,7 +35,8 @@
 
             <Button
                 android:id="@+id/btn_add_cash"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                style="?attr/materialButtonOutlinedStyle"
+                app:rippleColor="@color/ripple_main"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="6dp"
@@ -49,7 +50,8 @@
 
             <Button
                 android:id="@+id/btn_balance_inquiry"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                style="?attr/materialButtonOutlinedStyle"
+                app:rippleColor="@color/ripple_main"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="6dp"
@@ -64,7 +66,8 @@
 
             <Button
                 android:id="@+id/btn_gift_cash"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                style="?attr/materialButtonOutlinedStyle"
+                app:rippleColor="@color/ripple_main"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="6dp"
@@ -79,7 +82,8 @@
 
             <Button
                 android:id="@+id/btn_gift_credit"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                style="?attr/materialButtonOutlinedStyle"
+                app:rippleColor="@color/ripple_main"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="6dp"
@@ -94,7 +98,8 @@
 
             <Button
                 android:id="@+id/btn_gift_cancel"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                style="?attr/materialButtonOutlinedStyle"
+                app:rippleColor="@color/ripple_main"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="6dp"

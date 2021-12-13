@@ -115,6 +115,7 @@ class CheckoutViewModel @Inject constructor (
             _checkoutNull.value = false
             val listPayTicket = arrayListOf<PayTicket>()
             val listTickets = arrayListOf<Ticket>()
+            val allTickets = mutableListOf<Ticket>()
             ce.orders.forEach { o ->
                 val pt = PayTicket(
                     order = o,
@@ -127,6 +128,7 @@ class CheckoutViewModel @Inject constructor (
                     pt.payment = p
                     pt.ticket = it
                     listTickets.add(it)
+                    allTickets.add(it)
                 }
                 listPayTicket.add(pt)
             }
@@ -189,12 +191,13 @@ class CheckoutViewModel @Inject constructor (
 
             val orderItems = returnAllOrderItems(ce.orders)
             //TODO: Not precise because an item might be discounted in the Payment
-            val barItems = orderItems.filter{it.salesCategory == "Bar"}
-            val barSales = barItems.sumOf { it.menuItemPrice.price }
-            settings?.let {
-                ce.busShare = ce.orderTotal.times(settings.tipShare.busboy.div(100))
-                ce.barShare = barSales.times(settings.tipShare.bartender.div(100))
-            }
+//            val barItems = orderItems.filter{it.salesCategory == "Bar"}
+//            val barSales = barItems.sumOf { it.menuItemPrice.price }
+//            val totalTips = getAllTips(allTickets)
+//            settings?.let {
+//                ce.busShare = totalTips.times(settings.tipShare.busboy.div(100))
+//                ce.barShare = barSales.times(settings.tipShare.bartender.div(100))
+//            }
 
         }else{
             _checkoutNull.value = true
@@ -219,6 +222,16 @@ class CheckoutViewModel @Inject constructor (
             order.getAllOrderItems()?.let { oiList.addAll(it) }
         }
         return oiList as List<OrderItem>
+    }
+
+    private fun getAllTips(list: List<Ticket>): Double{
+        var tips = 0.00
+        for (ticket in list){
+            ticket.paymentList?.forEach{
+                tips = tips.plus(it.gratuity)
+            }
+        }
+        return tips
     }
 
     private fun getCashSales(list: List<Ticket>): Double{

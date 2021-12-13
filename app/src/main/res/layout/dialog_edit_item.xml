@@ -128,43 +128,34 @@
 
     </androidx.recyclerview.widget.RecyclerView>
 
-
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/layout_edit_item_pricing"
         android:layout_width="match_parent"
         android:layout_height="125dp"
         android:layout_marginTop="10dp"
+        android:background="@drawable/top_border"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
-        <View
-            android:id="@+id/edit_price_divider"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="?android:attr/listDivider"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/layout_prices"
+            android:id="@+id/layout_prices_edit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/edit_price_divider">
+            app:layout_constraintTop_toTopOf="parent">
 
             <RadioGroup
-                android:id="@+id/item_price_radio_group"
+                android:id="@+id/item_price_radio_group_edit"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/layout_prices">
+                app:layout_constraintTop_toTopOf="@+id/layout_prices_edit">
 
             </RadioGroup>
 
@@ -177,13 +168,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:layout_marginBottom="16dp"
+            android:layout_marginBottom="5dp"
             android:backgroundTint="@color/secondaryColor"
             android:text="@string/cancel"
             android:textSize="20sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/layout_prices"
+            app:layout_constraintTop_toBottomOf="@+id/layout_prices_edit"
             tools:ignore="RtlHardcoded" />
 
         <Button
@@ -192,12 +183,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="16dp"
-            android:layout_marginBottom="16dp"
+            android:layout_marginBottom="5dp"
             android:text="@string/save"
             android:textSize="20sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/layout_prices"
+            app:layout_constraintTop_toBottomOf="@+id/layout_prices_edit"
             tools:ignore="RtlHardcoded" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 

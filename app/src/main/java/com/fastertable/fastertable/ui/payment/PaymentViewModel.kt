@@ -625,6 +625,16 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
                         location?.let { loc ->
                             printer?.let {  p ->
                                 val payment = _activePayment.value?.activeTicket()?.paymentList?.find{ !it.canceled }
+                                if (payment == null){
+                                    _activeOrder.value?.let { order ->
+                                        _activePayment.value?.let { pay ->
+                                            val ticketDocument = pay.getTicketReceipt(order, p, loc)
+                                            ticketDocument.let { doc ->
+                                                receiptPrintingService.printTicketReceipt(doc, p, settings)
+                                            }
+                                        }
+                                    }
+                                }
                                 payment?.let { ticketPayment ->
                                     if (ticketPayment.paymentType == "Cash" || ticketPayment.paymentType == "Gift"){
                                         _activeOrder.value?.let { order ->

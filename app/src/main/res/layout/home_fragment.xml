@@ -36,11 +36,11 @@
 
                 <Button
                     android:id="@+id/btn_counterOrder"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    style="?attr/materialButtonOutlinedStyle"
+                    app:rippleColor="@color/ripple_main"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="6dp"
-                    android:backgroundTint="@color/fasterToolBar"
                     android:onClick="@{() -> viewModel.startCounterOrder()}"
                     android:text="@string/counter_order"
                     android:textColor="@color/white"
@@ -51,12 +51,12 @@
 
                 <Button
                     android:id="@+id/btn_tableOrder"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    style="?attr/materialButtonOutlinedStyle"
+                    app:rippleColor="@color/ripple_main"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="12dp"
                     android:layout_marginTop="6dp"
-                    android:backgroundTint="@color/fasterToolBar"
                     android:text="@string/table_order"
                     android:textColor="@color/white"
                     android:textSize="@dimen/toolbar_button"
@@ -67,12 +67,12 @@
 
                 <Button
                     android:id="@+id/btn_takeoutOrder"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    style="?attr/materialButtonOutlinedStyle"
+                    app:rippleColor="@color/ripple_main"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="12dp"
                     android:layout_marginTop="6dp"
-                    android:backgroundTint="@color/fasterToolBar"
                     android:text="@string/takeout_order"
                     android:textColor="@color/white"
                     android:textSize="@dimen/toolbar_button"
