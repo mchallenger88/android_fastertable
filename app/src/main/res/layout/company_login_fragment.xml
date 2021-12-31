@@ -34,9 +34,7 @@
         app:layout_constraintBottom_toTopOf="@+id/txt_comp_login_title"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.84000003"
-        tools:visibility="invisible" />
+        app:spinnerVisibility="@{viewModel.showProgressBar}" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/til_company_login"

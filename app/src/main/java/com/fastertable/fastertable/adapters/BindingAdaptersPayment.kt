@@ -242,6 +242,28 @@ fun disablePayButton(button: Button, value: String?){
     }
 }
 
+@BindingAdapter("disableSplitButton")
+fun disableSplitButton(button: Button, payment: Payment?){
+    if (payment != null){
+        if (payment.splitType == ""){
+            button.isEnabled = true
+            val white = ContextCompat.getColor(button.context, R.color.white)
+            button.setTextColor(ColorStateList.valueOf(white))
+        }else{
+            if (payment.anyTicketsPaid()){
+                button.isEnabled = false
+                val offWhite = ContextCompat.getColor(button.context, R.color.offWhite)
+                button.setTextColor(ColorStateList.valueOf(offWhite))
+            }else{
+                button.isEnabled = true
+                val white = ContextCompat.getColor(button.context, R.color.white)
+                button.setTextColor(ColorStateList.valueOf(white))
+            }
+
+        }
+    }
+}
+
 @BindingAdapter("hidePayButton")
 fun hidePayButton(button: Button, payment: Payment?){
     if (payment != null){
@@ -305,6 +327,17 @@ fun showPriceModified(textView: TextView, item: TicketItem){
         textView.text = textView.context.getString(R.string.price_modified)
     }else{
         textView.visibility = View.GONE
+    }
+}
+
+@BindingAdapter("showPaymentMoreButton")
+fun showPaymentMoreButton(button: ImageButton, payment: Payment?){
+    payment?.let{
+        if (payment.splitType == ""){
+            button.visibility = View.VISIBLE
+        }else{
+            button.visibility = View.INVISIBLE
+        }
     }
 }
 

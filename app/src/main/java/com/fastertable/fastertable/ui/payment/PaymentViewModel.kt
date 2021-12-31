@@ -197,6 +197,10 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
     val homeOrderListUpdate: LiveData<Boolean>
         get() = _homeOrderListUpdate
 
+    private val _printReceipt = MutableLiveData(false)
+    val printReceipt: LiveData<Boolean>
+        get() = _printReceipt
+
 
     //endregion
 
@@ -231,6 +235,7 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
                     payment.close()
                 }
                 _activePayment.value = payment
+                _printReceipt.value = true
                 savePaymentToCloud()
                 _cashAmount.value = 0.00
             }
@@ -345,13 +350,20 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
                 if (it._rid == ""){
                     p = savePayment.savePayment(it)
                     _activePayment.postValue(p)
-                    printPaymentReceipt()
+                    if (printReceipt.value == true){
+                        printPaymentReceipt()
+                        _printReceipt.postValue(false)
+                    }
+
                 }else{
                     p = updatePayment.savePayment(it)
                     p = updatePayment.savePayment(p)
                     //Had to add this second save because the first save although it returned the correct values was not actually saving to the database
                     _activePayment.postValue(p)
-                    printPaymentReceipt()
+                    if (printReceipt.value == true){
+                        printPaymentReceipt()
+                        _printReceipt.postValue(false)
+                    }
                 }
             }
 
@@ -798,6 +810,7 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
                 }else{
                     _activePayment.value = payment
                 }
+                _printReceipt.value = true
                 savePaymentToCloud()
             }
         }

@@ -1,10 +1,13 @@
 package com.fastertable.fastertable.ui.payment
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
+import android.widget.ImageButton
 import androidx.fragment.app.activityViewModels
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.fastertable.fastertable.R
+import com.fastertable.fastertable.adapters.SplitTicketItemAdapter
 import com.fastertable.fastertable.adapters.TicketItemAdapter
 import com.fastertable.fastertable.adapters.TicketSideBarAdapter
 import com.fastertable.fastertable.common.base.BaseFragment
@@ -23,6 +26,7 @@ class SplitPaymentFragment: BaseFragment(R.layout.payment_split_fragment) {
         binding.lifecycleOwner = viewLifecycleOwner
         binding.viewModel = viewModel
         binding.orderViewModel = orderViewModel
+
         createAdapters(binding)
     }
 
@@ -31,9 +35,7 @@ class SplitPaymentFragment: BaseFragment(R.layout.payment_split_fragment) {
             viewModel.setActiveTicket(it)
         })
 
-        val ticketsAdapter = TicketItemAdapter(TicketItemAdapter.TicketItemListener {
-
-        })
+        val ticketsAdapter = SplitTicketItemAdapter()
 
         binding.managePaymentRecycler.adapter = ticketNumberAdapter
 
@@ -42,9 +44,8 @@ class SplitPaymentFragment: BaseFragment(R.layout.payment_split_fragment) {
         viewModel.activePayment.observe(viewLifecycleOwner, { item ->
             item?.tickets?.forEach { ticket ->
                 if (ticket.uiActive){
-//                    ticketsAdapter.submitList(ticket.ticketItems)
+                    ticketsAdapter.submitList(ticket.ticketItems)
                     ticketsAdapter.notifyDataSetChanged()
-
                 }
             }
 

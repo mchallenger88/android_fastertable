@@ -68,7 +68,8 @@ data class Payment(
     fun anyTicketsPaid(): Boolean{
         var paid = false
         this.tickets?.forEach { ticket ->
-            if (ticket.paymentTotal >= ticket.total && ticket.paymentList != null){
+
+            if (ticket.subTotal == 0.00 || (ticket.paymentTotal > 0.00 && ticket.paymentTotal >= ticket.total && ticket.paymentList != null)){
                 paid = true
             }
         }
@@ -156,6 +157,7 @@ data class Payment(
                         }else{
                             item.ticketItemPrice = item.itemPrice.times(item.quantity).round(2)
                         }
+                        item.split = false
                     }
                     val ts = arrayListOf<Ticket>()
                     list[0].ticketItems = ticketItems
@@ -164,7 +166,7 @@ data class Payment(
 
                     ts.add(list[0])
                     splitTicket = null
-                    splitType = "None"
+                    splitType = ""
                     this.tickets = ts
                 }
 
@@ -180,6 +182,9 @@ data class Payment(
                 tickets?.clear()
                 for (i in 1..order.guestCount){
                     val tis = ticketItems.filter{it.orderGuestNo == i}
+                    for (ti in tis){
+                        ti.split = true
+                    }
                     val ticket = order.createTicket(i, tis.toCollection(ArrayList()), fees)
                     ticket.uiActive = ticket.id == 1
                     ts.add(ticket)
@@ -200,6 +205,7 @@ data class Payment(
             val guestCount = order.guestCount
             for (item in ticketItems){
                 item.ticketItemPrice = item.ticketItemPrice.div(guestCount).round(2)
+                item.split = true
             }
             for (i in 1..guestCount){
                 val ticket = order.createTicket(i, ticketItems.toCollection(ArrayList()), fees)
@@ -220,6 +226,7 @@ data class Payment(
 
             for (item in ticketItems){
                 item.ticketItemPrice = item.ticketItemPrice.div(ticketCount).round(2)
+                item.split = true
             }
             for (i in 1..ticketCount){
                 val ticket = order.createTicket(i, ticketItems.toCollection(ArrayList()), fees)
@@ -543,7 +550,8 @@ data class TicketItem(
     val salesCategory: String,
     var ticketItemPrice: Double,
     var tax: Double,
-    var selected: Boolean = false
+    var selected: Boolean = false,
+    var split: Boolean = false
 ): Parcelable{
     fun approve(newPrice: Double){
         ticketItemPrice = newPrice

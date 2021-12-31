@@ -23,7 +23,6 @@ import androidx.navigation.ui.*
 import com.fastertable.fastertable.common.base.BaseActivity
 import com.fastertable.fastertable.common.base.BaseContinueDialog
 import com.fastertable.fastertable.common.base.DismissListener
-import com.fastertable.fastertable.common.base.LogoutListener
 import com.fastertable.fastertable.data.models.*
 import com.fastertable.fastertable.data.repository.GetPayment
 import com.fastertable.fastertable.data.repository.LoginRepository
@@ -119,7 +118,6 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
         appBarConfiguration = AppBarConfiguration(
             setOf(
                 R.id.nav_home,
-                R.id.approvalsFragment
             ), drawerLayout
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
@@ -837,6 +835,16 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, ItemNoteLis
             myToast.show()
         }
     }
+
+//    override fun onBackPressed() {
+//        supportFragmentManager.executePendingTransactions()
+//        val count = supportFragmentManager.backStackEntryCount
+//        if (count <= 1) {
+//            finish()
+//        } else {
+//            supportFragmentManager.popBackStack()
+//        }
+//    }
 
 }
 

@@ -8,9 +8,6 @@
             name="ticketItem"
             type="com.fastertable.fastertable.data.models.TicketItem" />
 
-        <variable
-            name="viewModel"
-            type="com.fastertable.fastertable.ui.payment.PaymentViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -18,64 +15,53 @@
         android:layout_height="match_parent">
 
         <TextView
-            android:id="@+id/txt_quantity"
+            android:id="@+id/txt_split_quantity"
             style="@style/payment_line_item"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:text="@string/string_quantity"
-            app:layout_constraintBottom_toBottomOf="@+id/txt_item"
+            app:layout_constraintBottom_toBottomOf="@+id/txt_split_item"
             app:layout_constraintStart_toStartOf="parent"
             tools:itemQuantity="@{ticketItem.quantity}" />
 
         <TextView
-            android:id="@+id/txt_item"
+            android:id="@+id/txt_split_item"
             style="@style/payment_line_item"
             android:layout_width="400dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="10dp"
             android:text="@{ticketItem.itemName}"
-            app:layout_constraintBottom_toBottomOf="@+id/txt_price"
-            app:layout_constraintStart_toEndOf="@+id/txt_quantity"
+            app:layout_constraintBottom_toBottomOf="@+id/txt_split_price"
+            app:layout_constraintStart_toEndOf="@+id/txt_split_quantity"
             app:layout_constraintTop_toTopOf="parent" />
 
 
         <TextView
-            android:id="@+id/txt_price"
+            android:id="@+id/txt_split_price"
             style="@style/payment_line_item"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="10dp"
             android:text="@string/string_price"
             android:textAlignment="viewEnd"
-            app:layout_constraintBottom_toBottomOf="@+id/txt_quantity"
-            app:layout_constraintEnd_toStartOf="@+id/btn_ticket_item_more"
+            app:layout_constraintBottom_toBottomOf="@+id/txt_split_quantity"
+            app:layout_constraintEnd_toEndOf="parent"
             app:ticketItemPrice="@{ticketItem}" />
 
-        <ImageButton
-            android:id="@+id/btn_ticket_item_more"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="6dp"
-            android:background="@color/white"
-            android:contentDescription="@string/ticket_item_options"
-            android:paddingTop="8dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_baseline_more_vert_24" />
 
         <LinearLayout
-            android:id="@+id/mod_list_layout"
+            android:id="@+id/mod_split_list_layout"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:layout_marginTop="4dp"
             android:orientation="vertical"
-            app:layout_constraintStart_toStartOf="@+id/txt_item"
-            app:layout_constraintTop_toBottomOf="@+id/txt_item">
+            app:layout_constraintStart_toStartOf="@+id/txt_split_item"
+            app:layout_constraintTop_toBottomOf="@+id/txt_split_item">
 
             <TextView
-                android:id="@+id/txt_mods"
+                android:id="@+id/txt_split_mods"
                 style="@style/mods_ingredients"
                 android:layout_width="400dp"
                 android:layout_height="wrap_content"
@@ -85,13 +71,13 @@
         </LinearLayout>
 
         <TextView
-            android:id="@+id/txt_price_mod"
+            android:id="@+id/txt_split_price_mod"
             style="@style/error_style_extra_small"
             android:layout_width="350dp"
             android:layout_height="wrap_content"
             app:showPriceModified="@{ticketItem}"
-            app:layout_constraintStart_toStartOf="@+id/txt_item"
-            app:layout_constraintTop_toBottomOf="@+id/txt_item" />
+            app:layout_constraintStart_toStartOf="@+id/txt_split_item"
+            app:layout_constraintTop_toBottomOf="@+id/txt_split_item" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

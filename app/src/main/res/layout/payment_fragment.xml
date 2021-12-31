@@ -47,7 +47,7 @@
                 android:textSize="@dimen/toolbar_button"
                 android:onClick="@{() -> viewModel.setManagePayment()}"
                 app:disablePayButton="@{viewModel.activePayment.statusApproval}"
-                app:hidePayButton="@{viewModel.activePayment}"
+                app:disableSplitButton="@{viewModel.activePayment}"
                 app:layout_constraintStart_toStartOf="@+id/layout_payment_buttons"
                 app:layout_constraintTop_toTopOf="@+id/layout_payment_buttons"
                 app:strokeColor="@color/white" />
@@ -235,6 +235,7 @@
                     android:background="@color/primary_payment_color"
                     android:contentDescription="@string/ticket_options"
                     android:onClick="@{() -> viewModel.toggleTicketMore()}"
+                    app:showPaymentMoreButton="@{viewModel.activePayment}"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
@@ -875,7 +876,6 @@
                 android:layout_marginEnd="20dp"
                 android:hint="@string/card_number"
                 app:errorEnabled="true"
-                android:nextFocusForward="@+id/manual_expiration_date"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/manual_cardholder_layout">
@@ -888,7 +888,7 @@
                     android:inputType="number"
                     android:textSize="@dimen/d21"
                     android:text="@{viewModel.cardNumber}"
-                    android:nextFocusForward="@+id/manual_expiration_date" />
+                    android:nextFocusDown="@+id/manual_expiration_date" />
 
             </com.google.android.material.textfield.TextInputLayout>
 

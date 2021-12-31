@@ -74,10 +74,6 @@ data class Order(
         activeGuest = 1
     }
 
-    fun guestRemove(guest: Guest){
-//        this.guests?.remove(guest)
-    }
-
     fun orderItemRemove(item: OrderItem){
         orderItems?.remove(item)
 
@@ -93,6 +89,14 @@ data class Order(
 
     fun toggleItemNoMake(item: OrderItem){
         item.dontMake = !item.dontMake
+    }
+
+    fun getNewItemId(): Int{
+        return if (this.orderItems != null){
+            this.orderItems.last().id.plus(1)
+        }else{
+            1
+        }
     }
 
     fun addItemNote(item: OrderItem){
@@ -393,7 +397,6 @@ data class Guest(
 data class OrderItem(
     var id: Int,
     var guestId: Int = 1,
-//    var quantity: Int,
     val menuItemId: String,
     val menuItemName: String,
     var menuItemPrice: ItemPrice,
@@ -419,7 +422,7 @@ data class OrderItem(
     fun getTicketExtendedPrice(taxRate: Double): Double{
         var price = this.getExtendedPrice()
 
-        if (this.tax === "Tax Included"){
+        if (this.tax == "Tax Included"){
             price = price.minus(this.getSalesTax(this.tax, taxRate))
         }
 

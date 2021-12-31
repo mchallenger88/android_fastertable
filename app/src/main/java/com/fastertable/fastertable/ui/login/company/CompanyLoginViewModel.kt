@@ -37,7 +37,7 @@ class CompanyLoginViewModel @Inject constructor(
     val restaurant: LiveData<Location>
         get() = _restaurant
 
-    private val _showProgressBar = MutableLiveData<Boolean>()
+    private val _showProgressBar = MutableLiveData(false)
     val showProgressBar: LiveData<Boolean>
         get() = _showProgressBar
 
@@ -54,7 +54,6 @@ class CompanyLoginViewModel @Inject constructor(
         get() = _loginEnabled
 
     init{
-        _showProgressBar.value = false
         _error.value = false
         _loginEnabled.value = true
         checkCompany()
@@ -71,11 +70,14 @@ class CompanyLoginViewModel @Inject constructor(
                     _error.postValue(false)
                     saveLogin(loginName, password, it.id)
                 }
+                _showProgressBar.value = false
             }catch (e: Exception) {
                 _loginEnabled.postValue(true)
                 _error.postValue(true)
+                _showProgressBar.value = false
             }
         }
+
     }
 
 
@@ -94,7 +96,6 @@ class CompanyLoginViewModel @Inject constructor(
             _loginName.value?.let { name ->
                 _password.value?.let { password ->
                     loginCompany(name, password)
-                    _showProgressBar.value = false
                 }
             }
             if(_loginName.value == null || _password.value == null){

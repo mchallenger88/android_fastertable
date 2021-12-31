@@ -104,6 +104,8 @@
                 android:layout_height="wrap_content"
                 android:text="@{viewModel.orderItem.note}"
                 android:inputType="textMultiLine|textCapSentences"
+                android:nextFocusDown="@id/btn_edit_save_item"
+                android:nextFocusForward="@id/btn_edit_save_item"
                 android:textSize="@dimen/d21" />
 
         </com.google.android.material.textfield.TextInputLayout>

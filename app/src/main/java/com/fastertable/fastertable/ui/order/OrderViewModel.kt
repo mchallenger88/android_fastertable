@@ -251,7 +251,9 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
         val payment = _activePayment.value
         //Check to see if there are any payments on the order and if yes then no more items can be added
         if (payment != null){
+            Log.d("Testing", "Payment not null")
             if (payment.anyTicketsPaid()){
+                Log.d("Testing", payment.anyTicketsPaid().toString())
                 setError("Tickets Paid", "Payments have been made on this order. You will have to void the payments or begin a new order.")
             }else{
                 if (order != null && item != null){
@@ -277,7 +279,7 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
             val price = item.prices.find { it.isSelected }
             if (price != null) {
                 val orderItem = OrderItem(
-                    id = order.orderItems?.size?.plus(1) ?: 1,
+                    id = order.getNewItemId(),
                     guestId = order.activeGuest,
                     menuItemId = item.id,
                     menuItemName = item.itemName,
@@ -683,7 +685,9 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
         orderRepository.clearOrder()
         _currentOrderId.value = null
         _activeOrder.value = null
+        _activePayment.value = null
         _activeOrder.value = _activeOrder.value
+        _activePayment.value = _activePayment.value
     }
 
     fun closeOrder(){

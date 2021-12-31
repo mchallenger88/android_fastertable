@@ -1,5 +1,6 @@
 package com.fastertable.fastertable.ui.login.user
 
+import android.util.Log
 import androidx.lifecycle.*
 import com.fastertable.fastertable.common.base.BaseViewModel
 import com.fastertable.fastertable.data.models.Employee
@@ -129,7 +130,7 @@ class UserLoginViewModel @Inject constructor(private val loginRepository: LoginR
                 _loginTime.postValue(now)
                 _validUser.postValue(true)
                 getOrders()
-                val eids = GetEmployee(cid = cid, eid =opsAuth.employeeId)
+                val eids = GetEmployee(cid = cid, eid = opsAuth.employeeId)
                 emp = getEmployeeById.getEmployee(eids)
                 emp?.let {
                     _employee.postValue(it)

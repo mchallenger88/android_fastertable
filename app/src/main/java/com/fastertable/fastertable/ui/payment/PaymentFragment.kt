@@ -22,7 +22,9 @@ import com.fastertable.fastertable.ui.order.OrderViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.inputmethod.InputMethodManager
+import android.widget.ImageButton
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.fastertable.fastertable.common.base.BaseFragment
 import com.fastertable.fastertable.data.models.ManualCredit
@@ -120,7 +122,6 @@ class PaymentFragment: BaseFragment(R.layout.payment_fragment) {
                 if (ticket.uiActive){
                     ticketsAdapter.submitList(ticket.ticketItems)
                     ticketsAdapter.notifyDataSetChanged()
-
                 }
             }
         })

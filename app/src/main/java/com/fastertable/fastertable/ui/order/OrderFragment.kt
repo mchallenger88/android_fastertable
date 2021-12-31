@@ -8,6 +8,7 @@ import android.view.*
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.RadioButton
+import android.widget.RadioGroup
 import androidx.constraintlayout.helper.widget.Flow
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
@@ -37,15 +38,15 @@ class OrderFragment : BaseFragment(R.layout.order_fragment) {
         binding.lifecycleOwner = viewLifecycleOwner
         binding.viewModel = viewModel
         viewModel.initOrder()
-        createAndSetAdapters(binding)
-        createObservers(binding)
+        createAndSetAdapters()
+        createObservers()
 
         binding.menusTabBar.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab?) {
                 tab?.text?.let { tabText ->
                     val menu = viewModel.menus.value?.find{it -> it.name == tabText}
                     if (menu != null){
-                        createCategoryButtons(menu, binding)
+                        createCategoryButtons(menu)
                         viewModel.setMenusNavigation(MenusNavigation.CATEGORIES)
                     }
                 }
@@ -56,11 +57,11 @@ class OrderFragment : BaseFragment(R.layout.order_fragment) {
         })
     }
 
-    private fun createObservers(binding: OrderFragmentBinding){
+    private fun createObservers(){
         viewModel.pageLoaded.observe(viewLifecycleOwner, {
             if (it){
                 viewModel.menus.value?.let { list ->
-                    createMenuButtons(list, binding)
+                    createMenuButtons(list)
                     viewModel.setPageLoaded(false)
                 }
 
@@ -77,7 +78,7 @@ class OrderFragment : BaseFragment(R.layout.order_fragment) {
         })
     }
 
-    private fun createMenuButtons(menus: List<Menu>, binding: OrderFragmentBinding){
+    private fun createMenuButtons(menus: List<Menu>){
         for (menu in menus){
             val tab = binding.menusTabBar.newTab()
 
@@ -91,7 +92,7 @@ class OrderFragment : BaseFragment(R.layout.order_fragment) {
         }
     }
 
-    private fun createCategoryButtons(menu: Menu, binding: OrderFragmentBinding){
+    private fun createCategoryButtons(menu: Menu){
         binding.btnMenuBack.visibility = View.VISIBLE
 
         binding.layoutMenuCategories.removeAllViews()
@@ -132,7 +133,7 @@ class OrderFragment : BaseFragment(R.layout.order_fragment) {
             btnView.layoutParams = params
             btnView.width = 250
             btnView.height = 200
-            btnView.setOnClickListener { setCategory(category, binding) }
+            btnView.setOnClickListener { setCategory(category) }
 
             binding.layoutMenuCategories.addView(btnView)
 
@@ -143,8 +144,9 @@ class OrderFragment : BaseFragment(R.layout.order_fragment) {
         binding.layoutMenuCategories.addView(flow)
     }
 
-    private fun setCategory(cat: MenuCategory, binding: OrderFragmentBinding){
-        binding.layoutMenuItems.removeAllViews()
+    private fun setCategory(cat: MenuCategory){
+        val layoutMenu = requireView().findViewById<ConstraintLayout>(R.id.layout_menu_items)
+        layoutMenu.removeAllViews()
         viewModel.setActiveCategory(cat)
         val flow = Flow(context)
         flow.id = ViewCompat.generateViewId()
@@ -183,12 +185,12 @@ class OrderFragment : BaseFragment(R.layout.order_fragment) {
             btnView.height = 180
             btnView.setOnClickListener { setMenuItem(menuItem) }
 
-            binding.layoutMenuItems.addView(btnView)
+            layoutMenu.addView(btnView)
 
             flow.addView(btnView)
         }
         viewModel.setMenusNavigation(MenusNavigation.MENU_ITEMS)
-        binding.layoutMenuItems.addView(flow)
+        layoutMenu.addView(flow)
 
     }
 
@@ -198,7 +200,7 @@ class OrderFragment : BaseFragment(R.layout.order_fragment) {
 
     }
 
-    private fun createAndSetAdapters(binding: OrderFragmentBinding){
+    private fun createAndSetAdapters(){
         val modAdapter = ModifierAdapter(ModifierAdapter.ModifierListener { item ->
             viewModel.onModItemClicked(item)
         })
@@ -261,7 +263,8 @@ class OrderFragment : BaseFragment(R.layout.order_fragment) {
 
     @SuppressLint("SetTextI18n")
     fun populatePriceGroup(item: MenuItem){
-        binding.itemPriceRadioGroup.removeAllViews()
+        val priceGroup = requireView().findViewById<RadioGroup>(R.id.item_price_radio_group)
+        priceGroup.removeAllViews()
         for (price in item.prices){
             val button = RadioButton(activity)
             val typeface = ResourcesCompat.getFont(button.context, R.font.open_sans_semibold)
@@ -272,7 +275,7 @@ class OrderFragment : BaseFragment(R.layout.order_fragment) {
             button.text = "${price.size}: $x"
             button.isChecked = price.isSelected
             button.setOnClickListener { viewModel.changeSelectedPrice(price) }
-            binding.itemPriceRadioGroup.addView(button)
+            priceGroup.addView(button)
         }
 
 

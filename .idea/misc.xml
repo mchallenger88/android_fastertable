@@ -46,6 +46,7 @@
         <entry key="..\:/androidprojects/fastertable/app/src/main/res/layout/checkout_add_tip_line_item.xml" value="0.303125" />
         <entry key="..\:/androidprojects/fastertable/app/src/main/res/layout/clockout_fragment.xml" value="0.303125" />
         <entry key="..\:/androidprojects/fastertable/app/src/main/res/layout/closed_approval_line_item.xml" value="0.303125" />
+        <entry key="..\:/androidprojects/fastertable/app/src/main/res/layout/company_login_fragment.xml" value="0.303125" />
         <entry key="..\:/androidprojects/fastertable/app/src/main/res/layout/confirm_fragment.xml" value="0.303125" />
         <entry key="..\:/androidprojects/fastertable/app/src/main/res/layout/confirm_list_line_item.xml" value="0.303125" />
         <entry key="..\:/androidprojects/fastertable/app/src/main/res/layout/dialog_add_guests_adhoc_split.xml" value="0.303125" />
@@ -81,6 +82,7 @@
         <entry key="..\:/androidprojects/fastertable/app/src/main/res/layout/terminal_select_fragment.xml" value="0.303125" />
         <entry key="..\:/androidprojects/fastertable/app/src/main/res/layout/ticket_line_item.xml" value="0.303125" />
         <entry key="..\:/androidprojects/fastertable/app/src/main/res/layout/ticket_line_item_move.xml" value="0.303125" />
+        <entry key="..\:/androidprojects/fastertable/app/src/main/res/layout/ticket_line_item_split.xml" value="0.303125" />
         <entry key="..\:/androidprojects/fastertable/app/src/main/res/layout/transfer_employee_line_item.xml" value="0.303125" />
         <entry key="..\:/androidprojects/fastertable/app/src/main/res/layout/transfer_item_orders_header.xml" value="0.303125" />
         <entry key="..\:/androidprojects/fastertable/app/src/main/res/layout/transfer_item_orders_line_item.xml" value="0.303125" />
@@ -95,7 +97,7 @@
       </map>
     </option>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_15_PREVIEW" project-jdk-name="1.8" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_15" project-jdk-name="1.8" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>
   <component name="ProjectType">

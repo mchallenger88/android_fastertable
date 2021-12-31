@@ -32,7 +32,6 @@ class OrderItemTransferAdapter(private val addListener: TransferAddListener, pri
     class MenuItemViewHolder(private var binding: TransferOrderLineItemBinding, private val parent: ViewGroup):
         RecyclerView.ViewHolder(binding.root) {
         fun bind(orderItem: OrderItem, addListener: TransferAddListener, removeListener: TransferRemoveListener) {
-            Log.d("TransferTesting", "Made It Yes")
             binding.item = null
             binding.item = orderItem
 
@@ -44,7 +43,6 @@ class OrderItemTransferAdapter(private val addListener: TransferAddListener, pri
             binding.txtTransferQuantity.typeface = typeface
 
             binding.switchTransferItem.setOnCheckedChangeListener { buttonView, isChecked ->
-                Log.d("TransferTesting", "Made It")
                 if (isChecked){
                     addListener.onClick(orderItem)
                 }else{

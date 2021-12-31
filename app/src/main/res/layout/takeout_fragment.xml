@@ -95,6 +95,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:inputType="phone"
+                        android:text="@{viewModel.phoneNumber}"
+                        android:maxLength="14"
                         android:textSize="@dimen/d21" />
 
                 </com.google.android.material.textfield.TextInputLayout>

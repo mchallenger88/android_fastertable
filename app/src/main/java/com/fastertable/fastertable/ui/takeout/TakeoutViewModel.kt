@@ -24,6 +24,10 @@ class TakeoutViewModel @Inject constructor
     val orders: LiveData<List<Order>>
         get() = _orders
 
+    private val _phoneNumber = MutableLiveData("")
+    val phoneNumber: LiveData<String>
+        get() = _phoneNumber
+
     private val _navigateToOrder = MutableLiveData<String>()
     val navigateToOrder: LiveData<String>
         get() = _navigateToOrder
@@ -32,6 +36,10 @@ class TakeoutViewModel @Inject constructor
         viewModelScope.launch {
             getOrders()
         }
+    }
+
+    fun setPhoneNumber(text: String){
+        _phoneNumber.value = text
     }
 
     private fun getOrders(){

@@ -152,7 +152,9 @@
         android:label="TakeoutFragment" >
         <action
             android:id="@+id/action_takeoutFragment_to_orderFragment"
-            app:destination="@id/orderFragment" />
+            app:destination="@id/orderFragment"
+            app:popUpTo="@id/nav_home"
+            app:popUpToInclusive="true" />
     </fragment>
     <fragment
         android:id="@+id/transferOrderFragment"
