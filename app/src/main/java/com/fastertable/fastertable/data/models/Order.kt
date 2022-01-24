@@ -92,10 +92,10 @@ data class Order(
     }
 
     fun getNewItemId(): Int{
-        return if (this.orderItems != null){
-            this.orderItems.last().id.plus(1)
-        }else{
+        return if (this.orderItems.isNullOrEmpty()){
             1
+        }else{
+            this.orderItems.last().id.plus(1)
         }
     }
 

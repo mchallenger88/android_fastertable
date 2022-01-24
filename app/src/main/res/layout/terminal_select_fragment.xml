@@ -58,15 +58,38 @@
             app:layout_constraintTop_toBottomOf="@+id/txt_instructions"
             tools:listitem="@layout/terminal_line_item" />
 
-<!--        <Button-->
-<!--            android:id="@+id/btn_select"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_marginTop="16dp"-->
-<!--            android:text="@string/select"-->
-<!--            app:layout_constraintEnd_toEndOf="parent"-->
-<!--            app:layout_constraintStart_toStartOf="parent"-->
-<!--            app:layout_constraintTop_toBottomOf="@+id/chips_restaurants" />-->
+        <Button
+            android:id="@+id/btn_find_bluetooth"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/find_bluetooth_printers"
+            android:enabled="@{viewModel.bluetoothEnabled}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/terminal_recycler" />
+
+        <TextView
+            android:id="@+id/txt_bluetooth_status"
+            style="@style/default_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="@{viewModel.statusText}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/btn_find_bluetooth" />
+
+        <TextView
+            android:id="@+id/txt_bluetooth_address"
+            style="@style/default_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="@{viewModel.addressText}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/txt_bluetooth_status" />
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

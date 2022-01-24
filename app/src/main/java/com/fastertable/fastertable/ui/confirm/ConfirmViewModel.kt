@@ -93,20 +93,19 @@ class ConfirmViewModel @Inject constructor (
 
     fun confirm(confirmEmployee: ConfirmEmployee) {
         viewModelScope.launch {
-            val user = loginRepository.getOpsUser()
             _activeDate.value?.let {
                 val date = GlobalUtils().unixMidnight(it)
-                if (user != null) {
-                    val cc = CheckoutCredentials(
-                        employeeId = user.employeeId,
-                        companyId = settings?.companyId ?: "",
-                        locationId = settings?.locationId ?: "",
-                        checkout = true,
-                        midnight = date
-                    )
-                    confirmCheckout.confirm(cc)
-                    getConfirmList()
-                }
+                val cc = CheckoutCredentials(
+                    employeeId = confirmEmployee.employeeId,
+                    companyId = settings?.companyId ?: "",
+                    locationId = settings?.locationId ?: "",
+                    checkout = true,
+                    midnight = date,
+
+                )
+                confirmCheckout.confirm(cc)
+                getConfirmList()
+
             }
 
         }

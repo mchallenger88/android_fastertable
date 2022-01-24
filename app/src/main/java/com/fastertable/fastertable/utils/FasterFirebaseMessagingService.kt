@@ -1,6 +1,5 @@
 package com.fastertable.fastertable.utils
 
-import android.app.NotificationManager
 import android.util.Log
 import androidx.core.content.ContextCompat
 import com.google.firebase.messaging.FirebaseMessagingService
@@ -22,7 +21,7 @@ class FasterFirebaseMessagingService: FirebaseMessagingService() {
         // Check if message contains a notification payload.
         remoteMessage.notification?.let {
             Log.d(TAG, "Message Notification Body: ${it.body}")
-            sendNotification(it.body!!)
+//            sendNotification(it.body!!)
         }
     }
 
@@ -40,10 +39,10 @@ class FasterFirebaseMessagingService: FirebaseMessagingService() {
     }
 
 
-    private fun sendNotification(messageBody: String) {
-        val notificationManager = ContextCompat.getSystemService(applicationContext, NotificationManager::class.java) as NotificationManager
-        notificationManager.sendNotification(messageBody, applicationContext)
-    }
+//    private fun sendNotification(messageBody: String) {
+//        val notificationManager = ContextCompat.getSystemService(applicationContext, NotificationManager::class.java) as NotificationManager
+//        notificationManager.sendNotification(messageBody, applicationContext)
+//    }
 
     companion object {
         private const val TAG = "FasterFirebaseMsgService"

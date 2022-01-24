@@ -260,14 +260,17 @@ fun enablePayButton(button: Button, order: Order?){
         b = false
     }else{
         if (order != null){
-            if (order.orderItems != null){
+            if (order.orderItems?.isNotEmpty() == true){
                 val started = order.orderItems.find{it.status == "Started"}
                 if (started == null){
                     b = true
                 }
+            }else{
+                b = false
             }
+        }else{
+            b = false
         }
-
     }
 
     val white = ContextCompat.getColor(button.context, R.color.white)

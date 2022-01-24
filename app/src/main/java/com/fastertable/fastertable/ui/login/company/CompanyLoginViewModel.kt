@@ -1,6 +1,7 @@
 package com.fastertable.fastertable.ui.login.company
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.databinding.ObservableField
 import androidx.lifecycle.*
 import com.fastertable.fastertable.data.models.Company

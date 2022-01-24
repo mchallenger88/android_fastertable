@@ -343,6 +343,7 @@
     <string name="resend_kitchen_ticket">Resend Kitchen Ticket</string>
     <string name="force_order_closed">Force Order Closed</string>
     <string name="this_order_is_closed">This Order is Closed</string>
+    <string name="find_bluetooth_printers">Find Bluetooth Printers</string>
 
     //Floorplan
     <string-array name="table_types">
