@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="Gradle: C./androidprojects/fastertable/app/libs/technology.master.kotlinprint.printer-1.02-debug.aar">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-3/7feed6332a9f525d6f262d4d4daeb2c8/transformed/jetified-technology.master.kotlinprint.printer-1.02-debug/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/7feed6332a9f525d6f262d4d4daeb2c8/transformed/jetified-technology.master.kotlinprint.printer-1.02-debug/res" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/7feed6332a9f525d6f262d4d4daeb2c8/transformed/jetified-technology.master.kotlinprint.printer-1.02-debug/AndroidManifest.xml" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

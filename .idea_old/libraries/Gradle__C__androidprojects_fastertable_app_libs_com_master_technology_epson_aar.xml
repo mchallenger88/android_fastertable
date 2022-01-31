@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="Gradle: C./androidprojects/fastertable/app/libs/com.master-technology.epson.aar">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-3/4b0d4d75a9b9616adc2e58b3ff0da3a8/transformed/jetified-com.master-technology.epson/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/4b0d4d75a9b9616adc2e58b3ff0da3a8/transformed/jetified-com.master-technology.epson/res" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/4b0d4d75a9b9616adc2e58b3ff0da3a8/transformed/jetified-com.master-technology.epson/AndroidManifest.xml" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

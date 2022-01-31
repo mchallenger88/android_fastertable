@@ -344,6 +344,12 @@
     <string name="force_order_closed">Force Order Closed</string>
     <string name="this_order_is_closed">This Order is Closed</string>
     <string name="find_bluetooth_printers">Find Bluetooth Printers</string>
+    <string name="location_permissions_warning">Fastertable collects location data to use Bluetooth discovery of bluetooth printers to enable receipt printing, and to enable background services
+        for the printing of receipts and kitchen tickets via both bluetooth and TCP/IP network printing even when the app is closed or not in use. This location data is stored locally and never uploaded
+        for any other use.
+    </string>
+    <string name="location_permissions_title">Location Permission</string>
+
 
     //Floorplan
     <string-array name="table_types">

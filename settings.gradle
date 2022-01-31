@@ -1,2 +1,25 @@
+pluginManagement {
+    repositories {
+        google()
+        mavenCentral()
+
+    }
+    plugins {
+        id 'com.android.application'
+        id 'kotlin-android'
+        id 'kotlin-kapt'
+        id 'dagger.hilt.android.plugin'
+        id 'androidx.navigation.safeargs.kotlin'
+        id 'kotlin-parcelize'
+    }
+    resolutionStrategy {
+        eachPlugin {
+            if( requested.id.id == 'dagger.hilt.android.plugin') {
+                useModule("com.google.dagger:hilt-android-gradle-plugin:2.39.1")
+            }
+        }
+    }
+}
+
 include ':app'
 rootProject.name = "fastertable"
