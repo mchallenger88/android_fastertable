@@ -6,11 +6,11 @@
     <data>
         <variable
             name="approval"
-            type="com.fastertable.fastertable.data.models.Approval" />
+            type="com.fastertable.fastertable2022.data.models.Approval" />
 
         <variable
             name="clickListener"
-            type="com.fastertable.fastertable.adapters.ApprovalsSideBarAdapter.ApprovalSideBarListener" />
+            type="com.fastertable.fastertable2022.adapters.ApprovalsSideBarAdapter.ApprovalSideBarListener" />
     </data>
 
     <Button

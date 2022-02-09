@@ -4,11 +4,11 @@
     <data>
         <variable
             name="modifier"
-            type="com.fastertable.fastertable.data.models.Modifier" />
+            type="com.fastertable.fastertable2022.data.models.Modifier" />
 
         <variable
             name="clickListener"
-            type="com.fastertable.fastertable.adapters.ModifierAdapter.ModifierListener" />
+            type="com.fastertable.fastertable2022.adapters.ModifierAdapter.ModifierListener" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

@@ -4,11 +4,11 @@
     <data>
         <variable
             name="payment"
-            type="com.fastertable.fastertable.data.models.Payment" />
+            type="com.fastertable.fastertable2022.data.models.Payment" />
 
         <variable
             name="clickListener"
-            type="com.fastertable.fastertable.adapters.CheckoutPaymentListListener" />
+            type="com.fastertable.fastertable2022.adapters.CheckoutPaymentListListener" />
     </data>
 <androidx.constraintlayout.widget.ConstraintLayout
     android:layout_width="match_parent"

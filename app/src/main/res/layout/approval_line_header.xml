@@ -5,7 +5,7 @@
     <data>
         <variable
             name="approval"
-            type="com.fastertable.fastertable.data.models.Approval" />
+            type="com.fastertable.fastertable2022.data.models.Approval" />
     </data>
 <androidx.constraintlayout.widget.ConstraintLayout
     android:layout_width="match_parent"

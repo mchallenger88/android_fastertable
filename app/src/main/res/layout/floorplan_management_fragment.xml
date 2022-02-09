@@ -6,7 +6,7 @@
     <data>
         <variable
             name="viewModel"
-            type="com.fastertable.fastertable.ui.floorplan_manage.FloorplanManageViewModel" />
+            type="com.fastertable.fastertable2022.ui.floorplan_manage.FloorplanManageViewModel" />
     </data>
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraint_floorplan"

@@ -4,7 +4,7 @@
     <data>
         <variable
             name="drink"
-            type="com.fastertable.fastertable.data.models.ReorderDrink" />
+            type="com.fastertable.fastertable2022.data.models.ReorderDrink" />
 
     </data>
 

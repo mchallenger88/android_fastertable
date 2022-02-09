@@ -6,15 +6,15 @@
 
         <variable
             name="emp"
-            type="com.fastertable.fastertable.data.models.ConfirmEmployee" />
+            type="com.fastertable.fastertable2022.data.models.ConfirmEmployee" />
 
         <variable
             name="clickListener"
-            type="com.fastertable.fastertable.adapters.ConfirmListAdapter.ConfirmListListener" />
+            type="com.fastertable.fastertable2022.adapters.ConfirmListAdapter.ConfirmListListener" />
 
         <variable
             name="buttonListener"
-            type="com.fastertable.fastertable.adapters.ConfirmListAdapter.ConfirmButtonListener" />
+            type="com.fastertable.fastertable2022.adapters.ConfirmListAdapter.ConfirmButtonListener" />
 
     </data>
 

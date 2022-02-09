@@ -5,7 +5,7 @@
     <data>
         <variable
             name="table"
-            type="com.fastertable.fastertable.data.models.RestaurantTable" />
+            type="com.fastertable.fastertable2022.data.models.RestaurantTable" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

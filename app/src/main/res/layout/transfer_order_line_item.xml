@@ -5,7 +5,7 @@
     <data>
         <variable
             name="item"
-            type="com.fastertable.fastertable.data.models.OrderItem" />
+            type="com.fastertable.fastertable2022.data.models.OrderItem" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

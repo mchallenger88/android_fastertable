@@ -5,11 +5,11 @@
     <data>
         <variable
             name="viewModel"
-            type="com.fastertable.fastertable.ui.payment.PaymentViewModel" />
+            type="com.fastertable.fastertable2022.ui.payment.PaymentViewModel" />
 
         <variable
             name="orderViewModel"
-            type="com.fastertable.fastertable.ui.order.OrderViewModel" />
+            type="com.fastertable.fastertable2022.ui.order.OrderViewModel" />
 
     </data>
 <androidx.constraintlayout.widget.ConstraintLayout

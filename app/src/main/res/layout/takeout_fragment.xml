@@ -6,7 +6,7 @@
     <data>
         <variable
             name="viewModel"
-            type="com.fastertable.fastertable.ui.takeout.TakeoutViewModel" />
+            type="com.fastertable.fastertable2022.ui.takeout.TakeoutViewModel" />
     </data>
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"

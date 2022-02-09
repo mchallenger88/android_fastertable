@@ -6,7 +6,7 @@
     <data>
         <variable
             name="aop"
-            type="com.fastertable.fastertable.data.models.ApprovalOrderPayment" />
+            type="com.fastertable.fastertable2022.data.models.ApprovalOrderPayment" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

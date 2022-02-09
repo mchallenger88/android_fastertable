@@ -4,11 +4,11 @@
     <data>
         <variable
             name="order"
-            type="com.fastertable.fastertable.data.models.Order" />
+            type="com.fastertable.fastertable2022.data.models.Order" />
 
         <variable
             name="clickListener"
-            type="com.fastertable.fastertable.ui.home.OrderListListener" />
+            type="com.fastertable.fastertable2022.ui.home.OrderListListener" />
     </data>
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"

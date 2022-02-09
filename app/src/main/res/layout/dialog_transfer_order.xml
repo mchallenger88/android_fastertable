@@ -3,7 +3,7 @@
     <data>
         <variable
             name="viewModel"
-            type="com.fastertable.fastertable.ui.order.OrderViewModel" />
+            type="com.fastertable.fastertable2022.ui.order.OrderViewModel" />
     </data>
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"

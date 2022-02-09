@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/nav_home"
-        android:name="com.fastertable.fastertable.ui.home.HomeFragment"
+        android:name="com.fastertable.fastertable2022.ui.home.HomeFragment"
         android:label="@string/menu_home"
         tools:layout="@layout/home_fragment" >
         <action
@@ -46,7 +46,7 @@
     </fragment>
     <fragment
         android:id="@+id/orderFragment"
-        android:name="com.fastertable.fastertable.ui.order.OrderFragment"
+        android:name="com.fastertable.fastertable2022.ui.order.OrderFragment"
         android:label="OrderFragment"
         tools:layout="@layout/order_fragment">
         <action
@@ -69,7 +69,7 @@
     </fragment>
     <fragment
         android:id="@+id/paymentFragment"
-        android:name="com.fastertable.fastertable.ui.payment.PaymentFragment"
+        android:name="com.fastertable.fastertable2022.ui.payment.PaymentFragment"
         android:label="PaymentFragment"
         tools:layout="@layout/payment_fragment">
         <action
@@ -86,7 +86,7 @@
     </fragment>
     <fragment
         android:id="@+id/paymentSplitFragment"
-        android:name="com.fastertable.fastertable.ui.payment.SplitPaymentFragment"
+        android:name="com.fastertable.fastertable2022.ui.payment.SplitPaymentFragment"
         android:label="PaymentSplitFragment"
         tools:layout="@layout/payment_split_fragment">
         <action
@@ -98,7 +98,7 @@
     </fragment>
     <fragment
         android:id="@+id/approvalsFragment"
-        android:name="com.fastertable.fastertable.ui.approvals.ApprovalsFragment"
+        android:name="com.fastertable.fastertable2022.ui.approvals.ApprovalsFragment"
         android:label="ApprovalsFragment"
         tools:layout="@layout/approvals_fragment">
         <action
@@ -107,7 +107,7 @@
     </fragment>
     <fragment
         android:id="@+id/checkoutFragment"
-        android:name="com.fastertable.fastertable.ui.checkout.CheckoutFragment"
+        android:name="com.fastertable.fastertable2022.ui.checkout.CheckoutFragment"
         android:label="CheckoutFragment"
         tools:layout="@layout/checkout_fragment">
         <action
@@ -119,7 +119,7 @@
     </fragment>
     <fragment
         android:id="@+id/addTipFragment"
-        android:name="com.fastertable.fastertable.ui.checkout.AddTipFragment"
+        android:name="com.fastertable.fastertable2022.ui.checkout.AddTipFragment"
         android:label="AddTipFragment"
         tools:layout="@layout/checkout_add_tip_fragment">
         <action
@@ -128,19 +128,19 @@
     </fragment>
     <fragment
         android:id="@+id/clockoutFragment"
-        android:name="com.fastertable.fastertable.ui.clockout.ClockoutFragment"
+        android:name="com.fastertable.fastertable2022.ui.clockout.ClockoutFragment"
         android:label="ClockoutFragment" />
     <fragment
         android:id="@+id/confirmFragment"
-        android:name="com.fastertable.fastertable.ui.confirm.ConfirmFragment"
+        android:name="com.fastertable.fastertable2022.ui.confirm.ConfirmFragment"
         android:label="ConfirmFragment" />
     <fragment
         android:id="@+id/giftCardFragment"
-        android:name="com.fastertable.fastertable.ui.gift.GiftCardFragment"
+        android:name="com.fastertable.fastertable2022.ui.gift.GiftCardFragment"
         android:label="GiftCardFragment" />
     <fragment
         android:id="@+id/floorplanFragment"
-        android:name="com.fastertable.fastertable.ui.floorplan.FloorplanFragment"
+        android:name="com.fastertable.fastertable2022.ui.floorplan.FloorplanFragment"
         android:label="FloorplanFragment" >
         <action
             android:id="@+id/action_floorplanFragment_to_orderFragment"
@@ -148,7 +148,7 @@
     </fragment>
     <fragment
         android:id="@+id/takeoutFragment"
-        android:name="com.fastertable.fastertable.ui.takeout.TakeoutFragment"
+        android:name="com.fastertable.fastertable2022.ui.takeout.TakeoutFragment"
         android:label="TakeoutFragment" >
         <action
             android:id="@+id/action_takeoutFragment_to_orderFragment"
@@ -158,7 +158,7 @@
     </fragment>
     <fragment
         android:id="@+id/transferOrderFragment"
-        android:name="com.fastertable.fastertable.ui.order.TransferOrderFragment"
+        android:name="com.fastertable.fastertable2022.ui.order.TransferOrderFragment"
         android:label="TransferOrderFragment" >
         <action
             android:id="@+id/action_transferOrderFragment_to_nav_home"
@@ -169,11 +169,11 @@
     </fragment>
     <fragment
         android:id="@+id/floorplanManagementFragment"
-        android:name="com.fastertable.fastertable.ui.floorplan_manage.FloorplanManagementFragment"
+        android:name="com.fastertable.fastertable2022.ui.floorplan_manage.FloorplanManagementFragment"
         android:label="FloorplanManagementFragment" />
     <fragment
         android:id="@+id/voidFragment"
-        android:name="com.fastertable.fastertable.ui.payment.VoidFragment"
+        android:name="com.fastertable.fastertable2022.ui.payment.VoidFragment"
         android:label="VoidFragment" >
         <action
             android:id="@+id/action_voidFragment_to_nav_home"
@@ -181,7 +181,7 @@
     </fragment>
     <fragment
         android:id="@+id/transferItemFragment"
-        android:name="com.fastertable.fastertable.ui.order.TransferItemFragment"
+        android:name="com.fastertable.fastertable2022.ui.order.TransferItemFragment"
         android:label="TransferItemFragment" >
         <action
             android:id="@+id/action_transferItemFragment_to_nav_home"
@@ -189,7 +189,7 @@
     </fragment>
     <fragment
         android:id="@+id/voidStartFragment"
-        android:name="com.fastertable.fastertable.ui.payment.VoidStartFragment"
+        android:name="com.fastertable.fastertable2022.ui.payment.VoidStartFragment"
         android:label="VoidStartFragment" >
         <action
             android:id="@+id/action_voidStartFragment_to_nav_home"
@@ -200,7 +200,7 @@
     </fragment>
     <fragment
         android:id="@+id/completedApprovalsFragment"
-        android:name="com.fastertable.fastertable.ui.approvals.CompletedApprovalsFragment"
+        android:name="com.fastertable.fastertable2022.ui.approvals.CompletedApprovalsFragment"
         android:label="CompletedApprovalsFragment" >
         <action
             android:id="@+id/action_completedApprovalsFragment_to_approvalsFragment"
@@ -208,7 +208,7 @@
     </fragment>
     <fragment
         android:id="@+id/adhocPaymentFragment"
-        android:name="com.fastertable.fastertable.ui.payment.AdhocPaymentFragment"
+        android:name="com.fastertable.fastertable2022.ui.payment.AdhocPaymentFragment"
         android:label="AdhocPaymentFragment" >
         <action
             android:id="@+id/action_adhocPaymentFragment_to_paymentFragment"

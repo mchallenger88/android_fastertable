@@ -6,11 +6,11 @@
     <data>
         <variable
             name="ticketItem"
-            type="com.fastertable.fastertable.data.models.TicketItem" />
+            type="com.fastertable.fastertable2022.data.models.TicketItem" />
 
         <variable
             name="viewModel"
-            type="com.fastertable.fastertable.ui.payment.PaymentViewModel" />
+            type="com.fastertable.fastertable2022.ui.payment.PaymentViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

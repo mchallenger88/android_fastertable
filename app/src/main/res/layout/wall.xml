@@ -5,7 +5,7 @@
     <data>
         <variable
             name="wall"
-            type="com.fastertable.fastertable.data.models.FloorplanWall" />
+            type="com.fastertable.fastertable2022.data.models.FloorplanWall" />
     </data>
 
     <ImageView

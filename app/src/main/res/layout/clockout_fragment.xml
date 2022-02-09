@@ -5,7 +5,7 @@
     <data>
         <variable
             name="viewModel"
-            type="com.fastertable.fastertable.ui.clockout.ClockoutViewModel" />
+            type="com.fastertable.fastertable2022.ui.clockout.ClockoutViewModel" />
     </data>
 
 <androidx.constraintlayout.widget.ConstraintLayout

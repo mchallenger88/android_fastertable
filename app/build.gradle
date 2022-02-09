@@ -13,7 +13,7 @@ android {
     buildToolsVersion "30.0.3"
 
     defaultConfig {
-        applicationId "com.fastertable.fastertable"
+        applicationId "com.fastertable.fastertable2022"
         minSdkVersion 25
         targetSdkVersion 31
         versionCode 4

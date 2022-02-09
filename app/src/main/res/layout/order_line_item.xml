@@ -6,15 +6,15 @@
     <data>
         <variable
             name="orderItem"
-            type="com.fastertable.fastertable.data.models.OrderItem" />
+            type="com.fastertable.fastertable2022.data.models.OrderItem" />
 
         <variable
             name="viewModel"
-            type="com.fastertable.fastertable.ui.order.OrderViewModel" />
+            type="com.fastertable.fastertable2022.ui.order.OrderViewModel" />
 
         <variable
             name="clickListener"
-            type="com.fastertable.fastertable.adapters.OrderItemAdapter.OrderItemListener" />
+            type="com.fastertable.fastertable2022.adapters.OrderItemAdapter.OrderItemListener" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

@@ -4,7 +4,7 @@
     <data>
         <variable
             name="viewModel"
-            type="com.fastertable.fastertable.ui.checkout.CheckoutViewModel" />
+            type="com.fastertable.fastertable2022.ui.checkout.CheckoutViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

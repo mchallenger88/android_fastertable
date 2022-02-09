@@ -6,7 +6,7 @@
     <data>
         <variable
             name="viewModel"
-            type="com.fastertable.fastertable.ui.dialogs.ContinueCancelViewModel" />
+            type="com.fastertable.fastertable2022.ui.dialogs.ContinueCancelViewModel" />
     </data>
 
 <androidx.constraintlayout.widget.ConstraintLayout

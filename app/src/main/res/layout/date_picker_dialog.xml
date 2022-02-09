@@ -5,7 +5,7 @@
     <data>
         <variable
             name="viewModel"
-            type="com.fastertable.fastertable.ui.dialogs.DatePickerViewModel" />
+            type="com.fastertable.fastertable2022.ui.dialogs.DatePickerViewModel" />
     </data>
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"

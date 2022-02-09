@@ -8,7 +8,7 @@
 
     <fragment
         android:id="@+id/companyLoginFragment"
-        android:name="com.fastertable.fastertable.ui.login.company.CompanyLoginFragment"
+        android:name="com.fastertable.fastertable2022.ui.login.company.CompanyLoginFragment"
         android:label="CompanyLoginFragment"
         tools:layout="@layout/company_login_fragment" >
         <action
@@ -20,7 +20,7 @@
     </fragment>
     <fragment
         android:id="@+id/restaurantLoginFragment"
-        android:name="com.fastertable.fastertable.ui.login.restaurant.RestaurantLoginFragment"
+        android:name="com.fastertable.fastertable2022.ui.login.restaurant.RestaurantLoginFragment"
         android:label="RestaurantLoginFragment"
         tools:layout="@layout/restaurant_login_fragment">
         <action
@@ -32,7 +32,7 @@
     </fragment>
     <fragment
         android:id="@+id/terminalSelectFragment"
-        android:name="com.fastertable.fastertable.ui.login.terminal.TerminalSelectFragment"
+        android:name="com.fastertable.fastertable2022.ui.login.terminal.TerminalSelectFragment"
         android:label="TerminalSelectFragment"
         tools:layout="@layout/terminal_select_fragment">
         <action
@@ -41,7 +41,7 @@
     </fragment>
     <fragment
         android:id="@+id/userLoginFragment"
-        android:name="com.fastertable.fastertable.ui.login.user.UserLoginFragment"
+        android:name="com.fastertable.fastertable2022.ui.login.user.UserLoginFragment"
         android:label="UserLoginFragment"
         tools:layout="@layout/user_login_fragment">
         <action
@@ -56,12 +56,12 @@
     </fragment>
     <fragment
         android:id="@+id/homeFragment"
-        android:name="com.fastertable.fastertable.ui.home.HomeFragment"
+        android:name="com.fastertable.fastertable2022.ui.home.HomeFragment"
         android:label="fragment_home"
         tools:layout="@layout/home_fragment" />
     <fragment
         android:id="@+id/kitchenClockoutFragment"
-        android:name="com.fastertable.fastertable.ui.login.user.KitchenClockoutFragment"
+        android:name="com.fastertable.fastertable2022.ui.login.user.KitchenClockoutFragment"
         android:label="KitchenClockoutFragment" >
         <action
             android:id="@+id/action_kitchenClockoutFragment_to_userLoginFragment"

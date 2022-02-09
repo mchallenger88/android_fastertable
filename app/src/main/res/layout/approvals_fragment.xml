@@ -6,7 +6,7 @@
     <data>
         <variable
             name="viewModel"
-            type="com.fastertable.fastertable.ui.approvals.ApprovalsViewModel" />
+            type="com.fastertable.fastertable2022.ui.approvals.ApprovalsViewModel" />
     </data>
 
 <androidx.constraintlayout.widget.ConstraintLayout

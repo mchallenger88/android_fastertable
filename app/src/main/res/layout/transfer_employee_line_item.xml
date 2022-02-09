@@ -4,11 +4,11 @@
     <data>
         <variable
             name="employee"
-            type="com.fastertable.fastertable.data.models.Employee" />
+            type="com.fastertable.fastertable2022.data.models.Employee" />
 
         <variable
             name="clickListener"
-            type="com.fastertable.fastertable.adapters.TransferEmployeeListListener" />
+            type="com.fastertable.fastertable2022.adapters.TransferEmployeeListListener" />
     </data>
 <androidx.constraintlayout.widget.ConstraintLayout
     android:layout_width="match_parent"

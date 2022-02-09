@@ -4,7 +4,7 @@
     <data>
         <variable
             name="order"
-            type="com.fastertable.fastertable.data.models.Order" />
+            type="com.fastertable.fastertable2022.data.models.Order" />
     </data>
 <androidx.constraintlayout.widget.ConstraintLayout
     android:layout_width="match_parent"

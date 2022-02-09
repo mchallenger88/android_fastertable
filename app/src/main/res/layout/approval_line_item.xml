@@ -6,7 +6,7 @@
     <data>
         <variable
             name="ticketItem"
-            type="com.fastertable.fastertable.data.models.TicketItem" />
+            type="com.fastertable.fastertable2022.data.models.TicketItem" />
 
     </data>
 

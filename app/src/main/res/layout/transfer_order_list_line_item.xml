@@ -4,11 +4,11 @@
     <data>
         <variable
             name="order"
-            type="com.fastertable.fastertable.data.models.Order" />
+            type="com.fastertable.fastertable2022.data.models.Order" />
 
         <variable
             name="clickListener"
-            type="com.fastertable.fastertable.adapters.TransferOrderListListener" />
+            type="com.fastertable.fastertable2022.adapters.TransferOrderListListener" />
 
     </data>
     <androidx.constraintlayout.widget.ConstraintLayout
