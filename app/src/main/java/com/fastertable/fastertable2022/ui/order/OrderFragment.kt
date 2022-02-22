@@ -3,6 +3,7 @@ package com.fastertable.fastertable2022.ui.order
 import android.annotation.SuppressLint
 import android.content.res.ColorStateList
 import android.os.Bundle
+import android.text.TextUtils
 import android.view.*
 import android.widget.Button
 import android.widget.LinearLayout
@@ -132,6 +133,8 @@ class OrderFragment : BaseFragment(R.layout.order_fragment) {
             btnView.layoutParams = params
             btnView.width = 250
             btnView.height = 200
+            btnView.maxLines = 1
+            btnView.ellipsize = TextUtils.TruncateAt.END
             btnView.setOnClickListener { setCategory(category) }
 
             binding.layoutMenuCategories.addView(btnView)

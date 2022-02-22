@@ -69,6 +69,10 @@
     <style name="default_text" parent="F_Body">
     <item name="android:layout_marginTop">@dimen/textView_margin</item>
     </style>
+    <style name="small_text" parent="F_Body">
+        <item name="android:textSize">@dimen/d14</item>
+        <item name="android:layout_marginTop">@dimen/textView_margin</item>
+    </style>
 
     <style name="list_text" parent="default_text">
         <item name="android:layout_marginTop">@dimen/s12</item>

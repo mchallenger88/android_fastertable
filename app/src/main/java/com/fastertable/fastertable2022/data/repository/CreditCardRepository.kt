@@ -2,6 +2,7 @@ package com.fastertable.fastertable2022.data.repository
 
 
 import android.app.Application
+import android.util.Log
 import com.fastertable.fastertable2022.api.*
 import com.fastertable.fastertable2022.data.models.*
 import com.fastertable.fastertable2022.utils.round
@@ -10,6 +11,7 @@ import javax.inject.Inject
 class StartCredit @Inject constructor(private val startCreditUseCase: StartCreditUseCase){
     suspend fun startCreditProcess(url: String): TerminalResponse {
         val result = startCreditUseCase.startCredit(url)
+        Log.d("Testing", result.toString())
         if (result is StartCreditUseCase.Result.Success){
             return result.response
         }else{

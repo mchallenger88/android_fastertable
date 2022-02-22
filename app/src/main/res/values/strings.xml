@@ -283,6 +283,7 @@
     <string name="order_item_options">Order Item Options</string>
     <string name="modify_order_item">Modify Order Item</string>
     <string name="terminal">Terminal</string>
+    <string name="terminal_dd">Terminal:</string>
     <string name="partial_payment">Partial Payment</string>
     <string name="string_payment_type">Pay Type</string>
     <string name="make_partial_payment">Make Partial Payment</string>

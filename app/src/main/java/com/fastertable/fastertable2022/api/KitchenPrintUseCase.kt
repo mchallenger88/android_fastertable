@@ -3,6 +3,7 @@ package com.fastertable.fastertable2022.api
 import android.app.Application
 import android.content.Context
 import android.util.Log
+import com.fastertable.fastertable2022.data.models.KitchenPrinterTicket
 import com.fastertable.fastertable2022.data.models.Order
 import com.fastertable.fastertable2022.data.models.Printer
 import com.fastertable.fastertable2022.data.models.Settings
@@ -23,20 +24,30 @@ class KitchenPrintUseCase @Inject constructor(private val app: Application){
         object Failure: Result()
     }
 
-    suspend fun print(list: List<Document>, settings: Settings): Result.Success {
+    suspend fun print(list: List<KitchenPrinterTicket>, settings: Settings): Result.Success {
+        return withContext(Dispatchers.IO){
+            val context = app.applicationContext
+            for (item in list){
+                printTicket(item, context, settings)
+            }
+            return@withContext Result.Success(true)
+        }
+    }
+
+    suspend fun printMaster(list: List<Document>, settings: Settings): Result.Success {
         return withContext(Dispatchers.IO){
             val context = app.applicationContext
             for (doc in list){
-                printTicket(doc, context, settings)
+                printMasterTicket(doc, context, settings)
             }
             return@withContext Result.Success(true)
         }
     }
 
 
-    private fun printTicket(document: Document, context: Context, settings: Settings){
+    private fun printTicket(item: KitchenPrinterTicket, context: Context, settings: Settings){
         PrinterDriver.setContext(context)
-        val ip = settings.printers.find{it.master}?.ipAddress
+        val ip = settings.printers.find{it.printerName == item.printer.printerName}?.ipAddress
         val s = PrinterSettings(
             address = "TCP:$ip",
             debugging = true,
@@ -47,7 +58,7 @@ class KitchenPrintUseCase @Inject constructor(private val app: Application){
         s.forceDriver = 1
         val epsonPrinter = Epson(s)
         epsonPrinter.connect().then {
-            epsonPrinter.print(document).then {
+            epsonPrinter.print(item.document).then {
                 epsonPrinter.close().then {
                 }
             }.catch { err ->
@@ -57,7 +68,7 @@ class KitchenPrintUseCase @Inject constructor(private val app: Application){
         }
     }
 
-    private fun printMasterTicket(order: Order, context: Context, settings: Settings) {
+    private fun printMasterTicket(document: Document, context: Context, settings: Settings) {
         PrinterDriver.setContext(context)
         val ip = settings.printers.find{it.master}?.ipAddress
         val s = PrinterSettings(
@@ -69,8 +80,6 @@ class KitchenPrintUseCase @Inject constructor(private val app: Application){
         s.forceDriver = 1
         val epsonPrinter = Epson(s)
         epsonPrinter.connect().then {
-            val document = epsonPrinter.createDocument()
-            PrintTicketService().masterTicket(document, order)
             epsonPrinter.print(document).then {
                 epsonPrinter.close().then {
                 }

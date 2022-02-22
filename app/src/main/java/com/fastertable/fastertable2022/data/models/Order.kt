@@ -1,6 +1,7 @@
 package com.fastertable.fastertable2022.data.models
 
 import android.os.Parcelable
+import android.util.Log
 import com.fastertable.fastertable2022.services.PrintTicketService
 import com.fastertable.fastertable2022.utils.GlobalUtils
 import com.fastertable.fastertable2022.utils.round
@@ -309,10 +310,12 @@ data class Order(
             )
             if (printer.master){
                 //creates the document
+                    Log.d("Testing", "In the master")
                 PrintTicketService().masterTicket(doc, this)
                 documents.add(doc)
             }else{
                 //creates the document
+                    Log.d("Testing", printer.toString())
                 PrintTicketService().kitchenTicket(doc, this, printer)
                 documents.add(doc)
             }
@@ -320,17 +323,76 @@ data class Order(
         return documents
     }
 
-
-    fun reprintKitchenTickets(): List<Document>{
+    fun createMasterTicket(): List<Document>{
         val printers = mutableListOf<Printer>()
         val documents = mutableListOf<Document>()
 
-        if (orderItems != null){
-            for (item in orderItems){
-                val p = printers.find{it.id == item.printer.id}
-                if (p == null){
-                    printers.add(item.printer)
-                }}
+        orderItems?.let{ items ->
+            val foodItems = items.filter { it.status == "Started" && it.salesCategory == "Food" }
+
+            if (foodItems.isNotEmpty()){
+                Epson.use()
+
+                val doc = PrinterDriver.createDocument(
+                    DocumentSettings(), "TM_U220"
+                )
+                PrintTicketService().masterTicket(doc, this)
+                documents.add(doc)
+            }
+        }
+        return documents
+    }
+
+    fun createKitchenTickets(): List<KitchenPrinterTicket>{
+        val printers = mutableListOf<Printer>()
+        val tickets = mutableListOf<KitchenPrinterTicket>()
+
+        orderItems?.let{ items ->
+            val foodItems = items.filter { it.status == "Started" && it.salesCategory == "Food" }
+
+            if (foodItems.isNotEmpty()){
+               foodItems.forEach { item ->
+                   val p = printers.find{it.id == item.printer.id}
+                   if (p == null){
+                       printers.add(item.printer)
+                   }}
+               }
+            }
+
+        for (printer in printers){
+            Epson.use()
+
+            val doc = PrinterDriver.createDocument(
+                DocumentSettings(), "TM_U220"
+            )
+
+            if (!printer.master){
+                //creates the document
+                PrintTicketService().kitchenTicket(doc, this, printer)
+                val kt = KitchenPrinterTicket(
+                    printer = printer,
+                    document = doc
+                )
+                tickets.add(kt)
+            }
+        }
+        return tickets
+    }
+
+    fun createBarTickets(): List<KitchenPrinterTicket>{
+        val printers = mutableListOf<Printer>()
+        val tickets = mutableListOf<KitchenPrinterTicket>()
+
+        orderItems?.let { items ->
+            val barItems = items.filter { it.status == "Started" && it.salesCategory == "Bar" }
+            if (barItems.isNotEmpty()) {
+                barItems.forEach { item ->
+                    val p = printers.find { it.id == item.printer.id }
+                    if (p == null) {
+                        printers.add(item.printer)
+                    }
+                }
+            }
         }
 
         for (printer in printers){
@@ -339,17 +401,112 @@ data class Order(
             val doc = PrinterDriver.createDocument(
                 DocumentSettings(), "TM_U220"
             )
-            if (printer.master){
+
+            if (!printer.master){
                 //creates the document
+                PrintTicketService().kitchenTicket(doc, this, printer)
+                val kt = KitchenPrinterTicket(
+                    printer = printer,
+                    document = doc
+                )
+                tickets.add(kt)
+            }
+        }
+
+        return tickets
+    }
+
+    fun reprintMasterTicket(): List<Document>{
+        val printers = mutableListOf<Printer>()
+        val documents = mutableListOf<Document>()
+
+        orderItems?.let{ items ->
+            val foodItems = items.filter { it.salesCategory == "Food" }
+
+            if (foodItems.isNotEmpty()){
+                Epson.use()
+
+                val doc = PrinterDriver.createDocument(
+                    DocumentSettings(), "TM_U220"
+                )
                 PrintTicketService().resendMasterTicket(doc, this)
-                documents.add(doc)
-            }else{
-                //creates the document
-                PrintTicketService().resendKitchenTicket(doc, this, printer)
                 documents.add(doc)
             }
         }
         return documents
+    }
+
+    fun reprintKitchenTickets(): List<KitchenPrinterTicket>{
+        val printers = mutableListOf<Printer>()
+        val tickets = mutableListOf<KitchenPrinterTicket>()
+
+        orderItems?.let{ items ->
+            val foodItems = items.filter { it.salesCategory == "Food" }
+
+            if (foodItems.isNotEmpty()){
+                foodItems.forEach { item ->
+                    val p = printers.find{it.id == item.printer.id}
+                    if (p == null){
+                        printers.add(item.printer)
+                    }}
+            }
+        }
+
+        for (printer in printers){
+            Epson.use()
+
+            val doc = PrinterDriver.createDocument(
+                DocumentSettings(), "TM_U220"
+            )
+
+            if (!printer.master){
+                //creates the document
+                PrintTicketService().resendKitchenTicket(doc, this, printer)
+                val kt = KitchenPrinterTicket(
+                    printer = printer,
+                    document = doc
+                )
+                tickets.add(kt)
+            }
+        }
+        return tickets
+    }
+
+    fun reprintBarTickets(): List<KitchenPrinterTicket>{
+        val printers = mutableListOf<Printer>()
+        val tickets = mutableListOf<KitchenPrinterTicket>()
+
+        orderItems?.let { items ->
+            val barItems = items.filter { it.salesCategory == "Bar" }
+            if (barItems.isNotEmpty()) {
+                barItems.forEach { item ->
+                    val p = printers.find { it.id == item.printer.id }
+                    if (p == null) {
+                        printers.add(item.printer)
+                    }
+                }
+            }
+        }
+
+        for (printer in printers){
+            Epson.use()
+
+            val doc = PrinterDriver.createDocument(
+                DocumentSettings(), "TM_U220"
+            )
+
+            if (!printer.master){
+                //creates the document
+                PrintTicketService().resendKitchenTicket(doc, this, printer)
+                val kt = KitchenPrinterTicket(
+                    printer = printer,
+                    document = doc
+                )
+                tickets.add(kt)
+            }
+        }
+
+        return tickets
     }
 
 
@@ -540,3 +697,9 @@ data class IdRequest
     val id: String,
     val lid: String
 ): Parcelable
+
+
+data class KitchenPrinterTicket(
+    val printer: Printer,
+    val document: Document
+)

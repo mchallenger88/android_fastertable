@@ -1,6 +1,7 @@
 package com.fastertable.fastertable2022.data.models
 
 import android.os.Parcelable
+import android.util.Log
 import com.fastertable.fastertable2022.services.PrintTicketService
 import com.fastertable.fastertable2022.utils.GlobalUtils
 import com.fastertable.fastertable2022.utils.round
@@ -357,6 +358,7 @@ data class Payment(
 
     fun getTicketReceipt(order: Order,printer: Printer, location: Location): Document{
         Epson.use()
+
         val document = PrinterDriver.createDocument(
             DocumentSettings(), printer.printerModel)
         activeTicket()?.let { ticket ->

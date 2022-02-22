@@ -1,6 +1,7 @@
 package com.fastertable.fastertable2022.ui.payment
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -683,6 +684,7 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
         viewModelScope.launch {
             settings?.let { s ->
                 terminal?.let { t ->
+
                     _activePayment.value?.let { payment ->
                         val activeTicket = payment.tickets?.find { it.uiActive }
                         activeTicket?.let { ticket ->
@@ -695,6 +697,7 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
                                                 "http://" + t.ccEquipment.ipAddress + ":8080/pos?Action=StartOrder&Order=" + order.orderNumber.toString() + "&Format=JSON"
                                             val response: TerminalResponse =
                                                 startCredit.startCreditProcess(url)
+
                                             if (response.Status == "Success") {
                                                 creditStaging(order, s, t)
                                             } else {
@@ -726,7 +729,9 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
                 activePayment.value?.activeTicket()?.let { ticket ->
                     creditAmount.value?.let { ca ->
                         val transaction: CayanCardTransaction = creditCardRepository.createCayanTransaction(order, ticket, settings, terminal, ca)
+                        Log.d("Testing", transaction.toString())
                         val stageResponse: Any = stageTransaction.stageTransaction(transaction)
+                        Log.d("Testing", stageResponse.toString())
                         if (stageResponse is String){
                             cancelCredit()
                             setError("Error Notification", STAGING_ERROR)

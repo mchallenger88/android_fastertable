@@ -327,6 +327,8 @@
                 android:text="@{viewModel.activeCategory.category}"
                 android:textAlignment="center"
                 android:visibility="gone"
+                android:maxLines="1"
+                android:ellipsize="end"
                 app:menuItemsTextViewVisibility="@{viewModel.menusNavigation}"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="@+id/btn_menu_back"

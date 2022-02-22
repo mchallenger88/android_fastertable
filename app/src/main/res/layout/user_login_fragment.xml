@@ -243,6 +243,16 @@
             app:layout_constraintStart_toStartOf="parent"
             app:terminalUsing="@{viewModel.liveTerminal}" />
 
+        <TextView
+            android:id="@+id/txt_terminal_dropdown"
+            style="@style/small_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="@string/terminal_dd"
+            app:layout_constraintBottom_toTopOf="@+id/btn_terminal"
+            app:layout_constraintStart_toStartOf="parent" />
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

@@ -1,6 +1,7 @@
 package com.fastertable.fastertable2022.ui.dialogs
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
@@ -23,16 +24,18 @@ class ReorderDrinksDialogFragment  : BaseDialog(R.layout.dialog_reorder_drinks) 
         createAdapter(binding)
 
         binding.btnDrinksOk.setOnClickListener {
-            viewModel.activePayment.value?.let { payment ->
-                if (payment.anyTicketsPaid()){
+            if (viewModel.activePayment.value != null){
+                if (viewModel.activePayment.value!!.anyTicketsPaid()){
                     dismiss()
                     viewModel.setError("Tickets Paid", "Payments have been made on this order. You will have to void the payments or begin a new order.")
                 }else{
                     viewModel.addDrinksToOrder(drinksList)
                     dismiss()
                 }
+            }else{
+                viewModel.addDrinksToOrder(drinksList)
+                dismiss()
             }
-
         }
 
         binding.btnDrinksClose.setOnClickListener {

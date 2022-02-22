@@ -36,7 +36,7 @@ fun dateToString(textView: TextView, date: LocalDate?){
 @BindingAdapter("terminalUsing")
 fun setTerminalName(textView: TextView, terminal: Terminal?){
     if (terminal != null) {
-        textView.text = "Terminal:  ${terminal.terminalName}"
+        textView.text = terminal.terminalName
     }
 }
 

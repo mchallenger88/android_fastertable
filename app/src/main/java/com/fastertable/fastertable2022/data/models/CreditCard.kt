@@ -105,13 +105,13 @@ data class StageResponse(
 data class TerminalResponse(
     val Status: String,
     val ResponseMessage: String,
-    val AdditionalParameters: String,
+    val AdditionalParameters: AdditionalParameters?,
 ): Parcelable
 @Parcelize
 data class GiftTerminalResponse(
     val Status: String,
     val responseMessage:String,
-    val additionalParameters: String,
+    val additionalParameters: AdditionalParameters?,
 ): Parcelable
 @Parcelize
 data class MessageList(

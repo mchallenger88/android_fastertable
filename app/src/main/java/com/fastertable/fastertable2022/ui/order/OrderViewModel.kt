@@ -251,9 +251,7 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
         val payment = _activePayment.value
         //Check to see if there are any payments on the order and if yes then no more items can be added
         if (payment != null){
-            Log.d("Testing", "Payment not null")
             if (payment.anyTicketsPaid()){
-                Log.d("Testing", payment.anyTicketsPaid().toString())
                 setError("Tickets Paid", "Payments have been made on this order. You will have to void the payments or begin a new order.")
             }else{
                 if (order != null && item != null){
@@ -570,6 +568,7 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
     }
 
     fun addDrinksToOrder(drinksList: MutableList<ReorderDrink>){
+        Log.d("Testing", "Add drinks")
         if (activeOrder.value?.closeTime == null){
             for (drink in drinksList){
                 val newOrderItem = drink.drink.clone()
@@ -592,13 +591,22 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
                     if (order.orderNumber == 99){
                         o = saveOrder.saveOrder(order)
                         o?.let {
-                            val list = it.getKitchenTickets()
-                            printerService.printKitchenTickets(list, settings)
+//                            val list = it.getKitchenTickets()
+                            val masterList = it.createMasterTicket()
+                            val kitchenList = it.createKitchenTickets()
+                            val barList = it.createBarTickets()
+                            printerService.printMasterTicket(masterList, settings)
+                            printerService.printKitchenTickets(kitchenList, settings)
+                            printerService.printKitchenTickets(barList, settings)
                             getOrders()
                         }
                     }else{
-                        val list = order.getKitchenTickets()
-                        printerService.printKitchenTickets(list, settings)
+                        val masterList = order.createMasterTicket()
+                        val kitchenList = order.createKitchenTickets()
+                        val barList = order.createBarTickets()
+                        printerService.printMasterTicket(masterList, settings)
+                        printerService.printKitchenTickets(kitchenList, settings)
+                        printerService.printKitchenTickets(barList, settings)
                         updatePayment()
                         getOrders()
                     }
@@ -723,8 +731,12 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
         viewModelScope.launch {
             settings?.let {
                 _activeOrder.value?.let {
-                    val list = it.reprintKitchenTickets()
-                    printerService.printKitchenTickets(list, settings)
+                    val masterList = it.reprintMasterTicket()
+                    val kitchenList = it.reprintKitchenTickets()
+                    val barList = it.reprintBarTickets()
+                    printerService.printMasterTicket(masterList, settings)
+                    printerService.printKitchenTickets(kitchenList, settings)
+                    printerService.printKitchenTickets(barList, settings)
                 }
             }
         }

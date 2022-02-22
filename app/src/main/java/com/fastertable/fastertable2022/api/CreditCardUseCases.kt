@@ -1,5 +1,6 @@
 package com.fastertable.fastertable2022.api
 
+import android.util.Log
 import com.fastertable.fastertable2022.data.models.*
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers

@@ -142,6 +142,9 @@ class PrintTicketService {
             .newLine()
             .text("--- " + order.orderType.uppercase(Locale.getDefault()) + " ORDER ---", TextSettings(bold = true))
             .newLine()
+            .newLine()
+            .text("REPRINT - REPRINT - REPRINT", TextSettings(bold = true))
+            .newLine()
 
         if(order.orderType == "Delivery"){
             val telephone = order.outsideDelivery?.telephone
@@ -200,49 +203,48 @@ class PrintTicketService {
                 .text("GUEST $i")
                 .newLine()
             val list = order.orderItems?.filter { it.guestId == i }
-            list?.let { oiList ->
-            for (item in oiList){
-                if (item.salesCategory == "Food"){
-                    document
-                        .alignment("left")
+            list?.let{ oiList ->
+                for (item in oiList){
+                    if (item.salesCategory == "Food"){
+                        document
+                            .alignment("left")
 
-                    addMenuItemLine(document, item, order.orderType)
+                        addMenuItemLine(document, item, order.orderType)
 
-                    var ing: String
-                    if (item.activeModItems().isNotEmpty()){
-                        item.activeModItems().forEach{ m ->
-                            document
-                                .color(PrinterDriver.COLOR.RED)
-                                .text("  " + m.itemName.uppercase(Locale.getDefault()), TextSettings(bold = true))
-                                .color(PrinterDriver.COLOR.BLACK)
-                                .newLine()
-                        }
-                    }
-                    item.ingredients?.forEach{ i ->
-                        ing =
-                            when (i.orderValue){
-                                0 -> "NO " + i.name.uppercase(Locale.getDefault())
-                                2 -> "EXTRA " + i.name.uppercase(Locale.getDefault())
-                                else -> ""
+                        var ing: String
+                        if (item.activeModItems().isNotEmpty()){
+                            item.activeModItems().forEach{ m ->
+                                document
+                                    .color(PrinterDriver.COLOR.RED)
+                                    .text("  " + m.itemName.uppercase(Locale.getDefault()), TextSettings(bold = true))
+                                    .color(PrinterDriver.COLOR.BLACK)
+                                    .newLine()
                             }
-                        if (ing != ""){
-                            document
-                                .color(PrinterDriver.COLOR.RED)
-                                .text("  $ing", TextSettings(bold = true))
-                                .color(PrinterDriver.COLOR.BLACK)
-                                .newLine()
                         }
-                    }
-
-                    item.note?.let{
-                        if (it != "") {
-                            document
-                                .text("  Notes: " + item.note)
-                                .newLine()
+                        item.ingredients?.forEach{ i ->
+                            ing =
+                                when (i.orderValue){
+                                    0 -> "NO " + i.name.uppercase(Locale.getDefault())
+                                    2 -> "EXTRA " + i.name.uppercase(Locale.getDefault())
+                                    else -> ""
+                                }
+                            if (ing != ""){
+                                document
+                                    .color(PrinterDriver.COLOR.RED)
+                                    .text("  $ing", TextSettings(bold = true))
+                                    .color(PrinterDriver.COLOR.BLACK)
+                                    .newLine()
+                            }
                         }
-                    }
-                    document.newLine()
-                }}}
+                        item.note?.let {
+                            if (it != ""){
+                                document
+                                    .text("  Notes: " + item.note)
+                                    .newLine()
+                            }
+                        }
+                        document.newLine()
+                    }}}
         }
 
         document
@@ -432,6 +434,9 @@ class PrintTicketService {
             .text("*** " + printer.printerName.uppercase(Locale.getDefault()) + " ***", TextSettings(bold = true))
             .newLine()
             .text("--- " + order.orderType.uppercase(Locale.getDefault()) + " ORDER ---", TextSettings(bold = true))
+            .newLine()
+            .newLine()
+            .text("REPRINT - REPRINT - REPRINT", TextSettings(bold = true))
             .newLine()
 
         if(order.orderType == "Delivery"){
@@ -968,8 +973,12 @@ class PrintTicketService {
 }
 
 class KitchenPrintingService @Inject constructor(private val kitchenPrintUseCase: KitchenPrintUseCase) {
-    suspend fun printKitchenTickets(list: List<Document>, settings: Settings): KitchenPrintUseCase.Result.Success{
+    suspend fun printKitchenTickets(list: List<KitchenPrinterTicket>, settings: Settings): KitchenPrintUseCase.Result.Success{
         return kitchenPrintUseCase.print(list, settings)
+    }
+
+    suspend fun printMasterTicket(list: List<Document>, settings: Settings): KitchenPrintUseCase.Result.Success{
+        return kitchenPrintUseCase.printMaster(list, settings)
     }
 }
 
