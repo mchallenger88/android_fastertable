@@ -660,6 +660,16 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
                                     }
 
                                     if (ticketPayment.paymentType == "Credit" || ticketPayment.paymentType == "Manual Credit"){
+
+                                        _activeOrder.value?.let { order ->
+                                            _activePayment.value?.let { pay ->
+                                                val ticketDocument = pay.getTicketReceipt(order, p, loc)
+                                                ticketDocument.let { doc ->
+                                                    receiptPrintingService.printTicketReceipt(doc, p, settings)
+                                                }
+                                            }
+                                        }
+
                                         _activePayment.value?.let { pay ->
                                             val ticketDocument = pay.getCreditReceipt(p, loc)
                                             ticketDocument.let { doc ->
@@ -729,9 +739,7 @@ class PaymentViewModel @Inject constructor (private val loginRepository: LoginRe
                 activePayment.value?.activeTicket()?.let { ticket ->
                     creditAmount.value?.let { ca ->
                         val transaction: CayanCardTransaction = creditCardRepository.createCayanTransaction(order, ticket, settings, terminal, ca)
-                        Log.d("Testing", transaction.toString())
                         val stageResponse: Any = stageTransaction.stageTransaction(transaction)
-                        Log.d("Testing", stageResponse.toString())
                         if (stageResponse is String){
                             cancelCredit()
                             setError("Error Notification", STAGING_ERROR)

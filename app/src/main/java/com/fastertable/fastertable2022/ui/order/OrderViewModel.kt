@@ -36,7 +36,7 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
                                           private val updateOrder: UpdateOrder) : BaseViewModel() {
 
     //region Model Variables
-    private var itemNote = ""
+
     val user: OpsAuth? = loginRepository.getOpsUser()
     val settings: Settings? = loginRepository.getSettings()
     var reorderList = mutableListOf<ReorderDrink>()
@@ -45,6 +45,10 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
     private val _menus = MutableLiveData<List<Menu>>()
     val menus: LiveData<List<Menu>>
         get() = _menus
+
+    private val _itemNote = MutableLiveData("")
+    val itemNote: LiveData<String>
+        get() = _itemNote
 
     private val _activeCategory = MutableLiveData<MenuCategory>()
     val activeCategory: LiveData<MenuCategory>
@@ -163,6 +167,10 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
     val navHome: LiveData<Boolean>
         get() = _navHome
 
+    private val _navOrder = MutableLiveData(false)
+    val navOrder: LiveData<Boolean>
+        get() = _navOrder
+
     //endregion
 
     //region Initialization
@@ -265,14 +273,17 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
         }
     }
 
-    fun createAndAddItem(order: Order, item: MenuItem){
+    private fun createAndAddItem(order: Order, item: MenuItem){
         if (order.closeTime ==  null){
             val mods = arrayListOf<ModifierItem>()
-            item.modifiers.forEach { mod ->
-                mod.modifierItems.forEach { mi ->
-                    if (mi.quantity > 0) {
-                        mods.add(mi)
-                    }}}
+            if (mods.isNotEmpty()) {
+                item.modifiers.forEach { mod ->
+                    mod.modifierItems.forEach { mi ->
+                        if (mi.quantity > 0) {
+                            mods.add(mi)
+                        }}}
+            }
+
 
             val price = item.prices.find { it.isSelected }
             if (price != null) {
@@ -293,7 +304,7 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
                     dontMake = false,
                     rush = false,
                     tax = price.tax,
-                    note = itemNote,
+                    note = _itemNote.value,
                     employeeId = user?.employeeId ?: "",
                     status = "Started",
                 )
@@ -317,6 +328,10 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
         }
         _activeOrder.value = _activeOrder.value
         clearItemSettings()
+    }
+
+    fun addItemNote(note: String){
+        _itemNote.value = note
     }
 
     fun addAdHocItem(item: OrderItem){
@@ -420,7 +435,7 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
 
     private fun clearItemSettings(){
         _activeItem.value = null
-//        _workingItemPrice.value = 0.0
+        _itemNote.value = ""
     }
 
     private fun findMenuItem(id: String): MenuItem? {
@@ -437,10 +452,6 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
 
     fun openNoteDialog(){
         _showOrderNote.value = true
-    }
-
-    fun saveOrderNote(note: String){
-        itemNote = note
     }
 
     //endregion
@@ -671,6 +682,10 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
             val rid = loginRepository.getStringSharedPreferences("rid")
             getOrders.getOrders(midnight, rid ?: "")
         }
+    }
+
+    fun navToOrder(b: Boolean){
+        _navOrder.value = b
     }
 
     fun getOrdersFromFile(){

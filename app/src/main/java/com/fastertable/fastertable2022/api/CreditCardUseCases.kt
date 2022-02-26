@@ -20,10 +20,12 @@ class StartCreditUseCase @Inject constructor(private val fastertableApi: Fastert
                 if (response.isSuccessful && response.body() != null){
                     return@withContext Result.Success(response.body()!!)
                 }else{
+                    Log.d("Testing", Result.Failure.toString())
                     return@withContext Result.Failure
                 }
             }catch (t: Throwable){
                 if (t !is CancellationException){
+                    Log.d("Testing1", Result.Failure.toString())
                     return@withContext  Result.Failure
                 }else{
                     throw t
@@ -31,6 +33,8 @@ class StartCreditUseCase @Inject constructor(private val fastertableApi: Fastert
             }
         }
     }
+
+
 
     suspend fun cancelCredit(url: String): Result {
         return withContext(Dispatchers.IO){
@@ -110,7 +114,7 @@ class AdjustTipUseCase @Inject constructor(private val fastertableApi: Fastertab
         object Failure: Result()
     }
 
-    suspend fun tipAdjust(transaction: AdjustTipTest): Result {
+    suspend fun tipAdjust(transaction: AdjustTip): Result {
         return withContext(Dispatchers.IO){
             try{
                 val response = fastertableApi.tipAdjustment(transaction)

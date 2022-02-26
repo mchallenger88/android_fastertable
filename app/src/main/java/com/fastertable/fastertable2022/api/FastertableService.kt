@@ -82,7 +82,7 @@ interface FastertableApi {
     suspend fun manualAuthorization(@Body authorizationRequest: AuthorizationRequest): Response<TransactionResponse45>
 
     @POST("payments/tipadjust")
-    suspend fun tipAdjustment(@Body transaction: AdjustTipTest): Response<TransactionResponse45>
+    suspend fun tipAdjustment(@Body transaction: AdjustTip): Response<TransactionResponse45>
 
     @POST("payments/capture")
     suspend fun captureTicket(@Body transaction: CaptureRequest): Response<TransactionResponse45>

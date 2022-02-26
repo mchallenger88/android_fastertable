@@ -58,24 +58,24 @@ class OrderFragment : BaseFragment(R.layout.order_fragment) {
     }
 
     private fun createObservers(){
-        viewModel.pageLoaded.observe(viewLifecycleOwner, {
-            if (it){
+        viewModel.pageLoaded.observe(viewLifecycleOwner) {
+            if (it) {
                 viewModel.menus.value?.let { list ->
                     createMenuButtons(list)
                     viewModel.setPageLoaded(false)
                 }
 
             }
-        })
+        }
 
-        viewModel.ticketsPrinted.observe(viewLifecycleOwner, {
-            if (it != null){
+        viewModel.ticketsPrinted.observe(viewLifecycleOwner) {
+            if (it != null) {
                 viewModel.activeOrder.value?.let { order ->
                     viewModel.updateOrderStatus(order)
                 }
 
             }
-        })
+        }
     }
 
     private fun createMenuButtons(menus: List<Menu>){

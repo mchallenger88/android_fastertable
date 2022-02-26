@@ -45,6 +45,10 @@ class TransferOrderViewModel @Inject constructor (
     val showSpinner: LiveData<Boolean>
         get() = _showSpinner
 
+    private val _navOrder = MutableLiveData(false)
+    val navOrder: LiveData<Boolean>
+        get() = _navOrder
+
     init {
         getEmployees()
         filterOrders()
@@ -128,5 +132,9 @@ class TransferOrderViewModel @Inject constructor (
         _showSpinner.postValue(false)
         _transferComplete.postValue(true)
 
+    }
+
+    fun navToOrder(b: Boolean){
+        _navOrder.value = b
     }
 }

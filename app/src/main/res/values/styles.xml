@@ -320,6 +320,11 @@
         <item name="android:textStyle">italic</item>
     </style>
 
+    <style name="error_style_tiny" parent="error_style">
+        <item name="android:textSize">@dimen/d16</item>
+        <item name="android:textStyle">italic</item>
+    </style>
+
     <style name="bottom_sheet_title" parent="large_title_bold">
         <item name="android:textSize">@dimen/d26</item>
     </style>

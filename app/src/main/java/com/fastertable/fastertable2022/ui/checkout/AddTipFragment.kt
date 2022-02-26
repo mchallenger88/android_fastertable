@@ -1,10 +1,12 @@
 package com.fastertable.fastertable2022.ui.checkout
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Context
 import android.os.Bundle
 import android.view.View
 import android.view.inputmethod.InputMethodManager
+import android.widget.TextView
 import androidx.fragment.app.activityViewModels
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.fastertable.fastertable2022.R
@@ -15,6 +17,7 @@ import com.fastertable.fastertable2022.common.base.BaseFragment
 import com.fastertable.fastertable2022.data.models.TicketPayment
 import com.fastertable.fastertable2022.databinding.CheckoutAddTipFragmentBinding
 import dagger.hilt.android.AndroidEntryPoint
+
 
 @AndroidEntryPoint
 class AddTipFragment: BaseFragment(R.layout.checkout_add_tip_fragment) {
@@ -40,6 +43,7 @@ class AddTipFragment: BaseFragment(R.layout.checkout_add_tip_fragment) {
 
         val paymentAdapter = TicketPaymentAdapter(TicketPaymentAdapter.AddTipListener {
             hideKeyboardFrom(requireContext(), requireView())
+            tipAlert(it)
             viewModel.addTipNew(it)
         })
 
@@ -48,12 +52,12 @@ class AddTipFragment: BaseFragment(R.layout.checkout_add_tip_fragment) {
         binding.tipTicketRecycler.adapter = ticketNumberAdapter
         binding.ticketItemsRecycler.adapter = ticketsAdapter
 
-        viewModel.activePayment.observe(viewLifecycleOwner, { payment ->
-            if (payment != null){
+        viewModel.activePayment.observe(viewLifecycleOwner) { payment ->
+            if (payment != null) {
                 val list = mutableListOf<TicketPayment>()
                 payment.tickets?.forEach { ticket ->
                     ticket.paymentList?.forEach {
-                        if (!it.canceled){
+                        if (!it.canceled) {
                             list.add(it)
                         }
                     }
@@ -62,13 +66,41 @@ class AddTipFragment: BaseFragment(R.layout.checkout_add_tip_fragment) {
                 paymentAdapter.submitList(list)
                 paymentAdapter.notifyDataSetChanged()
             }
-        })
+        }
     }
 
     private fun hideKeyboardFrom(context: Context, view: View) {
         val imm: InputMethodManager =
             context.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(view.windowToken, 0)
+    }
+
+    private fun tipAlert(tp: TicketPayment){
+        val builder: AlertDialog.Builder = this.let {
+            AlertDialog.Builder(activity)
+        }
+
+        var tipMessage = ""
+
+        this.context?.let {
+            tipMessage = it.getString(R.string.add_gratuity_message, "%.${2}f".format(tp.gratuity))
+        }
+
+        builder.setMessage(tipMessage)
+            ?.setTitle(R.string.add_gratuity_title)
+
+//        builder.apply {
+//            setPositiveButton(
+//                R.string.ok,
+//                DialogInterface.OnClickListener { dialog, id ->
+//
+//                })
+//        }
+
+        val dialog: AlertDialog = builder.create()
+        dialog.show()
+        val textView = dialog.findViewById<View>(android.R.id.message) as TextView
+        textView.textSize = 24f
     }
 
 }

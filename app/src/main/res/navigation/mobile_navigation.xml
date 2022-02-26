@@ -166,6 +166,9 @@
         <argument
             android:name="order_id"
             app:argType="string" />
+        <action
+            android:id="@+id/action_transferOrderFragment_to_orderFragment"
+            app:destination="@id/orderFragment" />
     </fragment>
     <fragment
         android:id="@+id/floorplanManagementFragment"
@@ -186,6 +189,9 @@
         <action
             android:id="@+id/action_transferItemFragment_to_nav_home"
             app:destination="@id/nav_home" />
+        <action
+            android:id="@+id/action_transferItemFragment_to_orderFragment"
+            app:destination="@id/orderFragment" />
     </fragment>
     <fragment
         android:id="@+id/voidStartFragment"

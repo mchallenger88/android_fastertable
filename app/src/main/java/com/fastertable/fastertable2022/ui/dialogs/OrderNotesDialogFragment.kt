@@ -24,7 +24,7 @@ class OrderNotesDialogFragment : BaseDialog(R.layout.order_note_dialog) {
         binding.viewModel = viewModel
 
         binding.btnSaveOrderNote.setOnClickListener {
-            itemNoteListener.returnNote(binding.txtOrderNote.text.toString())
+            viewModel.addItemNote(binding.txtOrderNote.text.toString())
             hideKeyboardFrom(requireContext(), requireView())
             dismiss()
         }

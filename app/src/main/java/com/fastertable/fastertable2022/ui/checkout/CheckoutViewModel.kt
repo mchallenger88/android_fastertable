@@ -372,7 +372,7 @@ class CheckoutViewModel @Inject constructor (
             ticketPayment.creditCardTransactions?.let {
                 val ct = it.first()
                 settings?.let {
-                    val request = AdjustTipTest(
+                    val request = AdjustTip(
                         MerchantName = settings.merchantCredentials.MerchantName,
                         MerchantSiteId = settings.merchantCredentials.MerchantSiteId,
                         MerchantKey = settings.merchantCredentials.MerchantKey,
@@ -504,4 +504,6 @@ class CheckoutViewModel @Inject constructor (
     fun setCheckoutComplete(value: String){
         _checkoutComplete.value = value
     }
+
+
 }

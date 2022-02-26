@@ -279,6 +279,8 @@ class PrintTicketService {
         document.color(PrinterDriver.COLOR.BLACK)
         document.text(line, TextSettings(size = 24f, bold = true))
             .newLine()
+
+
     }
 
     private fun addAdditionalFees(document: Document, ticket: Ticket){

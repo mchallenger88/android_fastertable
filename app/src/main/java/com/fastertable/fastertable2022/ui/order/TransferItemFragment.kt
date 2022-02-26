@@ -38,15 +38,15 @@ class TransferItemFragment: BaseFragment(R.layout.transfer_order_item_fragment) 
         binding.recyclerTransferItem.adapter = orderAdapter
         binding.recyclerOrderTransfer.adapter = concatAdapter
 
-        viewModel.activeOrder.observe(viewLifecycleOwner, {
-            if (it != null){
+        viewModel.activeOrder.observe(viewLifecycleOwner) {
+            if (it != null) {
                 orderAdapter.submitList(it.getAllOrderItems())
                 orderAdapter.notifyDataSetChanged()
             }
-        })
+        }
 
-        viewModel.orders.observe(viewLifecycleOwner, { list ->
-            if (list != null){
+        viewModel.orders.observe(viewLifecycleOwner) { list ->
+            if (list != null) {
                 val newList = list.filter { it.closeTime == null } as MutableList<Order>
                 viewModel.activeOrder.value?.let { o ->
                     newList.remove(o)
@@ -54,7 +54,7 @@ class TransferItemFragment: BaseFragment(R.layout.transfer_order_item_fragment) 
                 ordersAdapter.submitList(newList)
                 ordersAdapter.notifyDataSetChanged()
             }
-        })
+        }
     }
 
 }

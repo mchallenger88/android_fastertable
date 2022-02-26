@@ -58,8 +58,8 @@ class PaymentFragment: BaseFragment(R.layout.payment_fragment) {
 
 
     private fun createObservers(binding: PaymentFragmentBinding){
-        viewModel.paymentScreen.observe(viewLifecycleOwner, {
-            when (it){
+        viewModel.paymentScreen.observe(viewLifecycleOwner) {
+            when (it) {
                 ShowPayment.NONE -> {
                     binding.cashLayout.visibility = View.GONE
                     binding.discountLayout.visibility = View.GONE
@@ -98,7 +98,7 @@ class PaymentFragment: BaseFragment(R.layout.payment_fragment) {
                     binding.creditLayout.visibility = View.GONE
                 }
             }
-        })
+        }
     }
 
     private fun createAdapters(binding: PaymentFragmentBinding){
@@ -114,14 +114,14 @@ class PaymentFragment: BaseFragment(R.layout.payment_fragment) {
 
         binding.ticketItemsRecycler.adapter = ticketsAdapter
 
-        viewModel.activePayment.observe(viewLifecycleOwner, { item ->
+        viewModel.activePayment.observe(viewLifecycleOwner) { item ->
             item?.tickets?.forEach { ticket ->
-                if (ticket.uiActive){
+                if (ticket.uiActive) {
                     ticketsAdapter.submitList(ticket.ticketItems)
                     ticketsAdapter.notifyDataSetChanged()
                 }
             }
-        })
+        }
     }
 
     private fun discountButtons(binding: PaymentFragmentBinding){

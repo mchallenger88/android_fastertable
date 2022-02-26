@@ -105,8 +105,14 @@ data class StageResponse(
 data class TerminalResponse(
     val Status: String,
     val ResponseMessage: String,
-    val AdditionalParameters: AdditionalParameters?,
+//    val AdditionalParameters: AdditionalParameters?,
 ): Parcelable
+
+sealed class AdditionalParameter<T>(val value: T) {
+    class ClassValue(value: AdditionalParameters) : AdditionalParameter<AdditionalParameters>(value)
+    class StringValue(value: String) : AdditionalParameter<String>(value)
+}
+
 @Parcelize
 data class GiftTerminalResponse(
     val Status: String,
@@ -485,14 +491,14 @@ data class AdditionalResponseParameters(
     val fsaCard: String,
 ): Parcelable
 
-@Parcelize
-data class AdjustTip(
-    val credentials: MerchantCredentials,
-    val tipRequest: TipRequest,
-): Parcelable
+//@Parcelize
+//data class AdjustTip(
+//    val credentials: MerchantCredentials,
+//    val tipRequest: TipRequest,
+//): Parcelable
 
 @Parcelize
-data class AdjustTipTest(
+data class AdjustTip(
     val MerchantName: String,
     val MerchantSiteId: String,
     val MerchantKey: String,

@@ -32,7 +32,7 @@
 
     //Error Dialog
     <string name="error_title">Error Notification</string>
-    <string name="error_message">An error occurred. Please try again or contact your system admininstrator.</string>
+    <string name="error_message">An error occurred. Please try again or contact your system administrator.</string>
 
     <string name="string_order">Order</string>
     <string name="string_customer">Customer</string>
@@ -350,6 +350,10 @@
         for any other use.
     </string>
     <string name="location_permissions_title">Location Permission</string>
+    <string name="add_gratuity_title">Tip Alert</string>
+    <string name="add_gratuity_message">You have added a tip of $%1$s to this ticket.
+    </string>
+    <string name="extra_fees_may_be_included_in_the_total">Extra fees may be included in the total</string>
 
 
     //Floorplan
