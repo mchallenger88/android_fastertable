@@ -47,6 +47,7 @@ class CheckoutOrdersAdapter(val clickListener: CheckoutOrderListListener): ListA
                 binding.txtPaymentType.setBackgroundColor(white)
                 binding.txtStartTime.setBackgroundColor(white)
                 binding.txtTableNumber.setBackgroundColor(white)
+
             }else{
                 binding.txtOrderTotal.setTextColor(ColorStateList.valueOf(white))
                 binding.txtOrderNumber.setTextColor(ColorStateList.valueOf(white))

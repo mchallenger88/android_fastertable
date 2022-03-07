@@ -16,7 +16,6 @@ import dagger.hilt.android.AndroidEntryPoint
 class OrderNotesDialogFragment : BaseDialog(R.layout.order_note_dialog) {
     private val viewModel: OrderViewModel by activityViewModels()
     private val binding: OrderNoteDialogBinding by viewBinding()
-    private lateinit var itemNoteListener: ItemNoteListener
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -30,16 +29,6 @@ class OrderNotesDialogFragment : BaseDialog(R.layout.order_note_dialog) {
         }
         binding.btnCancelOrderNote.setOnClickListener {
             dismiss()
-        }
-    }
-
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        if (context is ItemNoteListener) {
-            itemNoteListener = context
-        } else {
-            throw RuntimeException(requireContext().toString() + " must implement OnFragmentInteractionListener")
         }
     }
 

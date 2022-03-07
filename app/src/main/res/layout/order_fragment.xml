@@ -404,6 +404,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
                     android:layout_marginEnd="16dp"
+                    android:paddingStart="@dimen/d28"
+                    android:paddingEnd="@dimen/d28"
                     android:text="@{viewModel.activeItem.itemDescription}"
                     android:textAlignment="textStart"
                     app:layout_constraintEnd_toEndOf="parent"

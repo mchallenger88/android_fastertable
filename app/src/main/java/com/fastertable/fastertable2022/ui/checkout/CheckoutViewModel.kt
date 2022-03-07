@@ -143,13 +143,14 @@ class CheckoutViewModel @Inject constructor (
                 ce.creditTips = ce.creditTips.minus(tp.div(100)).round(2)
             }
 
-            if (ce.tipSettlementPeriod == "Daily"){
-                ce.totalOwed = ce.cashSalesTotal.minus(ce.creditTips)
-            }
-
-            if (ce.tipSettlementPeriod === "Weekly"){
-                ce.totalOwed = ce.cashSalesTotal
-            }
+//            if (ce.tipSettlementPeriod == "Daily"){
+//                ce.totalOwed = ce.cashSalesTotal.minus(ce.creditTips)
+//            }
+//
+//            if (ce.tipSettlementPeriod === "Weekly"){
+//                ce.totalOwed = ce.cashSalesTotal
+//            }
+            ce.totalOwed = ce.cashSalesTotal
 
             if (ce.totalOwed < 0){
                 ce.totalOwed = abs(ce.totalOwed)
@@ -288,12 +289,16 @@ class CheckoutViewModel @Inject constructor (
                         if (p.paymentType == "Credit" || p.paymentType == "Manual Credit" || p.paymentType == "Gift"){
                             paymentsList.add(p)
                             payments.add(p.gratuity)
+                        }else{
+                            payments.add(p.gratuity)
                         }
                     }
                 }
 
             }else{
                 if (ticket.paymentType == "Credit" || ticket.paymentType == "Manual Credit" || ticket.paymentType == "Gift"){
+                    payments.add(ticket.gratuity)
+                }else{
                     payments.add(ticket.gratuity)
                 }
             }
