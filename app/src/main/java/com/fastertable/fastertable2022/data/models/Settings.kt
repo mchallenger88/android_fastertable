@@ -54,7 +54,7 @@ data class AdditionalFees(
     val name: String,
     val feeType: FeeType,
     val amount: Double,
-    var checkAmount: Double?,
+    var checkAmount: Double,
     val checkMessage: String
 ): Parcelable
 

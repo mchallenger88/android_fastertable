@@ -120,7 +120,7 @@ data class Payment(
             for (ticket in list){
                 ticket.subTotal = ticket.ticketItems.sumOf { it -> it.ticketItemPrice }.round(2)
                 ticket.tax = ticket.subTotal.times(ticket.taxRate).round(2)
-                ticket.total = ticket.subTotal.plus(ticket.tax).round(2)
+                ticket.total = ticket.subTotal.plus(ticket.tax).plus(ticket.allExtraFees()).round(2)
             }
         }
     }
@@ -442,14 +442,19 @@ data class Ticket(
         fun recalculateAfterApproval(){
             subTotal = ticketItems.sumOf { it.ticketItemPrice }.round(2)
             tax = subTotal.times(taxRate).round(2)
-            total = subTotal.plus(tax).round(2)
+            total = subTotal.plus(tax).plus(allExtraFees()).round(2)
         }
 
-        fun addTip(tip: Double, taxRate: Double){
-            activePayment()?.gratuity = tip
+        fun addTip(tip: Double){
+//            activePayment()?.gratuity = tip
             recalculateAfterApproval()
-            this.total = this.total.plus(tip).round(2)
-            this.paymentTotal = this.total.round(2);
+            this.paymentList?.let{ tp ->
+                val totalTips = tp.sumOf { it.gratuity }
+                this.total = this.total.plus(totalTips).round(2)
+                this.paymentTotal = this.total.round(2);
+            }
+
+
         }
 
         fun activePayment(): TicketPayment?{
@@ -460,7 +465,18 @@ data class Ticket(
         }
 
         fun ticketTotal(): Double{
-            return total.plus(allGratuities())
+//            return total.plus(allExtraFees())
+            return total
+        }
+
+        fun allExtraFees(): Double{
+            return if (this.extraFees != null){
+                this.extraFees.let{ ef ->
+                    ef.sumOf { it.checkAmount }
+                }
+            }else{
+                0.00
+            }
         }
 
         fun allGratuities(): Double{

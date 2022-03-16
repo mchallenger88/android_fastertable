@@ -1,5 +1,6 @@
 package com.fastertable.fastertable2022.ui.checkout
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -361,6 +362,7 @@ class CheckoutViewModel @Inject constructor (
                 if (ticket != null){
                     val tp1 = ticket.paymentList?.find { it.id == tp.id }
                     if (tp1?.paymentType == "Cash"){
+                        ticket.addTip(tp.gratuity)
                         savePaymentToCloud()
                     }
 
@@ -387,6 +389,7 @@ class CheckoutViewModel @Inject constructor (
                     ct.tipTransaction = transaction
 
                     if (transaction.ApprovalStatus == "APPROVED"){
+                        ticket.addTip(ticketPayment.gratuity)
                         savePaymentToCloud()
                     }
                 }

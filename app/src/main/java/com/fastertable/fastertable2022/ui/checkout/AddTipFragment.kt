@@ -3,6 +3,7 @@ package com.fastertable.fastertable2022.ui.checkout
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
+import android.content.DialogInterface
 import android.os.Bundle
 import android.view.View
 import android.view.inputmethod.InputMethodManager
@@ -89,13 +90,13 @@ class AddTipFragment: BaseFragment(R.layout.checkout_add_tip_fragment) {
         builder.setMessage(tipMessage)
             ?.setTitle(R.string.add_gratuity_title)
 
-//        builder.apply {
-//            setPositiveButton(
-//                R.string.ok,
-//                DialogInterface.OnClickListener { dialog, id ->
-//
-//                })
-//        }
+        builder.apply {
+            setPositiveButton(
+                R.string.ok,
+                DialogInterface.OnClickListener { dialog, id ->
+
+                })
+        }
 
         val dialog: AlertDialog = builder.create()
         dialog.show()
