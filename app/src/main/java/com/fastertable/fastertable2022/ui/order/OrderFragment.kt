@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.res.ColorStateList
 import android.os.Bundle
 import android.text.TextUtils
+import android.util.Log
 import android.view.*
 import android.widget.Button
 import android.widget.LinearLayout
@@ -32,6 +33,34 @@ import dagger.hilt.android.AndroidEntryPoint
 class OrderFragment : BaseFragment(R.layout.order_fragment) {
     private val viewModel: OrderViewModel by activityViewModels()
     private val binding: OrderFragmentBinding by viewBinding()
+
+//    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+//        val binding1 = OrderFragmentBinding.inflate(inflater)
+//
+//        binding1.lifecycleOwner = viewLifecycleOwner
+//        binding1.viewModel = viewModel
+//
+//        viewModel.initOrder()
+//        createAndSetAdapters()
+//        createObservers()
+//
+//        binding1.menusTabBar.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+//            override fun onTabSelected(tab: TabLayout.Tab?) {
+//                tab?.text?.let { tabText ->
+//                    val menu = viewModel.menus.value?.find{it -> it.name == tabText}
+//                    if (menu != null){
+//                        createCategoryButtons(binding1, menu)
+//                        viewModel.setMenusNavigation(MenusNavigation.CATEGORIES)
+//                    }
+//                }
+//
+//            }
+//            override fun onTabUnselected(tab: TabLayout.Tab?) {}
+//            override fun onTabReselected(tab: TabLayout.Tab?) {}
+//        })
+//
+//        return binding1.root
+//    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

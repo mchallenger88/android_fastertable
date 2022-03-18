@@ -1,6 +1,7 @@
 package com.fastertable.fastertable2022.data.repository
 
 import android.app.Application
+import android.util.Log
 import com.fastertable.fastertable2022.api.*
 import com.fastertable.fastertable2022.data.models.*
 import com.fastertable.fastertable2022.utils.GlobalUtils
@@ -175,11 +176,12 @@ class OrderRepository @Inject constructor(private val app: Application) {
             uiActive = true
         )
 
+        Log.d("Testing", takeOutCustomer.toString())
+
         val guests = ArrayList<Guest>()
         guests.add(newGuest)
 
         val orderItems = mutableListOf<OrderItem>()
-
 
         val order = Order(
             orderType = orderType,

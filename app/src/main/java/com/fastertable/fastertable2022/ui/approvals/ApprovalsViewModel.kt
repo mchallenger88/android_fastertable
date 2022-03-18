@@ -1,5 +1,6 @@
 package com.fastertable.fastertable2022.ui.approvals
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope

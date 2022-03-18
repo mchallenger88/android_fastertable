@@ -83,10 +83,12 @@ class TakeoutFragment : BaseFragment(R.layout.takeout_fragment) {
                     phone = phone!!.replace("-", "")
                 }
 
+                var notes = binding.editTakeoutNotes.text?.trim().toString()
+
                 val takeoutCustomer = TakeOutCustomer(
                     name = binding.editTakeoutName.text?.trim().toString(),
                     telephone = phone ?: "",
-                    notes = binding.editTakeoutNotes.text?.trim().toString()
+                    notes = notes ?: ""
                 )
                 viewModel.startTakeoutOrder(takeoutCustomer)
             }

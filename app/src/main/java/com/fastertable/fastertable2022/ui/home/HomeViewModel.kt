@@ -1,5 +1,6 @@
 package com.fastertable.fastertable2022.ui.home
 
+import android.util.Log
 import androidx.lifecycle.*
 import com.fastertable.fastertable2022.data.models.*
 import com.fastertable.fastertable2022.data.repository.GetOrders
@@ -91,7 +92,13 @@ class HomeViewModel @Inject constructor (private val loginRepository: LoginRepos
 
         job.join()
         _orders.postValue(orderRepository.getOrdersFromFile())
+
         setOrderFilter("Open")
+    }
+
+    private fun filterOrdersByUser(){
+
+
     }
 
     fun getCompany(){
@@ -134,11 +141,37 @@ class HomeViewModel @Inject constructor (private val loginRepository: LoginRepos
 
     fun setOrderFilter(filter: String){
         _orderFilter.value = filter
-        when (filter) {
-            "Open" -> _filteredOrders.value = orders.value?.filter { it -> it.closeTime == null }
-            "Closed" -> _filteredOrders.value = orders.value?.filter { it -> it.closeTime != null }
-            "All" -> _filteredOrders.value = orders.value
+        val permission = Permissions.viewOrders.toString()
+        val manager = user?.claims?.find { it.permission.name == permission && it.permission.value }
+
+        if (manager != null){
+            if (manager.permission.value){
+                when (filter) {
+                    "Open" -> _filteredOrders.value = orders.value?.filter { it -> it.closeTime == null }
+                    "Closed" -> _filteredOrders.value = orders.value?.filter { it -> it.closeTime != null }
+                    "All" -> _filteredOrders.value = orders.value
+                }
+            }else{
+                user?.let {
+                    when (filter) {
+                        "Open" -> _filteredOrders.value = orders.value?.filter { it -> it.closeTime == null && it.employeeId == user.employeeId }
+                        "Closed" -> _filteredOrders.value = orders.value?.filter { it -> it.closeTime != null  && it.employeeId == user.employeeId}
+                        "All" -> _filteredOrders.value = orders.value?.filter {  it.employeeId == user.employeeId }
+                    }
+                }
+            }
+
+        }else{
+            user?.let {
+                when (filter) {
+                    "Open" -> _filteredOrders.value = orders.value?.filter { it -> it.closeTime == null && it.employeeId == user.employeeId }
+                    "Closed" -> _filteredOrders.value = orders.value?.filter { it -> it.closeTime != null  && it.employeeId == user.employeeId}
+                    "All" -> _filteredOrders.value = orders.value?.filter {  it.employeeId == user.employeeId }
+                }
+            }
+
         }
+
     }
 
 

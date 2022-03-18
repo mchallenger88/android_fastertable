@@ -442,7 +442,7 @@ data class Ticket(
         fun recalculateAfterApproval(){
             subTotal = ticketItems.sumOf { it.ticketItemPrice }.round(2)
             tax = subTotal.times(taxRate).round(2)
-            total = subTotal.plus(tax).plus(allExtraFees()).round(2)
+            total = subTotal.plus(tax).round(2)
         }
 
         fun addTip(tip: Double){
