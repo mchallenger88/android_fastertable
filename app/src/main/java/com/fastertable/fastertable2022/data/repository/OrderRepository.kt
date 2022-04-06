@@ -176,7 +176,7 @@ class OrderRepository @Inject constructor(private val app: Application) {
             uiActive = true
         )
 
-        Log.d("Testing", takeOutCustomer.toString())
+
 
         val guests = ArrayList<Guest>()
         guests.add(newGuest)

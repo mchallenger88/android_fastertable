@@ -37,7 +37,7 @@ data class Approval(
 data class ApprovalOrderPayment(
     val approval: Approval,
     val order: Order,
-    val payment: Payment
+    val payment: Payment?
 ): Parcelable
 
 @Parcelize

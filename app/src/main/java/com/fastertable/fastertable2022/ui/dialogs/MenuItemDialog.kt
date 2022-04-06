@@ -51,7 +51,16 @@ class MenuItemDialog: BaseDialog(R.layout.add_misc_menu_item) {
 
     private fun createOrderItem(qty: Int, name: String, price: Double){
         val order = viewModel.activeOrder.value
-        val id = order?.orderItems?.last()?.id?.plus(1)!!
+        var id = 1
+            order?.let { o ->
+            if (o.orderItems != null){
+                if (o.orderItems.isNotEmpty()){
+                    id = o.orderItems.last().id.plus(1)
+                }
+
+            }
+        }
+
 
         val p = ItemPrice(
             quantity = qty,

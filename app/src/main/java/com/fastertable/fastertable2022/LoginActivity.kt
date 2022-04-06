@@ -208,7 +208,6 @@ class LoginActivity : BaseLoginActivity(), DialogListener {
                 setButtonEnabled(true)
             }
         }.catch { err ->
-            Log.d("Testing", "Discovery error: $err");
             this.updateStatus("Error: $err");
             setButtonEnabled(true)
         }

@@ -57,6 +57,10 @@ class ApprovalsViewModel @Inject constructor(
     val enableButton: LiveData<Boolean>
         get() = _enableButton
 
+    private val _navigateToHome = MutableLiveData(false)
+    val navigateToHome: LiveData<Boolean>
+        get() = _navigateToHome
+
     init{
         viewModelScope.launch {
             loadApprovals()
@@ -79,11 +83,23 @@ class ApprovalsViewModel @Inject constructor(
 
     private fun sortApprovals(list: List<ApprovalOrderPayment>){
         var listNew: MutableList<ApprovalOrderPayment>
+        var distinctList = mutableListOf<ApprovalOrderPayment>()
         if (_showPending.value == true){
             listNew = list.filter { it.approval.timeHandled == null } as MutableList<ApprovalOrderPayment>
-            val distinctList = listNew.distinctBy{it.payment.id} as MutableList
-            _approvals.value = distinctList
-            setActiveApproval()
+            if (listNew.isNotEmpty()){
+                listNew.forEach { aop ->
+
+                    var found = distinctList.find { it.payment?.id == aop.payment?.id}
+                    if (found == null){
+                        distinctList.add(aop)
+                    }
+
+                }
+
+                _approvals.value = distinctList
+                setActiveApproval()
+            }
+
         }
 
 
@@ -96,7 +112,8 @@ class ApprovalsViewModel @Inject constructor(
                 val aop = list[0]
                 if (aop.approval.timeHandled == null){
                     _activeApproval.value = aop
-                    val ticket = aop.payment.tickets?.find{it.id == aop.approval.ticketId}
+
+                    val ticket = aop.payment?.tickets?.find{it.id == aop.approval.ticketId}
                     ticket?.let {
                         val at = ApprovalTicket(
                             approval = aop.approval,
@@ -120,7 +137,7 @@ class ApprovalsViewModel @Inject constructor(
         val aop = _approvals.value?.find{it.approval.id == id}
         aop?.let {
             _activeApproval.value = it
-            val ticket = it.payment.tickets?.find{a -> a.id == it.approval.ticketId}
+            val ticket = it.payment?.tickets?.find{a -> a.id == it.approval.ticketId}
             ticket?.let { ticket ->
                 val at = ApprovalTicket(
                     approval = it.approval,
@@ -158,6 +175,14 @@ class ApprovalsViewModel @Inject constructor(
         viewModelScope.launch {
             processApproval()
         }
+    }
+
+    fun returnHome(){
+        setReturnHome(true)
+    }
+
+    fun setReturnHome(b: Boolean){
+        _navigateToHome.value = b
     }
 
     private suspend fun processApproval(){
@@ -206,7 +231,7 @@ class ApprovalsViewModel @Inject constructor(
         viewModelScope.launch {
             val aop = _activeApproval.value
             aop?.let { approval ->
-                approval.payment.tickets?.let { tickets ->
+                approval.payment?.let { payment -> payment.tickets?.let { tickets ->
                     val ticket = tickets.find { it.id == approval.approval.ticketId }
                     ticket?.let {
                         for (item in list){
@@ -232,7 +257,7 @@ class ApprovalsViewModel @Inject constructor(
                         updateOrder.saveOrder(approval.order)
                         setOrderSaved(true)
                         approvalRepository.updateApprovalOrderPayment(approval)
-                    }
+                    }}
                 }
             }
         }
@@ -242,7 +267,7 @@ class ApprovalsViewModel @Inject constructor(
         viewModelScope.launch {
             val aop = _activeApproval.value
             aop?.let { approval ->
-                approval.payment.tickets?.let { tickets ->
+                approval.payment?.let { payment -> payment.tickets?.let { tickets ->
                     val ticket = tickets.find { it.id == approval.approval.ticketId }
                     ticket?.let {
                         for (item in list){
@@ -260,7 +285,7 @@ class ApprovalsViewModel @Inject constructor(
                         updateOrder.saveOrder(approval.order)
                         setOrderSaved(true)
                         approvalRepository.updateApprovalOrderPayment(approval)
-                    }
+                    }}
                 }
             }
         }

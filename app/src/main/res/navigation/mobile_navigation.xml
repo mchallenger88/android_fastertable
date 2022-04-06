@@ -104,6 +104,9 @@
         <action
             android:id="@+id/action_approvalsFragment_to_completedApprovalsFragment"
             app:destination="@id/completedApprovalsFragment" />
+        <action
+            android:id="@+id/action_approvalsFragment_to_nav_home"
+            app:destination="@id/nav_home" />
     </fragment>
     <fragment
         android:id="@+id/checkoutFragment"

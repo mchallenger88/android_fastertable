@@ -20,12 +20,10 @@ class StartCreditUseCase @Inject constructor(private val fastertableApi: Fastert
                 if (response.isSuccessful && response.body() != null){
                     return@withContext Result.Success(response.body()!!)
                 }else{
-                    Log.d("Testing", Result.Failure.toString())
                     return@withContext Result.Failure
                 }
             }catch (t: Throwable){
                 if (t !is CancellationException){
-                    Log.d("Testing1", Result.Failure.toString())
                     return@withContext  Result.Failure
                 }else{
                     throw t

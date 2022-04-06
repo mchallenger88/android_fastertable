@@ -256,3 +256,4 @@ fun spinnerVisibility(progressBar: ProgressBar, b: Boolean){
 fun enableButton(btn: Button, b: Boolean){
     btn.isEnabled = b
 }
+

@@ -588,6 +588,14 @@ class MainActivity: BaseActivity(), DismissListener, DialogListener, DateListene
                 navController.navigate(CompletedApprovalsFragmentDirections.actionCompletedApprovalsFragmentToApprovalsFragment())
             }
         }
+
+        approvalsViewModel.navigateToHome.observe(this) {
+            if (it) {
+                homeViewModel.getOrdersFromFile()
+                navController.navigate(ApprovalsFragmentDirections.actionApprovalsFragmentToNavHome())
+                paymentViewModel.setReturnHome(false)
+            }
+        }
     }
 
     private fun datePickerObservables(){

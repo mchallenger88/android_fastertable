@@ -1,6 +1,7 @@
 package com.fastertable.fastertable2022.data.models
 
 import android.os.Parcelable
+import android.util.Log
 import com.fastertable.fastertable2022.utils.round
 import com.google.gson.Gson
 import kotlinx.parcelize.Parcelize
@@ -61,8 +62,16 @@ data class MenuItem(
 
 
     fun sumSurcharges(){
-        val modSum = allModifierItems().sumOf { it.quantity.times(it.surcharge) }
-        val ingSum = ingredientSurchargeList().sumOf{ it.surcharge }
+        var modSum = 0.00
+        allModifierItems()?.let {
+            modSum = allModifierItems().sumOf { it.quantity.times(it.surcharge) }
+        }
+
+        var ingSum = 0.00
+        ingredientSurchargeList()?.let{
+            ingredientSurchargeList().sumOf{ it.surcharge }
+        }
+
         val total = modSum.plus(ingSum).round(2)
         prices.forEach {
             it.modifiedPrice = total

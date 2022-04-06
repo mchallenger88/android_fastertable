@@ -23,7 +23,10 @@ import java.time.format.DateTimeFormatter
 fun orderTypeTableNumber(textView: TextView, order: Order?) {
     if (order != null){
         if (order.orderType == "Takeout"){
-            textView.text = textView.context.getString(R.string.takeout)
+            order.takeOutCustomer?.let {
+                textView.text = it.name
+            }
+
         }
 
         if (order.orderType == "Counter"){

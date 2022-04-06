@@ -338,6 +338,7 @@ class OrderViewModel @Inject constructor (private val menusRepository: MenusRepo
         item.guestId = _activeOrder.value?.activeGuest ?: 1
         _activeOrder.value?.orderItems?.add(item)
         _activeOrder.value = _activeOrder.value
+        _kitchenButtonEnabled.value = true
         _menusNavigation.value = MenusNavigation.CATEGORIES
     }
 

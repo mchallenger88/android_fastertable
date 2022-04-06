@@ -63,24 +63,26 @@ class ClosedApprovalAdapter() : ListAdapter<ApprovalOrderPayment, ClosedApproval
                 binding.txtClosedApprovalType.text = aop.approval.approvalType
             }
             binding.txtClosedApprovalType.text = aop.approval.approvalType
-            val ticketItems = aop.payment.allTicketItems()
-            val ticketItem = ticketItems.find { it.id == aop.approval.ticketItemId }
-            if (ticketItem != null){
-                var txtApproved: String
-                if (aop.approval.approved != null && aop.approval.approved == true){
-                   txtApproved = "Approved: "
-                }else{
-                    txtApproved = "Rejected: "
-                }
-                binding.txtClosedItemQuantity.text = ticketItem.quantity.toString()
-                binding.txtClosedItem.text = ticketItem.itemName
-                binding.txtClosedItemPrice.text = "$txtApproved " + binding.txtClosedItemPrice.context.getString(R.string.item_price, "%.${2}f".format(aop.approval.newItemPrice))
+            aop.payment?.let {
+                val ticketItems = it.allTicketItems()
+                val ticketItem = ticketItems.find { it.id == aop.approval.ticketItemId }
+                if (ticketItem != null){
+                    val txtApproved: String = if (aop.approval.approved != null && aop.approval.approved == true){
+                        "Approved: "
+                    }else{
+                        "Rejected: "
+                    }
+                    binding.txtClosedItemQuantity.text = ticketItem.quantity.toString()
+                    binding.txtClosedItem.text = ticketItem.itemName
+                    binding.txtClosedItemPrice.text = "$txtApproved " + binding.txtClosedItemPrice.context.getString(R.string.item_price, "%.${2}f".format(aop.approval.newItemPrice))
 
-                val typeface = ResourcesCompat.getFont(parent.context, R.font.open_sans_semibold)
-                binding.txtClosedItemQuantity.typeface = typeface
-                binding.txtClosedItem.typeface = typeface
-                binding.txtClosedItemPrice.typeface = typeface
+                    val typeface = ResourcesCompat.getFont(parent.context, R.font.open_sans_semibold)
+                    binding.txtClosedItemQuantity.typeface = typeface
+                    binding.txtClosedItem.typeface = typeface
+                    binding.txtClosedItemPrice.typeface = typeface
+                }
             }
+
         }
 
         @SuppressLint("SetTextI18n")
@@ -90,19 +92,21 @@ class ClosedApprovalAdapter() : ListAdapter<ApprovalOrderPayment, ClosedApproval
             }else{
                 binding.txtClosedApprovalType.text = aop.approval.approvalType
             }
-            val ticket = aop.payment.tickets?.find { it.id == aop.approval.ticketId }
-            if (ticket != null){
-                var txtApproved: String
-                if (aop.approval.approved != null && aop.approval.approved == true){
-                    txtApproved = "Approved: "
-                }else{
-                    txtApproved = "Rejected: "
+            aop.payment?.let {
+                val ticket = it.tickets?.find { it.id == aop.approval.ticketId }
+                if (ticket != null){
+                    val txtApproved: String = if (aop.approval.approved != null && aop.approval.approved == true){
+                        "Approved: "
+                    }else{
+                        "Rejected: "
+                    }
+                    val typeface = ResourcesCompat.getFont(parent.context, R.font.open_sans_semibold)
+                    val totalDiscount = ticket.getApprovedTotal()
+                    binding.txtClosedItem.text = "$txtApproved " + binding.txtClosedItem.context.getString(R.string.item_price, "%.${2}f".format(totalDiscount))
+                    binding.txtClosedItem.typeface = typeface
                 }
-                val typeface = ResourcesCompat.getFont(parent.context, R.font.open_sans_semibold)
-                val totalDiscount = ticket.getApprovedTotal()
-                binding.txtClosedItem.text = "$txtApproved " + binding.txtClosedItem.context.getString(R.string.item_price, "%.${2}f".format(totalDiscount))
-                binding.txtClosedItem.typeface = typeface
             }
+
         }
     }
     companion object DiffCallback : DiffUtil.ItemCallback<ApprovalOrderPayment>() {

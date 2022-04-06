@@ -315,7 +315,6 @@ data class Order(
                 documents.add(doc)
             }else{
                 //creates the document
-                    Log.d("Testing", printer.toString())
                 PrintTicketService().kitchenTicket(doc, this, printer)
                 documents.add(doc)
             }

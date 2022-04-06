@@ -62,6 +62,21 @@
                 app:layout_constraintTop_toTopOf="@+id/layout_approvals_buttons"
                 app:strokeColor="@color/white" />
 
+            <Button
+                android:id="@+id/btn_approval_home"
+                style="?attr/materialButtonOutlinedStyle"
+                app:rippleColor="@color/ripple_main"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:text="@string/dashboard"
+                android:textColor="@color/white"
+                android:textSize="@dimen/toolbar_button"
+                android:onClick="@{() -> viewModel.returnHome()}"
+                app:layout_constraintEnd_toEndOf="@+id/layout_approvals_buttons"
+                app:layout_constraintTop_toTopOf="parent"
+                app:strokeColor="@color/white" />
+
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.appcompat.widget.Toolbar>
